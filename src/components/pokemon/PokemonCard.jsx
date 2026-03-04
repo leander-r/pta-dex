@@ -1932,8 +1932,16 @@ const PokemonCard = ({
                         </div>
 
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
-                            {['hp', 'atk', 'def', 'satk', 'sdef', 'spd'].map(stat => (
-                                <div key={stat} className="bg-light" style={{ padding: '10px', borderRadius: '8px', textAlign: 'center' }}>
+                            {['hp', 'atk', 'def', 'satk', 'sdef', 'spd'].map(stat => {
+                                const addedVal = pokemon.addedStats?.[stat] || 0;
+                                const pointsLeft = pokemon.statPointsAvailable || 0;
+                                const addViolates = pointsLeft > 0 && wouldViolateBaseRelation(stat, pokemon.baseStats, pokemon.addedStats || {}, 1);
+                                const removeViolates = addedVal > 0 && wouldViolateBaseRelation(stat, pokemon.baseStats, pokemon.addedStats || {}, -1);
+                                const minusDisabled = addedVal <= 0 || removeViolates;
+                                const plusDisabled = pointsLeft <= 0 || addViolates;
+                                const canAdd = pointsLeft > 0 && !addViolates;
+                                return (
+                                <div key={stat} className="bg-light" style={{ padding: '10px', borderRadius: '8px', textAlign: 'center', outline: canAdd ? '2px solid #4caf50' : 'none', boxShadow: canAdd ? '0 0 6px rgba(76,175,80,0.4)' : 'none' }}>
                                     <div style={{ fontSize: '12px', fontWeight: 'bold', color: '#667eea', marginBottom: '4px' }}>
                                         {stat.toUpperCase()}
                                     </div>
@@ -1941,7 +1949,7 @@ const PokemonCard = ({
                                         Base: {pokemon.baseStats?.[stat] || 10}
                                     </div>
                                     <div style={{ fontSize: '11px', color: '#4caf50' }} title="Points you've added from level-up bonuses.">
-                                        +{pokemon.addedStats?.[stat] || 0}
+                                        +{addedVal}
                                     </div>
                                     <div style={{ fontSize: '18px', fontWeight: 'bold' }} title="Total stat = Base + Added. Used for damage calculations and skill checks.">
                                         {actualStats[stat]}
@@ -1949,43 +1957,43 @@ const PokemonCard = ({
                                     <div style={{ display: 'flex', justifyContent: 'center', gap: '4px', marginTop: '4px' }}>
                                         <button
                                             onClick={() => {
-                                                if ((pokemon.addedStats?.[stat] || 0) > 0) {
-                                                    // Remove last occurrence of this stat from history
+                                                if (!minusDisabled) {
                                                     const history = [...(pokemon.statAllocationHistory || [])];
                                                     const lastIdx = history.lastIndexOf(stat);
-                                                    if (lastIdx !== -1) {
-                                                        history.splice(lastIdx, 1);
-                                                    }
+                                                    if (lastIdx !== -1) history.splice(lastIdx, 1);
                                                     updatePokemon({
-                                                        addedStats: { ...pokemon.addedStats, [stat]: (pokemon.addedStats?.[stat] || 0) - 1 },
-                                                        statPointsAvailable: (pokemon.statPointsAvailable || 0) + 1,
+                                                        addedStats: { ...pokemon.addedStats, [stat]: addedVal - 1 },
+                                                        statPointsAvailable: pointsLeft + 1,
                                                         statAllocationHistory: history
                                                     });
                                                 }
                                             }}
-                                            disabled={(pokemon.addedStats?.[stat] || 0) <= 0}
-                                            style={{ ...statBtnStyle, opacity: (pokemon.addedStats?.[stat] || 0) <= 0 ? 0.5 : 1, cursor: (pokemon.addedStats?.[stat] || 0) <= 0 ? 'not-allowed' : 'pointer' }}
+                                            disabled={minusDisabled}
+                                            title={removeViolates ? 'Removing this would violate Base Relation' : undefined}
+                                            style={{ ...statBtnStyle, opacity: minusDisabled ? 0.5 : 1, cursor: minusDisabled ? 'not-allowed' : 'pointer' }}
                                         >
                                             −
                                         </button>
                                         <button
                                             onClick={() => {
-                                                if ((pokemon.statPointsAvailable || 0) > 0) {
+                                                if (!plusDisabled) {
                                                     updatePokemon({
-                                                        addedStats: { ...pokemon.addedStats, [stat]: (pokemon.addedStats?.[stat] || 0) + 1 },
-                                                        statPointsAvailable: (pokemon.statPointsAvailable || 0) - 1,
+                                                        addedStats: { ...pokemon.addedStats, [stat]: addedVal + 1 },
+                                                        statPointsAvailable: pointsLeft - 1,
                                                         statAllocationHistory: [...(pokemon.statAllocationHistory || []), stat]
                                                     });
                                                 }
                                             }}
-                                            disabled={(pokemon.statPointsAvailable || 0) <= 0}
-                                            style={{ ...statBtnStyle, opacity: (pokemon.statPointsAvailable || 0) <= 0 ? 0.5 : 1, cursor: (pokemon.statPointsAvailable || 0) <= 0 ? 'not-allowed' : 'pointer' }}
+                                            disabled={plusDisabled}
+                                            title={addViolates ? 'Would violate Base Relation' : undefined}
+                                            style={{ ...statBtnStyle, opacity: plusDisabled ? 0.5 : 1, cursor: plusDisabled ? 'not-allowed' : 'pointer' }}
                                         >
                                             +
                                         </button>
                                     </div>
                                 </div>
-                            ))}
+                                );
+                            })}
                         </div>
 
                         <div style={{ marginTop: '15px', padding: '10px', background: '#e8f5e9', borderRadius: '8px' }}>
@@ -2534,5 +2542,25 @@ const statBtnStyle = {
     cursor: 'pointer',
     fontSize: '16px'
 };
+
+// Returns true if applying `delta` (+1 or -1) to `stat` would violate Base Relation.
+// Base Relation rule: for every pair (A, B) where base(A) > base(B), total(A) must > total(B).
+function wouldViolateBaseRelation(stat, baseStats, addedStats, delta) {
+    const STATS = ['hp', 'atk', 'def', 'satk', 'sdef', 'spd'];
+    const base = baseStats || {};
+    const newAdded = { ...addedStats };
+    newAdded[stat] = (newAdded[stat] || 0) + delta;
+    const totals = {};
+    for (const s of STATS) {
+        totals[s] = (base[s] || 0) + (newAdded[s] || 0);
+    }
+    for (const sA of STATS) {
+        for (const sB of STATS) {
+            if (sA === sB) continue;
+            if ((base[sA] || 0) > (base[sB] || 0) && totals[sA] <= totals[sB]) return true;
+        }
+    }
+    return false;
+}
 
 export default PokemonCard;
