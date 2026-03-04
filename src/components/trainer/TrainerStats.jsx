@@ -65,24 +65,54 @@ const TrainerStats = () => {
                             <div style={{ fontSize: '12px', fontWeight: 'bold', color: stat.color, marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                                 {stat.label}
                             </div>
-                            <input
-                                type="number"
-                                value={trainer.stats[stat.key]}
-                                onChange={(e) => updateTrainerStat(stat.key, e.target.value)}
-                                min="6"
-                                max="30"
-                                style={{
-                                    width: '50px',
-                                    textAlign: 'center',
-                                    fontSize: '16px',
-                                    fontWeight: 'bold',
-                                    border: `1.5px solid ${stat.color}99`,
-                                    borderRadius: '5px',
-                                    padding: '3px 2px',
-                                    background: 'transparent',
-                                    color: 'var(--text-primary)'
-                                }}
-                            />
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '2px' }}>
+                                <button
+                                    onClick={() => updateTrainerStat(stat.key, trainer.stats[stat.key] - 1)}
+                                    aria-label={`Decrease ${stat.label}`}
+                                    style={{
+                                        width: '24px', height: '24px', padding: 0,
+                                        fontSize: '16px', lineHeight: 1,
+                                        border: `1px solid ${stat.color}66`,
+                                        borderRadius: '4px',
+                                        background: `${stat.color}15`,
+                                        color: stat.color,
+                                        cursor: 'pointer',
+                                        flexShrink: 0
+                                    }}
+                                >−</button>
+                                <input
+                                    type="number"
+                                    value={trainer.stats[stat.key]}
+                                    onChange={(e) => updateTrainerStat(stat.key, e.target.value)}
+                                    min="6"
+                                    max="30"
+                                    style={{
+                                        width: '36px',
+                                        textAlign: 'center',
+                                        fontSize: '16px',
+                                        fontWeight: 'bold',
+                                        border: `1.5px solid ${stat.color}99`,
+                                        borderRadius: '5px',
+                                        padding: '3px 2px',
+                                        background: 'transparent',
+                                        color: 'var(--text-primary)'
+                                    }}
+                                />
+                                <button
+                                    onClick={() => updateTrainerStat(stat.key, trainer.stats[stat.key] + 1)}
+                                    aria-label={`Increase ${stat.label}`}
+                                    style={{
+                                        width: '24px', height: '24px', padding: 0,
+                                        fontSize: '16px', lineHeight: 1,
+                                        border: `1px solid ${stat.color}66`,
+                                        borderRadius: '4px',
+                                        background: `${stat.color}15`,
+                                        color: stat.color,
+                                        cursor: 'pointer',
+                                        flexShrink: 0
+                                    }}
+                                >+</button>
+                            </div>
                             <div style={{
                                 fontSize: '12px',
                                 color: mod >= 0 ? '#4caf50' : '#f44336',
