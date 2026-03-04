@@ -3185,6 +3185,21 @@
             .trainer-stats-compact {
                 grid-template-columns: repeat(3, 1fr) !important;
             }
+            /* Stat cells must not overflow their grid column */
+            .trainer-stats-compact > div {
+                min-width: 0;
+                overflow: hidden;
+            }
+            /* Shrink +/- buttons and input to fit 3-column grid */
+            .trainer-stats-compact button {
+                width: 20px !important;
+                height: 20px !important;
+                font-size: 13px !important;
+            }
+            .trainer-stats-compact input[type="number"] {
+                width: 28px !important;
+                font-size: 14px !important;
+            }
             
             /* ===== MOBILE SECTION CARDS ===== */
             .section-card,
