@@ -7,6 +7,7 @@ import React, { createContext, useContext, useState, useEffect, useMemo, useCall
 import { GAME_DATA } from '../data/configs.js';
 import { gameDataLoadPromise } from '../data/gameDataLoader.js';
 import { loadPokedexFromGitHub } from '../data/pokedexLoader.js';
+import toast from '../utils/toast.js';
 
 const GameDataContext = createContext(null);
 
@@ -32,7 +33,11 @@ export const GameDataProvider = ({ children }) => {
     useEffect(() => {
         gameDataLoadPromise
             .then(loaded => setGameDataLoaded(loaded))
-            .catch(() => setGameDataLoaded(true)); // unblock spinner on error
+            .catch(err => {
+                console.error('Failed to load game data:', err);
+                toast.warning('Game data failed to load — using fallback. Some moves, abilities, or features may be missing.');
+                setGameDataLoaded(true); // unblock spinner so app is usable
+            });
     }, []);
 
     // Fetch Pokedex (uses shared loader with timeout and caching)

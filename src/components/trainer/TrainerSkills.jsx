@@ -39,7 +39,7 @@ const getTrainedSkillsList = (skills) => {
 const calculateSkillBonus = (rank, statValue) => {
     if (rank === 0) return null;
 
-    // Calculate stat modifier (same formula as useTrainer)
+    // PTA stat modifier: above 10 → floor((stat-10)/2); below 10 → -(10-stat) (PH2 p.10)
     let modifier;
     if (statValue === 10) modifier = 0;
     else if (statValue < 10) modifier = -(10 - statValue);

@@ -40,7 +40,7 @@ const CombatStagesPanel = ({ selectedPokemon, combatStages, getStatsWithMega, up
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <span
                         style={{ fontSize: '12px', fontWeight: 'bold' }}
-                        title="Combat Stages track stat buffs and debuffs from moves. Each positive stage increases the stat by 25%, each negative stage decreases it by 10%. Range: -6 to +6."
+                        title="Combat Stages track stat buffs and debuffs from moves. Each positive stage increases the stat by 25%, each negative stage decreases it by 10%. At +6: 250% of original. At -6: 40% of original. Range: -6 to +6."
                     >
                         Combat Stages
                     </span>
@@ -66,7 +66,7 @@ const CombatStagesPanel = ({ selectedPokemon, combatStages, getStatsWithMega, up
             {show && (
                 <div className="combat-stages-content" style={{ padding: '10px', borderRadius: '6px' }}>
                     <div className="text-muted" style={{ fontSize: '12px', marginBottom: '8px', textAlign: 'center' }}>
-                        +1 stage = +25% stat | −1 stage = −10% stat | Range: −6 to +6
+                        +1 stage = +25% stat | −1 stage = −10% stat | At ±6: 250% / 40% | Range: −6 to +6
                     </div>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
                         {STATS.map(stat => {

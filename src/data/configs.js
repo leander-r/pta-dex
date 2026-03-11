@@ -2,8 +2,6 @@
 // DATA CONFIGURATION - GitHub-hosted JSON files
 // ============================================================
 // [lndr_rsr:0x6c65616e6465725f727372] Application Core
-export const _0x72 = atob('bGVhbmRlcl9yc3I='); // ownership marker
-
 export const DATA_CONFIG = {
     // GitHub raw URLs for data files
     pokedexUrl: 'https://raw.githubusercontent.com/leander-r/pta-dex/main/pokedex.min.json',
@@ -146,61 +144,63 @@ export let GAME_DATA = {
         91: 1180000, 92: 1260000, 93: 1340000, 94: 1420000, 95: 1500000, 96: 1600000, 97: 1700000, 98: 1800000, 99: 1900000, 100: 2000000
     },
     
-    // Trainer level progression - Official P:TA Handbook values
-    // Level 5: 2 classes, Level 12: 3 classes, Level 24: 4 classes
-    // Pattern: 1 stat per level, feats alternate (even=1, odd=0) after level 6, milestone bonus at every 10th
+    // Trainer level progression — sourced from PTA Trainer Level Chart image (reference material)
+    // Levels 1–11: 1 stat + 1 feat per level (with milestone bonuses at 7, 9, 10).
+    // Level 12+: even levels grant feats only; odd levels grant 1 stat only.
+    // Milestone feat bonuses: level 10 (+2 feats), 14/18/22/26/30/34/38/42/46 (+2 feats), 50 (+3 feats).
+    // Totals at level 50: 40 cumulative feats, 30 cumulative level-up stats.
     trainerLevelProgression: {
-        0: { feats: 0, stats: 0, totalFeats: 0, totalStats: 0 },
-        1: { feats: 1, stats: 1, totalFeats: 1, totalStats: 1 },
-        2: { feats: 1, stats: 1, totalFeats: 2, totalStats: 2 },
-        3: { feats: 1, stats: 1, totalFeats: 3, totalStats: 3 },
-        4: { feats: 1, stats: 1, totalFeats: 4, totalStats: 4 },
-        5: { feats: 1, stats: 1, totalFeats: 5, totalStats: 5 },
-        6: { feats: 1, stats: 1, totalFeats: 6, totalStats: 6 },
-        7: { feats: 0, stats: 1, totalFeats: 6, totalStats: 7 },
-        8: { feats: 1, stats: 1, totalFeats: 7, totalStats: 8 },
-        9: { feats: 0, stats: 1, totalFeats: 7, totalStats: 9 },
-        10: { feats: 2, stats: 1, totalFeats: 9, totalStats: 10 },
-        11: { feats: 0, stats: 1, totalFeats: 9, totalStats: 11 },
-        12: { feats: 1, stats: 1, totalFeats: 10, totalStats: 12 },
-        13: { feats: 0, stats: 1, totalFeats: 10, totalStats: 13 },
-        14: { feats: 1, stats: 1, totalFeats: 11, totalStats: 14 },
-        15: { feats: 0, stats: 1, totalFeats: 11, totalStats: 15 },
-        16: { feats: 1, stats: 1, totalFeats: 12, totalStats: 16 },
-        17: { feats: 0, stats: 1, totalFeats: 12, totalStats: 17 },
-        18: { feats: 1, stats: 1, totalFeats: 13, totalStats: 18 },
-        19: { feats: 0, stats: 1, totalFeats: 13, totalStats: 19 },
-        20: { feats: 2, stats: 1, totalFeats: 15, totalStats: 20 },
-        21: { feats: 0, stats: 1, totalFeats: 15, totalStats: 21 },
-        22: { feats: 1, stats: 1, totalFeats: 16, totalStats: 22 },
-        23: { feats: 0, stats: 1, totalFeats: 16, totalStats: 23 },
-        24: { feats: 1, stats: 1, totalFeats: 17, totalStats: 24 },
-        25: { feats: 0, stats: 1, totalFeats: 17, totalStats: 25 },
-        26: { feats: 1, stats: 1, totalFeats: 18, totalStats: 26 },
-        27: { feats: 0, stats: 1, totalFeats: 18, totalStats: 27 },
-        28: { feats: 1, stats: 1, totalFeats: 19, totalStats: 28 },
-        29: { feats: 0, stats: 1, totalFeats: 19, totalStats: 29 },
-        30: { feats: 2, stats: 1, totalFeats: 21, totalStats: 30 },
-        31: { feats: 0, stats: 1, totalFeats: 21, totalStats: 31 },
-        32: { feats: 1, stats: 1, totalFeats: 22, totalStats: 32 },
-        33: { feats: 0, stats: 1, totalFeats: 22, totalStats: 33 },
-        34: { feats: 1, stats: 1, totalFeats: 23, totalStats: 34 },
-        35: { feats: 0, stats: 1, totalFeats: 23, totalStats: 35 },
-        36: { feats: 1, stats: 1, totalFeats: 24, totalStats: 36 },
-        37: { feats: 0, stats: 1, totalFeats: 24, totalStats: 37 },
-        38: { feats: 1, stats: 1, totalFeats: 25, totalStats: 38 },
-        39: { feats: 0, stats: 1, totalFeats: 25, totalStats: 39 },
-        40: { feats: 2, stats: 1, totalFeats: 27, totalStats: 40 },
-        41: { feats: 0, stats: 1, totalFeats: 27, totalStats: 41 },
-        42: { feats: 1, stats: 1, totalFeats: 28, totalStats: 42 },
-        43: { feats: 0, stats: 1, totalFeats: 28, totalStats: 43 },
-        44: { feats: 1, stats: 1, totalFeats: 29, totalStats: 44 },
-        45: { feats: 0, stats: 1, totalFeats: 29, totalStats: 45 },
-        46: { feats: 1, stats: 1, totalFeats: 30, totalStats: 46 },
-        47: { feats: 0, stats: 1, totalFeats: 30, totalStats: 47 },
-        48: { feats: 1, stats: 1, totalFeats: 31, totalStats: 48 },
-        49: { feats: 0, stats: 1, totalFeats: 31, totalStats: 49 },
-        50: { feats: 2, stats: 1, totalFeats: 33, totalStats: 50 }
+        0:  { feats: 0, stats: 0, totalFeats: 0,  totalStats: 0  },
+        1:  { feats: 1, stats: 1, totalFeats: 1,  totalStats: 1  },
+        2:  { feats: 1, stats: 1, totalFeats: 2,  totalStats: 2  },
+        3:  { feats: 1, stats: 1, totalFeats: 3,  totalStats: 3  },
+        4:  { feats: 1, stats: 1, totalFeats: 4,  totalStats: 4  },
+        5:  { feats: 1, stats: 1, totalFeats: 5,  totalStats: 5  },
+        6:  { feats: 1, stats: 1, totalFeats: 6,  totalStats: 6  },
+        7:  { feats: 0, stats: 1, totalFeats: 6,  totalStats: 7  },
+        8:  { feats: 1, stats: 1, totalFeats: 7,  totalStats: 8  },
+        9:  { feats: 0, stats: 1, totalFeats: 7,  totalStats: 9  },
+        10: { feats: 2, stats: 1, totalFeats: 9,  totalStats: 10 },
+        11: { feats: 0, stats: 1, totalFeats: 9,  totalStats: 11 },
+        12: { feats: 1, stats: 0, totalFeats: 10, totalStats: 11 },
+        13: { feats: 0, stats: 1, totalFeats: 10, totalStats: 12 },
+        14: { feats: 2, stats: 0, totalFeats: 12, totalStats: 12 },
+        15: { feats: 0, stats: 1, totalFeats: 12, totalStats: 13 },
+        16: { feats: 1, stats: 0, totalFeats: 13, totalStats: 13 },
+        17: { feats: 0, stats: 1, totalFeats: 13, totalStats: 14 },
+        18: { feats: 2, stats: 0, totalFeats: 15, totalStats: 14 },
+        19: { feats: 0, stats: 1, totalFeats: 15, totalStats: 15 },
+        20: { feats: 1, stats: 0, totalFeats: 16, totalStats: 15 },
+        21: { feats: 0, stats: 1, totalFeats: 16, totalStats: 16 },
+        22: { feats: 2, stats: 0, totalFeats: 18, totalStats: 16 },
+        23: { feats: 0, stats: 1, totalFeats: 18, totalStats: 17 },
+        24: { feats: 1, stats: 0, totalFeats: 19, totalStats: 17 },
+        25: { feats: 0, stats: 1, totalFeats: 19, totalStats: 18 },
+        26: { feats: 2, stats: 0, totalFeats: 21, totalStats: 18 },
+        27: { feats: 0, stats: 1, totalFeats: 21, totalStats: 19 },
+        28: { feats: 1, stats: 0, totalFeats: 22, totalStats: 19 },
+        29: { feats: 0, stats: 1, totalFeats: 22, totalStats: 20 },
+        30: { feats: 2, stats: 0, totalFeats: 24, totalStats: 20 },
+        31: { feats: 0, stats: 1, totalFeats: 24, totalStats: 21 },
+        32: { feats: 1, stats: 0, totalFeats: 25, totalStats: 21 },
+        33: { feats: 0, stats: 1, totalFeats: 25, totalStats: 22 },
+        34: { feats: 2, stats: 0, totalFeats: 27, totalStats: 22 },
+        35: { feats: 0, stats: 1, totalFeats: 27, totalStats: 23 },
+        36: { feats: 1, stats: 0, totalFeats: 28, totalStats: 23 },
+        37: { feats: 0, stats: 1, totalFeats: 28, totalStats: 24 },
+        38: { feats: 2, stats: 0, totalFeats: 30, totalStats: 24 },
+        39: { feats: 0, stats: 1, totalFeats: 30, totalStats: 25 },
+        40: { feats: 1, stats: 0, totalFeats: 31, totalStats: 25 },
+        41: { feats: 0, stats: 1, totalFeats: 31, totalStats: 26 },
+        42: { feats: 2, stats: 0, totalFeats: 33, totalStats: 26 },
+        43: { feats: 0, stats: 1, totalFeats: 33, totalStats: 27 },
+        44: { feats: 1, stats: 0, totalFeats: 34, totalStats: 27 },
+        45: { feats: 0, stats: 1, totalFeats: 34, totalStats: 28 },
+        46: { feats: 2, stats: 0, totalFeats: 36, totalStats: 28 },
+        47: { feats: 0, stats: 1, totalFeats: 36, totalStats: 29 },
+        48: { feats: 1, stats: 0, totalFeats: 37, totalStats: 29 },
+        49: { feats: 0, stats: 1, totalFeats: 37, totalStats: 30 },
+        50: { feats: 3, stats: 0, totalFeats: 40, totalStats: 30 }
     }
 };
 
@@ -208,3 +208,21 @@ export let GAME_DATA = {
 export const updateGameData = (newData) => {
     Object.assign(GAME_DATA, newData);
 };
+
+// Dev-only validation: ensures cumulative totals in trainerLevelProgression are internally consistent.
+// Catches accidental typos when editing the table. Runs once at module load in development.
+if (process.env.NODE_ENV !== 'production') {
+    let cumFeats = 0, cumStats = 0;
+    for (let lvl = 0; lvl <= 50; lvl++) {
+        const row = GAME_DATA.trainerLevelProgression[lvl];
+        if (!row) { console.error(`trainerLevelProgression: missing level ${lvl}`); continue; }
+        cumFeats += row.feats;
+        cumStats += row.stats;
+        if (row.totalFeats !== cumFeats || row.totalStats !== cumStats) {
+            console.error(
+                `trainerLevelProgression level ${lvl}: expected totalFeats=${cumFeats} totalStats=${cumStats}` +
+                `, got totalFeats=${row.totalFeats} totalStats=${row.totalStats}`
+            );
+        }
+    }
+}

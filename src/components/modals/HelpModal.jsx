@@ -57,7 +57,7 @@ const HELP_CONTENT = {
                 <ul style={{ paddingLeft: '18px', margin: '0 0 10px', lineHeight: '1.8' }}>
                     <li><strong>+1 stage</strong> = stat × 1.25 (25% increase)</li>
                     <li><strong>−1 stage</strong> = stat × 0.90 (10% decrease)</li>
-                    <li>Stages stack: +3 = ×1.75, −3 = ×0.73</li>
+                    <li>Stages stack: +3 = ×1.75, −3 = ×0.70, −6 = ×0.40</li>
                 </ul>
                 <h4 style={{ margin: '14px 0 6px', fontSize: '13px', color: 'var(--text-secondary)' }}>Limits & Reset</h4>
                 <p>Stages range from <strong>−6 to +6</strong>. They reset when the Pokémon switches out or the battle ends. Use the Reset button to clear all stages at once.</p>

@@ -73,7 +73,7 @@ const NaturesSection = () => {
         <div>
             <h3>Nature Effects ({totalNatures} Natures)</h3>
             <p style={{ marginBottom: '15px', fontSize: '13px', color: 'var(--text-muted)' }}>
-                Natures modify base stats by +1/-1. HP modifications are always just +1 or -1 to the HP Base Stat.
+                Natures add <strong>+2</strong> to one Base Stat and subtract <strong>-2</strong> from another. Exception: HP is only ever changed by ±1.
             </p>
 
             {/* Search and Filters */}

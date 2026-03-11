@@ -468,7 +468,7 @@ const BattleTab = () => {
                                     </label>
                                     <span
                                         style={{ fontSize: '12px', color: 'var(--text-secondary)' }}
-                                        title="Same Type Attack Bonus (STAB): +2 at Lv.1-10, +4 at Lv.11-20, +6 at Lv.21-40, +8 at Lv.41-60, +10 at Lv.61+"
+                                        title="Same Type Attack Bonus (STAB): +1 at Lv.5, +2 at Lv.10, +3 at Lv.15, +4 at Lv.20… (+1 per 5 levels)"
                                     >
                                         (+{calculateSTAB(selectedPokemon.level || 1)} for matching type)
                                     </span>

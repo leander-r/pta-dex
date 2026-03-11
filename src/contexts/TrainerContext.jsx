@@ -3,7 +3,7 @@
 // ============================================================
 // Manages trainer state and actions
 
-import React, { createContext, useContext, useState, useMemo, useCallback } from 'react';
+import React, { createContext, useContext, useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { GAME_DATA } from '../data/configs.js';
 import {
     DEFAULT_TRAINER,
@@ -82,6 +82,35 @@ export const TrainerProvider = ({ children }) => {
     const trainer = useMemo(() => {
         return trainers.find(t => t.id === activeTrainerId) || trainers[0] || DEFAULT_TRAINER;
     }, [trainers, activeTrainerId]);
+
+    // ── Migration warning: level chart was corrected in a later update ──────
+    // If a trainer was levelled up under the old chart (which gave 1 stat per
+    // level all the way to 50) they may have earned more level-up stats than
+    // the official chart allows.  Warn once per trainer switch so the player
+    // knows to consider a respec.
+    const warnedTrainerRef = useRef(null);
+    useEffect(() => {
+        if (!trainer || !trainer.id || trainer.level < 12) return;
+        if (warnedTrainerRef.current === trainer.id) return;
+
+        const progression = GAME_DATA.trainerLevelProgression;
+        const allowed = progression[trainer.level]?.totalStats ?? 0;
+
+        const BASE_SUM = BASE_STAT_VALUE * Object.keys(trainer.stats || {}).length;
+        const totalAllocated = Object.values(trainer.stats || {}).reduce((s, v) => s + v, 0) - BASE_SUM;
+        const creationSpent = CREATION_STAT_POINTS - (trainer.statPoints ?? 0);
+        const levelSpent = Math.max(0, totalAllocated - creationSpent);
+        const levelEarned = (trainer.levelStatPoints ?? 0) + levelSpent;
+
+        if (levelEarned > allowed) {
+            warnedTrainerRef.current = trainer.id;
+            toast.warning(
+                `${trainer.name || 'This trainer'} has ${levelEarned} level-up stat points ` +
+                `but level ${trainer.level} only grants ${allowed} under the corrected chart. ` +
+                `Consider using Respec to rebuild.`
+            );
+        }
+    }, [trainer?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
     // Helper to update current trainer
     const setTrainer = useCallback((updater) => {

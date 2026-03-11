@@ -85,7 +85,8 @@ export const TABS = {
     INVENTORY: 'inventory',
     BATTLE: 'battle',
     REFERENCE: 'reference',
-    NOTES: 'notes'
+    NOTES: 'notes',
+    GM: 'gm'
 };
 
 /**
@@ -188,7 +189,8 @@ export const MAX_ROLL_HISTORY = 50;
 export const COMBAT_STAGE_POSITIVE_MULTIPLIER = 0.25;
 
 /**
- * Combat stage multiplier applied per negative stage (e.g. -1 stage → stat × 0.90)
+ * Combat stage multiplier applied per negative stage (e.g. -1 stage → stat loses 10% of original)
+ * At -6 stages: 40% of original stat. Source: PTA Players Handbook 2, p.255.
  */
 export const COMBAT_STAGE_NEGATIVE_MULTIPLIER = 0.10;
 

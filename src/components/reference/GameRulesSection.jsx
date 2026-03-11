@@ -57,8 +57,11 @@ const GameRulesSection = () => {
 
                     <h4>Type Effectiveness</h4>
                     <ul>
-                        <li>Super Effective: 1.5x damage (not 2x)</li>
-                        <li>Not Very Effective: 0.5x damage</li>
+                        <li>Super Effective (1 weakness): ×2 damage</li>
+                        <li>Double Super Effective (2 weaknesses): ×4 damage</li>
+                        <li>Resistant (1 resistance): ÷2 damage</li>
+                        <li>Double Resistant (2 resistances): ÷4 damage</li>
+                        <li>One weakness + one resistance: ×1 (neutral)</li>
                         <li>Immune: 0 damage</li>
                     </ul>
                 </div>
@@ -70,19 +73,25 @@ const GameRulesSection = () => {
             content: (
                 <div>
                     <h4>Combat Stages</h4>
-                    <p>Buffs and debuffs affect stats through Combat Stages (-6 to +6)</p>
+                    <p>Buffs and debuffs affect stats through Combat Stages (−6 to +6)</p>
                     <ul>
-                        <li>Each +1 stage: +25% of base stat</li>
-                        <li>Each -1 stage: -10% of base stat</li>
+                        <li>Each +1 stage: +25% of original stat (additive)</li>
+                        <li>Each −1 stage: −10% of original stat (additive)</li>
                         <li>At +6: 250% of original</li>
-                        <li>At -6: 40% of original</li>
+                        <li>At −6: 40% of original</li>
                     </ul>
 
-                    <h4>Evasion</h4>
+                    <h4>Pokémon Evasion</h4>
                     <ul>
-                        <li>Physical Evasion = DEF / 5</li>
-                        <li>Special Evasion = SDEF / 5</li>
-                        <li>Speed Evasion = min(6, SPD modifier)</li>
+                        <li>Physical Evasion = +1 per 5 DEF (max +6) — vs Physical moves</li>
+                        <li>Special Evasion = +1 per 5 SDEF (max +6) — vs Special moves</li>
+                        <li>Speed Evasion = +1 per 10 SPD (max +6) — vs any move</li>
+                        <li>Only one evasion score may be applied per accuracy check</li>
+                        <li>Max total evasion applied to any one check: +9</li>
+                    </ul>
+                    <h4>Trainer Evasion</h4>
+                    <ul>
+                        <li>Evasion = SPD modifier (negative counts as 0, capped at +6)</li>
                     </ul>
                 </div>
             )
@@ -110,11 +119,16 @@ const GameRulesSection = () => {
 
                     <h4>Skill Checks</h4>
                     <ul>
-                        <li>Roll 2d6 + stat modifier + skill bonus</li>
-                        <li>Stat modifier = (Stat - 10)</li>
-                        <li>Rank 1: +2 + stat modifier</li>
-                        <li>Rank 2: +4 + (2 × stat modifier)</li>
-                        <li>HP skills max at Rank 1 (passive)</li>
+                        <li>No skill: Roll 1d20 plain</li>
+                        <li>Skill (rank 1): 1d20 + 2 + stat modifier</li>
+                        <li>Skill (rank 2): 1d20 + 4 + (2 × stat modifier)</li>
+                        <li>HP skills are passive — no roll required</li>
+                    </ul>
+                    <h4>Stat Modifier Formula</h4>
+                    <ul>
+                        <li><strong>Above 10:</strong> +1 per 2 points above 10 (e.g. 12 → +1, 14 → +2)</li>
+                        <li><strong>Below 10:</strong> −1 per 1 point below 10 (e.g. 9 → −1, 8 → −2, 6 → −4)</li>
+                        <li>Stat 10 = modifier 0</li>
                     </ul>
                 </div>
             )
