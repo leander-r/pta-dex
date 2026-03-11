@@ -4240,6 +4240,11 @@
         }
 
         /* Dark mode: Card headers */
+        [data-theme="dark"] .card-orange {
+            background: var(--bg-section);
+            border-color: var(--border-light);
+        }
+
         [data-theme="dark"] .card-header {
             background: var(--bg-section) !important;
             border-color: var(--border-light) !important;
