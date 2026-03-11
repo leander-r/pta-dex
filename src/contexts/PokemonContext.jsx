@@ -48,7 +48,7 @@ const POKEMON_CAPABILITY_MAPPINGS = [
 ];
 
 // Build Pokemon skills array from a Pokédex species.skills object
-const buildPokemonSkills = (skills) => {
+export const buildPokemonSkills = (skills) => {
     const result = [];
     if (!skills) return result;
     POKEMON_SKILL_MAPPINGS.forEach(([key, name]) => {
