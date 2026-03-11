@@ -149,11 +149,11 @@ const EncounterGuide = () => {
                         </div>
                         <div style={{
                             padding: '8px 16px', borderRadius: 8,
-                            background: 'linear-gradient(135deg, #667eea22, #764ba222)',
-                            border: '1px solid #667eea44'
+                            background: 'var(--tint-purple-bg)',
+                            border: '1px solid var(--tint-purple-border)'
                         }}>
                             <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>Wild HP: </span>
-                            <span style={{ fontSize: 18, fontWeight: 800, color: '#667eea' }}>{wildHp}</span>
+                            <span style={{ fontSize: 18, fontWeight: 800, color: 'var(--color-purple)' }}>{wildHp}</span>
                             <span style={{ fontSize: 12, color: 'var(--text-muted)', marginLeft: 6 }}>
                                 ({customLevel} + {customHpBase}×3)
                             </span>
@@ -200,8 +200,8 @@ const EncounterGuide = () => {
                         </div>
                         <div style={{
                             marginTop: 8, padding: '8px 12px', borderRadius: 8,
-                            background: `${allyTier.color}22`,
-                            border: `1px solid ${allyTier.color}66`,
+                            background: `${allyTier.color}44`,
+                            border: `1px solid ${allyTier.color}88`,
                             display: 'flex', alignItems: 'center', gap: 10
                         }}>
                             <span style={{ fontSize: 22, fontWeight: 800, color: allyTier.color }}>{allyScore > 0 ? '+' : ''}{allyScore}</span>
@@ -232,8 +232,8 @@ const EncounterGuide = () => {
                             {ALLY_SCALE.map(tier => (
                                 <div key={tier.value} style={{
                                     padding: '6px 10px', borderRadius: 6,
-                                    border: `1px solid ${tier.color}66`,
-                                    background: `${tier.color}11`
+                                    border: `1px solid ${tier.color}88`,
+                                    background: `${tier.color}30`
                                 }}>
                                     <div style={{ fontWeight: 700, color: tier.color, fontSize: 13 }}>
                                         {tier.value > 0 ? '+' : ''}{tier.value} — {tier.label}
@@ -259,8 +259,8 @@ const EncounterGuide = () => {
                                 style={{
                                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                                     padding: '8px 12px', borderRadius: 8,
-                                    border: `1px solid ${action.value >= 0 ? '#43a04744' : '#e5393544'}`,
-                                    background: action.value >= 0 ? '#43a04711' : '#e5393511',
+                                    border: `1px solid ${action.value >= 0 ? '#43a04766' : '#e5393566'}`,
+                                    background: action.value >= 0 ? '#43a04730' : '#e5393530',
                                     cursor: 'pointer', fontSize: 13, textAlign: 'left'
                                 }}
                             >

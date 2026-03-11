@@ -73,6 +73,18 @@
             --info-header-start: #2196f3;
             --info-header-end: #1565c0;
 
+            /* Tinted info-box backgrounds (GM section and reference panels) */
+            --tint-blue-bg: rgba(33,150,243,0.08);
+            --tint-blue-border: rgba(25,118,210,0.38);
+            --tint-red-bg: rgba(229,57,53,0.08);
+            --tint-red-border: rgba(229,57,53,0.38);
+            --tint-orange-bg: rgba(255,152,0,0.08);
+            --tint-orange-border: rgba(255,152,0,0.38);
+            --tint-purple-bg: rgba(102,126,234,0.12);
+            --tint-purple-border: rgba(102,126,234,0.27);
+            --tint-success-bg: rgba(67,160,71,0.10);
+            --tint-fail-bg: rgba(229,57,53,0.10);
+
             /* NEW: Consistent component colors */
             --section-bg: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
             --section-border: #e0e0e0;
@@ -256,6 +268,18 @@
             --info-bg: rgba(33, 150, 243, 0.2);
             --info-header-start: #1976d2;
             --info-header-end: #0d47a1;
+
+            /* Tinted info-box backgrounds - dark mode (higher opacity for visibility) */
+            --tint-blue-bg: rgba(33,150,243,0.20);
+            --tint-blue-border: rgba(25,118,210,0.60);
+            --tint-red-bg: rgba(229,57,53,0.20);
+            --tint-red-border: rgba(229,57,53,0.55);
+            --tint-orange-bg: rgba(255,152,0,0.18);
+            --tint-orange-border: rgba(255,152,0,0.50);
+            --tint-purple-bg: rgba(102,126,234,0.25);
+            --tint-purple-border: rgba(102,126,234,0.50);
+            --tint-success-bg: rgba(67,160,71,0.22);
+            --tint-fail-bg: rgba(229,57,53,0.22);
 
             /* Body background - dark theme */
             --body-bg: linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);

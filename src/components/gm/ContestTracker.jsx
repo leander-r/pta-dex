@@ -46,14 +46,14 @@ const DeathSaves = () => {
             <div className="card-orange" style={{ marginBottom: 14 }}>
                 <h3 className="card-header font-bold">😵 Fainting Rules</h3>
                 <div style={{ padding: '14px 16px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 12 }}>
-                    <div style={{ padding: '12px 14px', borderRadius: 8, background: 'rgba(33,150,243,0.08)', border: '1px solid #1976d266' }}>
+                    <div style={{ padding: '12px 14px', borderRadius: 8, background: 'var(--tint-blue-bg)', border: '1px solid var(--tint-blue-border)' }}>
                         <div style={{ fontWeight: 700, color: '#1976d2', marginBottom: 6 }}>🧑 Trainer Fainting</div>
                         <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
                             At <strong>0 HP</strong>: Fainted. Cannot Shift, issue commands, or use Trainer Actions.
                             Can still be attacked and suffer status ailment damage.
                         </div>
                     </div>
-                    <div style={{ padding: '12px 14px', borderRadius: 8, background: 'rgba(255,87,34,0.08)', border: '1px solid #bf360c66' }}>
+                    <div style={{ padding: '12px 14px', borderRadius: 8, background: 'var(--tint-orange-bg)', border: '1px solid var(--tint-orange-border)' }}>
                         <div style={{ fontWeight: 700, color: '#bf360c', marginBottom: 6 }}>🐾 Pokémon Fainting</div>
                         <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
                             At <strong>0 HP</strong>: Fainted. Cannot act. Can still be attacked and suffer status damage
@@ -70,7 +70,7 @@ const DeathSaves = () => {
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12, marginBottom: 12 }}>
                         <div style={{
                             padding: '12px 14px', borderRadius: 8,
-                            background: 'rgba(229,57,53,0.08)', border: '1px solid #e5393566'
+                            background: 'var(--tint-red-bg)', border: '1px solid var(--tint-red-border)'
                         }}>
                             <div style={{ fontWeight: 700, color: '#e53935', marginBottom: 4 }}>Trainer Death</div>
                             <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
@@ -80,7 +80,7 @@ const DeathSaves = () => {
                         </div>
                         <div style={{
                             padding: '12px 14px', borderRadius: 8,
-                            background: 'rgba(229,57,53,0.08)', border: '1px solid #e5393566'
+                            background: 'var(--tint-red-bg)', border: '1px solid var(--tint-red-border)'
                         }}>
                             <div style={{ fontWeight: 700, color: '#e53935', marginBottom: 4 }}>Pokémon Death</div>
                             <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
@@ -91,7 +91,7 @@ const DeathSaves = () => {
                     </div>
                     <div style={{
                         padding: '10px 14px', borderRadius: 8,
-                        background: 'rgba(255,152,0,0.08)', border: '1px solid #ff980066',
+                        background: 'var(--tint-orange-bg)', border: '1px solid var(--tint-orange-border)',
                         fontSize: 13, color: 'var(--text-secondary)'
                     }}>
                         <strong>Low-level protection:</strong> Pokémon under <strong>level 30</strong> and Trainers under <strong>level 20</strong>
@@ -152,7 +152,7 @@ const DeathSaves = () => {
                     {trainerRoll && (
                         <div style={{
                             padding: '12px 16px', borderRadius: 8,
-                            background: trainerRoll.success ? 'rgba(67,160,71,0.1)' : 'rgba(229,57,53,0.1)',
+                            background: trainerRoll.success ? 'var(--tint-success-bg)' : 'var(--tint-fail-bg)',
                             border: `1px solid ${trainerRoll.success ? '#43a047' : '#e53935'}`,
                             display: 'flex', gap: 12, alignItems: 'center'
                         }}>
@@ -222,7 +222,7 @@ const DeathSaves = () => {
                     {pokeRoll && (
                         <div style={{
                             padding: '12px 16px', borderRadius: 8,
-                            background: pokeRoll.success ? 'rgba(67,160,71,0.1)' : 'rgba(229,57,53,0.1)',
+                            background: pokeRoll.success ? 'var(--tint-success-bg)' : 'var(--tint-fail-bg)',
                             border: `1px solid ${pokeRoll.success ? '#43a047' : '#e53935'}`,
                             display: 'flex', gap: 12, alignItems: 'center'
                         }}>

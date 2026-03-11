@@ -105,8 +105,8 @@ const LoyaltyGuide = () => {
                                 onClick={() => setExpandedRank(expandedRank === lr.rank ? null : lr.rank)}
                                 style={{
                                     borderRadius: 8,
-                                    border: `1px solid ${lr.color}66`,
-                                    background: expandedRank === lr.rank ? `${lr.color}18` : `${lr.color}0c`,
+                                    border: `1px solid ${lr.color}88`,
+                                    background: expandedRank === lr.rank ? `${lr.color}38` : `${lr.color}22`,
                                     overflow: 'hidden', cursor: 'pointer'
                                 }}
                             >
@@ -190,7 +190,7 @@ const LoyaltyGuide = () => {
                     {defianceRoll && (
                         <div style={{
                             marginBottom: 14, padding: '12px 16px', borderRadius: 8,
-                            background: 'rgba(244,67,54,0.1)', border: '1px solid #f44336',
+                            background: 'var(--tint-fail-bg)', border: '1px solid #f44336',
                             display: 'flex', gap: 12, alignItems: 'flex-start'
                         }}>
                             <span style={{ fontSize: 24, fontWeight: 800, color: '#f44336', flexShrink: 0 }}>
@@ -206,7 +206,7 @@ const LoyaltyGuide = () => {
                         {DEFIANCE_TABLE.map((row, i) => (
                             <div key={i} style={{
                                 display: 'flex', gap: 12, padding: '7px 10px', borderRadius: 6,
-                                background: defianceRoll?.entry === row ? 'rgba(244,67,54,0.12)' : 'var(--surface-bg)',
+                                background: defianceRoll?.entry === row ? 'var(--tint-fail-bg)' : 'var(--surface-bg)',
                                 border: `1px solid ${defianceRoll?.entry === row ? '#f44336' : 'var(--border-light)'}`,
                                 fontSize: 13
                             }}>

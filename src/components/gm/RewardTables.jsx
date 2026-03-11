@@ -139,14 +139,14 @@ const ExpCalculator = () => {
                     {/* Result */}
                     <div style={{
                         padding: '16px 20px', borderRadius: 10,
-                        background: 'linear-gradient(135deg, #667eea22, #764ba222)',
-                        border: '1px solid #667eea44'
+                        background: 'var(--tint-purple-bg)',
+                        border: '1px solid var(--tint-purple-border)'
                     }}>
                         <div style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 4 }}>
                             EXP per active Pokémon (per trainer)
                         </div>
                         <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, flexWrap: 'wrap' }}>
-                            <span style={{ fontSize: 40, fontWeight: 800, color: '#667eea' }}>{splitExp.toLocaleString()}</span>
+                            <span style={{ fontSize: 40, fontWeight: 800, color: 'var(--color-purple)' }}>{splitExp.toLocaleString()}</span>
                             <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>
                                 = {activeParty > 1 ? `⌊${expDrop}÷${activeParty}⌋` : expDrop} EXP Drop
                                 {' × '}{pokeLevel} level{' × '}{multiplier} ({isTrainer ? "trainer's" : 'wild'})
@@ -197,12 +197,12 @@ const ExpCalculator = () => {
                                 style={{
                                     padding: '6px 10px', borderRadius: 6, cursor: 'pointer',
                                     border: '1px solid var(--border-light)',
-                                    background: expDrop === drop ? 'linear-gradient(135deg, #667eea22, #764ba222)' : 'var(--surface-bg)',
+                                    background: expDrop === drop ? 'var(--tint-purple-bg)' : 'var(--surface-bg)',
                                     display: 'flex', justifyContent: 'space-between', alignItems: 'center'
                                 }}
                             >
                                 <span style={{ color: 'var(--text-primary)' }}>{name}</span>
-                                <span style={{ fontWeight: 700, color: '#667eea' }}>{drop}</span>
+                                <span style={{ fontWeight: 700, color: 'var(--color-purple)' }}>{drop}</span>
                             </div>
                         ))}
                     </div>

@@ -369,7 +369,7 @@ const SkillChecks = () => {
                 {roll && (
                     <div style={{
                         marginTop: 10, padding: '8px 12px', borderRadius: 8,
-                        background: 'rgba(102,126,234,0.12)', border: '1px solid #667eea44',
+                        background: 'var(--tint-purple-bg)', border: '1px solid var(--tint-purple-border)',
                         fontSize: 14, color: 'var(--text-primary)'
                     }}>
                         Rolled <strong>{roll.base}</strong>
@@ -407,7 +407,7 @@ const SkillChecks = () => {
                     >
                         <div style={{
                             padding: '10px 14px', fontWeight: 700, fontSize: 14,
-                            color: grp.color, borderBottom: `1px solid ${grp.color}33`
+                            color: grp.color, borderBottom: `1px solid ${grp.color}66`
                         }}>
                             {skill.name}
                             {skill.note && (
