@@ -34,7 +34,7 @@ const TrainerStats = () => {
                     title="About stat allocation"
                 >?</button>
                 <span style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <span className="text-muted" style={{ fontSize: '12px', fontWeight: 'normal' }} title="Creation points are used during character creation (min 6, max 14). Level points are gained when leveling up.">
+                    <span className="text-muted" style={{ fontSize: '12px', fontWeight: 'normal' }} title="Creation points: 30 total, max 14 per stat during character creation. Level points: earned each level-up, no per-stat cap.">
                         Creation: {trainer.statPoints} | Level: {trainer.levelStatPoints || 0}
                     </span>
                     <button
