@@ -7,9 +7,9 @@ import React, { useState } from 'react';
 import CaptureCalculator from './CaptureCalculator.jsx';
 import EncounterGuide from './EncounterGuide.jsx';
 import RewardTables from './RewardTables.jsx';
-import GymLeaderGuide from './GymLeaderGuide.jsx';
-import NpcGenerator from './NpcGenerator.jsx';
-import ContestTracker from './ContestTracker.jsx';
+import LoyaltyGuide from './LoyaltyGuide.jsx';
+import SkillChecks from './SkillChecks.jsx';
+import DeathSaves from './DeathSaves.jsx';
 import BiomeEncounters from './BiomeEncounters.jsx';
 
 // Sections drawn directly from the PTA GM Guide (final).pdf
@@ -28,9 +28,9 @@ const SECTION_COMPONENTS = {
     encounter: EncounterGuide,
     biome:     BiomeEncounters,
     rewards:   RewardTables,
-    gym:       GymLeaderGuide,
-    npc:       NpcGenerator,
-    contest:   ContestTracker,
+    gym:       LoyaltyGuide,
+    npc:       SkillChecks,
+    contest:   DeathSaves,
 };
 
 const GMTab = () => {

@@ -33,3 +33,7 @@ npm-debug.log*
 # Playwright
 test-results/
 playwright-report/
+
+# Reference material extraction artifacts
+*.txt
+nul

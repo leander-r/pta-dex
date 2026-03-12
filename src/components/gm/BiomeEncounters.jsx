@@ -3,7 +3,8 @@
 // ============================================================
 // Pokémon habitat lists organized by biome for quick encounter generation.
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
+import toast from '../../utils/toast.js';
 
 const BIOMES = [
     {
@@ -89,8 +90,16 @@ const BIOMES = [
 const BiomeEncounters = () => {
     const [selectedBiome, setSelectedBiome] = useState('forest');
     const [search, setSearch] = useState('');
+    const [rolled, setRolled] = useState(null);
 
     const biome = BIOMES.find(b => b.id === selectedBiome);
+
+    const rollRandom = useCallback(() => {
+        const pool = biome.pokemon;
+        const pick = pool[Math.floor(Math.random() * pool.length)];
+        setRolled(pick);
+        toast.success(`Rolled: ${pick}`);
+    }, [biome]);
 
     const filtered = useMemo(() => {
         const q = search.trim().toLowerCase();
@@ -116,7 +125,7 @@ const BiomeEncounters = () => {
                         {BIOMES.map(b => (
                             <button
                                 key={b.id}
-                                onClick={() => { setSelectedBiome(b.id); setSearch(''); }}
+                                onClick={() => { setSelectedBiome(b.id); setSearch(''); setRolled(null); }}
                                 style={{
                                     padding: '6px 12px',
                                     borderRadius: 20,
@@ -143,9 +152,38 @@ const BiomeEncounters = () => {
 
             {/* Pokémon list */}
             <div className="card-orange">
-                <h3 className="card-header font-bold">
-                    {biome.icon} {biome.label} — {biome.pokemon.length} Pokémon
+                <h3 className="card-header font-bold" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
+                    <span>{biome.icon} {biome.label} — {biome.pokemon.length} Pokémon</span>
+                    <button
+                        onClick={rollRandom}
+                        style={{
+                            padding: '5px 14px', borderRadius: 20,
+                            border: '2px solid rgba(255,255,255,0.5)',
+                            background: 'rgba(255,255,255,0.2)',
+                            color: 'white', fontWeight: 700, fontSize: 13,
+                            cursor: 'pointer', whiteSpace: 'nowrap',
+                        }}
+                    >
+                        🎲 Roll Random
+                    </button>
                 </h3>
+                {rolled && (
+                    <div style={{
+                        margin: '0 16px', padding: '8px 14px', borderRadius: 8,
+                        background: 'var(--tint-purple-bg)', border: '1px solid var(--tint-purple-border)',
+                        fontSize: 14, fontWeight: 700, color: 'var(--color-purple)',
+                        display: 'flex', alignItems: 'center', gap: 8,
+                    }}>
+                        <span>🎲 Last roll:</span>
+                        <span>{rolled}</span>
+                        <button
+                            onClick={() => setRolled(null)}
+                            style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: 'var(--text-muted)' }}
+                        >
+                            ✕
+                        </button>
+                    </div>
+                )}
                 <div style={{ padding: '14px 16px' }}>
                     <input
                         type="search"
