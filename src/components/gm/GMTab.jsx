@@ -10,11 +10,13 @@ import RewardTables from './RewardTables.jsx';
 import GymLeaderGuide from './GymLeaderGuide.jsx';
 import NpcGenerator from './NpcGenerator.jsx';
 import ContestTracker from './ContestTracker.jsx';
+import BiomeEncounters from './BiomeEncounters.jsx';
 
 // Sections drawn directly from the PTA GM Guide (final).pdf
 const SECTIONS = [
     { id: 'capture',   icon: '🎯', label: 'Capture Rates'    },
     { id: 'encounter', icon: '🌿', label: 'Wild Encounters'   },
+    { id: 'biome',     icon: '🗺️', label: 'Habitats'         },
     { id: 'rewards',   icon: '⭐', label: 'EXP Calculator'   },
     { id: 'gym',       icon: '❤️', label: 'Loyalty Guide'    },
     { id: 'npc',       icon: '📋', label: 'Skill Checks'     },
@@ -24,6 +26,7 @@ const SECTIONS = [
 const SECTION_COMPONENTS = {
     capture:   CaptureCalculator,
     encounter: EncounterGuide,
+    biome:     BiomeEncounters,
     rewards:   RewardTables,
     gym:       GymLeaderGuide,
     npc:       NpcGenerator,

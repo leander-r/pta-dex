@@ -33,7 +33,7 @@ const EncounterGuide = () => {
     const [customHpBase, setCustomHpBase] = useState(5);
     const [customLevel, setCustomLevel]   = useState(10);
 
-    const wildHp = customLevel + customHpBase * 3;
+    const wildHp = customHpBase * 3 + customLevel * 3;
     const wildStatValue = v => v + customLevel;
 
     const allyTier = ALLY_SCALE.reduce((best, tier) => {
@@ -105,7 +105,7 @@ const EncounterGuide = () => {
                         <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
                             <div>
                                 <span style={{ color: 'var(--text-muted)' }}>HP: </span>
-                                <strong>Level + (HP Base Stat × 3)</strong>
+                                <strong>(HP Base Stat × 3) + (Level × 3)</strong>
                             </div>
                             <div>
                                 <span style={{ color: 'var(--text-muted)' }}>Other stats: </span>
@@ -155,7 +155,7 @@ const EncounterGuide = () => {
                             <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>Wild HP: </span>
                             <span style={{ fontSize: 18, fontWeight: 800, color: 'var(--color-purple)' }}>{wildHp}</span>
                             <span style={{ fontSize: 12, color: 'var(--text-muted)', marginLeft: 6 }}>
-                                ({customLevel} + {customHpBase}×3)
+                                ({customHpBase}×3 + {customLevel}×3)
                             </span>
                         </div>
                         <div style={{
