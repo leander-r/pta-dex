@@ -12,7 +12,7 @@ export const useOnboarding = () => {
 
     const steps = [
         { id: 'name',    label: 'Name your trainer',        done: !!(trainer?.name?.trim()), tab: 'trainer' },
-        { id: 'stats',   label: 'Allocate all stat points', done: (trainer?.statPoints || 0) === 0, tab: 'trainer' },
+        { id: 'stats',   label: 'Allocate all stat points', done: (trainer?.statPoints || 0) === 0 && (trainer?.levelStatPoints || 0) === 0, tab: 'trainer' },
         { id: 'class',   label: 'Pick a class',             done: (trainer?.classes?.length || 0) > 0, tab: 'trainer' },
         { id: 'pokemon', label: 'Add a Pokémon',            done: hasPokemon, tab: 'pokemon' },
     ];

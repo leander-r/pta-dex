@@ -23,6 +23,7 @@ const TrainerStats = () => {
     const { trainer, updateTrainerStat, calculateModifier, undoStatAllocation, canUndoStat } = useTrainerContext();
     const { showHelp } = useUI();
     const [collapsed, setCollapsed] = useState(true);
+    const [draftStats, setDraftStats] = useState({});
     return (
         <div className="section-card-purple">
             <h3 className="section-title-purple" onClick={() => setCollapsed(c => !c)} style={{ cursor: 'pointer', userSelect: 'none' }}>
@@ -82,8 +83,13 @@ const TrainerStats = () => {
                                 >−</button>
                                 <input
                                     type="number"
-                                    value={trainer.stats[stat.key]}
-                                    onChange={(e) => updateTrainerStat(stat.key, e.target.value)}
+                                    value={draftStats[stat.key] ?? trainer.stats[stat.key]}
+                                    onChange={(e) => setDraftStats(prev => ({ ...prev, [stat.key]: e.target.value }))}
+                                    onBlur={(e) => {
+                                        const v = parseInt(e.target.value);
+                                        if (!isNaN(v)) updateTrainerStat(stat.key, v);
+                                        setDraftStats(prev => { const n = { ...prev }; delete n[stat.key]; return n; });
+                                    }}
                                     min="6"
                                     max="30"
                                     style={{

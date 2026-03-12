@@ -3,7 +3,7 @@
 // ============================================================
 // Modal for creating custom Pokemon species for homebrew/newer Pokemon
 
-import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { getTypeColor } from '../../utils/typeUtils.js';
 import { GAME_DATA } from '../../data/configs.js';
 import { POKEMON_TYPES } from '../../data/typeChart.js';
@@ -74,6 +74,7 @@ const CustomSpeciesModal = () => {
 
     const [species, setSpecies] = useState({ ...DEFAULT_SPECIES });
     const [editingIndex, setEditingIndex] = useState(null);
+    const originalSpeciesRef = useRef(null);
 
     // Ability picker state
     const [abilityFilter, setAbilityFilter] = useState({ search: '', tier: null });
@@ -122,7 +123,7 @@ const CustomSpeciesModal = () => {
             const index = customSpecies.findIndex(s => s.id === editingCustomSpeciesId);
             if (index !== -1) {
                 const speciesData = customSpecies[index];
-                setSpecies({
+                const merged = {
                     ...DEFAULT_SPECIES,
                     ...speciesData,
                     abilities: {
@@ -134,7 +135,9 @@ const CustomSpeciesModal = () => {
                     skills: { ...DEFAULT_SPECIES.skills, ...(speciesData.skills || {}) },
                     evolvesTo: speciesData.evolvesTo || [],
                     evolvesFrom: speciesData.evolvesFrom || null
-                });
+                };
+                setSpecies(merged);
+                originalSpeciesRef.current = merged;
                 setEditingIndex(index);
             }
         }
@@ -144,6 +147,7 @@ const CustomSpeciesModal = () => {
         setShowCustomSpeciesModal(false);
         setSpecies({ ...DEFAULT_SPECIES });
         setEditingIndex(null);
+        originalSpeciesRef.current = null;
         setAbilityFilter({ search: '', tier: null });
         setMoveFilter({ search: '', type: '', category: '' });
         setShowAbilityPicker(null);
@@ -153,21 +157,35 @@ const CustomSpeciesModal = () => {
         }
     }, [setShowCustomSpeciesModal, setEditingCustomSpeciesId]);
 
-    // Warn if the user tries to close a form that has partially filled data
+    // Warn if the user tries to close with unsaved data
     const handleClose = useCallback(() => {
-        const hasUnsaved = species.species.trim() || species.types.join(',') !== 'Normal' ||
-            species.abilities.basic.length > 0 || species.levelUpMoves.length > 0;
-        if (hasUnsaved && editingIndex === null) {
-            showConfirm({
-                title: 'Discard new species?',
-                message: 'You have unsaved changes to this new species. Close without saving?',
-                confirmLabel: 'Discard',
-                danger: true,
-                onConfirm: doClose,
-            });
+        if (editingIndex !== null) {
+            const isModified = JSON.stringify(species) !== JSON.stringify(originalSpeciesRef.current);
+            if (isModified) {
+                showConfirm({
+                    title: 'Discard changes?',
+                    message: 'You have unsaved changes to this species. Close without saving?',
+                    confirmLabel: 'Discard',
+                    danger: true,
+                    onConfirm: doClose,
+                });
+                return;
+            }
         } else {
-            doClose();
+            const hasUnsaved = species.species.trim() || species.types.join(',') !== 'Normal' ||
+                species.abilities.basic.length > 0 || species.levelUpMoves.length > 0;
+            if (hasUnsaved) {
+                showConfirm({
+                    title: 'Discard new species?',
+                    message: 'You have unsaved changes to this new species. Close without saving?',
+                    confirmLabel: 'Discard',
+                    danger: true,
+                    onConfirm: doClose,
+                });
+                return;
+            }
         }
+        doClose();
     }, [species, editingIndex, showConfirm, doClose]);
 
     const { modalRef } = useModalKeyboard(showCustomSpeciesModal, handleClose);

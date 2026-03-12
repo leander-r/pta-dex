@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 import { useUI } from '../../contexts/index.js';
+import toast from '../../utils/toast.js';
 import { HELP_BTN_STYLE } from '../common/helpBtnStyle.js';
 
 const HPTracker = ({ label, currentHP, maxHP, onDamage, onHeal, onFull }) => {
@@ -76,7 +77,7 @@ const HPTracker = ({ label, currentHP, maxHP, onDamage, onHeal, onFull }) => {
                     onClick={() => {
                         const val = parseInt(inputRef.current?.value);
                         if (val > 0) { onDamage(val); inputRef.current.value = ''; }
-                        else if (inputRef.current) inputRef.current.value = '';
+                        else { toast.warning('Enter a positive number.'); if (inputRef.current) inputRef.current.value = ''; }
                     }}
                     aria-label={`Deal custom damage to ${label}`}
                     style={{ padding: '4px 8px', background: '#f44336', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}
@@ -87,7 +88,7 @@ const HPTracker = ({ label, currentHP, maxHP, onDamage, onHeal, onFull }) => {
                     onClick={() => {
                         const val = parseInt(inputRef.current?.value);
                         if (val > 0) { onHeal(val); inputRef.current.value = ''; }
-                        else if (inputRef.current) inputRef.current.value = '';
+                        else { toast.warning('Enter a positive number.'); if (inputRef.current) inputRef.current.value = ''; }
                     }}
                     aria-label={`Heal custom HP for ${label}`}
                     style={{ padding: '4px 8px', background: '#4caf50', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}
