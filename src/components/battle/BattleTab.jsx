@@ -261,22 +261,27 @@ const BattleTab = () => {
 
         const statKey = skillData.stat?.toLowerCase();
         const baseStat = trainer.stats?.[statKey] || 6;
-        const modifier = baseStat - 10;
+        // PH2 p.10: +1 per 2 pts above 10, -1 per pt below 10
+        let modifier;
+        if (baseStat === 10) modifier = 0;
+        else if (baseStat < 10) modifier = -(10 - baseStat);
+        else modifier = Math.floor((baseStat - 10) / 2);
 
         const skills = trainer.skills || {};
         const skillRank = Array.isArray(skills)
             ? (skills.includes(selectedSkill) ? 1 : 0)
             : (skills[selectedSkill] || 0);
         const hasSkill = skillRank > 0;
+        // Rank 1: +2 + modifier, Rank 2: +4 + (2×modifier). No skill: plain 1d20.
         const skillBonus = skillRank > 0 ? (skillRank * 2) + (skillRank * modifier) : 0;
 
-        const rolls = rollDice(2, 6);
-        const rollTotal = rolls.reduce((sum, r) => sum + r, 0);
-        const total = rollTotal + modifier + skillBonus;
+        const rolls = rollDice(1, 20);
+        const rollTotal = rolls[0];
+        const total = rollTotal + skillBonus;
 
         const trainerMaxHP = calculateMaxHP();
         const trainerCurrentHP = Math.max(0, trainerMaxHP - (trainer.currentDamage || 0));
-        addToHistory({ type: 'trainer_skill', skill: selectedSkill, skillStat: skillData.stat, dice: '2d6', rolls, baseStat, modifier, hasSkill, bonus: skillBonus, total, trainerCurrentHP, trainerMaxHP, timestamp: Date.now() });
+        addToHistory({ type: 'trainer_skill', skill: selectedSkill, skillStat: skillData.stat, dice: '1d20', rolls, baseStat, modifier, hasSkill, bonus: skillBonus, total, trainerCurrentHP, trainerMaxHP, timestamp: Date.now() });
     };
 
     const rollCustomDice = () => {
@@ -594,8 +599,8 @@ const BattleTab = () => {
                                 return (
                                     <div className="skill-info-box" style={{ marginBottom: '12px', padding: '10px', borderRadius: '6px', fontSize: '13px' }}>
                                         <div><strong>{selectedSkill}</strong> ({skillData.stat})</div>
-                                        <div style={{ marginTop: '4px' }} title="Roll 2d6 + stat modifier. Trained skills add a bonus: Rank 1 = +2 + modifier, Rank 2 = +4 + (2× modifier)">
-                                            Roll: 2d6 {modifier >= 0 ? '+' : ''}{modifier} (stat)
+                                        <div style={{ marginTop: '4px' }} title="Roll 1d20. Trained skills add a bonus: Rank 1 = +2 + modifier, Rank 2 = +4 + (2× modifier). No skill = plain 1d20.">
+                                            Roll: 1d20
                                             {hasTrained && <span style={{ color: '#4caf50' }} title={`Rank ${skillRank} trained skill bonus`}> +{trainedBonus} (rank {skillRank})</span>}
                                         </div>
                                         <div className="text-muted" style={{ marginTop: '2px' }}>{skillData.description}</div>
