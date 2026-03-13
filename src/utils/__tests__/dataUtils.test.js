@@ -20,12 +20,12 @@ describe('calcModifier', () => {
         expect(calcModifier(14)).toBe(2);
     });
 
-    it('returns -1 for stat 8', () => {
-        expect(calcModifier(8)).toBe(-1);
+    it('returns -2 for stat 8', () => {
+        expect(calcModifier(8)).toBe(-2);
     });
 
-    it('returns -5 for stat 1', () => {
-        expect(calcModifier(1)).toBe(-5);
+    it('returns -9 for stat 1', () => {
+        expect(calcModifier(1)).toBe(-9);
     });
 });
 

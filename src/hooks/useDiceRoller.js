@@ -151,8 +151,8 @@ export const useDiceRoller = (sendToDiscord = null) => {
             stabBonus = calculateSTAB(pokemon.level || 1);
         }
 
-        // Total damage
-        const total = diceTotal + diceData.bonus + statMod + stabBonus;
+        // Total damage (crit doubles the full damage notation, including fixed bonus)
+        const total = diceTotal + (isCrit ? diceData.bonus * 2 : diceData.bonus) + statMod + stabBonus;
 
         const result = {
             type: 'pokemon',

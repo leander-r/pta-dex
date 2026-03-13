@@ -10,9 +10,13 @@ import {
 } from '../data/constants.js';
 
 /**
- * Calculate stat modifier (D&D style)
+ * Calculate stat modifier (PH2 p.10: +1 per 2 pts above 10, -1 per pt below 10)
  */
-export const calcModifier = (stat) => Math.floor(stat / 2) - 5;
+export const calcModifier = (stat) => {
+    if (stat === 10) return 0;
+    if (stat < 10) return -(10 - stat);
+    return Math.floor((stat - 10) / 2);
+};
 
 /**
  * Format number with commas

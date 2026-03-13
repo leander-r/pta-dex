@@ -14,11 +14,18 @@ const CONDITIONS = [
 const StatusConditionUI = ({ selectedPokemon, updatePokemon }) => {
     if (!selectedPokemon) return null;
     const conditions = selectedPokemon.statusConditions || {};
+    const activeCount = Object.values(conditions).filter(Boolean).length;
+    const overLimit = activeCount > 2;
 
     return (
         <div style={{ marginBottom: '12px', padding: '8px 10px', borderRadius: '8px', background: 'var(--bg-secondary, #f5f5f5)' }}>
-            <div style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '6px', color: 'var(--text-secondary)' }}>
-                Status Conditions
+            <div style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '6px', color: 'var(--text-secondary)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span>Status Conditions</span>
+                {overLimit && (
+                    <span style={{ fontSize: '11px', color: '#e53935', fontWeight: 'normal' }} title="PH2: maximum 2 status conditions at once">
+                        ⚠ max 2 per rules
+                    </span>
+                )}
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
                 {CONDITIONS.map(cond => {

@@ -204,7 +204,7 @@ export const PokemonProvider = ({ children }) => {
             moves: [],
             skills: [],
             notes: '',
-            loyalty: 2,
+            loyalty: 1,
             statPointsAvailable: 0
         };
 

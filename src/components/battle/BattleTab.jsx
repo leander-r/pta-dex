@@ -243,7 +243,7 @@ const BattleTab = () => {
             if (applyStab && selectedPokemon.types?.includes(selectedMove.type)) {
                 stabBonus = calculateSTAB(selectedPokemon.level || 1);
             }
-            total = diceTotal + diceData.bonus + statMod + stabBonus;
+            total = diceTotal + (isCrit ? diceData.bonus * 2 : diceData.bonus) + statMod + stabBonus;
         }
 
         addToHistory(buildPokemonRollEntry({

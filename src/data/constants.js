@@ -71,7 +71,7 @@ export const DEFAULT_POKEMON = {
     moves: [],
     skills: [],
     notes: '',
-    loyalty: 2,
+    loyalty: 1,
     heldItem: '',
     statPointsAvailable: 0
 };

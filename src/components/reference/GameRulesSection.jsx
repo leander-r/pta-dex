@@ -22,16 +22,17 @@ const GameRulesSection = () => {
 
                     <h4>Actions Per Turn</h4>
                     <ul>
-                        <li><strong>Standard Action:</strong> Attack, use item, use ability</li>
+                        <li><strong>Command Action:</strong> Command your Pokémon to use a move</li>
+                        <li><strong>Trainer Action:</strong> Use a feature, item, or personal attack</li>
                         <li><strong>Shift Action:</strong> Move up to your Speed in meters</li>
-                        <li><strong>Swift Action:</strong> Minor actions (free recall, etc.)</li>
+                        <li><strong>Free Actions:</strong> Minor actions (recall, etc.)</li>
                     </ul>
 
                     <h4>Accuracy Rolls</h4>
                     <ul>
-                        <li>Roll 1d20 to hit</li>
-                        <li>Compare against target's Evasion</li>
-                        <li>Natural 20 = Critical Hit (double damage dice)</li>
+                        <li>Roll 1d20 to hit; meet or beat the move's AC to hit</li>
+                        <li>Subtract target's Evasion from the roll</li>
+                        <li>Critical Hit: roll meets or beats the move's crit range (default: 20); doubles the full damage notation (dice + fixed bonus)</li>
                     </ul>
                 </div>
             )
@@ -143,17 +144,9 @@ const GameRulesSection = () => {
 
                     <h4>Capture Modifiers</h4>
                     <ul>
-                        <li>HP remaining affects DC</li>
-                        <li>Status conditions lower DC</li>
-                        <li>Ball type provides modifier</li>
-                    </ul>
-
-                    <h4>Ball Modifiers</h4>
-                    <ul>
-                        <li>Poke Ball: +0</li>
-                        <li>Great Ball: -10</li>
-                        <li>Ultra Ball: -15</li>
-                        <li>Master Ball: Auto-capture</li>
+                        <li>HP remaining lowers the DC (less HP = easier to catch)</li>
+                        <li>Status conditions lower the DC</li>
+                        <li>Ball type modifiers are not defined in the GM Guide — ask your GM</li>
                     </ul>
                 </div>
             )
