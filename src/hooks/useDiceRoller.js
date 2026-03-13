@@ -213,8 +213,11 @@ export const useDiceRoller = (sendToDiscord = null) => {
         const statKey = skillData.stat?.toLowerCase();
         const baseStat = trainer.stats?.[statKey] || 6;
 
-        // Calculate stat modifier first (needed for skill bonus)
-        const modifier = baseStat - 10;
+        // Calculate stat modifier (PH2 p.10: +1 per 2 pts above 10, -1 per pt below 10)
+        let modifier;
+        if (baseStat === 10) modifier = 0;
+        else if (baseStat < 10) modifier = -(10 - baseStat);
+        else modifier = Math.floor((baseStat - 10) / 2);
 
         // Check skill rank (handles both object and legacy array format)
         const skills = trainer.skills || {};
@@ -222,19 +225,19 @@ export const useDiceRoller = (sendToDiscord = null) => {
             ? (skills.includes(skillName) ? 1 : 0)
             : (skills[skillName] || 0);
         const hasSkill = skillRank > 0;
-        // Rank 1: +2 + modifier, Rank 2: +4 + (2×modifier)
+        // Rank 1: +2 + modifier, Rank 2: +4 + (2×modifier). No skill: plain 1d20, no bonus.
         const skillBonus = skillRank > 0 ? (skillRank * 2) + (skillRank * modifier) : 0;
 
-        // Roll 2d6
-        const rolls = rollDice(2, 6);
-        const rollTotal = rolls.reduce((sum, r) => sum + r, 0);
-        const total = rollTotal + modifier + skillBonus;
+        // Roll 1d20 (PH2 p.14)
+        const rolls = rollDice(1, 20);
+        const rollTotal = rolls[0];
+        const total = rollTotal + skillBonus;
 
         const result = {
             type: 'trainer_skill',
             skill: skillName,
             skillStat: skillData.stat,
-            dice: '2d6',
+            dice: '1d20',
             rolls,
             baseStat,
             modifier,

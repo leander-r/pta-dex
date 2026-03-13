@@ -307,7 +307,7 @@ const ROLL_HOW = (
             <div>• <strong>No skill:</strong> Roll 1d20 plain.</div>
             <div>• <strong>Skill once:</strong> Roll 1d20 + 2 + Stat Modifier.</div>
             <div>• <strong>Skill twice:</strong> Roll 1d20 + 4 + (2 × Stat Modifier).</div>
-            <div>• <strong>Stat Modifier</strong> = Stat − 10 (e.g. ATK 14 → +4).</div>
+            <div>• <strong>Stat Modifier</strong> = +1 per 2 pts above 10, −1 per pt below 10 (e.g. ATK 14 → +2, ATK 9 → −1).</div>
             <div>• <em>Opposed rolls:</em> Whoever rolls higher wins. The GM may roll for NPCs or use the fixed DC values below.</div>
         </div>
     </div>
