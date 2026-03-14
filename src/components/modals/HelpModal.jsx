@@ -98,9 +98,9 @@ const HELP_CONTENT = {
                 <p>Skills represent your trainer's proficiency in various areas. Each skill is linked to one of your six stats.</p>
                 <h4 style={{ margin: '14px 0 6px', fontSize: '13px', color: 'var(--text-secondary)' }}>Skill Ranks</h4>
                 <ul style={{ paddingLeft: '18px', margin: '0 0 10px', lineHeight: '1.8' }}>
-                    <li><strong>Rank 0:</strong> untrained — roll only the stat modifier</li>
-                    <li><strong>Rank 1:</strong> trained — +2 + Stat Modifier</li>
-                    <li><strong>Rank 2:</strong> expert — +4 + (2 × Stat Modifier)</li>
+                    <li><strong>Rank 0:</strong> untrained — 1d20, no bonus</li>
+                    <li><strong>Rank 1:</strong> trained — 1d20 + 2 + Stat Modifier</li>
+                    <li><strong>Rank 2:</strong> expert — 1d20 + 4 + (2 × Stat Modifier)</li>
                 </ul>
                 <p>Click a skill to cycle through ranks (0 → 1 → 2 → 0). HP-linked skills cap at <strong>Rank 1</strong>.</p>
                 <h4 style={{ margin: '14px 0 6px', fontSize: '13px', color: 'var(--text-secondary)' }}>Skill Ranks from Classes</h4>

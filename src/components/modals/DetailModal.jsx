@@ -483,22 +483,43 @@ const SkillDetails = ({ data, getStatColor }) => (
         </div>
 
         {/* Roll info */}
-        <div style={{
-            background: 'linear-gradient(135deg, #e3f2fd 0%, #e8eaf6 100%)',
-            padding: '14px 16px',
-            borderRadius: '12px',
-            marginBottom: '12px',
-            border: '2px solid #90caf9',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '12px'
-        }}>
-            <span style={{ fontSize: '24px' }}>🎲</span>
-            <div>
-                <div style={{ fontSize: '11px', color: '#1565c0', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Roll</div>
-                <div style={{ fontSize: '16px', fontWeight: '700', color: '#0d47a1' }}>2d6 + {data.stat} modifier</div>
+        {data.type === 'passive' ? (
+            <div style={{
+                background: 'linear-gradient(135deg, #f3e5f5 0%, #ede7f6 100%)',
+                padding: '14px 16px',
+                borderRadius: '12px',
+                marginBottom: '12px',
+                border: '2px solid #ce93d8',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px'
+            }}>
+                <span style={{ fontSize: '24px' }}>✨</span>
+                <div>
+                    <div style={{ fontSize: '11px', color: '#6a1b9a', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Passive</div>
+                    <div style={{ fontSize: '14px', fontWeight: '700', color: '#6a1b9a' }}>No roll — automatic benefit</div>
+                </div>
             </div>
-        </div>
+        ) : (
+            <div style={{
+                background: 'linear-gradient(135deg, #e3f2fd 0%, #e8eaf6 100%)',
+                padding: '14px 16px',
+                borderRadius: '12px',
+                marginBottom: '12px',
+                border: '2px solid #90caf9',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px'
+            }}>
+                <span style={{ fontSize: '24px' }}>🎲</span>
+                <div>
+                    <div style={{ fontSize: '11px', color: '#1565c0', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Roll (1d20)</div>
+                    <div style={{ fontSize: '13px', fontWeight: '700', color: '#0d47a1' }}>No rank: 1d20 (no modifier)</div>
+                    <div style={{ fontSize: '13px', color: '#1565c0' }}>Rank 1: 1d20 + 2 + {data.stat} modifier</div>
+                    <div style={{ fontSize: '13px', color: '#1565c0' }}>Rank 2: 1d20 + 4 + 2× {data.stat} modifier</div>
+                </div>
+            </div>
+        )}
 
         <InfoBox label="Description" icon="📖" variant="default">
             {data.description || 'No description available.'}
