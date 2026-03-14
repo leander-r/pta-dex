@@ -308,7 +308,7 @@ const ROLL_HOW = (
             <div>• <strong>Skill once:</strong> Roll 1d20 + 2 + Stat Modifier.</div>
             <div>• <strong>Skill twice:</strong> Roll 1d20 + 4 + (2 × Stat Modifier).</div>
             <div>• <strong>Stat Modifier</strong> = +1 per 2 pts above 10, −1 per pt below 10 (e.g. ATK 14 → +2, ATK 9 → −1).</div>
-            <div>• <em>Opposed rolls:</em> Whoever rolls higher wins. The GM may roll for NPCs or use the fixed DC values below.</div>
+            <div>• <em>Opposed rolls:</em> Whoever rolls higher wins. The GM rolls for NPCs — the player never knows the target number. DC tables below for opposed skills are GM-side reference guidelines, not official PDF values.</div>
         </div>
     </div>
 );
@@ -333,8 +333,8 @@ const SkillChecks = () => {
                 📋 Skill Check DCs
             </h3>
             <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 16 }}>
-                Reference DC charts for every trainer skill, as published in the PTA GM Guide (pp.60–67).
-                Opposed rolls: player must roll higher than the NPC's DC value.
+                DC charts for every trainer skill. Fixed-DC skills (Jump, Sprint, Strength, etc.) are from the PTA Player's Handbook.
+                Opposed-roll skill DCs are GM-side reference guidelines — the player never knows the target number.
             </p>
 
             {ROLL_HOW}

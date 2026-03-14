@@ -12,7 +12,7 @@ const LOYALTY_RANKS = [
         rank: 0,
         label: 'Defiant',
         color: '#e53935',
-        desc: 'Pokémon is actively defiant. May use Frustration. Pokémon caught through Snagging or deemed the trainer unworthy (e.g. level 1 trainer capturing a level 50 Pokémon) begin here.',
+        desc: 'Pokémon is actively defiant. May use Frustration. May refuse to evolve even if requirements are met. Pokémon caught through Snagging or deemed the trainer unworthy (e.g. level 1 trainer capturing a level 50 Pokémon) begin here.',
     },
     {
         rank: 1,

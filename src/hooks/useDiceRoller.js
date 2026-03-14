@@ -4,7 +4,7 @@
 // Dice roller state and functions for PTA combat
 
 import { useState, useCallback } from 'react';
-import { calculateSTAB, getActualStats, calculatePokemonHP } from '../utils/dataUtils.js';
+import { calculateSTAB, getActualStats, calculatePokemonHP, parseCritThreshold } from '../utils/dataUtils.js';
 import { GAME_DATA } from '../data/configs.js';
 
 /**
@@ -116,7 +116,8 @@ export const useDiceRoller = (sendToDiscord = null) => {
 
         // Roll accuracy (d20)
         const accRoll = Math.floor(Math.random() * 20) + 1;
-        const isCrit = accRoll === 20;
+        const critThreshold = parseCritThreshold(move.description);
+        const isCrit = accRoll >= critThreshold;
 
         // Parse damage dice
         const diceData = parseDice(move.damage);

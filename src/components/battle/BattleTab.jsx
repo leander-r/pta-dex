@@ -201,11 +201,12 @@ const BattleTab = () => {
         const defaultAC = parseACFromFrequency(selectedMove.frequency || selectedMove.freq);
         const moveAC = acOverride !== '' ? parseInt(acOverride) || defaultAC : defaultAC;
         const accModifier = combatStages.acc || 0;
+        const evaStage = combatStages.eva || 0;
         const critThreshold = parseCritThreshold(selectedMove.description);
         const accRoll = Math.floor(Math.random() * 20) + 1;
         const modifiedAccRoll = accRoll + accModifier;
         const isCrit = accRoll >= critThreshold;
-        const isHit = isCrit || modifiedAccRoll >= moveAC;
+        const isHit = isCrit || modifiedAccRoll >= moveAC + evaStage;
         const acWasOverridden = acOverride !== '';
 
         const hp = getPokemonHP(selectedPokemon);
@@ -227,6 +228,7 @@ const BattleTab = () => {
         const statBonus = statMod - baseStatVal; // actual stat change from combat stage
         const relevantStages = [
             combatStages.acc ? { label: 'ACC', stage: combatStages.acc, bonus: combatStages.acc, isFlat: true } : null,
+            evaStage ? { label: 'EVA', stage: evaStage, bonus: -evaStage, isFlat: true } : null,
             diceData.count > 0 && combatStages[statKey] ? { label: statLabel, stage: combatStages[statKey], bonus: statBonus, base: baseStatVal, boosted: statMod } : null,
         ].filter(Boolean);
 
