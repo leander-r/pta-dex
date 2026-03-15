@@ -18,7 +18,7 @@ const getModifiedStat = (baseStat, stages) => {
     return baseStat;
 };
 
-const CombatStagesPanel = ({ selectedPokemon, combatStages, getStatsWithMega, updateCombatStage, resetCombatStages, onHelp }) => {
+const CombatStagesPanel = ({ selectedPokemon, combatStages, getStatsWithMega, updateCombatStage, resetCombatStages, onHelp, statusConditions }) => {
     const [show, setShow] = useState(false);
 
     if (!selectedPokemon) return null;
@@ -74,6 +74,8 @@ const CombatStagesPanel = ({ selectedPokemon, combatStages, getStatsWithMega, up
                             const stages = combatStages[stat.key] || 0;
                             const isModOnly = stat.key === 'acc' || stat.key === 'eva';
                             const modifiedStat = isModOnly ? stages : getModifiedStat(baseStat, stages);
+                            const burnOverlay = stat.key === 'def' && (statusConditions?.burned);
+                            const poisonOverlay = stat.key === 'sdef' && (statusConditions?.poisoned || statusConditions?.badlyPoisoned);
                             return (
                                 <div key={stat.key} className="combat-stat-box" style={{ textAlign: 'center', padding: '6px', borderRadius: '4px' }} title={stat.desc}>
                                     <div style={{ fontSize: '12px', fontWeight: 'bold', color: stat.color }}>{stat.label}</div>
@@ -82,6 +84,16 @@ const CombatStagesPanel = ({ selectedPokemon, combatStages, getStatsWithMega, up
                                             {isModOnly ? (stages >= 0 ? '+' : '') + stages : modifiedStat}
                                         </strong>
                                     </div>
+                                    {(burnOverlay || poisonOverlay) && (
+                                        <div
+                                            title={burnOverlay
+                                                ? 'Burn: DEF treated as −2 combat stages for damage calculations (PH2 p.403). This is a separate damage penalty — do NOT adjust the stage counter.'
+                                                : 'Poison: SDEF treated as −2 combat stages for damage calculations (PH2 p.403). This is a separate damage penalty — do NOT adjust the stage counter.'}
+                                            style={{ fontSize: '10px', color: burnOverlay ? '#f44336' : '#9c27b0', fontWeight: 'bold', marginTop: '2px', cursor: 'help' }}
+                                        >
+                                            {burnOverlay ? '🔥' : '☠️'} −2 eff.
+                                        </div>
+                                    )}
                                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', marginTop: '4px' }}>
                                         <button
                                             onClick={() => updateCombatStage(stat.key, -1)}
@@ -109,6 +121,42 @@ const CombatStagesPanel = ({ selectedPokemon, combatStages, getStatsWithMega, up
                     >
                         Reset All Stages
                     </button>
+
+                    {/* Base Evasion — derived from stats, before EVA stage modifier (PH2 p.255) */}
+                    <div
+                        title="Base evasion values derived from stats (PH2 p.255). Add the EVA combat stage modifier above for total evasion used in accuracy checks."
+                        style={{ marginTop: '10px', padding: '7px 10px', borderRadius: '5px', background: 'var(--bg-secondary, #f5f5f5)', border: '1px solid var(--border-light)' }}
+                    >
+                        <div style={{ fontSize: '11px', fontWeight: 'bold', color: 'var(--text-muted)', marginBottom: '5px', textTransform: 'uppercase', letterSpacing: '0.4px' }}>
+                            Base Evasion (from stats)
+                        </div>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px', textAlign: 'center' }}>
+                            <div title="Physical Evasion = DEF stat ÷ 5, max 6 (PH2 p.255)">
+                                <div style={{ fontSize: '10px', color: '#2196f3' }}>Phys Eva</div>
+                                <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#2196f3' }}>
+                                    +{Math.min(6, Math.floor((actualStats.def || 0) / 5))}
+                                </div>
+                                <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>DEF÷5</div>
+                            </div>
+                            <div title="Special Evasion = SDEF stat ÷ 5, max 6 (PH2 p.255)">
+                                <div style={{ fontSize: '10px', color: '#ff9800' }}>Spec Eva</div>
+                                <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#ff9800' }}>
+                                    +{Math.min(6, Math.floor((actualStats.sdef || 0) / 5))}
+                                </div>
+                                <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>SDEF÷5</div>
+                            </div>
+                            <div title="Speed Evasion = SPD stat ÷ 10, max 6 (PH2 p.255)">
+                                <div style={{ fontSize: '10px', color: '#00bcd4' }}>Spd Eva</div>
+                                <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#00bcd4' }}>
+                                    +{Math.min(6, Math.floor((actualStats.spd || 0) / 10))}
+                                </div>
+                                <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>SPD÷10</div>
+                            </div>
+                        </div>
+                        <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '4px', textAlign: 'center' }}>
+                            Total EVA = base + EVA stage modifier above
+                        </div>
+                    </div>
                 </div>
             )}
         </div>

@@ -171,7 +171,8 @@ const BattleTab = () => {
     const getPokemonHP = (poke) => {
         if (!poke) return { current: 0, max: 0 };
         const max = calculatePokemonHP(poke);
-        return { current: Math.max(0, max - (poke.currentDamage || 0)), max };
+        // Allow negative HP so HPTracker can show fainted/death-threshold states (GM Guide p.17)
+        return { current: max - (poke.currentDamage || 0), max };
     };
 
     const updateCombatStage = (stat, delta) => {
@@ -282,7 +283,7 @@ const BattleTab = () => {
         const total = rollTotal + skillBonus;
 
         const trainerMaxHP = calculateMaxHP();
-        const trainerCurrentHP = Math.max(0, trainerMaxHP - (trainer.currentDamage || 0));
+        const trainerCurrentHP = trainerMaxHP - (trainer.currentDamage || 0);
         addToHistory({ type: 'trainer_skill', skill: selectedSkill, skillStat: skillData.stat, dice: '1d20', rolls, baseStat, modifier, hasSkill, bonus: skillBonus, total, trainerCurrentHP, trainerMaxHP, timestamp: Date.now() });
     };
 
@@ -432,7 +433,8 @@ const BattleTab = () => {
                                         label="HP"
                                         currentHP={hp.current}
                                         maxHP={hp.max}
-                                        onDamage={(val) => updatePokemon(selectedPokemon.id, { currentDamage: Math.min(hp.max, (selectedPokemon.currentDamage || 0) + val) })}
+                                        level={selectedPokemon.level}
+                                        onDamage={(val) => updatePokemon(selectedPokemon.id, { currentDamage: Math.min(hp.max * 2, (selectedPokemon.currentDamage || 0) + val) })}
                                         onHeal={(val) => updatePokemon(selectedPokemon.id, { currentDamage: Math.max(0, (selectedPokemon.currentDamage || 0) - val) })}
                                         onFull={() => updatePokemon(selectedPokemon.id, { currentDamage: 0 })}
                                     />
@@ -461,6 +463,7 @@ const BattleTab = () => {
                                 updateCombatStage={updateCombatStage}
                                 resetCombatStages={resetCombatStages}
                                 onHelp={() => showHelp('combat-stages')}
+                                statusConditions={selectedPokemon?.statusConditions}
                             />
 
                             {/* STAB Toggle & AC Override */}
@@ -556,13 +559,16 @@ const BattleTab = () => {
                             {/* Trainer HP Tracker */}
                             {(() => {
                                 const maxHP = calculateMaxHP();
-                                const currentHP = Math.max(0, maxHP - (trainer.currentDamage || 0));
+                                // Allow negative HP so HPTracker can show fainted/death-threshold states (GM Guide p.17)
+                                const currentHP = maxHP - (trainer.currentDamage || 0);
                                 return (
                                     <HPTracker
                                         label="Trainer HP"
                                         currentHP={currentHP}
                                         maxHP={maxHP}
-                                        onDamage={(val) => setTrainer(prev => ({ ...prev, currentDamage: Math.min(maxHP, (prev.currentDamage || 0) + val) }))}
+                                        level={trainer.level || 1}
+                                        isTrainer
+                                        onDamage={(val) => setTrainer(prev => ({ ...prev, currentDamage: Math.min(maxHP * 2, (prev.currentDamage || 0) + val) }))}
                                         onHeal={(val) => setTrainer(prev => ({ ...prev, currentDamage: Math.max(0, (prev.currentDamage || 0) - val) }))}
                                         onFull={() => setTrainer(prev => ({ ...prev, currentDamage: 0 }))}
                                     />

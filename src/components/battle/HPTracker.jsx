@@ -3,10 +3,36 @@ import { useUI } from '../../contexts/index.js';
 import toast from '../../utils/toast.js';
 import { HELP_BTN_STYLE } from '../common/helpBtnStyle.js';
 
-const HPTracker = ({ label, currentHP, maxHP, onDamage, onHeal, onFull }) => {
+const HPTracker = ({ label, currentHP, maxHP, onDamage, onHeal, onFull, level, isTrainer }) => {
     const inputRef = useRef(null);
     const { showHelp } = useUI();
-    const hpPercent = maxHP > 0 ? (currentHP / maxHP) * 100 : 0;
+
+    const isFainted = currentHP <= 0;
+    // Death threshold: HP ≤ −maxHP (GM Guide p.17)
+    const isDeathThreshold = maxHP > 0 && currentHP <= -maxHP;
+    const displayHP = Math.max(currentHP, -maxHP); // clamp display at -maxHP
+    const hpPercent = maxHP > 0 ? Math.max(0, Math.min(100, (currentHP / maxHP) * 100)) : 0;
+
+    const barColor = isDeathThreshold ? '#b71c1c'
+        : isFainted ? '#757575'
+        : hpPercent > 50 ? '#4caf50'
+        : hpPercent > 25 ? '#ff9800'
+        : '#f44336';
+
+    const hpColor = isDeathThreshold ? '#b71c1c'
+        : isFainted ? '#757575'
+        : hpPercent > 50 ? '#4caf50'
+        : hpPercent > 25 ? '#ff9800'
+        : '#f44336';
+
+    // Death save threshold and lethality note (GM Guide p.17)
+    const deathSaveTarget = isTrainer
+        ? Math.min(18, level || 1)
+        : Math.min(90, (level || 1) * 2);
+    const deathDice = isTrainer ? '1d20' : '1d100';
+    const lethalNote = isTrainer
+        ? 'Trainers below level 20 cannot deal lethal damage.'
+        : 'Pokémon below level 30 cannot deal lethal damage (HP floors at −90% max).';
 
     return (
         <div className="hp-tracker-box" style={{ marginBottom: '12px', padding: '10px', borderRadius: '8px' }}>
@@ -20,15 +46,40 @@ const HPTracker = ({ label, currentHP, maxHP, onDamage, onHeal, onFull }) => {
                         title="About HP tracking"
                     >?</button>
                 </span>
-                <span style={{ fontSize: '14px', fontWeight: 'bold', color: hpPercent > 50 ? '#4caf50' : hpPercent > 25 ? '#ff9800' : '#f44336' }}>
-                    {currentHP} / {maxHP}
+                <span style={{ fontSize: '14px', fontWeight: 'bold', color: hpColor }}>
+                    {displayHP} / {maxHP}
                 </span>
             </div>
+
+            {/* Fainted banner */}
+            {isFainted && !isDeathThreshold && (
+                <div style={{
+                    marginBottom: '6px', padding: '5px 10px', borderRadius: '5px',
+                    background: '#f5f5f5', border: '1px solid #9e9e9e',
+                    fontSize: '12px', fontWeight: 'bold', color: '#616161', textAlign: 'center'
+                }}>
+                    ✖ Fainted — 0 HP
+                </div>
+            )}
+
+            {/* Death Saving Throw banner */}
+            {isDeathThreshold && (
+                <div style={{
+                    marginBottom: '6px', padding: '8px 10px', borderRadius: '6px',
+                    background: 'rgba(183,28,28,0.08)', border: '2px solid #b71c1c',
+                    fontSize: '12px', color: '#b71c1c'
+                }}>
+                    <div style={{ fontWeight: 'bold', marginBottom: '3px' }}>☠ Death Saving Throw Required!</div>
+                    <div>Roll {deathDice} — succeed if ≤ {deathSaveTarget}. Failure = death.</div>
+                    <div style={{ marginTop: '2px', opacity: 0.8, fontSize: '11px' }}>{lethalNote}</div>
+                </div>
+            )}
+
             <div style={{ background: 'var(--collapsed-hp-track)', borderRadius: '4px', height: '12px', overflow: 'hidden', marginBottom: '8px' }}>
                 <div style={{
                     width: `${hpPercent}%`,
                     height: '100%',
-                    background: hpPercent > 50 ? '#4caf50' : hpPercent > 25 ? '#ff9800' : '#f44336',
+                    background: barColor,
                     transition: 'width 0.3s ease'
                 }} />
             </div>

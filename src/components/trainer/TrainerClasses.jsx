@@ -24,12 +24,14 @@ const TrainerClasses = () => {
     const [selectedClassSkills, setSelectedClassSkills] = useState([]);
     const [collapsed, setCollapsed] = useState(true);
 
+    // Minimal fallback pool when a class has no skillPool defined in game data (PH2 p.14: 8 skills per base class)
+    const FALLBACK_SKILL_POOL = ['Browbeat', 'Sprint', 'Concentration', 'Healing', 'Investigate', 'Perception', 'Acrobatics', 'Stealth'];
+
     // Get skill pool for a class
     const getClassSkillPool = (className) => {
         const classData = GAME_DATA.trainerClasses?.[className];
         if (!classData?.skillPool) {
-            // Default skill pools based on class type if not defined
-            return Object.keys(GAME_DATA.skills || {});
+            return FALLBACK_SKILL_POOL;
         }
         return classData.skillPool;
     };

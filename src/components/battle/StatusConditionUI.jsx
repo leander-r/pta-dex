@@ -1,35 +1,27 @@
 import React from 'react';
-
-const CONDITIONS = [
-    { key: 'burned',    label: 'Burned',    icon: '🔥', color: '#f44336' },
-    { key: 'frozen',    label: 'Frozen',    icon: '🧊', color: '#42a5f5' },
-    { key: 'paralyzed', label: 'Paralyzed', icon: '⚡', color: '#ffc107' },
-    { key: 'poisoned',  label: 'Poisoned',  icon: '☠️', color: '#9c27b0' },
-    { key: 'asleep',    label: 'Asleep',    icon: '💤', color: '#607d8b' },
-    { key: 'confused',  label: 'Confused',  icon: '💫', color: '#ff9800' },
-    { key: 'flinched',  label: 'Flinched',  icon: '😵', color: '#795548' },
-    { key: 'fainted',   label: 'Fainted',   icon: '✖',  color: '#333'    },
-];
+import { STATUS_CONDITIONS } from '../../data/statusConditions.js';
 
 const StatusConditionUI = ({ selectedPokemon, updatePokemon }) => {
     if (!selectedPokemon) return null;
     const conditions = selectedPokemon.statusConditions || {};
-    const activeCount = Object.values(conditions).filter(Boolean).length;
+    // Count only real status afflictions (PH2 p.403 — max 2 at a time)
+    const activeCount = STATUS_CONDITIONS.filter(c => conditions[c.key]).length;
     const overLimit = activeCount > 2;
+    const activeConditions = STATUS_CONDITIONS.filter(c => conditions[c.key]);
 
     return (
         <div style={{ marginBottom: '12px', padding: '8px 10px', borderRadius: '8px', background: 'var(--bg-secondary, #f5f5f5)' }}>
             <div style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '6px', color: 'var(--text-secondary)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span>Status Conditions</span>
                 {overLimit && (
-                    <span style={{ fontSize: '11px', color: '#e53935', fontWeight: 'normal' }} title="PH2: maximum 2 status conditions at once">
+                    <span style={{ fontSize: '11px', color: '#e53935', fontWeight: 'normal' }} title="PH2 p.403: a Pokémon can suffer at most 2 status afflictions at the same time">
                         ⚠ max 2 per rules
                     </span>
                 )}
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
-                {CONDITIONS.map(cond => {
-                    const isActive = conditions[cond.key];
+                {STATUS_CONDITIONS.map(cond => {
+                    const isActive = !!conditions[cond.key];
                     return (
                         <button
                             key={cond.key}
@@ -45,13 +37,24 @@ const StatusConditionUI = ({ selectedPokemon, updatePokemon }) => {
                                 fontWeight: isActive ? 'bold' : 'normal',
                                 transition: 'all 0.15s ease'
                             }}
-                            title={`Toggle ${cond.label}`}
+                            title={`${cond.label}: ${cond.mechanic}`}
                         >
                             {cond.icon} {cond.label}
                         </button>
                     );
                 })}
             </div>
+            {/* Active condition mechanics — shown inline for mobile (title tooltips don't show on touch) */}
+            {activeConditions.length > 0 && (
+                <div style={{ marginTop: '7px', display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                    {activeConditions.map(cond => (
+                        <div key={cond.key} style={{ fontSize: '11px', color: 'var(--text-muted)', lineHeight: 1.5 }}>
+                            <span style={{ color: cond.color, fontWeight: 'bold' }}>{cond.icon} {cond.label}:</span>{' '}
+                            {cond.mechanic}
+                        </div>
+                    ))}
+                </div>
+            )}
         </div>
     );
 };

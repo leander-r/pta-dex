@@ -13,17 +13,7 @@ import { MAX_NATURAL_MOVES, MAX_TAUGHT_MOVES, MAX_TOTAL_MOVES } from '../../data
 import { getPokemonDisplayImage, getPokemonSprite } from '../../utils/pokemonSprite.js';
 
 import { HELP_BTN_STYLE } from '../common/helpBtnStyle.js';
-
-const STATUS_CONDITIONS = [
-    { key: 'burned',    label: 'Burned',    icon: '🔥', color: '#f44336' },
-    { key: 'frozen',    label: 'Frozen',    icon: '🧊', color: '#42a5f5' },
-    { key: 'paralyzed', label: 'Paralyzed', icon: '⚡', color: '#ffc107' },
-    { key: 'poisoned',  label: 'Poisoned',  icon: '☠️', color: '#9c27b0' },
-    { key: 'asleep',    label: 'Asleep',    icon: '💤', color: '#607d8b' },
-    { key: 'confused',  label: 'Confused',  icon: '💫', color: '#ff9800' },
-    { key: 'flinched',  label: 'Flinched',  icon: '😵', color: '#795548' },
-    { key: 'fainted',   label: 'Fainted',   icon: '✖',  color: '#333'    },
-];
+import { STATUS_CONDITIONS } from '../../data/statusConditions.js';
 
 const PokemonCard = ({
     // Pokemon-specific props (must be passed per-card)
@@ -1936,8 +1926,10 @@ const PokemonCard = ({
                             {['hp', 'atk', 'def', 'satk', 'sdef', 'spd'].map(stat => {
                                 const addedVal = pokemon.addedStats?.[stat] || 0;
                                 const pointsLeft = pokemon.statPointsAvailable || 0;
-                                const addViolates = pointsLeft > 0 && wouldViolateBaseRelation(stat, pokemon.baseStats, pokemon.addedStats || {}, 1);
-                                const removeViolates = addedVal > 0 && wouldViolateBaseRelation(stat, pokemon.baseStats, pokemon.addedStats || {}, -1);
+                                const addBlockReason = pointsLeft > 0 ? getBaseRelationBlockReason(stat, pokemon.baseStats, pokemon.addedStats || {}, 1) : null;
+                                const removeBlockReason = addedVal > 0 ? getBaseRelationBlockReason(stat, pokemon.baseStats, pokemon.addedStats || {}, -1) : null;
+                                const addViolates = !!addBlockReason;
+                                const removeViolates = !!removeBlockReason;
                                 const minusDisabled = addedVal <= 0 || removeViolates;
                                 const plusDisabled = pointsLeft <= 0 || addViolates;
                                 const canAdd = pointsLeft > 0 && !addViolates;
@@ -1970,7 +1962,7 @@ const PokemonCard = ({
                                                 }
                                             }}
                                             disabled={minusDisabled}
-                                            title={removeViolates ? 'Removing this would violate Base Relation' : undefined}
+                                            title={removeBlockReason || undefined}
                                             style={{ ...statBtnStyle, opacity: minusDisabled ? 0.5 : 1, cursor: minusDisabled ? 'not-allowed' : 'pointer' }}
                                         >
                                             −
@@ -1986,7 +1978,7 @@ const PokemonCard = ({
                                                 }
                                             }}
                                             disabled={plusDisabled}
-                                            title={addViolates ? 'Would violate Base Relation' : undefined}
+                                            title={addBlockReason || undefined}
                                             style={{ ...statBtnStyle, opacity: plusDisabled ? 0.5 : 1, cursor: plusDisabled ? 'not-allowed' : 'pointer' }}
                                         >
                                             +
@@ -1997,13 +1989,23 @@ const PokemonCard = ({
                             })}
                         </div>
 
+                        {/* Base Relation rule hint — shown when any stat is blocked */}
+                        {(['hp', 'atk', 'def', 'satk', 'sdef', 'spd'].some(s =>
+                            wouldViolateBaseRelation(s, pokemon.baseStats, pokemon.addedStats || {}, 1) ||
+                            wouldViolateBaseRelation(s, pokemon.baseStats, pokemon.addedStats || {}, -1)
+                        )) && (
+                            <div style={{ marginTop: '8px', padding: '6px 10px', borderRadius: '6px', background: 'rgba(103,126,234,0.08)', border: '1px solid rgba(103,126,234,0.25)', fontSize: '11px', color: 'var(--text-muted)', lineHeight: 1.5 }}>
+                                <strong style={{ color: '#667eea' }}>Base Relation</strong> — a stat with a higher species base value must always have a higher total than one with a lower base value (PH2 p.257). Hover blocked buttons for details.
+                            </div>
+                        )}
+
                         <div style={{ marginTop: '15px', padding: '10px', background: '#e8f5e9', borderRadius: '8px' }}>
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', textAlign: 'center', fontSize: '12px' }}>
-                                <div title="Maximum Hit Points = (HP stat × Level) + (Level × 4) + 10">
+                                <div title="Maximum Hit Points = Level + (HP stat × 3)">
                                     <div style={{ color: '#666' }}>Max HP</div>
                                     <div style={{ fontWeight: 'bold', color: '#e53935' }}>{maxHP}</div>
                                 </div>
-                                <div title="Same Type Attack Bonus: Extra damage when using moves matching the Pokémon's type. Scales with level: +2 (Lv.1-10), +4 (Lv.11-20), +6 (Lv.21-40), +8 (Lv.41-60), +10 (Lv.61+)">
+                                <div title="Same Type Attack Bonus: +0 at Lv.1–4, then +1 per 5 levels (Lv.5=+1, Lv.10=+2, Lv.15=+3 … Lv.100=+20)">
                                     <div style={{ color: '#666' }}>STAB Bonus</div>
                                     <div style={{ fontWeight: 'bold', color: '#667eea' }}>+{stabBonus}</div>
                                 </div>
@@ -2543,6 +2545,27 @@ const statBtnStyle = {
     cursor: 'pointer',
     fontSize: '16px'
 };
+
+// Returns a human-readable reason string if applying `delta` to `stat` would violate Base Relation,
+// or null if it wouldn't. E.g. "ATK (base 7) must stay above DEF (base 5)".
+function getBaseRelationBlockReason(stat, baseStats, addedStats, delta) {
+    const STAT_LABELS = { hp: 'HP', atk: 'ATK', def: 'DEF', satk: 'SATK', sdef: 'SDEF', spd: 'SPD' };
+    const STATS = ['hp', 'atk', 'def', 'satk', 'sdef', 'spd'];
+    const base = baseStats || {};
+    const newAdded = { ...addedStats };
+    newAdded[stat] = (newAdded[stat] || 0) + delta;
+    const totals = {};
+    for (const s of STATS) totals[s] = (base[s] || 0) + (newAdded[s] || 0);
+    for (const sA of STATS) {
+        for (const sB of STATS) {
+            if (sA === sB) continue;
+            if ((base[sA] || 0) > (base[sB] || 0) && totals[sA] <= totals[sB]) {
+                return `${STAT_LABELS[sA]} (base ${base[sA] || 0}) must stay above ${STAT_LABELS[sB]} (base ${base[sB] || 0}) — Base Relation rule (PH2 p.257)`;
+            }
+        }
+    }
+    return null;
+}
 
 // Returns true if applying `delta` (+1 or -1) to `stat` would violate Base Relation.
 // Base Relation rule: for every pair (A, B) where base(A) > base(B), total(A) must > total(B).
