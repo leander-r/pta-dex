@@ -201,13 +201,8 @@ const SkillPickerModal = () => {
                         <div style={{ display: 'flex', gap: '10px' }}>
                             <button
                                 onClick={handleClose}
-                                style={{
-                                    padding: '10px 20px',
-                                    border: '1px solid #ddd',
-                                    borderRadius: '6px',
-                                    background: 'white',
-                                    cursor: 'pointer'
-                                }}
+                                className="btn btn-secondary"
+                                style={{ padding: '10px 20px' }}
                             >
                                 Cancel
                             </button>
