@@ -19,6 +19,7 @@ import CustomDicePanel from './CustomDicePanel.jsx';
 import HealModePanel from './HealModePanel.jsx';
 import RollHistory from './RollHistory.jsx';
 import DiscordWebhookConfig from './DiscordWebhookConfig.jsx';
+import ContestPanel from './ContestPanel.jsx';
 
 // Hardcoded battle form changes for Pokémon not covered by the external Pokédex's megaForms field.
 // Zygarde only has one pokedex entry (50% Forme, id L48: HP11 ATK10 DEF12 SATK8 SDEF10 SPD10).
@@ -351,14 +352,15 @@ const BattleTab = () => {
                 <button className={`tab ${mode === 'trainer'  ? 'active' : ''}`} onClick={() => setMode('trainer')}>Trainer Skill</button>
                 <button className={`tab ${mode === 'custom'   ? 'active' : ''}`} onClick={() => setMode('custom')}>Custom Dice</button>
                 <button className={`tab ${mode === 'heal'     ? 'active' : ''}`} onClick={() => setMode('heal')}>🩹 Heal</button>
+                <button className={`tab ${mode === 'contest'  ? 'active' : ''}`} onClick={() => setMode('contest')}>🎭 Contest</button>
             </div>
 
             <div className="grid-responsive-2">
                 {/* Left: Roll Controls */}
                 <div className="section-card-purple">
                     <h3 className="section-title-purple">
-                        <span>{mode === 'heal' ? '🩹' : '🎲'}</span>{' '}
-                        {mode === 'pokemon' ? 'Pokemon Attack' : mode === 'trainer' ? 'Trainer Skill' : mode === 'heal' ? 'Use Healing Item' : 'Custom Roll'}
+                        <span>{mode === 'heal' ? '🩹' : mode === 'contest' ? '🎭' : '🎲'}</span>{' '}
+                        {mode === 'pokemon' ? 'Pokemon Attack' : mode === 'trainer' ? 'Trainer Skill' : mode === 'heal' ? 'Use Healing Item' : mode === 'contest' ? 'Contest Appeal' : 'Custom Roll'}
                     </h3>
 
                     {mode === 'pokemon' && (
@@ -641,6 +643,10 @@ const BattleTab = () => {
                             healingInventory={healingInventory}
                             onUseItem={rollHealItem}
                         />
+                    )}
+
+                    {mode === 'contest' && (
+                        <ContestPanel selectedPokemon={selectedPokemon} gameData={GAME_DATA} />
                     )}
 
                     <DiscordWebhookConfig />
