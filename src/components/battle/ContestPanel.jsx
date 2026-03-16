@@ -84,19 +84,6 @@ const ContestPanel = ({ selectedPokemon, gameData, onRoll }) => {
             .then(() => toast.success('Copied! Paste this in GM Tools → Contests during your turn.'));
     };
 
-    const copyDiscord = () => {
-        if (!roll || !selectedMove) return;
-        const name = selectedPokemon.name || selectedPokemon.species;
-        const lines = [
-            `🎭 **Contest Appeal — ${selectedMove.contestType}**`,
-            `**${name}** used **${selectedMove.name}** · ${selectedMove.contestDice}`,
-            `🎲 [${roll.rolls.join(', ')}]${roll.bonus ? ` +${roll.bonus}` : ''} = **${roll.total}**`,
-        ];
-        if (selectedMove.contestEffect) lines.push(`*${selectedMove.contestEffect}*`);
-        navigator.clipboard.writeText(lines.join('\n'))
-            .then(() => toast.success('Discord message copied!'));
-    };
-
     const color = CONTEST_COLORS[selectedMove?.contestType] || '#667eea';
     const rollableSelected = !!selectedMove?.contestDice;
     const noRollableSelected = selectedMove && !selectedMove.contestDice;
@@ -250,23 +237,14 @@ const ContestPanel = ({ selectedPokemon, gameData, onRoll }) => {
                         </div>
                     </div>
 
-                    {/* Copy buttons */}
-                    <div style={{ display: 'flex', gap: 6 }}>
-                        <button
-                            onClick={copyForGM}
-                            title={`Copies: ${selectedPokemon.name || selectedPokemon.species} | ${selectedMove.name} | ${roll.total}`}
-                            style={{ flex: 1, padding: '7px 8px', borderRadius: 6, border: `1px solid ${color}55`, background: `${color}18`, color, fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
-                        >
-                            📋 Copy for GM
-                        </button>
-                        <button
-                            onClick={copyDiscord}
-                            title="Copy as Discord-formatted message"
-                            style={{ flex: 1, padding: '7px 8px', borderRadius: 6, border: '1px solid #5865f266', background: 'rgba(88,101,242,0.08)', color: '#5865f2', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
-                        >
-                            💬 Discord
-                        </button>
-                    </div>
+                    {/* Copy button */}
+                    <button
+                        onClick={copyForGM}
+                        title={`Copies: ${selectedPokemon.name || selectedPokemon.species} | ${selectedMove.name} | ${roll.total}`}
+                        style={{ width: '100%', padding: '7px 8px', borderRadius: 6, border: `1px solid ${color}55`, background: `${color}18`, color, fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
+                    >
+                        📋 Copy for GM
+                    </button>
 
                     {/* GM workflow hint */}
                     <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text-muted)', textAlign: 'center' }}>
