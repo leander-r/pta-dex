@@ -11,6 +11,7 @@ import LoyaltyGuide from './LoyaltyGuide.jsx';
 import SkillChecks from './SkillChecks.jsx';
 import DeathSaves from './DeathSaves.jsx';
 import BiomeEncounters from './BiomeEncounters.jsx';
+import ContestRunner from './ContestRunner.jsx';
 
 // Sections drawn directly from the PTA GM Guide (final).pdf
 const SECTIONS = [
@@ -20,7 +21,8 @@ const SECTIONS = [
     { id: 'rewards',   icon: '⭐', label: 'EXP Calculator'   },
     { id: 'gym',       icon: '❤️', label: 'Loyalty Guide'    },
     { id: 'npc',       icon: '📋', label: 'Skill Checks'     },
-    { id: 'contest',   icon: '💀', label: 'Death Saves'      },
+    { id: 'death',     icon: '💀', label: 'Death Saves'      },
+    { id: 'contest',   icon: '🎭', label: 'Contests'         },
 ];
 
 const SECTION_COMPONENTS = {
@@ -30,7 +32,8 @@ const SECTION_COMPONENTS = {
     rewards:   RewardTables,
     gym:       LoyaltyGuide,
     npc:       SkillChecks,
-    contest:   DeathSaves,
+    death:     DeathSaves,
+    contest:   ContestRunner,
 };
 
 const GMTab = () => {
