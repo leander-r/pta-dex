@@ -2,13 +2,18 @@
 // Contest Runner — PTA Player's Handbook 2, Contests chapter
 // Rules implemented:
 //   • 3 Judges with Voltage (1–6)
-//   • Judge targeting per turn
+//   • Judge targeting per turn (player declares, GM selects)
 //   • Type relations: same (+1 voltage, +1d4) / opposite (-1 voltage) / adjacent (no effect)
 //   • Max voltage bonus: raise judge to 6 → +4d4 that round
 //   • Turn order: odd rounds low→high appeal; even rounds high→low
 //   • Move repetition: same move twice in a row = 0 appeal (voltage still changes)
-//   • Introduction stage bonuses
 //   • Rounds = number of participants (standard)
+//
+// Workflow:
+//   Setup  → GM enters participant names only (Trainer + Pokémon)
+//   Appeal → Player rolls in Dice Roller → copies result → GM pastes here
+//            GM selects which judge the player declared → Confirm
+//            NPC entries: GM picks move and rolls directly
 // ============================================================
 
 import React, { useState, useMemo } from 'react';
@@ -26,8 +31,6 @@ const CONTEST_TYPES = [
     { id: 'Tough',  color: '#795548', icon: '💪' },
 ];
 
-// Type pentagon: Cool – Beauty – Cute – Smart – Tough
-// Adjacent = neighbors on pentagon, Opposite = 2 steps away
 const TYPE_ADJACENT = {
     Cool:   ['Beauty', 'Tough'],
     Beauty: ['Cool',   'Cute'],
@@ -36,7 +39,6 @@ const TYPE_ADJACENT = {
     Tough:  ['Smart',  'Cool'],
 };
 
-// 'same' | 'adjacent' | 'opposite'
 const getTypeRelation = (moveType, contestType) => {
     if (!moveType || !contestType) return 'adjacent';
     if (moveType === contestType) return 'same';
@@ -45,7 +47,6 @@ const getTypeRelation = (moveType, contestType) => {
 };
 
 const ctColor = (id) => CONTEST_TYPES.find(t => t.id === id)?.color || '#667eea';
-const ctIcon  = (id) => CONTEST_TYPES.find(t => t.id === id)?.icon  || '🎭';
 
 // ── Dice helpers ───────────────────────────────────────────────────────────
 
@@ -57,6 +58,31 @@ const rollDiceStr = (diceStr) => {
     if (!count || !sides) return { rolls: [], bonus: 0, total: 0 };
     const rolls = Array.from({ length: count }, () => Math.floor(Math.random() * sides) + 1);
     return { rolls, bonus, total: rolls.reduce((a, b) => a + b, 0) + bonus };
+};
+
+// Parse a string copied from ContestPanel's "Copy for GM" button.
+// Format: Name | Move | ContestType | Score | Effect  (effect optional)
+// Also accepts: Name | Move | Score  (older 3-field format)
+const parsePasteInput = (text) => {
+    if (!text?.trim()) return null;
+    const parts = text.split('|').map(s => s.trim());
+    if (parts.length >= 4) {
+        const score = parseInt(parts[3]);
+        if (isNaN(score)) return null;
+        return {
+            name:            parts[0],
+            moveName:        parts[1],
+            moveContestType: parts[2],
+            score,
+            effect:          parts[4] || '',
+        };
+    }
+    if (parts.length === 3) {
+        const score = parseInt(parts[2]);
+        if (isNaN(score)) return null;
+        return { name: parts[0], moveName: parts[1], moveContestType: '', score, effect: '' };
+    }
+    return null;
 };
 
 // ── Sub-components ─────────────────────────────────────────────────────────
@@ -102,48 +128,52 @@ const JudgeCard = ({ judge, color, selected, onSelect, disabled }) => (
     </button>
 );
 
+const StepLabel = ({ n, label }) => (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+        <span style={{
+            width: 20, height: 20, borderRadius: '50%', background: '#667eea', color: 'white',
+            fontSize: 11, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+        }}>{n}</span>
+        <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>{label}</span>
+    </div>
+);
+
 // ── Main component ─────────────────────────────────────────────────────────
 
 const ContestRunner = () => {
     const { GAME_DATA } = useGameData();
 
-    // Setup state
+    // ── Setup state ────────────────────────────────────────────────────────
     const [contestType, setContestType] = useState('');
     const [participants, setParticipants] = useState([]);
     const [newName, setNewName] = useState('');
-    const [newMove, setNewMove] = useState('');
-    const [newIntro, setNewIntro] = useState('0');
     const [importText, setImportText] = useState('');
     const [showImport, setShowImport] = useState(false);
 
-    // Appeal state
-    const [manualScore, setManualScore] = useState(''); // manual score input for current turn
-    const [phase, setPhase] = useState('setup'); // 'setup' | 'appeal' | 'results'
+    // ── Appeal state ───────────────────────────────────────────────────────
+    const [phase, setPhase] = useState('setup');
     const [round, setRound] = useState(0);
     const [judges, setJudges] = useState([
         { id: 1, voltage: 1 },
         { id: 2, voltage: 1 },
         { id: 3, voltage: 1 },
     ]);
-    const [turnOrder, setTurnOrder] = useState([]);   // participant IDs in appeal order
-    const [turnIdx,   setTurnIdx]   = useState(0);    // which position we're at
-    const [pendingJudge, setPendingJudge] = useState(null); // judge selected, not yet rolled
-    const [lastMoves, setLastMoves] = useState({});   // { [participantId]: moveName }
-    const [log, setLog] = useState([]);               // { text, color }
+    const [turnOrder,    setTurnOrder]    = useState([]);
+    const [turnIdx,      setTurnIdx]      = useState(0);
+    const [pendingJudge, setPendingJudge] = useState(null);
+    const [lastMoves,    setLastMoves]    = useState({});
+    const [log,          setLog]          = useState([]);
 
-    // numRounds = number of participants (standard rule)
+    // Player paste path
+    const [pastedText,  setPastedText]  = useState('');
+    const [parsedPaste, setParsedPaste] = useState(null);
+
+    // NPC roll path
+    const [npcMoveName, setNpcMoveName] = useState('');
+
     const numRounds = participants.length || 4;
 
     // ── Move data helpers ──────────────────────────────────────────────────
-
-    const contestMoves = useMemo(() => {
-        if (!contestType || !GAME_DATA?.moves) return {};
-        return Object.fromEntries(
-            Object.entries(GAME_DATA.moves)
-                .filter(([, m]) => m.contestType === contestType && m.contestDice)
-                .map(([name, m]) => [name, { dice: m.contestDice, keyword: m.contestEffect || '' }])
-        );
-    }, [contestType, GAME_DATA?.moves]);
 
     const resolveMoveData = (moveName) => {
         if (!moveName?.trim() || !GAME_DATA?.moves) return null;
@@ -153,62 +183,42 @@ const ContestRunner = () => {
         return key ? GAME_DATA.moves[key] : null;
     };
 
+    // NPC reference chips for the selected contest type
+    const npcMoveOptions = useMemo(() => {
+        if (!contestType || !GAME_DATA?.moves) return {};
+        return Object.fromEntries(
+            Object.entries(GAME_DATA.moves)
+                .filter(([, m]) => m.contestType === contestType && m.contestDice)
+                .map(([name, m]) => [name, { dice: m.contestDice, keyword: m.contestEffect || '' }])
+        );
+    }, [contestType, GAME_DATA?.moves]);
+
     // ── Setup actions ──────────────────────────────────────────────────────
 
     const handleAddParticipant = () => {
         if (!newName.trim()) { toast.warning('Enter a participant name.'); return; }
-        const moveData = resolveMoveData(newMove);
-        setParticipants(prev => [...prev, {
-            id: Date.now(),
-            name: newName.trim(),
-            moveName:        newMove.trim() || '—',
-            diceStr:         moveData?.contestDice  || '1d4',
-            moveContestType: moveData?.contestType  || '',
-            contestKeyword:  moveData?.contestEffect || '',
-            introBonus:      parseInt(newIntro) || 0,
-            rounds:          [],
-        }]);
-        setNewName(''); setNewMove(''); setNewIntro('0');
+        setParticipants(prev => [...prev, { id: Date.now(), name: newName.trim(), rounds: [] }]);
+        setNewName('');
     };
 
     const handleRemoveParticipant = (id) =>
         setParticipants(prev => prev.filter(p => p.id !== id));
 
-    // Parse pasted player results. Each line: "Name | Move" or "Name | Move | Score"
     const handleImport = () => {
         const lines = importText.split('\n').map(l => l.trim()).filter(Boolean);
-        let added = 0;
-        for (const line of lines) {
-            const parts = line.split('|').map(s => s.trim());
-            const name = parts[0];
-            if (!name) continue;
-            const moveName = parts[1] || '';
-            const moveData = resolveMoveData(moveName);
-            setParticipants(prev => [...prev, {
-                id: Date.now() + Math.random(),
-                name,
-                moveName:        moveName || '—',
-                diceStr:         moveData?.contestDice  || '1d4',
-                moveContestType: moveData?.contestType  || '',
-                contestKeyword:  moveData?.contestEffect || '',
-                introBonus:      0,
-                rounds:          [],
-            }]);
-            added++;
-        }
-        if (added > 0) {
-            toast.success(`Imported ${added} participant${added > 1 ? 's' : ''}.`);
-            setImportText('');
-            setShowImport(false);
-        } else {
-            toast.warning('No valid lines found. Use "Name | Move" format.');
-        }
+        if (lines.length === 0) { toast.warning('No names found.'); return; }
+        lines.forEach(name => {
+            setParticipants(prev => [...prev, { id: Date.now() + Math.random(), name, rounds: [] }]);
+        });
+        toast.success(`Added ${lines.length} participant${lines.length > 1 ? 's' : ''}.`);
+        setImportText('');
+        setShowImport(false);
     };
 
     const computeTurnOrder = (pList, rnd) => {
         const sorted = [...pList].sort((a, b) => {
             const diff = getTotal(a) - getTotal(b);
-            return rnd % 2 === 1 ? diff : -diff; // odd: low→high; even: high→low
+            return rnd % 2 === 1 ? diff : -diff;
         });
         return sorted.map(p => p.id);
     };
@@ -216,8 +226,7 @@ const ContestRunner = () => {
     const handleStart = () => {
         if (!contestType) { toast.warning('Select a contest type first.'); return; }
         if (participants.length < 2) { toast.warning('Need at least 2 participants.'); return; }
-        const order = computeTurnOrder(participants, 1);
-        setTurnOrder(order);
+        setTurnOrder(computeTurnOrder(participants, 1));
         setTurnIdx(0);
         setRound(1);
         setPhase('appeal');
@@ -225,56 +234,57 @@ const ContestRunner = () => {
         setJudges([{ id: 1, voltage: 1 }, { id: 2, voltage: 1 }, { id: 3, voltage: 1 }]);
         setLastMoves({});
         setPendingJudge(null);
+        setPastedText('');
+        setParsedPaste(null);
+        setNpcMoveName('');
     };
 
-    // ── Appeal actions ─────────────────────────────────────────────────────
+    // ── Appeal helpers ─────────────────────────────────────────────────────
 
-    const getTotal = (p) =>
-        (p.introBonus || 0) + p.rounds.reduce((sum, r) => sum + r.appeal, 0);
+    const getTotal = (p) => p.rounds.reduce((sum, r) => sum + r.appeal, 0);
 
     const currentParticipantId = turnOrder[turnIdx];
     const currentParticipant   = participants.find(p => p.id === currentParticipantId);
     const allDoneThisRound     = turnIdx >= participants.length;
 
-    // manualOverride: number provided by GM (player's reported score). If set, skip dice.
-    const handleRoll = (manualOverride = null) => {
+    const handlePasteChange = (text) => {
+        setPastedText(text);
+        setParsedPaste(parsePasteInput(text));
+    };
+
+    // Core roll: takes move data + optional pre-determined score (player paste)
+    const handleRoll = ({ moveName, moveContestType, diceStr, effect = '', manualScore = null }) => {
         if (!pendingJudge || !currentParticipant) return;
 
-        const p      = currentParticipant;
-        const judge  = judges.find(j => j.id === pendingJudge);
-        const typeRel = getTypeRelation(p.moveContestType, contestType);
-        const isSameMove = p.moveName !== '—' && lastMoves[p.id] === p.moveName;
+        const p         = currentParticipant;
+        const judge     = judges.find(j => j.id === pendingJudge);
+        const typeRel   = getTypeRelation(moveContestType, contestType);
+        const isSameMove = p.rounds.length > 0 && lastMoves[p.id] === moveName;
 
         let appeal = 0;
-        let baseRolls = [], baseBonus = 0;
-        let typeBonusRolls = [];
-        let maxVoltageBonusRolls = [];
+        let baseRolls = [], baseBonus = 0, typeBonusRolls = [], maxVoltageBonusRolls = [];
 
         if (isSameMove) {
             appeal = 0;
-        } else if (manualOverride !== null) {
-            // GM entered the player's reported score — use it directly, no dice breakdown
-            appeal = manualOverride;
+        } else if (manualScore !== null) {
+            appeal = manualScore;
         } else {
-            const base = rollDiceStr(p.diceStr);
+            const base = rollDiceStr(diceStr || '1d4');
             baseRolls = base.rolls;
             baseBonus = base.bonus;
             appeal = base.total;
-
-            // +1d4 type bonus when move matches contest type
             if (typeRel === 'same') {
                 typeBonusRolls = rollD4s(1);
                 appeal += typeBonusRolls[0];
             }
         }
 
-        // Voltage change
+        // Voltage
         let newVoltage = judge.voltage;
         let voltageChange = 0;
         if (typeRel === 'same' && judge.voltage < 6) {
             newVoltage = judge.voltage + 1;
             voltageChange = +1;
-            // Max voltage bonus: +4d4 to the performer who raised it to 6
             if (newVoltage === 6) {
                 maxVoltageBonusRolls = rollD4s(4);
                 appeal += maxVoltageBonusRolls.reduce((a, b) => a + b, 0);
@@ -284,66 +294,79 @@ const ContestRunner = () => {
             voltageChange = -1;
         }
 
-        // Commit judge voltage
-        const newJudges = judges.map(j =>
-            j.id === pendingJudge ? { ...j, voltage: newVoltage } : j
-        );
-        setJudges(newJudges);
+        setJudges(judges.map(j => j.id === pendingJudge ? { ...j, voltage: newVoltage } : j));
 
-        // Record result
-        const roundResult = {
-            judgeId: pendingJudge,
-            appeal,
-            baseRolls, baseBonus,
-            typeBonusRolls,
-            maxVoltageBonusRolls,
-            isSameMove,
-            typeRel,
-            voltageChange,
-        };
         setParticipants(prev => prev.map(p2 =>
-            p2.id === p.id ? { ...p2, rounds: [...p2.rounds, roundResult] } : p2
+            p2.id === p.id ? { ...p2, rounds: [...p2.rounds, {
+                judgeId: pendingJudge,
+                moveName, moveContestType, effect, diceStr,
+                appeal, baseRolls, baseBonus, typeBonusRolls, maxVoltageBonusRolls,
+                isSameMove, typeRel, voltageChange,
+                isManual: manualScore !== null,
+            }] } : p2
         ));
-        setLastMoves(prev => ({ ...prev, [p.id]: p.moveName }));
+        setLastMoves(prev => ({ ...prev, [p.id]: moveName }));
 
-        // Log entry
+        // Log
         let logParts = [`${p.name} → J${pendingJudge}: `];
         if (isSameMove) {
             logParts.push('SAME MOVE — 0 appeal');
-        } else if (manualOverride !== null) {
-            logParts.push(`[manual] = ${appeal}`);
+        } else if (manualScore !== null) {
+            logParts.push(`${moveName}${moveContestType ? ` (${moveContestType})` : ''} [player] = ${appeal}`);
         } else {
-            logParts.push(`[${baseRolls.join(',')}]${baseBonus ? `+${baseBonus}` : ''}`);
-            if (typeBonusRolls.length) logParts.push(`+[${typeBonusRolls[0]}] type bonus`);
-            if (maxVoltageBonusRolls.length)
-                logParts.push(`+[${maxVoltageBonusRolls.join(',')}] MAX VOLTAGE`);
+            logParts.push(`${moveName} [${baseRolls.join(',')}]${baseBonus ? `+${baseBonus}` : ''}`);
+            if (typeBonusRolls.length)      logParts.push(`+[${typeBonusRolls[0]}] type`);
+            if (maxVoltageBonusRolls.length) logParts.push(`+[${maxVoltageBonusRolls.join(',')}] MAX⚡`);
             logParts.push(`= ${appeal}`);
         }
         if (voltageChange !== 0)
             logParts.push(`· J${pendingJudge} ⚡${voltageChange > 0 ? '▲' : '▼'}${newVoltage}`);
 
-        const logColor = maxVoltageBonusRolls.length
-            ? '#ff9800'
+        const logColor = maxVoltageBonusRolls.length ? '#ff9800'
             : voltageChange > 0 ? '#4caf50' : voltageChange < 0 ? '#f44336' : 'var(--text-secondary)';
 
         setLog(prev => [...prev, { text: logParts.join(' '), color: logColor }]);
         setPendingJudge(null);
-        setManualScore('');
+        setPastedText('');
+        setParsedPaste(null);
+        setNpcMoveName('');
         setTurnIdx(ti => ti + 1);
+    };
+
+    const handleConfirmPaste = () => {
+        if (!parsedPaste || !pendingJudge) return;
+        const gameMove = resolveMoveData(parsedPaste.moveName);
+        handleRoll({
+            moveName:        parsedPaste.moveName,
+            moveContestType: parsedPaste.moveContestType || gameMove?.contestType || '',
+            diceStr:         gameMove?.contestDice || '1d4',
+            effect:          parsedPaste.effect || gameMove?.contestEffect || '',
+            manualScore:     parsedPaste.score,
+        });
+    };
+
+    const handleNpcRoll = () => {
+        if (!npcMoveName.trim() || !pendingJudge) return;
+        const gameMove = resolveMoveData(npcMoveName);
+        handleRoll({
+            moveName:        npcMoveName.trim(),
+            moveContestType: gameMove?.contestType || '',
+            diceStr:         gameMove?.contestDice || '1d4',
+            effect:          gameMove?.contestEffect || '',
+            manualScore:     null,
+        });
     };
 
     const handleNextRound = () => {
         const nextRound = round + 1;
-        if (nextRound > numRounds) {
-            setPhase('results');
-            return;
-        }
-        const updatedParticipants = participants; // already updated via setParticipants above
-        const order = computeTurnOrder(updatedParticipants, nextRound);
-        setTurnOrder(order);
+        if (nextRound > numRounds) { setPhase('results'); return; }
+        setTurnOrder(computeTurnOrder(participants, nextRound));
         setTurnIdx(0);
         setPendingJudge(null);
         setRound(nextRound);
+        setPastedText('');
+        setParsedPaste(null);
+        setNpcMoveName('');
     };
 
     const handleReset = () => {
@@ -357,7 +380,9 @@ const ContestRunner = () => {
         setPendingJudge(null);
         setLastMoves({});
         setLog([]);
-        setManualScore('');
+        setPastedText('');
+        setParsedPaste(null);
+        setNpcMoveName('');
         setImportText('');
         setShowImport(false);
     };
@@ -369,20 +394,19 @@ const ContestRunner = () => {
     // ── Setup phase ────────────────────────────────────────────────────────
 
     if (phase === 'setup') {
-        const movePreview = resolveMoveData(newMove);
-        const moveMatchesContest = movePreview?.contestType === contestType;
-
         return (
             <div>
                 <h3 style={{ marginBottom: 4, fontWeight: 700 }}>🎭 Contest Runner</h3>
                 <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 16 }}>
-                    Runs a full PTA contest: 3 judges with Voltage, type-based appeal bonuses, and alternating
-                    turn order. Rounds equal number of participants (standard rule).
+                    Set up participants, then start the contest. During each turn the player rolls in the
+                    Dice Roller and copies their result here. NPC entries roll directly.
                 </p>
 
-                {/* Contest type selector */}
+                {/* Step 1 */}
                 <div className="card-orange" style={{ marginBottom: 14 }}>
-                    <h3 className="card-header font-bold">🏆 Contest Type</h3>
+                    <h3 className="card-header font-bold">
+                        <StepLabel n={1} label="Choose Contest Type" />
+                    </h3>
                     <div style={{ padding: '10px 16px', display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                         {CONTEST_TYPES.map(ct => (
                             <button
@@ -393,8 +417,7 @@ const ContestRunner = () => {
                                     border: `2px solid ${contestType === ct.id ? ct.color : 'var(--border-light)'}`,
                                     background: contestType === ct.id ? ct.color : 'var(--surface-bg)',
                                     color: contestType === ct.id ? 'white' : 'var(--text-primary)',
-                                    fontWeight: 700, fontSize: 14, cursor: 'pointer',
-                                    transition: 'all 0.15s',
+                                    fontWeight: 700, fontSize: 14, cursor: 'pointer', transition: 'all 0.15s',
                                 }}
                             >
                                 {ct.icon} {ct.id}
@@ -410,27 +433,29 @@ const ContestRunner = () => {
                     )}
                 </div>
 
-                {/* Add participants */}
+                {/* Step 2 */}
                 <div className="card-orange" style={{ marginBottom: 14 }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <h3 className="card-header font-bold">👥 Participants</h3>
+                        <h3 className="card-header font-bold">
+                            <StepLabel n={2} label="Add Participants (Trainer + Pokémon)" />
+                        </h3>
                         <button
                             onClick={() => setShowImport(v => !v)}
                             style={{ margin: '0 16px 0 0', padding: '4px 12px', borderRadius: 6, border: '1px solid var(--border-light)', background: showImport ? '#667eea' : 'var(--surface-bg)', color: showImport ? 'white' : 'var(--text-secondary)', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
                         >
-                            📋 Import from players
+                            📋 Paste list
                         </button>
                     </div>
+
                     {showImport && (
                         <div style={{ padding: '0 16px 10px' }}>
                             <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 6 }}>
-                                Paste player results (one per line): <code style={{ fontSize: 11 }}>Name | Move</code>
-                                <br />Players can use <strong>📋 Copy for GM</strong> in the Dice Roller → Pokémon → Contest tab.
+                                One name per line — moves will be declared during the contest.
                             </div>
                             <textarea
                                 value={importText}
                                 onChange={e => setImportText(e.target.value)}
-                                placeholder={"Ash's Pikachu | Thunderbolt\nMisty's Starmie | Psybeam\nBrock's Onix | Rock Slide"}
+                                placeholder={"Ash's Pikachu\nMisty's Starmie\nBrock's Onix"}
                                 rows={4}
                                 style={{ width: '100%', padding: '8px 10px', borderRadius: 6, border: '1px solid var(--border-light)', background: 'var(--surface-bg)', color: 'var(--text-primary)', fontSize: 12, fontFamily: 'monospace', resize: 'vertical', boxSizing: 'border-box' }}
                             />
@@ -443,81 +468,39 @@ const ContestRunner = () => {
                             </button>
                         </div>
                     )}
+
                     <div style={{ padding: '10px 16px' }}>
-                        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 8 }}>
+                        <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
                             <input
                                 type="text"
-                                placeholder="Name (Pokémon / trainer)..."
+                                placeholder="e.g. Ash's Pikachu"
                                 value={newName}
                                 onChange={e => setNewName(e.target.value)}
                                 onKeyDown={e => e.key === 'Enter' && handleAddParticipant()}
-                                style={{ flex: 2, minWidth: 120, padding: '7px 10px', borderRadius: 6, border: '1px solid var(--border-light)', background: 'var(--surface-bg)', color: 'var(--text-primary)', fontSize: 13 }}
-                            />
-                            <input
-                                type="text"
-                                placeholder="Contest move (optional)..."
-                                value={newMove}
-                                onChange={e => setNewMove(e.target.value)}
-                                onKeyDown={e => e.key === 'Enter' && handleAddParticipant()}
-                                style={{ flex: 2, minWidth: 140, padding: '7px 10px', borderRadius: 6, border: '1px solid var(--border-light)', background: 'var(--surface-bg)', color: 'var(--text-primary)', fontSize: 13 }}
-                            />
-                            <input
-                                type="number"
-                                placeholder="Intro bonus"
-                                value={newIntro}
-                                onChange={e => setNewIntro(e.target.value)}
-                                title="Introduction stage bonus (accessories, grooming, held items)"
-                                min="0"
-                                style={{ width: 80, padding: '7px 8px', borderRadius: 6, border: '1px solid var(--border-light)', background: 'var(--surface-bg)', color: 'var(--text-primary)', fontSize: 13, textAlign: 'center' }}
+                                style={{ flex: 1, padding: '8px 10px', borderRadius: 6, border: '1px solid var(--border-light)', background: 'var(--surface-bg)', color: 'var(--text-primary)', fontSize: 13 }}
                             />
                             <button
                                 onClick={handleAddParticipant}
-                                style={{ padding: '7px 16px', borderRadius: 6, border: 'none', background: '#667eea', color: 'white', fontWeight: 700, fontSize: 13, cursor: 'pointer' }}
+                                style={{ padding: '8px 16px', borderRadius: 6, border: 'none', background: '#667eea', color: 'white', fontWeight: 700, fontSize: 13, cursor: 'pointer' }}
                             >
                                 + Add
                             </button>
                         </div>
 
-                        {/* Move preview */}
-                        {newMove.trim() && (
-                            <div style={{ fontSize: 12, marginBottom: 8,
-                                color: movePreview ? (moveMatchesContest ? '#2e7d32' : 'var(--text-secondary)') : '#e65100'
-                            }}>
-                                {movePreview
-                                    ? `✓ ${newMove.trim()} · ${movePreview.contestType} · ${movePreview.contestDice || '1d4'}${movePreview.contestEffect ? ` · ${movePreview.contestEffect}` : ''}${!moveMatchesContest && contestType ? ` (${getTypeRelation(movePreview.contestType, contestType)} type — ${getTypeRelation(movePreview.contestType, contestType) === 'opposite' ? '−1 voltage' : 'no voltage effect'})` : ''}`
-                                    : `⚠ Move not found — will use 1d4 fallback`
-                                }
-                            </div>
-                        )}
-
-                        {/* Participant list */}
                         {participants.length === 0 ? (
                             <div style={{ fontSize: 13, color: 'var(--text-muted)', fontStyle: 'italic', textAlign: 'center', padding: '10px 0' }}>
                                 No participants yet. Add at least 2 to start.
                             </div>
                         ) : (
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-                                {participants.map(p => (
+                                {participants.map((p, idx) => (
                                     <div key={p.id} style={{
                                         display: 'flex', alignItems: 'center', gap: 10,
-                                        padding: '7px 12px', borderRadius: 8,
-                                        background: 'var(--bg-light, #f5f5f5)', border: '1px solid var(--border-light)'
+                                        padding: '8px 12px', borderRadius: 8,
+                                        background: 'var(--bg-light)', border: '1px solid var(--border-light)',
                                     }}>
-                                        <span style={{ fontWeight: 700, flex: 1, fontSize: 14 }}>{p.name}</span>
-                                        {p.introBonus > 0 && (
-                                            <span style={{ fontSize: 11, color: '#ff9800', fontWeight: 700 }}>+{p.introBonus} intro</span>
-                                        )}
-                                        <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-                                            {p.moveName !== '—'
-                                                ? <>{p.moveName} <span style={{ color: ctColor(p.moveContestType), fontWeight: 700 }}>({p.diceStr})</span></>
-                                                : <span style={{ fontStyle: 'italic' }}>no move · 1d4</span>
-                                            }
-                                        </span>
-                                        {p.contestKeyword && (
-                                            <span style={{ fontSize: 10, padding: '1px 6px', borderRadius: 8, background: `${ctColor(p.moveContestType)}22`, color: ctColor(p.moveContestType), fontWeight: 700 }}>
-                                                {p.contestKeyword}
-                                            </span>
-                                        )}
+                                        <span style={{ fontSize: 12, color: 'var(--text-muted)', width: 18 }}>{idx + 1}</span>
+                                        <span style={{ fontWeight: 600, flex: 1, fontSize: 14 }}>{p.name}</span>
                                         <button
                                             onClick={() => handleRemoveParticipant(p.id)}
                                             style={{ background: 'none', border: 'none', color: '#f44336', cursor: 'pointer', fontSize: 16, padding: '0 2px', lineHeight: 1 }}
@@ -525,31 +508,6 @@ const ContestRunner = () => {
                                         >×</button>
                                     </div>
                                 ))}
-                            </div>
-                        )}
-
-                        {/* Contest moves reference chips */}
-                        {contestType && Object.keys(contestMoves).length > 0 && (
-                            <div style={{ marginTop: 12 }}>
-                                <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-muted)', marginBottom: 5 }}>
-                                    {contestType} moves — click to fill:
-                                </div>
-                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, maxHeight: 100, overflowY: 'auto' }}>
-                                    {Object.entries(contestMoves).map(([name, { dice, keyword }]) => (
-                                        <span
-                                            key={name}
-                                            onClick={() => setNewMove(name)}
-                                            title={keyword || undefined}
-                                            style={{
-                                                padding: '2px 8px', borderRadius: 10, fontSize: 11,
-                                                background: `${color}18`, border: `1px solid ${color}44`,
-                                                color: 'var(--text-primary)', cursor: 'pointer',
-                                            }}
-                                        >
-                                            {name} <strong>({dice})</strong>
-                                        </span>
-                                    ))}
-                                </div>
                             </div>
                         )}
                     </div>
@@ -560,16 +518,18 @@ const ContestRunner = () => {
                     disabled={!contestType || participants.length < 2}
                     style={{
                         width: '100%', padding: '12px', borderRadius: 8, border: 'none',
-                        background: !contestType || participants.length < 2
-                            ? 'var(--border-light)'
-                            : `linear-gradient(135deg, ${color}, ${color}cc)`,
+                        background: !contestType || participants.length < 2 ? 'var(--border-light)' : `linear-gradient(135deg, ${color}, ${color}cc)`,
                         color: !contestType || participants.length < 2 ? 'var(--text-muted)' : 'white',
                         fontWeight: 800, fontSize: 15,
                         cursor: !contestType || participants.length < 2 ? 'not-allowed' : 'pointer',
                         transition: 'all 0.2s',
                     }}
                 >
-                    {typeInfo?.icon} Start {contestType || '...'} Contest ({participants.length} rounds)
+                    {!contestType
+                        ? 'Select a contest type to continue'
+                        : participants.length < 2
+                        ? `Add at least ${2 - participants.length} more participant${2 - participants.length > 1 ? 's' : ''} to start`
+                        : `${typeInfo?.icon} Start ${contestType} Contest (${participants.length} rounds)`}
                 </button>
             </div>
         );
@@ -579,6 +539,17 @@ const ContestRunner = () => {
 
     if (phase === 'results') {
         const winner = sortedByAppeal[0];
+
+        const copyResults = () => {
+            const lines = [`🏆 ${contestType} Contest Results`, ''];
+            sortedByAppeal.forEach((p, idx) => {
+                const medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `#${idx + 1}`;
+                const rounds = p.rounds.map((r, i) => `R${i + 1}:${r.appeal}`).join('  ');
+                lines.push(`${medal} ${p.name} — ${getTotal(p)} appeal  (${rounds})`);
+            });
+            navigator.clipboard.writeText(lines.join('\n')).then(() => toast.success('Results copied!'));
+        };
+
         return (
             <div>
                 <div style={{ textAlign: 'center', marginBottom: 20 }}>
@@ -604,23 +575,22 @@ const ContestRunner = () => {
                                 <span style={{ fontSize: 18, width: 28 }}>
                                     {idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `#${idx + 1}`}
                                 </span>
-                                <span style={{ flex: 1, fontWeight: 700, fontSize: 14 }}>{p.name}</span>
-                                {p.introBonus > 0 && (
-                                    <span style={{ fontSize: 11, color: '#ff9800' }}>+{p.introBonus} intro</span>
-                                )}
-                                <div style={{ fontSize: 11, color: 'var(--text-muted)', display: 'flex', gap: 6 }}>
-                                    {p.rounds.map((r, i) => (
-                                        <span key={i}>R{i + 1}:&nbsp;
-                                            <strong style={{ color: r.isSameMove ? '#f44336' : r.maxVoltageBonusRolls?.length ? '#ff9800' : 'var(--text-primary)' }}>
-                                                {r.appeal}
-                                            </strong>
-                                        </span>
-                                    ))}
+                                <div style={{ flex: 1, minWidth: 0 }}>
+                                    <div style={{ fontWeight: 700, fontSize: 14 }}>{p.name}</div>
+                                    <div style={{ fontSize: 12, color: 'var(--text-muted)', display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 2 }}>
+                                        {p.rounds.map((r, i) => (
+                                            <span key={i}>
+                                                R{i + 1}: <strong style={{ color: r.isSameMove ? '#f44336' : r.maxVoltageBonusRolls?.length ? '#ff9800' : 'var(--text-primary)' }}>
+                                                    {r.appeal}
+                                                </strong>
+                                                {r.moveName && r.moveName !== '—' && (
+                                                    <span style={{ color: 'var(--text-muted)', marginLeft: 3 }}>({r.moveName})</span>
+                                                )}
+                                            </span>
+                                        ))}
+                                    </div>
                                 </div>
-                                <span style={{
-                                    fontSize: 22, fontWeight: 800, minWidth: 40, textAlign: 'right',
-                                    color: idx === 0 ? color : 'var(--text-primary)',
-                                }}>
+                                <span style={{ fontSize: 24, fontWeight: 800, minWidth: 40, textAlign: 'right', color: idx === 0 ? color : 'var(--text-primary)' }}>
                                     {getTotal(p)}
                                 </span>
                             </div>
@@ -628,71 +598,75 @@ const ContestRunner = () => {
                     </div>
                 </div>
 
-                {/* Round log */}
                 {log.length > 0 && (
                     <div className="card-orange" style={{ marginBottom: 14 }}>
                         <h3 className="card-header font-bold">📜 Appeal Log</h3>
                         <div style={{ padding: '8px 16px', display: 'flex', flexDirection: 'column', gap: 3, maxHeight: 200, overflowY: 'auto' }}>
                             {log.map((entry, i) => (
-                                <div key={i} style={{ fontSize: 12, color: entry.color, fontFamily: 'monospace' }}>
-                                    {entry.text}
-                                </div>
+                                <div key={i} style={{ fontSize: 12, color: entry.color, fontFamily: 'monospace' }}>{entry.text}</div>
                             ))}
                         </div>
                     </div>
                 )}
 
-                <button
-                    onClick={handleReset}
-                    style={{ width: '100%', padding: '10px', borderRadius: 8, border: '1px solid var(--border-light)', background: 'var(--surface-bg)', color: 'var(--text-primary)', fontWeight: 700, fontSize: 14, cursor: 'pointer' }}
-                >
-                    ↺ New Contest
-                </button>
+                <div style={{ display: 'flex', gap: 8 }}>
+                    <button onClick={copyResults} style={{ flex: 1, padding: '10px', borderRadius: 8, border: `1px solid ${color}55`, background: `${color}14`, color, fontWeight: 700, fontSize: 14, cursor: 'pointer' }}>
+                        📋 Copy Results
+                    </button>
+                    <button onClick={handleReset} style={{ flex: 1, padding: '10px', borderRadius: 8, border: '1px solid var(--border-light)', background: 'var(--surface-bg)', color: 'var(--text-primary)', fontWeight: 700, fontSize: 14, cursor: 'pointer' }}>
+                        ↺ New Contest
+                    </button>
+                </div>
             </div>
         );
     }
 
     // ── Appeal phase ───────────────────────────────────────────────────────
 
-    const isSameMove = currentParticipant &&
-        currentParticipant.moveName !== '—' &&
-        lastMoves[currentParticipant.id] === currentParticipant.moveName;
+    const isSameMove = currentParticipant && parsedPaste
+        ? lastMoves[currentParticipant.id] === parsedPaste.moveName
+        : false;
 
-    const typeRel = currentParticipant
-        ? getTypeRelation(currentParticipant.moveContestType, contestType)
-        : 'adjacent';
+    const pasteTypeRel = parsedPaste?.moveContestType
+        ? getTypeRelation(parsedPaste.moveContestType, contestType)
+        : null;
+
+    const nameMatchWarning = parsedPaste && currentParticipant &&
+        !currentParticipant.name.toLowerCase().includes(parsedPaste.name.toLowerCase()) &&
+        !parsedPaste.name.toLowerCase().includes(currentParticipant.name.toLowerCase());
+
+    const npcMoveData = resolveMoveData(npcMoveName);
+    const npcTypeRel  = npcMoveData?.contestType ? getTypeRelation(npcMoveData.contestType, contestType) : null;
+
+    const canConfirmPaste = !!parsedPaste && !!pendingJudge && !isSameMove;
+    const canRollNpc      = !!npcMoveName.trim() && !!pendingJudge;
 
     return (
         <div>
-            {/* Header: contest type + round progress */}
+            {/* Header */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}>
                 <span style={{ fontSize: 26 }}>{typeInfo?.icon}</span>
                 <div>
-                    <h3 style={{ margin: 0, fontWeight: 800, fontSize: 16, color }}>
-                        {contestType} Contest
-                    </h3>
+                    <h3 style={{ margin: 0, fontWeight: 800, fontSize: 16, color }}>{contestType} Contest</h3>
                     <p style={{ margin: 0, fontSize: 13, color: 'var(--text-muted)' }}>
                         Round {round} of {numRounds} &nbsp;·&nbsp;
-                        {round % 2 === 1 ? 'Lowest→Highest appeal order' : 'Highest→Lowest appeal order'}
+                        {round % 2 === 1 ? 'Lowest → Highest appeal order' : 'Highest → Lowest appeal order'}
                     </p>
                 </div>
-                <div style={{ marginLeft: 'auto', display: 'flex', gap: 4 }}>
-                    {Array.from({ length: numRounds }, (_, i) => (
-                        <div key={i} style={{
-                            width: 22, height: 8, borderRadius: 4,
-                            background: i + 1 < round ? color : i + 1 === round ? color + '88' : 'var(--border-light)'
-                        }} />
-                    ))}
-                </div>
+                <button
+                    onClick={handleReset}
+                    title="Abandon this contest and return to setup"
+                    style={{ marginLeft: 'auto', padding: '5px 12px', borderRadius: 6, border: '1px solid var(--border-light)', background: 'var(--surface-bg)', color: 'var(--text-muted)', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
+                >
+                    ↺ Abandon
+                </button>
             </div>
 
             {/* Judges */}
             <div style={{ display: 'flex', gap: 8, marginBottom: 14 }}>
                 {judges.map(j => (
                     <JudgeCard
-                        key={j.id}
-                        judge={j}
-                        color={color}
+                        key={j.id} judge={j} color={color}
                         selected={pendingJudge === j.id}
                         onSelect={setPendingJudge}
                         disabled={allDoneThisRound || !currentParticipant}
@@ -702,189 +676,218 @@ const ContestRunner = () => {
 
             {/* Current turn */}
             {!allDoneThisRound && currentParticipant ? (
-                <div style={{
-                    padding: '14px 16px', borderRadius: 10, marginBottom: 14,
-                    background: `${color}12`, border: `2px solid ${color}55`,
-                }}>
+                <div style={{ padding: '14px 16px', borderRadius: 10, marginBottom: 14, background: `${color}12`, border: `2px solid ${color}55` }}>
+
+                    {/* Who's up */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
                         <div style={{ flex: 1 }}>
-                            <span style={{ fontWeight: 800, fontSize: 16 }}>{currentParticipant.name}</span>
-                            <span style={{ fontSize: 13, color: 'var(--text-muted)', marginLeft: 10 }}>
-                                {currentParticipant.moveName !== '—'
-                                    ? <>{currentParticipant.moveName}
-                                        <span style={{ color: ctColor(currentParticipant.moveContestType), fontWeight: 700, marginLeft: 6 }}>
-                                            {currentParticipant.diceStr}
+                            <span style={{ fontWeight: 800, fontSize: 17 }}>{currentParticipant.name}</span>
+                            <span style={{ fontSize: 12, color: 'var(--text-muted)', marginLeft: 8 }}>— it's your turn!</span>
+                        </div>
+                        <div style={{ fontSize: 12, color: 'var(--text-muted)', flexShrink: 0 }}>
+                            Total: <strong style={{ fontSize: 15, color: 'var(--text-primary)' }}>{getTotal(currentParticipant)}</strong>
+                        </div>
+                    </div>
+
+                    {/* SAME MOVE banner */}
+                    {isSameMove && (
+                        <div style={{ padding: '8px 12px', borderRadius: 6, marginBottom: 10, background: 'rgba(198,40,40,0.08)', border: '1.5px solid #c62828', color: '#c62828', fontWeight: 700, fontSize: 13 }}>
+                            ⚠ Same move as last round — 0 appeal this turn (voltage still applies)
+                        </div>
+                    )}
+
+                    {/* Judge status */}
+                    <div style={{ fontSize: 13, marginBottom: 12, color: pendingJudge ? color : 'var(--text-muted)', fontWeight: pendingJudge ? 700 : 400 }}>
+                        {pendingJudge ? `Judge ${pendingJudge} selected` : 'Select a judge above (player declares which one)'}
+                    </div>
+
+                    {/* ── Player result paste ── */}
+                    <div style={{ marginBottom: 12 }}>
+                        <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-muted)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.4px' }}>
+                            Player result
+                        </div>
+                        <div style={{ display: 'flex', gap: 8 }}>
+                            <input
+                                type="text"
+                                placeholder="Paste player's copied result…"
+                                value={pastedText}
+                                onChange={e => handlePasteChange(e.target.value)}
+                                style={{
+                                    flex: 1, padding: '9px 10px', borderRadius: 7, fontSize: 13,
+                                    border: `1.5px solid ${parsedPaste ? color + '88' : 'var(--border-light)'}`,
+                                    background: 'var(--surface-bg)', color: 'var(--text-primary)',
+                                }}
+                            />
+                            {pastedText && !parsedPaste && (
+                                <span style={{ fontSize: 11, color: '#f44336', alignSelf: 'center', whiteSpace: 'nowrap' }}>
+                                    ✗ Can't parse
+                                </span>
+                            )}
+                        </div>
+
+                        {/* Paste preview */}
+                        {parsedPaste && (
+                            <div style={{ marginTop: 8, padding: '8px 12px', borderRadius: 7, background: 'var(--bg-light)', border: `1px solid ${color}44` }}>
+                                {nameMatchWarning && (
+                                    <div style={{ fontSize: 11, color: '#ff9800', fontWeight: 700, marginBottom: 4 }}>
+                                        ⚠ Name "{parsedPaste.name}" doesn't match current participant — check you're entering the right score
+                                    </div>
+                                )}
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                                    <span style={{ fontWeight: 700, fontSize: 14 }}>{parsedPaste.moveName || '—'}</span>
+                                    {parsedPaste.moveContestType && (
+                                        <span style={{ fontSize: 11, padding: '1px 7px', borderRadius: 8, background: ctColor(parsedPaste.moveContestType), color: 'white', fontWeight: 700 }}>
+                                            {parsedPaste.moveContestType}
                                         </span>
-                                        {currentParticipant.contestKeyword && (
-                                            <span style={{ marginLeft: 6, fontSize: 11, color: 'var(--text-muted)' }}>
-                                                [{currentParticipant.contestKeyword}]
-                                            </span>
-                                        )}
-                                    </>
-                                    : <span style={{ fontStyle: 'italic' }}>no move · 1d4</span>
-                                }
-                            </span>
-                        </div>
-                        <div style={{ textAlign: 'right', fontSize: 12, color: 'var(--text-muted)' }}>
-                            Total so far: <strong style={{ fontSize: 15, color: 'var(--text-primary)' }}>{getTotal(currentParticipant)}</strong>
-                        </div>
+                                    )}
+                                    {parsedPaste.effect && (
+                                        <span style={{ fontSize: 11, color: 'var(--text-muted)', fontStyle: 'italic' }}>{parsedPaste.effect}</span>
+                                    )}
+                                    <span style={{ marginLeft: 'auto', fontSize: 22, fontWeight: 800, color }}>{parsedPaste.score}</span>
+                                </div>
+                                {pasteTypeRel && !isSameMove && (
+                                    <div style={{ fontSize: 12, marginTop: 4, color: pasteTypeRel === 'same' ? 'var(--color-success-text)' : pasteTypeRel === 'opposite' ? '#c62828' : 'var(--text-muted)' }}>
+                                        {pasteTypeRel === 'same'     && `✓ ${parsedPaste.moveContestType} move → +1d4 bonus + raises judge voltage`}
+                                        {pasteTypeRel === 'opposite' && `⚠ ${parsedPaste.moveContestType} move → lowers judge voltage`}
+                                        {pasteTypeRel === 'adjacent' && `— no voltage effect`}
+                                    </div>
+                                )}
+                                <button
+                                    onClick={handleConfirmPaste}
+                                    disabled={!canConfirmPaste}
+                                    style={{
+                                        marginTop: 10, width: '100%', padding: '9px', borderRadius: 7, border: 'none',
+                                        background: canConfirmPaste ? `linear-gradient(135deg, #4caf50, #388e3c)` : 'var(--border-light)',
+                                        color: canConfirmPaste ? 'white' : 'var(--text-muted)',
+                                        fontWeight: 700, fontSize: 14,
+                                        cursor: canConfirmPaste ? 'pointer' : 'not-allowed',
+                                    }}
+                                >
+                                    {!pendingJudge ? 'Select a judge to confirm' : isSameMove ? 'Same move — 0 appeal' : `✓ Confirm Score (${parsedPaste.score})`}
+                                </button>
+                            </div>
+                        )}
                     </div>
 
-                    {/* Type relation hint */}
-                    {currentParticipant.moveContestType && (
-                        <div style={{ fontSize: 12, marginBottom: 10,
-                            color: typeRel === 'same' ? '#2e7d32' : typeRel === 'opposite' ? '#c62828' : 'var(--text-muted)'
-                        }}>
-                            {typeRel === 'same'    && `✓ ${currentParticipant.moveContestType} move in a ${contestType} contest → +1d4 bonus + raises judge voltage`}
-                            {typeRel === 'opposite' && `⚠ ${currentParticipant.moveContestType} move in a ${contestType} contest → lowers judge voltage`}
-                            {typeRel === 'adjacent' && `${currentParticipant.moveContestType} move → no voltage effect`}
-                            {isSameMove && <span style={{ color: '#c62828', fontWeight: 700, marginLeft: 8 }}>SAME MOVE AS LAST ROUND — 0 appeal!</span>}
+                    {/* ── NPC roll ── */}
+                    <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                            <div style={{ flex: 1, height: 1, background: 'var(--border-light)' }} />
+                            <span style={{ fontSize: 11, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>or roll for NPC</span>
+                            <div style={{ flex: 1, height: 1, background: 'var(--border-light)' }} />
                         </div>
-                    )}
-                    {isSameMove && !currentParticipant.moveContestType && (
-                        <div style={{ fontSize: 12, color: '#c62828', fontWeight: 700, marginBottom: 10 }}>
-                            ⚠ Same move as last round — 0 appeal (voltage still changes)
+                        <div style={{ display: 'flex', gap: 8 }}>
+                            <input
+                                type="text"
+                                placeholder="NPC move name…"
+                                value={npcMoveName}
+                                onChange={e => setNpcMoveName(e.target.value)}
+                                onKeyDown={e => e.key === 'Enter' && canRollNpc && handleNpcRoll()}
+                                style={{ flex: 1, padding: '8px 10px', borderRadius: 7, border: '1px solid var(--border-light)', background: 'var(--surface-bg)', color: 'var(--text-primary)', fontSize: 13 }}
+                            />
+                            <button
+                                onClick={handleNpcRoll}
+                                disabled={!canRollNpc}
+                                style={{
+                                    padding: '8px 18px', borderRadius: 7, border: 'none',
+                                    background: canRollNpc ? `linear-gradient(135deg, ${color}, ${color}cc)` : 'var(--border-light)',
+                                    color: canRollNpc ? 'white' : 'var(--text-muted)',
+                                    fontWeight: 800, fontSize: 14,
+                                    cursor: canRollNpc ? 'pointer' : 'not-allowed',
+                                }}
+                            >
+                                🎲 Roll
+                            </button>
                         </div>
-                    )}
-
-                    {/* Judge select prompt + Roll / Manual entry */}
-                    <div style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 8 }}>
-                        {pendingJudge ? `Appealing to Judge ${pendingJudge}` : '← Select a judge above, then roll or enter score'}
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                        {/* Manual score input */}
-                        <input
-                            type="number"
-                            min="0"
-                            placeholder="Player's score…"
-                            value={manualScore}
-                            onChange={e => setManualScore(e.target.value)}
-                            onKeyDown={e => {
-                                if (e.key === 'Enter' && pendingJudge && manualScore !== '') {
-                                    const v = parseInt(manualScore);
-                                    if (!isNaN(v)) handleRoll(v);
-                                }
-                            }}
-                            disabled={!pendingJudge}
-                            title="Enter the player's appeal score (from their Dice Roller → Contest result), or leave blank to roll here"
-                            style={{
-                                width: 110, padding: '8px 10px', borderRadius: 7,
-                                border: `1.5px solid ${pendingJudge ? color + '88' : 'var(--border-light)'}`,
-                                background: 'var(--surface-bg)', color: 'var(--text-primary)',
-                                fontSize: 14, fontWeight: 700, textAlign: 'center',
-                                opacity: pendingJudge ? 1 : 0.5,
-                            }}
-                        />
-                        <button
-                            onClick={() => { const v = parseInt(manualScore); if (!isNaN(v)) handleRoll(v); }}
-                            disabled={!pendingJudge || manualScore === '' || isNaN(parseInt(manualScore))}
-                            style={{
-                                padding: '9px 16px', borderRadius: 7, border: 'none',
-                                background: pendingJudge && manualScore !== '' && !isNaN(parseInt(manualScore))
-                                    ? `linear-gradient(135deg, #4caf50, #388e3c)`
-                                    : 'var(--border-light)',
-                                color: pendingJudge && manualScore !== '' ? 'white' : 'var(--text-muted)',
-                                fontWeight: 700, fontSize: 13,
-                                cursor: pendingJudge && manualScore !== '' ? 'pointer' : 'not-allowed',
-                            }}
-                        >
-                            ✓ Set Score
-                        </button>
-                        <span style={{ color: 'var(--text-muted)', fontSize: 12 }}>or</span>
-                        <button
-                            onClick={() => handleRoll()}
-                            disabled={!pendingJudge}
-                            style={{
-                                marginLeft: 'auto',
-                                padding: '9px 24px', borderRadius: 7, border: 'none',
-                                background: pendingJudge ? `linear-gradient(135deg, ${color}, ${color}cc)` : 'var(--border-light)',
-                                color: pendingJudge ? 'white' : 'var(--text-muted)',
-                                fontWeight: 800, fontSize: 15,
-                                cursor: pendingJudge ? 'pointer' : 'not-allowed',
-                                transition: 'all 0.15s',
-                            }}
-                        >
-                            🎲 Roll Appeal
-                        </button>
+                        {npcMoveName.trim() && (
+                            <div style={{ marginTop: 5, fontSize: 12 }}>
+                                {npcMoveData ? (
+                                    <span style={{ color: npcTypeRel === 'same' ? 'var(--color-success-text)' : npcTypeRel === 'opposite' ? '#c62828' : 'var(--text-muted)' }}>
+                                        ✓ {npcMoveData.contestType} · {npcMoveData.contestDice}
+                                        {npcMoveData.contestEffect && ` · ${npcMoveData.contestEffect}`}
+                                        {npcTypeRel === 'same'     && ' — +1d4 bonus + raises voltage'}
+                                        {npcTypeRel === 'opposite' && ' — lowers voltage'}
+                                    </span>
+                                ) : (
+                                    <span style={{ color: '#e65100' }}>⚠ Move not found — will roll 1d4</span>
+                                )}
+                            </div>
+                        )}
+                        {/* NPC move chips */}
+                        {Object.keys(npcMoveOptions).length > 0 && (
+                            <div style={{ marginTop: 8, display: 'flex', flexWrap: 'wrap', gap: 4, maxHeight: 80, overflowY: 'auto' }}>
+                                {Object.entries(npcMoveOptions).map(([name, { dice }]) => (
+                                    <span
+                                        key={name}
+                                        onClick={() => setNpcMoveName(name)}
+                                        style={{ padding: '2px 8px', borderRadius: 10, fontSize: 11, background: `${color}18`, border: `1px solid ${color}44`, color: 'var(--text-primary)', cursor: 'pointer' }}
+                                    >
+                                        {name} <strong>({dice})</strong>
+                                    </span>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </div>
             ) : (
-                /* All rolled — show Next Round button */
-                <div style={{
-                    padding: '12px 16px', borderRadius: 10, marginBottom: 14,
-                    background: 'var(--surface-bg)', border: '1px solid var(--border-light)',
-                    textAlign: 'center',
-                }}>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: '#4caf50', marginBottom: 8 }}>
-                        ✓ All participants have appealed this round
-                    </div>
+                <div style={{ padding: '12px 16px', borderRadius: 10, marginBottom: 14, background: 'var(--surface-bg)', border: '1px solid var(--border-light)', textAlign: 'center' }}>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: '#4caf50', marginBottom: 8 }}>✓ All participants have appealed this round</div>
                     <button
                         onClick={handleNextRound}
-                        style={{
-                            padding: '10px 28px', borderRadius: 7, border: 'none',
-                            background: `linear-gradient(135deg, ${color}, ${color}cc)`,
-                            color: 'white', fontWeight: 800, fontSize: 14, cursor: 'pointer',
-                        }}
+                        style={{ padding: '10px 28px', borderRadius: 7, border: 'none', background: `linear-gradient(135deg, ${color}, ${color}cc)`, color: 'white', fontWeight: 800, fontSize: 14, cursor: 'pointer' }}
                     >
                         {round < numRounds ? `Next Round (${round + 1}/${numRounds}) →` : '🏆 View Results'}
                     </button>
                 </div>
             )}
 
-            {/* Turn order list */}
+            {/* Turn order */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 5, marginBottom: 14 }}>
                 {turnOrder.map((id, pos) => {
                     const p = participants.find(x => x.id === id);
                     if (!p) return null;
-                    const done = pos < turnIdx;
+                    const done      = pos < turnIdx;
                     const isCurrent = pos === turnIdx;
-                    const rResult = done ? p.rounds[p.rounds.length - 1] : null;
+                    const rResult   = done ? p.rounds[p.rounds.length - 1] : null;
                     return (
                         <div key={id} style={{
                             display: 'flex', alignItems: 'center', gap: 10,
                             padding: '7px 12px', borderRadius: 8,
-                            background: isCurrent ? `${color}18` : done ? 'var(--surface-bg)' : 'var(--bg-light, #f9f9f9)',
+                            background: isCurrent ? `${color}18` : 'var(--surface-bg)',
                             border: `1px solid ${isCurrent ? color + '66' : 'var(--border-light)'}`,
-                            opacity: done && !isCurrent ? 0.7 : 1,
+                            opacity: done && !isCurrent ? 0.85 : 1,
                         }}>
                             <span style={{ fontSize: 13, color: 'var(--text-muted)', width: 20 }}>
                                 {done ? '✓' : isCurrent ? '▶' : `${pos + 1}`}
                             </span>
                             <span style={{ fontWeight: isCurrent ? 700 : 500, fontSize: 13, flex: 1 }}>{p.name}</span>
                             {done && rResult && (
-                                <span style={{ fontSize: 12 }}>
-                                    J{rResult.judgeId} &nbsp;
-                                    <strong style={{
-                                        color: rResult.isSameMove ? '#f44336' : rResult.maxVoltageBonusRolls?.length ? '#ff9800' : 'var(--text-primary)'
-                                    }}>
+                                <span style={{ fontSize: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
+                                    {rResult.moveName && rResult.moveName !== '—' && (
+                                        <span style={{ color: 'var(--text-muted)', fontSize: 11 }}>{rResult.moveName}</span>
+                                    )}
+                                    <span style={{ color: 'var(--text-muted)' }}>J{rResult.judgeId}</span>
+                                    <strong style={{ color: rResult.isSameMove ? '#f44336' : rResult.maxVoltageBonusRolls?.length ? '#ff9800' : 'var(--text-primary)' }}>
                                         {rResult.isSameMove ? '0 (same)' : `+${rResult.appeal}`}
                                     </strong>
                                     {rResult.voltageChange !== 0 && (
-                                        <span style={{ marginLeft: 6, color: rResult.voltageChange > 0 ? '#4caf50' : '#f44336', fontSize: 11 }}>
-                                            J{rResult.judgeId} ⚡{rResult.voltageChange > 0 ? '▲' : '▼'}
+                                        <span style={{ color: rResult.voltageChange > 0 ? '#4caf50' : '#f44336', fontSize: 11 }}>
+                                            ⚡{rResult.voltageChange > 0 ? '▲' : '▼'}
                                         </span>
                                     )}
                                 </span>
                             )}
-                            <span style={{ fontSize: 13, fontWeight: 700, minWidth: 36, textAlign: 'right', color }}>
-                                {getTotal(p)}
-                            </span>
+                            <span style={{ fontSize: 13, fontWeight: 700, minWidth: 36, textAlign: 'right', color }}>{getTotal(p)}</span>
                         </div>
                     );
                 })}
             </div>
 
-            {/* Recent log entries */}
+            {/* Recent log */}
             {log.length > 0 && (
-                <div style={{
-                    padding: '8px 12px', borderRadius: 8,
-                    background: 'var(--surface-bg)', border: '1px solid var(--border-light)',
-                    maxHeight: 90, overflowY: 'auto',
-                }}>
+                <div style={{ padding: '8px 12px', borderRadius: 8, background: 'var(--surface-bg)', border: '1px solid var(--border-light)', maxHeight: 90, overflowY: 'auto' }}>
                     {log.slice(-5).map((entry, i) => (
-                        <div key={i} style={{ fontSize: 11, color: entry.color, fontFamily: 'monospace', lineHeight: '1.6' }}>
-                            {entry.text}
-                        </div>
+                        <div key={i} style={{ fontSize: 11, color: entry.color, fontFamily: 'monospace', lineHeight: '1.6' }}>{entry.text}</div>
                     ))}
                 </div>
             )}

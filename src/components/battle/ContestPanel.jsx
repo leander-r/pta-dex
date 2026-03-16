@@ -77,8 +77,11 @@ const ContestPanel = ({ selectedPokemon, gameData, onRoll }) => {
     const copyForGM = () => {
         if (!roll || !selectedMove) return;
         const name = selectedPokemon.name || selectedPokemon.species;
-        navigator.clipboard.writeText(`${name} | ${selectedMove.name} | ${roll.total}`)
-            .then(() => toast.success('Copied! Paste this in the GM\'s Contest Runner.'));
+        // Format: Name | Move | ContestType | Score | Effect (effect optional)
+        const parts = [name, selectedMove.name, selectedMove.contestType || '', roll.total];
+        if (selectedMove.contestEffect) parts.push(selectedMove.contestEffect);
+        navigator.clipboard.writeText(parts.join(' | '))
+            .then(() => toast.success('Copied! Paste this in GM Tools → Contests during your turn.'));
     };
 
     const copyDiscord = () => {
@@ -267,7 +270,7 @@ const ContestPanel = ({ selectedPokemon, gameData, onRoll }) => {
 
                     {/* GM workflow hint */}
                     <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text-muted)', textAlign: 'center' }}>
-                        Give this score to your GM → GM Tools → Contests → enter in "Player's score"
+                        When it's your turn: give your GM the copied result, tell them which judge you're targeting
                     </div>
                 </div>
             )}
