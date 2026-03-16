@@ -499,6 +499,20 @@ const PokemonCard = ({
                                 }} title="This Pokémon uses a homebrew species">Homebrew</span>
                             )}
                             <span className="text-muted" style={{ fontSize: '13px' }}>Lv.{pokemon.level || 1}</span>
+                            {(() => {
+                                const loy = pokemon.loyalty ?? 1;
+                                const loyColors = ['#e53935','#ff7043','#fdd835','#66bb6a','#42a5f5'];
+                                const loyLabels = ['Defiant','Wary','Neutral','Friendly','Loyal'];
+                                return (
+                                    <span style={{
+                                        fontSize: '10px', fontWeight: 'bold', padding: '1px 6px',
+                                        borderRadius: '8px', background: loyColors[loy],
+                                        color: loy === 2 ? '#333' : 'white'
+                                    }} title={`Loyalty: ${loy} — ${loyLabels[loy]} (GM Guide pp.10–13)`}>
+                                        ❤ {loyLabels[loy]}
+                                    </span>
+                                );
+                            })()}
                         </div>
 
                         <div style={{ display: 'flex', gap: '4px', marginTop: '4px', flexWrap: 'wrap', alignItems: 'center' }}>
@@ -1502,6 +1516,52 @@ const PokemonCard = ({
                                 <option value="genderless">Genderless</option>
                             </select>
                         </div>
+
+                        {/* Loyalty */}
+                        {(() => {
+                            const LOYALTY_LABELS = ['Defiant', 'Wary', 'Neutral', 'Friendly', 'Loyal'];
+                            const LOYALTY_COLORS = ['#e53935', '#ff7043', '#fdd835', '#66bb6a', '#42a5f5'];
+                            const currentLoyalty = pokemon.loyalty ?? 1;
+                            return (
+                                <div style={{ marginBottom: '15px' }}>
+                                    <label style={{ fontSize: '12px', fontWeight: 'bold', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                        <span>Loyalty</span>
+                                        <span style={{
+                                            padding: '1px 8px', borderRadius: '8px', fontSize: '11px', fontWeight: 'bold',
+                                            background: LOYALTY_COLORS[currentLoyalty], color: currentLoyalty === 2 ? '#333' : 'white'
+                                        }}>
+                                            {currentLoyalty} — {LOYALTY_LABELS[currentLoyalty]}
+                                        </span>
+                                        <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 'normal', marginLeft: 'auto' }}>
+                                            GM Guide pp.10–13
+                                        </span>
+                                    </label>
+                                    <div style={{ display: 'flex', gap: '6px' }}>
+                                        {[0, 1, 2, 3, 4].map(rank => (
+                                            <button
+                                                key={rank}
+                                                onClick={() => updatePokemon({ loyalty: rank })}
+                                                title={`${rank} — ${LOYALTY_LABELS[rank]}`}
+                                                style={{
+                                                    flex: 1, padding: '8px 4px', borderRadius: '6px', border: '2px solid',
+                                                    borderColor: currentLoyalty === rank ? LOYALTY_COLORS[rank] : 'var(--border-medium, #ddd)',
+                                                    background: currentLoyalty === rank ? LOYALTY_COLORS[rank] : 'var(--input-bg)',
+                                                    color: currentLoyalty === rank ? (rank === 2 ? '#333' : 'white') : 'var(--text-muted)',
+                                                    cursor: 'pointer', fontSize: '13px', fontWeight: 'bold', transition: 'all 0.15s'
+                                                }}
+                                            >
+                                                {rank}
+                                            </button>
+                                        ))}
+                                    </div>
+                                    <div style={{ marginTop: '4px', fontSize: '11px', color: 'var(--text-muted)' }}>
+                                        {currentLoyalty <= 1 && '⚠ Can use Frustration. May refuse to evolve.'}
+                                        {currentLoyalty === 2 && '✓ Immune to Snagging. Follows commands.'}
+                                        {currentLoyalty >= 3 && '★ Can use Return. Immune to Snagging.'}
+                                    </div>
+                                </div>
+                            );
+                        })()}
 
                         {/* Abilities Section - Up to 3 */}
                         <div style={{ marginBottom: '15px' }}>

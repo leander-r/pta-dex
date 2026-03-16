@@ -3,10 +3,12 @@
 // ============================================================
 // Shows full info for moves, features, abilities, skills, items
 
-import React from 'react';
+import React, { useState } from 'react';
 import { getTypeColor } from '../../utils/typeUtils.js';
 import useModalKeyboard from '../../hooks/useModalKeyboard.js';
 import { useModal } from '../../contexts/index.js';
+import { parseDice } from '../../utils/dataUtils.js';
+import toast from '../../utils/toast.js';
 
 const DetailModal = () => {
     // Get state from context
@@ -252,7 +254,20 @@ const DetailBadge = ({ children, color, textColor = 'white' }) => (
 );
 
 // Move Details Sub-component
-const MoveDetails = ({ data, getContestTypeColor }) => (
+const MoveDetails = ({ data, getContestTypeColor }) => {
+    const [contestRoll, setContestRoll] = useState(null);
+
+    const rollAppeal = () => {
+        if (!data.contestDice) return;
+        const { count, sides, bonus } = parseDice(data.contestDice);
+        if (!count || !sides) { toast.warning('Could not parse contest dice.'); return; }
+        const rolls = [];
+        for (let i = 0; i < count; i++) rolls.push(Math.floor(Math.random() * sides) + 1);
+        const total = rolls.reduce((a, b) => a + b, 0) + bonus;
+        setContestRoll({ rolls, bonus, total });
+    };
+
+    return (
     <div>
         {/* Type/Category badges */}
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '16px' }}>
@@ -296,18 +311,43 @@ const MoveDetails = ({ data, getContestTypeColor }) => (
 
         {(data.contestType || data.contestEffect || data.contest) && (
             <InfoBox label="Contest" icon="🎭" variant="pink">
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center', marginBottom: data.contestEffect || data.contest ? '8px' : 0 }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center', marginBottom: '8px' }}>
                     {data.contestType && (
                         <DetailBadge color={getContestTypeColor(data.contestType)}>
                             {data.contestType}
                         </DetailBadge>
                     )}
                     {data.contestDice && (
-                        <span style={{ fontSize: '13px', fontWeight: 'bold', color: '#7b1fa2' }}>
-                            🎲 {data.contestDice}
-                        </span>
+                        <>
+                            <span style={{ fontSize: '13px', fontWeight: 'bold', color: '#7b1fa2' }}>
+                                🎲 {data.contestDice}
+                            </span>
+                            <button
+                                onClick={rollAppeal}
+                                style={{
+                                    padding: '4px 12px', borderRadius: '8px', border: 'none',
+                                    background: 'linear-gradient(135deg, #ad1457, #880e4f)',
+                                    color: 'white', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer'
+                                }}
+                            >
+                                Roll Appeal
+                            </button>
+                        </>
                     )}
                 </div>
+                {contestRoll && (
+                    <div style={{
+                        padding: '8px 12px', borderRadius: '8px', marginBottom: '8px',
+                        background: 'rgba(173,20,87,0.1)', border: '1px solid rgba(173,20,87,0.3)',
+                        display: 'flex', alignItems: 'center', gap: '10px'
+                    }}>
+                        <span style={{ fontSize: '22px', fontWeight: '800', color: '#ad1457' }}>{contestRoll.total}</span>
+                        <span style={{ fontSize: '12px', color: '#7b1fa2' }}>
+                            [{contestRoll.rolls.join(', ')}]{contestRoll.bonus !== 0 ? ` ${contestRoll.bonus > 0 ? '+' : ''}${contestRoll.bonus}` : ''}
+                        </span>
+                        <button onClick={rollAppeal} style={{ marginLeft: 'auto', background: 'none', border: '1px solid #ad1457', borderRadius: '6px', padding: '2px 8px', color: '#ad1457', fontSize: '11px', cursor: 'pointer' }}>Reroll</button>
+                    </div>
+                )}
                 {data.contestEffect && <div>{data.contestEffect}</div>}
                 {data.contest && !data.contestType && <div>{data.contest}</div>}
             </InfoBox>
@@ -319,7 +359,8 @@ const MoveDetails = ({ data, getContestTypeColor }) => (
             </InfoBox>
         )}
     </div>
-);
+    );
+};
 
 // Feature Details Sub-component
 const FeatureDetails = ({ data, name }) => {
