@@ -553,7 +553,6 @@ const ContestRunner = () => {
                             </div>
                         )}
                     </div>
-                    </div>
                 </div>
 
                 <button
