@@ -491,6 +491,13 @@ const PokemonCard = ({
                             {pokemon.species && pokemon.species !== pokemon.name && (
                                 <span className="text-muted" style={{ fontSize: '13px' }}>({pokemon.species})</span>
                             )}
+                            {customSpecies?.some(cs => cs.species === pokemon.species) && (
+                                <span style={{
+                                    fontSize: '10px', fontWeight: 'bold', padding: '1px 6px',
+                                    borderRadius: '8px', background: 'linear-gradient(135deg, #ff6b6b, #ee5a24)',
+                                    color: 'white'
+                                }} title="This Pokémon uses a homebrew species">Homebrew</span>
+                            )}
                             <span className="text-muted" style={{ fontSize: '13px' }}>Lv.{pokemon.level || 1}</span>
                         </div>
 
@@ -613,29 +620,43 @@ const PokemonCard = ({
                                 );
                             })()}
                             {/* Moves Button */}
-                            {(pokemon.moves || []).length > 0 && (
-                                <button
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        setExpandedSection(expandedSection === 'moves' ? null : 'moves');
-                                    }}
-                                    style={{
-                                        padding: '4px 10px',
-                                        borderRadius: '12px',
-                                        border: 'none',
-                                        background: expandedSection === 'moves' ? 'linear-gradient(135deg, #667eea, #764ba2)' : 'var(--collapsed-btn-bg)',
-                                        color: expandedSection === 'moves' ? 'white' : 'var(--collapsed-btn-text)',
-                                        fontSize: '12px',
-                                        fontWeight: 'bold',
-                                        cursor: 'pointer',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '4px'
-                                    }}
-                                >
-                                    <span>⚔️</span> Moves ({(pokemon.moves || []).length})
-                                </button>
-                            )}
+                            {(() => {
+                                const moves = pokemon.moves || [];
+                                const natCount = moves.filter(m => m.source === 'natural').length;
+                                const taughtCount = moves.filter(m => m.source === 'taught').length;
+                                const atNatLimit = natCount >= MAX_NATURAL_MOVES;
+                                const atTaughtLimit = taughtCount >= MAX_TAUGHT_MOVES;
+                                if (moves.length === 0) return null;
+                                return (
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setExpandedSection(expandedSection === 'moves' ? null : 'moves');
+                                        }}
+                                        title={`Natural: ${natCount}/${MAX_NATURAL_MOVES} | Taught: ${taughtCount}/${MAX_TAUGHT_MOVES}`}
+                                        style={{
+                                            padding: '4px 10px',
+                                            borderRadius: '12px',
+                                            border: 'none',
+                                            background: expandedSection === 'moves' ? 'linear-gradient(135deg, #667eea, #764ba2)' : 'var(--collapsed-btn-bg)',
+                                            color: expandedSection === 'moves' ? 'white' : 'var(--collapsed-btn-text)',
+                                            fontSize: '12px',
+                                            fontWeight: 'bold',
+                                            cursor: 'pointer',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '4px'
+                                        }}
+                                    >
+                                        <span>⚔️</span> Moves
+                                        <span style={{ fontSize: '11px', opacity: 0.85 }}>
+                                            <span style={{ color: (expandedSection === 'moves') ? 'rgba(255,255,255,0.9)' : (atNatLimit ? '#f44336' : 'inherit') }}>N:{natCount}/{MAX_NATURAL_MOVES}</span>
+                                            {' '}
+                                            <span style={{ color: (expandedSection === 'moves') ? 'rgba(255,255,255,0.9)' : (atTaughtLimit ? '#f44336' : 'inherit') }}>T:{taughtCount}/{MAX_TAUGHT_MOVES}</span>
+                                        </span>
+                                    </button>
+                                );
+                            })()}
                             {/* Skills Button */}
                             {(pokemon.pokemonSkills || []).filter(s => s.value === undefined || s.value > 0).length > 0 && (
                                 <button

@@ -233,6 +233,11 @@ const TrainerProfile = () => {
             )}
 
             {/* Level Controls */}
+            {isLevel0 && !canLevelUp && (
+                <div style={{ fontSize: '12px', color: '#e65100', textAlign: 'center', marginBottom: '6px', fontStyle: 'italic' }}>
+                    Complete the steps above to level up
+                </div>
+            )}
             <div className="level-controls">
                 <button
                     className="level-btn"

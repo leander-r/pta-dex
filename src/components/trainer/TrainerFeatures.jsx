@@ -42,7 +42,7 @@ const STAT_LABELS = {
  * Uses contexts for state management
  */
 const TrainerFeatures = () => {
-    const { showDetail } = useModal();
+    const { showDetail, showConfirm } = useModal();
     const { trainer, setTrainer } = useTrainerContext();
     const { GAME_DATA } = useGameData();
     const { showHelp } = useUI();
@@ -292,7 +292,13 @@ const TrainerFeatures = () => {
                                     <button
                                         onClick={(e) => {
                                             e.stopPropagation();
-                                            handleRemoveFeature(featureName);
+                                            showConfirm({
+                                                title: 'Remove Feature',
+                                                message: `Remove "${featureName}"?${!featureData?.isBase && featureData?.category !== 'General (Free)' ? ' This will refund 1 feat point.' : ''}`,
+                                                confirmLabel: 'Remove',
+                                                danger: true,
+                                                onConfirm: () => handleRemoveFeature(featureName)
+                                            });
                                         }}
                                         style={{
                                             background: 'rgba(255,255,255,0.2)',
@@ -370,6 +376,11 @@ const TrainerFeatures = () => {
             )}
 
             {/* Add Feature Section */}
+            {!pendingStatFeature && (trainer.featPoints || 0) <= 0 && (
+                <div style={{ fontSize: '12px', color: '#e65100', marginBottom: '8px', padding: '6px 10px', background: 'rgba(255,152,0,0.1)', borderRadius: '6px', border: '1px solid rgba(255,152,0,0.3)' }}>
+                    ⚠ No feat points — free features are still available. Earn points by leveling up.
+                </div>
+            )}
             {!pendingStatFeature && <div className="bg-light" style={{ padding: '12px', borderRadius: '8px' }}>
                 <div style={{ display: 'flex', gap: '10px', marginBottom: '10px', flexWrap: 'wrap' }}>
                     <input
@@ -478,13 +489,14 @@ const TrainerFeatures = () => {
                                 <button
                                     onClick={(e) => { e.stopPropagation(); handleAddFeature(name); }}
                                     disabled={data.category !== 'General (Free)' && (trainer.featPoints || 0) <= 0}
+                                    title={data.category !== 'General (Free)' && (trainer.featPoints || 0) <= 0 ? 'No feat points available — earn more by leveling up or adding a base class' : undefined}
                                     style={{
                                         padding: '4px 12px',
                                         background: data.category === 'General (Free)' ? 'var(--poke-orange, #f5a623)' : '#667eea',
                                         color: 'white',
                                         border: 'none',
                                         borderRadius: '4px',
-                                        cursor: 'pointer',
+                                        cursor: (data.category !== 'General (Free)' && (trainer.featPoints || 0) <= 0) ? 'not-allowed' : 'pointer',
                                         fontSize: '13px',
                                         opacity: (data.category !== 'General (Free)' && (trainer.featPoints || 0) <= 0) ? 0.5 : 1
                                     }}

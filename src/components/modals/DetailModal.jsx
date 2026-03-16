@@ -79,7 +79,7 @@ const DetailModal = () => {
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="detail-modal-title"
-                style={{ maxWidth: 'min(95vw, 550px)', width: '100%', maxHeight: '80vh', overflow: 'auto' }}
+                style={{ maxWidth: 'min(95vw, 550px)', width: '100%', maxHeight: '80vh', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
                 onClick={e => e.stopPropagation()}
             >
                 <div
@@ -140,7 +140,7 @@ const DetailModal = () => {
                     </button>
                 </div>
 
-                <div className="p-20">
+                <div className="p-20" style={{ overflowY: 'auto', flex: 1 }}>
                     {/* Move Details */}
                     {detailModal.type === 'move' && detailModal.data && (
                         <MoveDetails data={detailModal.data} getContestTypeColor={getContestTypeColor} />

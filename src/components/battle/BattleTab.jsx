@@ -149,6 +149,9 @@ const BattleTab = () => {
         setMegaEvolved(false);
         setCurrentMegaForm(null);
         setAcOverride('');
+        // Combat stages reset on switch per PTA rules (PH2 p.256)
+        resetCombatStages();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedPokemonId]);
 
     // Apply mega stat boosts to actual stats

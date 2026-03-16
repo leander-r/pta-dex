@@ -70,7 +70,7 @@ const HPTracker = ({ label, currentHP, maxHP, onDamage, onHeal, onFull, level, i
                     fontSize: '12px', color: '#b71c1c'
                 }}>
                     <div style={{ fontWeight: 'bold', marginBottom: '3px' }}>☠ Death Saving Throw Required!</div>
-                    <div>Roll {deathDice} — succeed if ≤ {deathSaveTarget}. Failure = death.</div>
+                    <div>Each round: roll {deathDice}. Roll ≤ {deathSaveTarget} to stabilize. Rolling above = death.</div>
                     <div style={{ marginTop: '2px', opacity: 0.8, fontSize: '11px' }}>{lethalNote}</div>
                 </div>
             )}

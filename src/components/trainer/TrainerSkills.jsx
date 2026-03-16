@@ -104,6 +104,8 @@ const TrainerSkills = () => {
     const trainedCount = countTrainedSkills(currentSkills);
     const trainedList = getTrainedSkillsList(currentSkills);
     const [collapsed, setCollapsed] = useState(true);
+    const [skillSearch, setSkillSearch] = useState('');
+    const [showTrainedOnly, setShowTrainedOnly] = useState(false);
 
     return (
         <div className="section-card-purple" style={{ marginBottom: '20px' }}>
@@ -137,11 +139,46 @@ const TrainerSkills = () => {
                 </span>
             </p>
 
+            {/* Filter controls */}
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
+                <input
+                    type="text"
+                    placeholder="Search skills..."
+                    value={skillSearch}
+                    onChange={e => setSkillSearch(e.target.value)}
+                    style={{ flex: 1, minWidth: '140px', padding: '6px 10px', borderRadius: '6px', border: '1px solid var(--border-medium, #ddd)', background: 'var(--input-bg)', color: 'var(--text-primary)', fontSize: '13px' }}
+                />
+                <button
+                    onClick={() => setShowTrainedOnly(v => !v)}
+                    style={{
+                        padding: '6px 12px',
+                        borderRadius: '6px',
+                        border: '1px solid var(--border-medium, #ddd)',
+                        background: showTrainedOnly ? 'linear-gradient(135deg, #667eea, #764ba2)' : 'var(--input-bg)',
+                        color: showTrainedOnly ? 'white' : 'var(--text-primary)',
+                        fontSize: '12px',
+                        fontWeight: 'bold',
+                        cursor: 'pointer',
+                        whiteSpace: 'nowrap'
+                    }}
+                >
+                    {showTrainedOnly ? '★ Trained only' : '☆ Show all'}
+                </button>
+            </div>
+
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '15px' }}>
                 {SKILL_STATS.map(stat => {
                     const statKey = stat.toLowerCase();
                     const statValue = trainer.stats[statKey] || 6;
                     const isHPStat = stat === 'HP';
+
+                    const visibleSkills = skillsByStat[stat].filter(skill => {
+                        if (showTrainedOnly && getSkillRank(currentSkills, skill.name) === 0) return false;
+                        if (skillSearch && !skill.name.toLowerCase().includes(skillSearch.toLowerCase())) return false;
+                        return true;
+                    });
+
+                    if (visibleSkills.length === 0) return null;
 
                     return (
                         <div key={stat} className="bg-light" style={{ borderRadius: '8px', padding: '10px' }}>
@@ -164,7 +201,7 @@ const TrainerSkills = () => {
                                 {isHPStat && <span style={{ fontSize: '11px', opacity: 0.7 }}>Max Rank 1</span>}
                             </div>
 
-                            {skillsByStat[stat].map(skill => {
+                            {visibleSkills.map(skill => {
                                 const rank = getSkillRank(currentSkills, skill.name);
                                 const isTrained = rank > 0;
                                 const bonus = isHPStat ? null : calculateSkillBonus(rank, statValue);
@@ -246,22 +283,34 @@ const TrainerSkills = () => {
             {collapsed && (
                 trainedCount > 0 ? (
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
-                        {trainedList.map(({ name, rank }) => (
-                            <span
-                                key={name}
-                                onClick={() => showDetail && showDetail('skill', name, GAME_DATA.skills?.[name])}
-                                title={`View ${name} details`}
-                                style={{
-                                    padding: '3px 8px', borderRadius: '10px', fontSize: '11px', fontWeight: 'bold',
-                                    background: rank === 2
-                                        ? 'linear-gradient(135deg, #ff6b6b, #ee5a24)'
-                                        : 'linear-gradient(135deg, #667eea, #764ba2)',
-                                    color: 'white', cursor: 'pointer'
-                                }}
-                            >
-                                {name}{rank === 2 && <span style={{ marginLeft: '3px', opacity: 0.85 }}>★★</span>}
-                            </span>
-                        ))}
+                        {trainedList.map(({ name, rank }) => {
+                            const skillData = GAME_DATA.skills?.[name];
+                            const statKey = skillData?.stat?.toLowerCase();
+                            const statValue = statKey ? (trainer.stats?.[statKey] || 6) : 6;
+                            const isHPSkill = skillData?.stat === 'HP';
+                            const bonus = isHPSkill ? null : calculateSkillBonus(rank, statValue);
+                            return (
+                                <span
+                                    key={name}
+                                    onClick={() => showDetail && showDetail('skill', name, skillData)}
+                                    title={`${name} — Rank ${rank}${bonus != null ? `, bonus: ${bonus >= 0 ? '+' : ''}${bonus}` : ' (passive)'}`}
+                                    style={{
+                                        padding: '3px 8px', borderRadius: '10px', fontSize: '11px', fontWeight: 'bold',
+                                        background: rank === 2
+                                            ? 'linear-gradient(135deg, #ff6b6b, #ee5a24)'
+                                            : 'linear-gradient(135deg, #667eea, #764ba2)',
+                                        color: 'white', cursor: 'pointer',
+                                        display: 'inline-flex', alignItems: 'center', gap: '3px'
+                                    }}
+                                >
+                                    {name}
+                                    {isHPSkill
+                                        ? <span style={{ opacity: 0.85, fontSize: '10px' }}>◆</span>
+                                        : <span style={{ opacity: 0.9, fontSize: '10px' }}>{bonus >= 0 ? `+${bonus}` : bonus}</span>
+                                    }
+                                </span>
+                            );
+                        })}
                     </div>
                 ) : (
                     <p style={{ margin: 0, fontSize: '12px', color: 'var(--text-muted)', fontStyle: 'italic' }}>

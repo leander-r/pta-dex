@@ -173,7 +173,7 @@ const HelpModal = () => {
             <div
                 ref={modalRef}
                 className="modal"
-                style={{ maxWidth: 'min(95vw, 480px)' }}
+                style={{ maxWidth: 'min(95vw, 480px)', maxHeight: '80vh', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
                 onClick={e => e.stopPropagation()}
                 role="dialog"
                 aria-modal="true"
@@ -229,7 +229,7 @@ const HelpModal = () => {
                     </button>
                 </div>
 
-                <div style={{ padding: '0 25px 25px', fontSize: '14px', lineHeight: '1.6', color: 'var(--text-color)' }}>
+                <div style={{ padding: '0 25px 25px', fontSize: '14px', lineHeight: '1.6', color: 'var(--text-color)', overflowY: 'auto', flex: 1 }}>
                     <Body />
                 </div>
             </div>

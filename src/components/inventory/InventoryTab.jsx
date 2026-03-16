@@ -274,6 +274,12 @@ const InventoryTab = () => {
         const formula = parseHealFormula(invItem?.effect || '');
         const maxHP = calculatePokemonHP(target);
         const { amount, desc } = rollHealFormula(formula, maxHP);
+        if (amount === 0 && !desc) {
+            toast.warning(`${healPanel.itemName} has no HP formula — cannot determine heal amount.`);
+            setHealPanel(null);
+            setHealTargetId('');
+            return;
+        }
         const newDamage = Math.max(0, (target.currentDamage || 0) - amount);
         updatePokemon(target.id, { currentDamage: newDamage });
         const itemName = healPanel.itemName;
