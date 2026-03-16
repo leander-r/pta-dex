@@ -35,7 +35,7 @@ const RollHistory = ({ rollHistory, setRollHistory, mode, subMode }) => {
             } else if (roll.type === 'trainer_skill') {
                 lines.push(`[${hhmm}] Trainer rolled ${roll.skill || 'Skill'} → ${roll.total ?? '?'} ([${(roll.rolls || []).join(', ')}])`);
             } else if (roll.type === 'contest') {
-                lines.push(`[${hhmm}] ${roll.pokemon || 'Pokémon'} — ${roll.moveName || 'Move'} (${roll.contestType || 'Contest'} Appeal)`);
+                lines.push(`[${hhmm}] ${roll.pokemon || 'Pokémon'} — ${roll.moveName || 'Move'} (${roll.contestType || 'Contest'} Appeal)${roll.isReroll ? ' [reroll]' : ''}`);
                 lines.push(`  ${roll.contestDice}: [${(roll.rolls || []).join(', ')}]${roll.bonus ? ` ${roll.bonus > 0 ? '+' : ''}${roll.bonus}` : ''} = ${roll.total ?? '?'}`);
                 if (roll.contestEffect) lines.push(`  Effect: ${roll.contestEffect}`);
             } else if (roll.type === 'custom') {
@@ -212,6 +212,9 @@ const RollHistory = ({ rollHistory, setRollHistory, mode, subMode }) => {
                                             <span style={{ marginLeft: '8px', fontSize: '11px', padding: '1px 7px', borderRadius: '8px', background: roll.contestTypeColor || '#e91e63', color: 'white', fontWeight: 700 }}>
                                                 {roll.contestType}
                                             </span>
+                                        )}
+                                        {roll.isReroll && (
+                                            <span style={{ marginLeft: '6px', fontSize: '11px', color: 'var(--text-muted)', fontWeight: 400, fontStyle: 'italic' }}>(reroll)</span>
                                         )}
                                     </div>
                                     <div style={{ fontSize: '12px' }}>
