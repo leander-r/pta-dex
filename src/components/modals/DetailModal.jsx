@@ -145,7 +145,7 @@ const DetailModal = () => {
                 <div className="p-20" style={{ overflowY: 'auto', flex: 1 }}>
                     {/* Move Details */}
                     {detailModal.type === 'move' && detailModal.data && (
-                        <MoveDetails data={detailModal.data} getContestTypeColor={getContestTypeColor} />
+                        <MoveDetails data={detailModal.data} moveName={detailModal.name} getContestTypeColor={getContestTypeColor} />
                     )}
 
                     {/* Feature Details */}
@@ -254,7 +254,7 @@ const DetailBadge = ({ children, color, textColor = 'white' }) => (
 );
 
 // Move Details Sub-component
-const MoveDetails = ({ data, getContestTypeColor }) => {
+const MoveDetails = ({ data, moveName, getContestTypeColor }) => {
     const [contestRoll, setContestRoll] = useState(null);
 
     const rollAppeal = () => {
@@ -265,6 +265,23 @@ const MoveDetails = ({ data, getContestTypeColor }) => {
         for (let i = 0; i < count; i++) rolls.push(Math.floor(Math.random() * sides) + 1);
         const total = rolls.reduce((a, b) => a + b, 0) + bonus;
         setContestRoll({ rolls, bonus, total });
+    };
+
+    const copyResult = () => {
+        if (!contestRoll) return;
+        const text = `${moveName} (${data.contestType}) ${data.contestDice}: [${contestRoll.rolls.join(', ')}] = ${contestRoll.total}`;
+        navigator.clipboard.writeText(text).then(() => toast.success('Result copied!'));
+    };
+
+    const copyDiscord = () => {
+        if (!contestRoll) return;
+        const lines = [
+            `🎭 **Contest Appeal — ${data.contestType}**`,
+            `**${moveName}** · ${data.contestDice}`,
+            `🎲 [${contestRoll.rolls.join(', ')}] = **${contestRoll.total}**`,
+        ];
+        if (data.contestEffect) lines.push(`*${data.contestEffect}*`);
+        navigator.clipboard.writeText(lines.join('\n')).then(() => toast.success('Discord message copied!'));
     };
 
     return (
@@ -339,13 +356,30 @@ const MoveDetails = ({ data, getContestTypeColor }) => {
                     <div style={{
                         padding: '8px 12px', borderRadius: '8px', marginBottom: '8px',
                         background: 'rgba(173,20,87,0.1)', border: '1px solid rgba(173,20,87,0.3)',
-                        display: 'flex', alignItems: 'center', gap: '10px'
                     }}>
-                        <span style={{ fontSize: '22px', fontWeight: '800', color: '#ad1457' }}>{contestRoll.total}</span>
-                        <span style={{ fontSize: '12px', color: '#7b1fa2' }}>
-                            [{contestRoll.rolls.join(', ')}]{contestRoll.bonus !== 0 ? ` ${contestRoll.bonus > 0 ? '+' : ''}${contestRoll.bonus}` : ''}
-                        </span>
-                        <button onClick={rollAppeal} style={{ marginLeft: 'auto', background: 'none', border: '1px solid #ad1457', borderRadius: '6px', padding: '2px 8px', color: '#ad1457', fontSize: '11px', cursor: 'pointer' }}>Reroll</button>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
+                            <span style={{ fontSize: '22px', fontWeight: '800', color: '#ad1457' }}>{contestRoll.total}</span>
+                            <span style={{ fontSize: '12px', color: '#7b1fa2' }}>
+                                [{contestRoll.rolls.join(', ')}]{contestRoll.bonus !== 0 ? ` ${contestRoll.bonus > 0 ? '+' : ''}${contestRoll.bonus}` : ''}
+                            </span>
+                            <button onClick={rollAppeal} style={{ marginLeft: 'auto', background: 'none', border: '1px solid #ad1457', borderRadius: '6px', padding: '2px 8px', color: '#ad1457', fontSize: '11px', cursor: 'pointer' }}>Reroll</button>
+                        </div>
+                        <div style={{ display: 'flex', gap: '6px' }}>
+                            <button
+                                onClick={copyResult}
+                                title="Copy as plain text for the GM"
+                                style={{ flex: 1, padding: '5px 8px', borderRadius: '6px', border: '1px solid #ad145766', background: 'rgba(173,20,87,0.08)', color: '#ad1457', fontSize: '12px', fontWeight: '700', cursor: 'pointer' }}
+                            >
+                                📋 Copy Result
+                            </button>
+                            <button
+                                onClick={copyDiscord}
+                                title="Copy as a Discord-formatted message"
+                                style={{ flex: 1, padding: '5px 8px', borderRadius: '6px', border: '1px solid #5865f266', background: 'rgba(88,101,242,0.08)', color: '#5865f2', fontSize: '12px', fontWeight: '700', cursor: 'pointer' }}
+                            >
+                                💬 Discord
+                            </button>
+                        </div>
                     </div>
                 )}
                 {data.contestEffect && <div>{data.contestEffect}</div>}

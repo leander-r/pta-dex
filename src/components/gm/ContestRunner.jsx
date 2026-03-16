@@ -113,8 +113,11 @@ const ContestRunner = () => {
     const [newName, setNewName] = useState('');
     const [newMove, setNewMove] = useState('');
     const [newIntro, setNewIntro] = useState('0');
+    const [importText, setImportText] = useState('');
+    const [showImport, setShowImport] = useState(false);
 
     // Appeal state
+    const [manualScore, setManualScore] = useState(''); // manual score input for current turn
     const [phase, setPhase] = useState('setup'); // 'setup' | 'appeal' | 'results'
     const [round, setRound] = useState(0);
     const [judges, setJudges] = useState([
@@ -171,6 +174,37 @@ const ContestRunner = () => {
     const handleRemoveParticipant = (id) =>
         setParticipants(prev => prev.filter(p => p.id !== id));
 
+    // Parse pasted player results. Each line: "Name | Move" or "Name | Move | Score"
+    const handleImport = () => {
+        const lines = importText.split('\n').map(l => l.trim()).filter(Boolean);
+        let added = 0;
+        for (const line of lines) {
+            const parts = line.split('|').map(s => s.trim());
+            const name = parts[0];
+            if (!name) continue;
+            const moveName = parts[1] || '';
+            const moveData = resolveMoveData(moveName);
+            setParticipants(prev => [...prev, {
+                id: Date.now() + Math.random(),
+                name,
+                moveName:        moveName || '—',
+                diceStr:         moveData?.contestDice  || '1d4',
+                moveContestType: moveData?.contestType  || '',
+                contestKeyword:  moveData?.contestEffect || '',
+                introBonus:      0,
+                rounds:          [],
+            }]);
+            added++;
+        }
+        if (added > 0) {
+            toast.success(`Imported ${added} participant${added > 1 ? 's' : ''}.`);
+            setImportText('');
+            setShowImport(false);
+        } else {
+            toast.warning('No valid lines found. Use "Name | Move" format.');
+        }
+    };
+
     const computeTurnOrder = (pList, rnd) => {
         const sorted = [...pList].sort((a, b) => {
             const diff = getTotal(a) - getTotal(b);
@@ -202,7 +236,8 @@ const ContestRunner = () => {
     const currentParticipant   = participants.find(p => p.id === currentParticipantId);
     const allDoneThisRound     = turnIdx >= participants.length;
 
-    const handleRoll = () => {
+    // manualOverride: number provided by GM (player's reported score). If set, skip dice.
+    const handleRoll = (manualOverride = null) => {
         if (!pendingJudge || !currentParticipant) return;
 
         const p      = currentParticipant;
@@ -215,7 +250,12 @@ const ContestRunner = () => {
         let typeBonusRolls = [];
         let maxVoltageBonusRolls = [];
 
-        if (!isSameMove) {
+        if (isSameMove) {
+            appeal = 0;
+        } else if (manualOverride !== null) {
+            // GM entered the player's reported score — use it directly, no dice breakdown
+            appeal = manualOverride;
+        } else {
             const base = rollDiceStr(p.diceStr);
             baseRolls = base.rolls;
             baseBonus = base.bonus;
@@ -270,6 +310,8 @@ const ContestRunner = () => {
         let logParts = [`${p.name} → J${pendingJudge}: `];
         if (isSameMove) {
             logParts.push('SAME MOVE — 0 appeal');
+        } else if (manualOverride !== null) {
+            logParts.push(`[manual] = ${appeal}`);
         } else {
             logParts.push(`[${baseRolls.join(',')}]${baseBonus ? `+${baseBonus}` : ''}`);
             if (typeBonusRolls.length) logParts.push(`+[${typeBonusRolls[0]}] type bonus`);
@@ -286,6 +328,7 @@ const ContestRunner = () => {
 
         setLog(prev => [...prev, { text: logParts.join(' '), color: logColor }]);
         setPendingJudge(null);
+        setManualScore('');
         setTurnIdx(ti => ti + 1);
     };
 
@@ -314,6 +357,9 @@ const ContestRunner = () => {
         setPendingJudge(null);
         setLastMoves({});
         setLog([]);
+        setManualScore('');
+        setImportText('');
+        setShowImport(false);
     };
 
     const sortedByAppeal = [...participants].sort((a, b) => getTotal(b) - getTotal(a));
@@ -366,7 +412,37 @@ const ContestRunner = () => {
 
                 {/* Add participants */}
                 <div className="card-orange" style={{ marginBottom: 14 }}>
-                    <h3 className="card-header font-bold">👥 Participants</h3>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <h3 className="card-header font-bold">👥 Participants</h3>
+                        <button
+                            onClick={() => setShowImport(v => !v)}
+                            style={{ margin: '0 16px 0 0', padding: '4px 12px', borderRadius: 6, border: '1px solid var(--border-light)', background: showImport ? '#667eea' : 'var(--surface-bg)', color: showImport ? 'white' : 'var(--text-secondary)', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
+                        >
+                            📋 Import from players
+                        </button>
+                    </div>
+                    {showImport && (
+                        <div style={{ padding: '0 16px 10px' }}>
+                            <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 6 }}>
+                                Paste player results (one per line): <code style={{ fontSize: 11 }}>Name | Move</code>
+                                <br />Players can copy from the move detail view in the app.
+                            </div>
+                            <textarea
+                                value={importText}
+                                onChange={e => setImportText(e.target.value)}
+                                placeholder={"Ash's Pikachu | Thunderbolt\nMisty's Starmie | Psybeam\nBrock's Onix | Rock Slide"}
+                                rows={4}
+                                style={{ width: '100%', padding: '8px 10px', borderRadius: 6, border: '1px solid var(--border-light)', background: 'var(--surface-bg)', color: 'var(--text-primary)', fontSize: 12, fontFamily: 'monospace', resize: 'vertical', boxSizing: 'border-box' }}
+                            />
+                            <button
+                                onClick={handleImport}
+                                disabled={!importText.trim()}
+                                style={{ marginTop: 6, padding: '7px 16px', borderRadius: 6, border: 'none', background: importText.trim() ? '#667eea' : 'var(--border-light)', color: importText.trim() ? 'white' : 'var(--text-muted)', fontWeight: 700, fontSize: 13, cursor: importText.trim() ? 'pointer' : 'not-allowed' }}
+                            >
+                                + Add All
+                            </button>
+                        </div>
+                    )}
                     <div style={{ padding: '10px 16px' }}>
                         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 8 }}>
                             <input
@@ -476,6 +552,7 @@ const ContestRunner = () => {
                                 </div>
                             </div>
                         )}
+                    </div>
                     </div>
                 </div>
 
@@ -671,13 +748,52 @@ const ContestRunner = () => {
                         </div>
                     )}
 
-                    {/* Judge select prompt + Roll */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                        <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>
-                            {pendingJudge ? `Appealing to Judge ${pendingJudge}` : '← Select a judge above, then roll'}
-                        </span>
+                    {/* Judge select prompt + Roll / Manual entry */}
+                    <div style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 8 }}>
+                        {pendingJudge ? `Appealing to Judge ${pendingJudge}` : '← Select a judge above, then roll or enter score'}
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                        {/* Manual score input */}
+                        <input
+                            type="number"
+                            min="0"
+                            placeholder="Player's score…"
+                            value={manualScore}
+                            onChange={e => setManualScore(e.target.value)}
+                            onKeyDown={e => {
+                                if (e.key === 'Enter' && pendingJudge && manualScore !== '') {
+                                    const v = parseInt(manualScore);
+                                    if (!isNaN(v)) handleRoll(v);
+                                }
+                            }}
+                            disabled={!pendingJudge}
+                            title="Enter the player's reported appeal score, or leave blank and click Roll"
+                            style={{
+                                width: 110, padding: '8px 10px', borderRadius: 7,
+                                border: `1.5px solid ${pendingJudge ? color + '88' : 'var(--border-light)'}`,
+                                background: 'var(--surface-bg)', color: 'var(--text-primary)',
+                                fontSize: 14, fontWeight: 700, textAlign: 'center',
+                                opacity: pendingJudge ? 1 : 0.5,
+                            }}
+                        />
                         <button
-                            onClick={handleRoll}
+                            onClick={() => { const v = parseInt(manualScore); if (!isNaN(v)) handleRoll(v); }}
+                            disabled={!pendingJudge || manualScore === '' || isNaN(parseInt(manualScore))}
+                            style={{
+                                padding: '9px 16px', borderRadius: 7, border: 'none',
+                                background: pendingJudge && manualScore !== '' && !isNaN(parseInt(manualScore))
+                                    ? `linear-gradient(135deg, #4caf50, #388e3c)`
+                                    : 'var(--border-light)',
+                                color: pendingJudge && manualScore !== '' ? 'white' : 'var(--text-muted)',
+                                fontWeight: 700, fontSize: 13,
+                                cursor: pendingJudge && manualScore !== '' ? 'pointer' : 'not-allowed',
+                            }}
+                        >
+                            ✓ Set Score
+                        </button>
+                        <span style={{ color: 'var(--text-muted)', fontSize: 12 }}>or</span>
+                        <button
+                            onClick={() => handleRoll()}
                             disabled={!pendingJudge}
                             style={{
                                 marginLeft: 'auto',
