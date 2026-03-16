@@ -15,7 +15,7 @@ const CONTEST_COLORS = {
     Tough:  '#795548',
 };
 
-const ContestPanel = ({ selectedPokemon, gameData }) => {
+const ContestPanel = ({ selectedPokemon, gameData, onRoll }) => {
     const [selectedMove, setSelectedMove] = useState(null);
     const [roll, setRoll] = useState(null);
 
@@ -44,7 +44,19 @@ const ContestPanel = ({ selectedPokemon, gameData }) => {
         if (!count || !sides) { toast.warning('Could not parse contest dice.'); return; }
         const rolls = Array.from({ length: count }, () => Math.floor(Math.random() * sides) + 1);
         const total = rolls.reduce((a, b) => a + b, 0) + bonus;
-        setRoll({ rolls, bonus, total });
+        const result = { rolls, bonus, total };
+        setRoll(result);
+        onRoll?.({
+            type: 'contest',
+            pokemon: selectedPokemon.name || selectedPokemon.species,
+            moveName: selectedMove.name,
+            contestType: selectedMove.contestType,
+            contestDice: selectedMove.contestDice,
+            contestEffect: selectedMove.contestEffect,
+            contestTypeColor: CONTEST_COLORS[selectedMove.contestType] || '#667eea',
+            rolls, bonus, total,
+            timestamp: Date.now(),
+        });
     };
 
     const handleSelect = (move) => {

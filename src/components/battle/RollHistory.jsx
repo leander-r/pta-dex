@@ -34,6 +34,10 @@ const RollHistory = ({ rollHistory, setRollHistory, mode, subMode }) => {
                 }
             } else if (roll.type === 'trainer_skill') {
                 lines.push(`[${hhmm}] Trainer rolled ${roll.skill || 'Skill'} → ${roll.total ?? '?'} ([${(roll.rolls || []).join(', ')}])`);
+            } else if (roll.type === 'contest') {
+                lines.push(`[${hhmm}] ${roll.pokemon || 'Pokémon'} — ${roll.moveName || 'Move'} (${roll.contestType || 'Contest'} Appeal)`);
+                lines.push(`  ${roll.contestDice}: [${(roll.rolls || []).join(', ')}]${roll.bonus ? ` ${roll.bonus > 0 ? '+' : ''}${roll.bonus}` : ''} = ${roll.total ?? '?'}`);
+                if (roll.contestEffect) lines.push(`  Effect: ${roll.contestEffect}`);
             } else if (roll.type === 'custom') {
                 lines.push(`[${hhmm}] Custom ${roll.dice || '?'} → [${(roll.rolls || []).join(', ')}] = ${roll.total ?? '?'}`);
             }
@@ -140,7 +144,8 @@ const RollHistory = ({ rollHistory, setRollHistory, mode, subMode }) => {
                                 borderLeft: `4px solid ${
                                     roll.type === 'pokemon'       ? getTypeColor(roll.moveType || 'Normal') :
                                     roll.type === 'trainer_skill' ? '#667eea' :
-                                    roll.type === 'heal'          ? '#4caf50' : '#95a5a6'
+                                    roll.type === 'heal'          ? '#4caf50' :
+                                    roll.type === 'contest'       ? (roll.contestTypeColor || '#e91e63') : '#95a5a6'
                                 }`
                             }}
                         >
@@ -197,6 +202,29 @@ const RollHistory = ({ rollHistory, setRollHistory, mode, subMode }) => {
                                         <span> | [{roll.rolls?.join(', ')}]</span>
                                         {roll.bonus > 0 && <span> +{roll.bonus}</span>}
                                     </div>
+                                </>
+                            )}
+                            {roll.type === 'contest' && (
+                                <>
+                                    <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>
+                                        🎭 {roll.pokemon} — {roll.moveName}
+                                        {roll.contestType && (
+                                            <span style={{ marginLeft: '8px', fontSize: '11px', padding: '1px 7px', borderRadius: '8px', background: roll.contestTypeColor || '#e91e63', color: 'white', fontWeight: 700 }}>
+                                                {roll.contestType}
+                                            </span>
+                                        )}
+                                    </div>
+                                    <div style={{ fontSize: '12px' }}>
+                                        <span style={{ fontWeight: 'bold', fontSize: '18px', color: roll.contestTypeColor || '#e91e63' }}>{roll.total}</span>
+                                        <span style={{ color: 'var(--text-muted)', marginLeft: '6px' }}>
+                                            {roll.contestDice}: [{(roll.rolls || []).join(', ')}]{roll.bonus ? ` ${roll.bonus > 0 ? '+' : ''}${roll.bonus}` : ''} = {roll.total}
+                                        </span>
+                                    </div>
+                                    {roll.contestEffect && (
+                                        <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '3px', fontStyle: 'italic' }}>
+                                            {roll.contestEffect}
+                                        </div>
+                                    )}
                                 </>
                             )}
                             {roll.type === 'heal' && (

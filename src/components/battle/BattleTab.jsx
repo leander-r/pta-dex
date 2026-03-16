@@ -434,7 +434,7 @@ const BattleTab = () => {
 
                             {/* Contest sub-mode */}
                             {subMode === 'contest' && (
-                                <ContestPanel selectedPokemon={selectedPokemon} gameData={GAME_DATA} />
+                                <ContestPanel selectedPokemon={selectedPokemon} gameData={GAME_DATA} onRoll={addToHistory} />
                             )}
 
                             {/* Battle sub-mode */}
