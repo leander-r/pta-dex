@@ -349,7 +349,7 @@ const BattleTab = () => {
 
             {/* Mode Selector */}
             <div className="tabs" style={{ marginBottom: '15px' }}>
-                <button className={`tab ${mode === 'pokemon'  ? 'active' : ''}`} onClick={() => setMode('pokemon')}>⚔️ Pokemon</button>
+                <button className={`tab ${mode === 'pokemon'  ? 'active' : ''}`} onClick={() => setMode('pokemon')}>⚔️ Pokémon</button>
                 <button className={`tab ${mode === 'trainer'  ? 'active' : ''}`} onClick={() => setMode('trainer')}>🎯 Trainer</button>
                 <button className={`tab ${mode === 'custom'   ? 'active' : ''}`} onClick={() => setMode('custom')}>🎲 Custom</button>
                 <button className={`tab ${mode === 'heal'     ? 'active' : ''}`} onClick={() => setMode('heal')}>🩹 Heal</button>
@@ -369,8 +369,49 @@ const BattleTab = () => {
 
                     {mode === 'pokemon' && (
                         <div>
+                            {/* Pokémon Selector — shared by both sub-modes */}
+                            <div style={{ marginBottom: '10px' }}>
+                                <label style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '4px', display: 'block' }}>Select Pokémon</label>
+                                <select
+                                    value={selectedPokemonId || ''}
+                                    onChange={(e) => {
+                                        setSelectedPokemonId(parseInt(e.target.value) || null);
+                                        setSelectedMove(null);
+                                        resetCombatStages();
+                                    }}
+                                    style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--input-bg)', color: 'var(--text-primary)' }}
+                                >
+                                    <option value="">Choose a Pokémon...</option>
+                                    {party.map(poke => {
+                                        const hp = getPokemonHP(poke);
+                                        return (
+                                            <option key={poke.id} value={poke.id}>
+                                                {poke.name || poke.species} (Lv.{poke.level}) — HP: {hp.current}/{hp.max}
+                                            </option>
+                                        );
+                                    })}
+                                </select>
+                            </div>
+
+                            {/* Pokémon Sprite — shared by both sub-modes */}
+                            {selectedPokemon && (() => {
+                                const img = megaEvolved && currentMegaForm
+                                    ? getMegaSprite(selectedPokemon, currentMegaForm)
+                                    : getPokemonDisplayImage(selectedPokemon);
+                                if (!img) return null;
+                                return (
+                                    <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '8px' }}>
+                                        <img
+                                            src={img}
+                                            alt={selectedPokemon.name || selectedPokemon.species}
+                                            style={{ width: '96px', height: '96px', objectFit: 'contain', imageRendering: !selectedPokemon.avatar ? 'pixelated' : 'auto' }}
+                                        />
+                                    </div>
+                                );
+                            })()}
+
                             {/* Battle / Contest sub-toggle */}
-                            <div style={{ display: 'flex', gap: 4, marginBottom: 12, background: 'var(--bg-secondary)', borderRadius: 8, padding: 3 }}>
+                            <div style={{ display: 'flex', gap: 4, marginBottom: 14, background: 'var(--bg-secondary)', borderRadius: 8, padding: 3 }}>
                                 <button
                                     onClick={() => setSubMode('battle')}
                                     style={{
@@ -391,47 +432,6 @@ const BattleTab = () => {
                                 >🎭 Contest</button>
                             </div>
 
-                            {/* Pokemon Selector — shared by both sub-modes */}
-                            <div style={{ marginBottom: '12px' }}>
-                                <label style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '4px', display: 'block' }}>Select Pokemon</label>
-                                <select
-                                    value={selectedPokemonId || ''}
-                                    onChange={(e) => {
-                                        setSelectedPokemonId(parseInt(e.target.value) || null);
-                                        setSelectedMove(null);
-                                        resetCombatStages();
-                                    }}
-                                    style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--input-bg)', color: 'var(--text-primary)' }}
-                                >
-                                    <option value="">Choose a Pokemon...</option>
-                                    {party.map(poke => {
-                                        const hp = getPokemonHP(poke);
-                                        return (
-                                            <option key={poke.id} value={poke.id}>
-                                                {poke.name || poke.species} (Lv.{poke.level}) - HP: {hp.current}/{hp.max}
-                                            </option>
-                                        );
-                                    })}
-                                </select>
-                            </div>
-
-                            {/* Pokemon Sprite — shared by both sub-modes */}
-                            {selectedPokemon && (() => {
-                                const img = megaEvolved && currentMegaForm
-                                    ? getMegaSprite(selectedPokemon, currentMegaForm)
-                                    : getPokemonDisplayImage(selectedPokemon);
-                                if (!img) return null;
-                                return (
-                                    <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '8px' }}>
-                                        <img
-                                            src={img}
-                                            alt={selectedPokemon.name || selectedPokemon.species}
-                                            style={{ width: '96px', height: '96px', objectFit: 'contain', imageRendering: !selectedPokemon.avatar ? 'pixelated' : 'auto' }}
-                                        />
-                                    </div>
-                                );
-                            })()}
-
                             {/* Contest sub-mode */}
                             {subMode === 'contest' && (
                                 <ContestPanel selectedPokemon={selectedPokemon} gameData={GAME_DATA} />
@@ -446,7 +446,7 @@ const BattleTab = () => {
                                         return (
                                             <div
                                                 onClick={() => { if (showDetail && itemData) showDetail('item', selectedPokemon.heldItem, itemData); }}
-                                                style={{ marginBottom: '12px', padding: '8px 10px', borderRadius: '8px', background: 'var(--bg-secondary)', border: '1px solid var(--border-light)', display: 'flex', alignItems: 'center', gap: '8px', cursor: showDetail && itemData ? 'pointer' : 'default' }}
+                                                style={{ marginBottom: '10px', padding: '8px 10px', borderRadius: '8px', background: 'var(--bg-secondary)', border: '1px solid var(--border-light)', display: 'flex', alignItems: 'center', gap: '8px', cursor: showDetail && itemData ? 'pointer' : 'default' }}
                                                 title={itemData ? 'Click to view item details' : selectedPokemon.heldItem}
                                             >
                                                 <span style={{ fontSize: '16px' }}>🎒</span>
@@ -464,7 +464,7 @@ const BattleTab = () => {
                                         );
                                     })()}
 
-                                    {/* Pokemon HP Tracker */}
+                                    {/* Pokémon HP Tracker */}
                                     {selectedPokemon && (() => {
                                         const hp = getPokemonHP(selectedPokemon);
                                         return (
@@ -495,6 +495,13 @@ const BattleTab = () => {
                                         isFormChange={!!BATTLE_FORM_CHANGES[selectedPokemon?.species]}
                                     />
 
+                                    {/* Section divider */}
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: '10px 0 8px' }}>
+                                        <div style={{ flex: 1, height: '1px', background: 'var(--border-light)' }} />
+                                        <span style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px', whiteSpace: 'nowrap' }}>Combat Modifiers</span>
+                                        <div style={{ flex: 1, height: '1px', background: 'var(--border-light)' }} />
+                                    </div>
+
                                     <CombatStagesPanel
                                         selectedPokemon={selectedPokemon}
                                         combatStages={combatStages}
@@ -505,9 +512,9 @@ const BattleTab = () => {
                                         statusConditions={selectedPokemon?.statusConditions}
                                     />
 
-                                    {/* STAB Toggle & AC Override */}
+                                    {/* STAB Toggle */}
                                     {selectedPokemon && (
-                                        <div style={{ marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                                        <div style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
                                             <label
                                                 style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}
                                                 title="Same Type Attack Bonus - extra damage when using moves that match the Pokémon's type. Scales with level."
@@ -521,23 +528,38 @@ const BattleTab = () => {
                                             >
                                                 (+{calculateSTAB(selectedPokemon.level || 1)} for matching type)
                                             </span>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginLeft: 'auto' }} title="Override move AC (higher = harder to hit)">
-                                                <label style={{ fontSize: '13px', fontWeight: 'bold', color: '#667eea' }}>AC Override:</label>
-                                                <input
-                                                    type="number"
-                                                    min="1"
-                                                    max="20"
-                                                    value={acOverride}
-                                                    onChange={(e) => setAcOverride(e.target.value)}
-                                                    placeholder={selectedMove ? String(parseACFromFrequency(selectedMove.frequency || selectedMove.freq)) : '-'}
-                                                    style={{ width: '50px', padding: '4px 8px', borderRadius: '4px', border: acOverride !== '' ? '2px solid #667eea' : '1px solid var(--border-medium)', fontSize: '13px', textAlign: 'center', background: acOverride !== '' ? 'var(--input-bg-hover)' : 'var(--input-bg)' }}
-                                                />
-                                                {acOverride !== '' && (
-                                                    <button onClick={() => setAcOverride('')} style={{ padding: '4px 8px', background: '#f44336', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }} title="Clear AC override" aria-label="Clear AC override">✕</button>
-                                                )}
-                                            </div>
                                         </div>
                                     )}
+
+                                    {/* AC Override */}
+                                    {selectedPokemon && (
+                                        <div style={{ marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }} title="Override the move's Accuracy Class (higher = harder to hit)">
+                                            <label style={{ fontSize: '13px', fontWeight: 'bold', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>AC Override:</label>
+                                            <input
+                                                type="number"
+                                                min="1"
+                                                max="20"
+                                                value={acOverride}
+                                                onChange={(e) => setAcOverride(e.target.value)}
+                                                placeholder={selectedMove ? String(parseACFromFrequency(selectedMove.frequency || selectedMove.freq)) : 'default'}
+                                                style={{ width: '70px', padding: '4px 8px', borderRadius: '4px', border: acOverride !== '' ? '2px solid #667eea' : '1px solid var(--border-medium)', fontSize: '13px', textAlign: 'center', background: acOverride !== '' ? 'var(--input-bg-hover)' : 'var(--input-bg)', color: 'var(--text-primary)' }}
+                                            />
+                                            {acOverride !== '' ? (
+                                                <button onClick={() => setAcOverride('')} style={{ padding: '4px 8px', background: '#f44336', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }} title="Clear AC override" aria-label="Clear AC override">✕ Clear</button>
+                                            ) : (
+                                                <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+                                                    {selectedMove ? `Default: AC ${parseACFromFrequency(selectedMove.frequency || selectedMove.freq)}` : 'Set to override move default'}
+                                                </span>
+                                            )}
+                                        </div>
+                                    )}
+
+                                    {/* Section divider */}
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: '10px 0 8px' }}>
+                                        <div style={{ flex: 1, height: '1px', background: 'var(--border-light)' }} />
+                                        <span style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px', whiteSpace: 'nowrap' }}>Select Move &amp; Roll</span>
+                                        <div style={{ flex: 1, height: '1px', background: 'var(--border-light)' }} />
+                                    </div>
 
                                     <MoveSelector
                                         selectedPokemon={selectedPokemon}
@@ -551,9 +573,10 @@ const BattleTab = () => {
                                     <button
                                         onClick={rollPokemonMove}
                                         disabled={!selectedPokemon || !selectedMove}
-                                        style={{ width: '100%', padding: '15px', background: selectedPokemon && selectedMove ? 'linear-gradient(135deg, #667eea, #764ba2)' : '#ccc', color: selectedPokemon && selectedMove ? 'white' : '#555', border: 'none', borderRadius: '8px', cursor: selectedPokemon && selectedMove ? 'pointer' : 'not-allowed', fontSize: '16px', fontWeight: 'bold' }}
+                                        title={!selectedPokemon ? 'Select a Pokémon first' : !selectedMove ? 'Select a move first' : undefined}
+                                        style={{ width: '100%', padding: '15px', background: selectedPokemon && selectedMove ? 'linear-gradient(135deg, #667eea, #764ba2)' : 'var(--collapsed-btn-bg)', color: selectedPokemon && selectedMove ? 'white' : 'var(--collapsed-btn-text)', border: 'none', borderRadius: '8px', cursor: selectedPokemon && selectedMove ? 'pointer' : 'not-allowed', fontSize: '16px', fontWeight: 'bold' }}
                                     >
-                                        Roll Attack!
+                                        {selectedPokemon && selectedMove ? `Roll ${selectedMove.name}!` : 'Select a Pokémon & move'}
                                     </button>
                                 </div>
                             )}
@@ -568,24 +591,30 @@ const BattleTab = () => {
                                     {trainer.name || 'Trainer'} - Level {trainer.level || 1}
                                 </div>
                                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px' }}>
-                                    {[
-                                        { key: 'hp',   label: 'HP',   color: '#e53935' },
-                                        { key: 'atk',  label: 'ATK',  color: '#ff5722' },
-                                        { key: 'def',  label: 'DEF',  color: '#2196f3' },
-                                        { key: 'satk', label: 'SATK', color: '#9c27b0' },
-                                        { key: 'sdef', label: 'SDEF', color: '#ff9800' },
-                                        { key: 'spd',  label: 'SPD',  color: '#00bcd4' },
-                                    ].map(stat => {
-                                        const value = trainer.stats?.[stat.key] || 10;
-                                        const mod = value >= 10 ? Math.floor((value - 10) / 2) : -(10 - value);
-                                        return (
-                                            <div key={stat.key} className="trainer-stat-mini-box" style={{ textAlign: 'center', padding: '4px', borderRadius: '4px' }}>
-                                                <div style={{ fontSize: '12px', fontWeight: 'bold', color: stat.color }}>{stat.label}</div>
-                                                <div style={{ fontSize: '14px', fontWeight: 'bold' }}>{value}</div>
-                                                <div style={{ fontSize: '12px', color: mod >= 0 ? '#4caf50' : '#f44336' }}>{mod >= 0 ? '+' : ''}{mod}</div>
-                                            </div>
-                                        );
-                                    })}
+                                    {(() => {
+                                        const activeStatKey = selectedSkill && GAME_DATA.skills?.[selectedSkill]?.stat
+                                            ? GAME_DATA.skills[selectedSkill].stat.toLowerCase()
+                                            : null;
+                                        return [
+                                            { key: 'hp',   label: 'HP',   color: '#e53935' },
+                                            { key: 'atk',  label: 'ATK',  color: '#ff5722' },
+                                            { key: 'def',  label: 'DEF',  color: '#2196f3' },
+                                            { key: 'satk', label: 'SATK', color: '#9c27b0' },
+                                            { key: 'sdef', label: 'SDEF', color: '#ff9800' },
+                                            { key: 'spd',  label: 'SPD',  color: '#00bcd4' },
+                                        ].map(stat => {
+                                            const value = trainer.stats?.[stat.key] || 10;
+                                            const mod = value >= 10 ? Math.floor((value - 10) / 2) : -(10 - value);
+                                            const isActive = stat.key === activeStatKey;
+                                            return (
+                                                <div key={stat.key} className="trainer-stat-mini-box" style={{ textAlign: 'center', padding: '4px', borderRadius: '4px', outline: isActive ? `2px solid ${stat.color}` : 'none', background: isActive ? `${stat.color}18` : undefined }}>
+                                                    <div style={{ fontSize: '12px', fontWeight: 'bold', color: stat.color }}>{stat.label}</div>
+                                                    <div style={{ fontSize: '14px', fontWeight: 'bold' }}>{value}</div>
+                                                    <div style={{ fontSize: '12px', color: mod >= 0 ? '#4caf50' : '#f44336' }}>{mod >= 0 ? '+' : ''}{mod}</div>
+                                                </div>
+                                            );
+                                        });
+                                    })()}
                                 </div>
                                 {trainer.skills && (Array.isArray(trainer.skills) ? trainer.skills.length > 0 : Object.keys(trainer.skills).length > 0) && (
                                     <div style={{ marginTop: '8px', fontSize: '12px' }}>
@@ -685,7 +714,7 @@ const BattleTab = () => {
                 </div>
 
                 {/* Right: Roll History */}
-                <RollHistory rollHistory={rollHistory} setRollHistory={setRollHistory} />
+                <RollHistory rollHistory={rollHistory} setRollHistory={setRollHistory} mode={mode} subMode={subMode} />
             </div>
         </div>
     );

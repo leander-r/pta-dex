@@ -52,7 +52,17 @@ const CombatStagesPanel = ({ selectedPokemon, combatStages, getStatsWithMega, up
                             title="About combat stages"
                         >?</button>
                     )}
-                    <span className="text-muted" style={{ fontSize: '12px', marginLeft: '2px' }}>Buffs & debuffs from moves</span>
+                    {!show && (() => {
+                        const nonZero = STATS.filter(s => (combatStages[s.key] || 0) !== 0);
+                        return nonZero.length > 0 ? (
+                            <span style={{ fontSize: '11px', background: '#667eea', color: 'white', padding: '1px 7px', borderRadius: '10px', fontWeight: 'bold' }}>
+                                {nonZero.length} active
+                            </span>
+                        ) : (
+                            <span className="text-muted" style={{ fontSize: '12px' }}>Buffs &amp; debuffs from moves</span>
+                        );
+                    })()}
+                    {show && <span className="text-muted" style={{ fontSize: '12px', marginLeft: '2px' }}>Buffs &amp; debuffs from moves</span>}
                 </div>
                 <svg
                     width="14" height="14" viewBox="0 0 24 24" fill="none"

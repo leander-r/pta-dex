@@ -3,7 +3,7 @@ import { getTypeColor } from '../../utils/typeUtils.js';
 import { useModal } from '../../contexts/index.js';
 import toast from '../../utils/toast.js';
 
-const RollHistory = ({ rollHistory, setRollHistory }) => {
+const RollHistory = ({ rollHistory, setRollHistory, mode, subMode }) => {
     const { showConfirm } = useModal();
     const [showExportOptions, setShowExportOptions] = useState(false);
     const exportDropdownRef = useRef(null);
@@ -119,7 +119,15 @@ const RollHistory = ({ rollHistory, setRollHistory }) => {
                         <span className="empty-state-icon">🎲</span>
                         <p className="empty-state-title">No rolls yet</p>
                         <p className="empty-state-description">
-                            Select a Pokémon and move, then click "Roll Attack!" to make your first roll.
+                            {mode === 'pokemon' && subMode === 'contest'
+                                ? 'Select a Pokémon and contest move, then click "Roll Appeal!"'
+                                : mode === 'trainer'
+                                ? 'Select a skill, then click "Roll Skill Check!"'
+                                : mode === 'custom'
+                                ? 'Enter dice notation or pick a preset, then click "Roll!"'
+                                : mode === 'heal'
+                                ? 'Select a Pokémon and use a healing item.'
+                                : 'Select a Pokémon and move, then click "Roll Attack!"'}
                         </p>
                     </div>
                 ) : (

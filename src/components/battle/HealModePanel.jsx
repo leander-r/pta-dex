@@ -27,7 +27,8 @@ const HealModePanel = ({ selectedPokemonId, setSelectedPokemonId, party, healing
 
         {healingInventory.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '20px', color: 'var(--text-muted)', fontSize: '13px' }}>
-                No healing items in inventory.
+                No healing items in inventory.{' '}
+                <span style={{ fontSize: '12px' }}>Add items in the Inventory tab.</span>
             </div>
         ) : (
             <div style={{ display: 'grid', gap: '6px' }}>
