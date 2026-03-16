@@ -425,7 +425,7 @@ const ContestRunner = () => {
                         <div style={{ padding: '0 16px 10px' }}>
                             <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 6 }}>
                                 Paste player results (one per line): <code style={{ fontSize: 11 }}>Name | Move</code>
-                                <br />Players can copy from the move detail view in the app.
+                                <br />Players can use <strong>📋 Copy for GM</strong> in the Dice Roller → Pokémon → Contest tab.
                             </div>
                             <textarea
                                 value={importText}
@@ -766,7 +766,7 @@ const ContestRunner = () => {
                                 }
                             }}
                             disabled={!pendingJudge}
-                            title="Enter the player's reported appeal score, or leave blank and click Roll"
+                            title="Enter the player's appeal score (from their Dice Roller → Contest result), or leave blank to roll here"
                             style={{
                                 width: 110, padding: '8px 10px', borderRadius: 7,
                                 border: `1.5px solid ${pendingJudge ? color + '88' : 'var(--border-light)'}`,

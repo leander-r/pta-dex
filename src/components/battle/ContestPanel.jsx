@@ -3,7 +3,7 @@
 // Used inside BattleTab when the player switches to Contest mode.
 // ============================================================
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { parseDice } from '../../utils/dataUtils.js';
 import toast from '../../utils/toast.js';
 
@@ -19,6 +19,13 @@ const ContestPanel = ({ selectedPokemon, gameData, onRoll }) => {
     const [selectedMove, setSelectedMove] = useState(null);
     const [roll, setRoll] = useState(null);
     const [typeFilter, setTypeFilter] = useState('All');
+
+    // Reset selection and result when the active Pokémon changes
+    useEffect(() => {
+        setSelectedMove(null);
+        setRoll(null);
+        setTypeFilter('All');
+    }, [selectedPokemon?.id]);
 
     if (!selectedPokemon) {
         return (
@@ -39,12 +46,15 @@ const ContestPanel = ({ selectedPokemon, gameData, onRoll }) => {
         };
     });
 
-    // Only show type filter when moves span multiple contest types
-    const presentTypes = [...new Set(moves.map(m => m.contestType).filter(Boolean))];
-    const showFilter = presentTypes.length > 1;
-    const filteredMoves = moves.filter(m => typeFilter === 'All' || m.contestType === typeFilter);
+    // Only show moves that have at least some contest data
+    const contestMoves = moves.filter(m => m.contestType || m.contestDice || m.contestEffect);
 
-    const rollAppeal = (isReroll = false) => {
+    // Only show type filter when moves span multiple contest types
+    const presentTypes = [...new Set(contestMoves.map(m => m.contestType).filter(Boolean))];
+    const showFilter = presentTypes.length > 1;
+    const filteredMoves = contestMoves.filter(m => typeFilter === 'All' || m.contestType === typeFilter);
+
+    const rollAppeal = () => {
         if (!selectedMove?.contestDice) return;
         const { count, sides, bonus } = parseDice(selectedMove.contestDice);
         if (!count || !sides) { toast.warning('Could not parse contest dice.'); return; }
@@ -60,31 +70,28 @@ const ContestPanel = ({ selectedPokemon, gameData, onRoll }) => {
             contestEffect: selectedMove.contestEffect,
             contestTypeColor: CONTEST_COLORS[selectedMove.contestType] || '#667eea',
             rolls, bonus, total,
-            isReroll,
             timestamp: Date.now(),
         });
     };
 
-    const handleSelect = (move) => {
-        setSelectedMove(move);
-        setRoll(null);
-    };
-
-    const copyResult = () => {
+    const copyForGM = () => {
         if (!roll || !selectedMove) return;
-        const text = `${selectedMove.name} (${selectedMove.contestType}) ${selectedMove.contestDice}: [${roll.rolls.join(', ')}] = ${roll.total}`;
-        navigator.clipboard.writeText(text).then(() => toast.success('Result copied!'));
+        const name = selectedPokemon.name || selectedPokemon.species;
+        navigator.clipboard.writeText(`${name} | ${selectedMove.name} | ${roll.total}`)
+            .then(() => toast.success('Copied! Paste this in the GM\'s Contest Runner.'));
     };
 
     const copyDiscord = () => {
         if (!roll || !selectedMove) return;
+        const name = selectedPokemon.name || selectedPokemon.species;
         const lines = [
             `🎭 **Contest Appeal — ${selectedMove.contestType}**`,
-            `**${selectedMove.name}** · ${selectedMove.contestDice}`,
-            `🎲 [${roll.rolls.join(', ')}] = **${roll.total}**`,
+            `**${name}** used **${selectedMove.name}** · ${selectedMove.contestDice}`,
+            `🎲 [${roll.rolls.join(', ')}]${roll.bonus ? ` +${roll.bonus}` : ''} = **${roll.total}**`,
         ];
         if (selectedMove.contestEffect) lines.push(`*${selectedMove.contestEffect}*`);
-        navigator.clipboard.writeText(lines.join('\n')).then(() => toast.success('Discord message copied!'));
+        navigator.clipboard.writeText(lines.join('\n'))
+            .then(() => toast.success('Discord message copied!'));
     };
 
     const color = CONTEST_COLORS[selectedMove?.contestType] || '#667eea';
@@ -121,10 +128,14 @@ const ContestPanel = ({ selectedPokemon, gameData, onRoll }) => {
             {/* Move list */}
             <div style={{ marginBottom: 12 }}>
                 <div style={{ fontSize: 13, fontWeight: 'bold', marginBottom: 6 }}>Select Contest Move</div>
-                <div style={{ maxHeight: 240, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 5 }}>
+                <div style={{ maxHeight: filteredMoves.length > 4 ? 240 : undefined, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 5 }}>
                     {filteredMoves.length === 0 && (
                         <div style={{ textAlign: 'center', padding: 12, fontSize: 13, color: 'var(--text-muted)' }}>
-                            {moves.length === 0 ? 'No moves learned yet.' : 'No moves match this filter.'}
+                            {moves.length === 0
+                                ? 'No moves learned yet.'
+                                : contestMoves.length === 0
+                                ? `None of ${selectedPokemon.name || selectedPokemon.species}'s moves have contest data.`
+                                : 'No moves match this filter.'}
                         </div>
                     )}
                     {filteredMoves.map((move, idx) => {
@@ -163,7 +174,7 @@ const ContestPanel = ({ selectedPokemon, gameData, onRoll }) => {
                         return (
                             <button
                                 key={idx}
-                                onClick={() => handleSelect(move)}
+                                onClick={() => { setSelectedMove(move); setRoll(null); }}
                                 style={{
                                     display: 'flex', alignItems: 'center', gap: 10,
                                     padding: '8px 12px', borderRadius: 7, cursor: 'pointer',
@@ -193,7 +204,7 @@ const ContestPanel = ({ selectedPokemon, gameData, onRoll }) => {
 
             {/* Roll button */}
             <button
-                onClick={() => rollAppeal(false)}
+                onClick={rollAppeal}
                 disabled={!rollableSelected}
                 style={{
                     width: '100%', padding: 14, borderRadius: 8, border: 'none', fontWeight: 800, fontSize: 15,
@@ -213,15 +224,16 @@ const ContestPanel = ({ selectedPokemon, gameData, onRoll }) => {
             {/* Result */}
             {roll && selectedMove && (
                 <div style={{ padding: '12px 14px', borderRadius: 8, background: `${color}14`, border: `1.5px solid ${color}55` }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+                    {/* Score + breakdown */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 10 }}>
                         <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--text-primary)', marginBottom: 2 }}>
+                            <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--text-primary)', marginBottom: 1 }}>
                                 {selectedMove.name}
                             </div>
                             <div style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                                 {selectedMove.contestType} Appeal
                             </div>
-                            <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>
+                            <div style={{ fontSize: 13, color: 'var(--text-muted)', marginTop: 2 }}>
                                 [{roll.rolls.join(', ')}]{roll.bonus !== 0 ? ` ${roll.bonus > 0 ? '+' : ''}${roll.bonus}` : ''}
                             </div>
                             {selectedMove.contestEffect && (
@@ -230,33 +242,32 @@ const ContestPanel = ({ selectedPokemon, gameData, onRoll }) => {
                                 </div>
                             )}
                         </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, flexShrink: 0 }}>
-                            <div style={{ fontSize: 32, fontWeight: 800, color, lineHeight: 1 }}>
-                                {roll.total}
-                            </div>
-                            <button
-                                onClick={() => rollAppeal(true)}
-                                style={{ background: 'none', border: `1px solid ${color}66`, borderRadius: 6, padding: '3px 9px', color, fontSize: 12, cursor: 'pointer' }}
-                            >
-                                Reroll
-                            </button>
+                        <div style={{ fontSize: 40, fontWeight: 800, color, lineHeight: 1, flexShrink: 0 }}>
+                            {roll.total}
                         </div>
                     </div>
+
+                    {/* Copy buttons */}
                     <div style={{ display: 'flex', gap: 6 }}>
                         <button
-                            onClick={copyResult}
-                            title="Copy plain text for the GM"
-                            style={{ flex: 1, padding: '6px 8px', borderRadius: 6, border: `1px solid ${color}55`, background: `${color}10`, color, fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
+                            onClick={copyForGM}
+                            title={`Copies: ${selectedPokemon.name || selectedPokemon.species} | ${selectedMove.name} | ${roll.total}`}
+                            style={{ flex: 1, padding: '7px 8px', borderRadius: 6, border: `1px solid ${color}55`, background: `${color}18`, color, fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
                         >
-                            📋 Copy Result
+                            📋 Copy for GM
                         </button>
                         <button
                             onClick={copyDiscord}
                             title="Copy as Discord-formatted message"
-                            style={{ flex: 1, padding: '6px 8px', borderRadius: 6, border: '1px solid #5865f266', background: 'rgba(88,101,242,0.08)', color: '#5865f2', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
+                            style={{ flex: 1, padding: '7px 8px', borderRadius: 6, border: '1px solid #5865f266', background: 'rgba(88,101,242,0.08)', color: '#5865f2', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
                         >
                             💬 Discord
                         </button>
+                    </div>
+
+                    {/* GM workflow hint */}
+                    <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text-muted)', textAlign: 'center' }}>
+                        Give this score to your GM → GM Tools → Contests → enter in "Player's score"
                     </div>
                 </div>
             )}

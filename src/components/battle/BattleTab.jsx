@@ -713,8 +713,10 @@ const BattleTab = () => {
                     <DiscordWebhookConfig />
                 </div>
 
-                {/* Right: Roll History */}
-                <RollHistory rollHistory={rollHistory} setRollHistory={setRollHistory} mode={mode} subMode={subMode} />
+                {/* Right: Roll History — hidden in contest mode (result box is sufficient) */}
+                {!(mode === 'pokemon' && subMode === 'contest') && (
+                    <RollHistory rollHistory={rollHistory} setRollHistory={setRollHistory} mode={mode} subMode={subMode} />
+                )}
             </div>
         </div>
     );
