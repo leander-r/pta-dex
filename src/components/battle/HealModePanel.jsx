@@ -52,8 +52,8 @@ const HealModePanel = ({ selectedPokemonId, setSelectedPokemonId, party, healing
                                 disabled={!selectedPokemonId}
                                 style={{
                                     padding: '6px 14px',
-                                    background: selectedPokemonId ? '#4caf50' : '#ccc',
-                                    color: 'white', border: 'none', borderRadius: '4px',
+                                    background: selectedPokemonId ? '#4caf50' : 'var(--collapsed-btn-bg)',
+                                    color: selectedPokemonId ? 'white' : 'var(--collapsed-btn-text)', border: 'none', borderRadius: '4px',
                                     cursor: selectedPokemonId ? 'pointer' : 'not-allowed',
                                     fontSize: '13px', fontWeight: 'bold', whiteSpace: 'nowrap'
                                 }}

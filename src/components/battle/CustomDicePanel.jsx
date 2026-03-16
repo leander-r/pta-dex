@@ -4,7 +4,7 @@ const QUICK_DICE = ['1d4', '1d6', '1d8', '1d10', '1d12', '1d20', '2d6', '3d6'];
 
 const CustomDicePanel = ({ customDice, setCustomDice, onRoll }) => (
     <div>
-        <label style={{ fontSize: '12px', fontWeight: 'bold', marginBottom: '4px', display: 'block' }}>
+        <label style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '4px', display: 'block' }}>
             Dice Notation (e.g., 2d6+5, 1d20)
         </label>
         <input
@@ -32,8 +32,8 @@ const CustomDicePanel = ({ customDice, setCustomDice, onRoll }) => (
             disabled={!customDice}
             style={{
                 width: '100%', padding: '15px',
-                background: customDice ? 'linear-gradient(135deg, #667eea, #764ba2)' : '#ccc',
-                color: 'white', border: 'none', borderRadius: '8px',
+                background: customDice ? 'linear-gradient(135deg, #667eea, #764ba2)' : 'var(--collapsed-btn-bg)',
+                color: customDice ? 'white' : 'var(--collapsed-btn-text)', border: 'none', borderRadius: '8px',
                 cursor: customDice ? 'pointer' : 'not-allowed',
                 fontSize: '16px', fontWeight: 'bold'
             }}

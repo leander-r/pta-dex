@@ -53,10 +53,9 @@ const HPTracker = ({ label, currentHP, maxHP, onDamage, onHeal, onFull, level, i
 
             {/* Fainted banner */}
             {isFainted && !isDeathThreshold && (
-                <div style={{
+                <div className="hp-fainted-banner" style={{
                     marginBottom: '6px', padding: '5px 10px', borderRadius: '5px',
-                    background: '#f5f5f5', border: '1px solid #9e9e9e',
-                    fontSize: '12px', fontWeight: 'bold', color: '#616161', textAlign: 'center'
+                    fontSize: '12px', fontWeight: 'bold', textAlign: 'center'
                 }}>
                     ✖ Fainted — 0 HP
                 </div>
@@ -64,10 +63,9 @@ const HPTracker = ({ label, currentHP, maxHP, onDamage, onHeal, onFull, level, i
 
             {/* Death Saving Throw banner */}
             {isDeathThreshold && (
-                <div style={{
+                <div className="hp-death-banner" style={{
                     marginBottom: '6px', padding: '8px 10px', borderRadius: '6px',
-                    background: 'rgba(183,28,28,0.08)', border: '2px solid #b71c1c',
-                    fontSize: '12px', color: '#b71c1c'
+                    fontSize: '12px',
                 }}>
                     <div style={{ fontWeight: 'bold', marginBottom: '3px' }}>☠ Death Saving Throw Required!</div>
                     <div>Each round: roll {deathDice}. Roll ≤ {deathSaveTarget} to stabilize. Rolling above = death.</div>

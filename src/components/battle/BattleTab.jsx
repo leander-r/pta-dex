@@ -401,7 +401,7 @@ const BattleTab = () => {
                                         setSelectedMove(null);
                                         resetCombatStages();
                                     }}
-                                    style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid var(--border-medium)' }}
+                                    style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--input-bg)', color: 'var(--text-primary)' }}
                                 >
                                     <option value="">Choose a Pokemon...</option>
                                     {party.map(poke => {
@@ -621,7 +621,7 @@ const BattleTab = () => {
                             <select
                                 value={selectedSkill}
                                 onChange={(e) => setSelectedSkill(e.target.value)}
-                                style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid var(--border-medium)', marginBottom: '8px' }}
+                                style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid var(--border-medium)', marginBottom: '8px', background: 'var(--input-bg)', color: 'var(--text-primary)' }}
                             >
                                 <option value="">Choose a skill...</option>
                                 {Object.entries(GAME_DATA.skills || {}).map(([name, data]) => {

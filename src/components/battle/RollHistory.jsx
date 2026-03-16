@@ -113,7 +113,7 @@ const RollHistory = ({ rollHistory, setRollHistory }) => {
                 )}
             </h3>
 
-            <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
+            <div style={{ maxHeight: 'clamp(300px, 50vh, 600px)', overflowY: 'auto' }}>
                 {rollHistory.length === 0 ? (
                     <div className="empty-state" style={{ margin: '0' }}>
                         <span className="empty-state-icon">🎲</span>
@@ -140,12 +140,12 @@ const RollHistory = ({ rollHistory, setRollHistory }) => {
                                 <>
                                     <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>
                                         {roll.pokemon} - {roll.move}
-                                        {roll.isCrit && <span style={{ marginLeft: '8px', color: '#c62828' }}>CRITICAL!</span>}
-                                        {!roll.isHit && <span style={{ marginLeft: '8px', color: '#f44336', fontWeight: 'bold' }}>MISS!</span>}
+                                        {roll.isCrit && <span style={{ marginLeft: '8px', color: 'var(--color-danger-text)' }}>CRITICAL!</span>}
+                                        {!roll.isHit && <span style={{ marginLeft: '8px', color: 'var(--color-danger-text)', fontWeight: 'bold' }}>MISS!</span>}
                                     </div>
                                     <div style={{ fontSize: '12px', padding: '4px 8px', background: roll.isHit ? (roll.isCrit ? 'var(--roll-crit-bg)' : 'var(--roll-hit-bg)') : 'var(--roll-miss-bg)', borderRadius: '4px', marginBottom: '4px', display: 'inline-block' }}>
                                         <span style={{ fontWeight: 'bold' }}>AC Roll: </span>
-                                        <span style={{ fontWeight: 'bold', color: roll.isCrit ? '#ff6f00' : (roll.isHit ? '#2e7d32' : '#c62828') }}>
+                                        <span style={{ fontWeight: 'bold', color: roll.isCrit ? '#ff6f00' : (roll.isHit ? 'var(--color-success-text)' : 'var(--color-danger-text)') }}>
                                             {roll.accRoll}
                                             {roll.accModifier !== 0 && (
                                                 <span className="text-muted">{roll.accModifier > 0 ? '+' : ''}{roll.accModifier}={roll.modifiedAccRoll}</span>
@@ -157,7 +157,7 @@ const RollHistory = ({ rollHistory, setRollHistory }) => {
                                     </div>
                                     <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
                                         {roll.isStatus ? (
-                                            <span style={{ color: roll.isHit ? '#2e7d32' : '#c62828' }}>
+                                            <span style={{ color: roll.isHit ? 'var(--color-success-text)' : 'var(--color-danger-text)' }}>
                                                 Status Move - {roll.isHit ? 'Effect applies!' : 'No effect'}
                                             </span>
                                         ) : roll.isHit ? (
