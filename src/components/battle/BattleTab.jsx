@@ -101,6 +101,7 @@ const BattleTab = () => {
     const { showHelp } = useUI();
 
     const [mode, setMode] = useState('pokemon');
+    const [subMode, setSubMode] = useState('battle');
     const [selectedMove, setSelectedMove] = useState(null);
     const [selectedSkill, setSelectedSkill] = useState('');
     const [customDice, setCustomDice] = useState('');
@@ -343,29 +344,54 @@ const BattleTab = () => {
         <div>
             <h2 className="section-title">Dice Roller</h2>
             <p className="section-description">
-                Roll attacks, skills, and custom dice. Results can be sent to Discord via webhook.
+                Roll attacks, contest appeals, skills, and custom dice. Results can be sent to Discord via webhook.
             </p>
 
             {/* Mode Selector */}
             <div className="tabs" style={{ marginBottom: '15px' }}>
-                <button className={`tab ${mode === 'pokemon'  ? 'active' : ''}`} onClick={() => setMode('pokemon')}>Pokemon Attack</button>
-                <button className={`tab ${mode === 'trainer'  ? 'active' : ''}`} onClick={() => setMode('trainer')}>Trainer Skill</button>
-                <button className={`tab ${mode === 'custom'   ? 'active' : ''}`} onClick={() => setMode('custom')}>Custom Dice</button>
+                <button className={`tab ${mode === 'pokemon'  ? 'active' : ''}`} onClick={() => setMode('pokemon')}>⚔️ Pokemon</button>
+                <button className={`tab ${mode === 'trainer'  ? 'active' : ''}`} onClick={() => setMode('trainer')}>🎯 Trainer</button>
+                <button className={`tab ${mode === 'custom'   ? 'active' : ''}`} onClick={() => setMode('custom')}>🎲 Custom</button>
                 <button className={`tab ${mode === 'heal'     ? 'active' : ''}`} onClick={() => setMode('heal')}>🩹 Heal</button>
-                <button className={`tab ${mode === 'contest'  ? 'active' : ''}`} onClick={() => setMode('contest')}>🎭 Contest</button>
             </div>
 
             <div className="grid-responsive-2">
                 {/* Left: Roll Controls */}
                 <div className="section-card-purple">
                     <h3 className="section-title-purple">
-                        <span>{mode === 'heal' ? '🩹' : mode === 'contest' ? '🎭' : '🎲'}</span>{' '}
-                        {mode === 'pokemon' ? 'Pokemon Attack' : mode === 'trainer' ? 'Trainer Skill' : mode === 'heal' ? 'Use Healing Item' : mode === 'contest' ? 'Contest Appeal' : 'Custom Roll'}
+                        <span>{mode === 'heal' ? '🩹' : (mode === 'pokemon' && subMode === 'contest') ? '🎭' : '🎲'}</span>{' '}
+                        {mode === 'pokemon' && subMode === 'contest' ? 'Contest Appeal'
+                            : mode === 'pokemon' ? 'Pokemon Attack'
+                            : mode === 'trainer' ? 'Trainer Skill'
+                            : mode === 'heal' ? 'Use Healing Item'
+                            : 'Custom Roll'}
                     </h3>
 
                     {mode === 'pokemon' && (
                         <div>
-                            {/* Pokemon Selector */}
+                            {/* Battle / Contest sub-toggle */}
+                            <div style={{ display: 'flex', gap: 4, marginBottom: 12, background: 'var(--bg-secondary)', borderRadius: 8, padding: 3 }}>
+                                <button
+                                    onClick={() => setSubMode('battle')}
+                                    style={{
+                                        flex: 1, padding: '6px 0', borderRadius: 6, border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 700,
+                                        background: subMode === 'battle' ? 'linear-gradient(135deg, #667eea, #764ba2)' : 'transparent',
+                                        color: subMode === 'battle' ? 'white' : 'var(--text-secondary)',
+                                        transition: 'all 0.15s',
+                                    }}
+                                >⚔️ Battle</button>
+                                <button
+                                    onClick={() => setSubMode('contest')}
+                                    style={{
+                                        flex: 1, padding: '6px 0', borderRadius: 6, border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 700,
+                                        background: subMode === 'contest' ? 'linear-gradient(135deg, #e91e63, #9c27b0)' : 'transparent',
+                                        color: subMode === 'contest' ? 'white' : 'var(--text-secondary)',
+                                        transition: 'all 0.15s',
+                                    }}
+                                >🎭 Contest</button>
+                            </div>
+
+                            {/* Pokemon Selector — shared by both sub-modes */}
                             <div style={{ marginBottom: '12px' }}>
                                 <label style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '4px', display: 'block' }}>Select Pokemon</label>
                                 <select
@@ -389,7 +415,7 @@ const BattleTab = () => {
                                 </select>
                             </div>
 
-                            {/* Pokemon Sprite */}
+                            {/* Pokemon Sprite — shared by both sub-modes */}
                             {selectedPokemon && (() => {
                                 const img = megaEvolved && currentMegaForm
                                     ? getMegaSprite(selectedPokemon, currentMegaForm)
@@ -406,121 +432,131 @@ const BattleTab = () => {
                                 );
                             })()}
 
-                            {/* Held Item */}
-                            {selectedPokemon?.heldItem && (() => {
-                                const itemData = GAME_DATA?.items?.[selectedPokemon.heldItem];
-                                return (
-                                    <div
-                                        onClick={() => { if (showDetail && itemData) showDetail('item', selectedPokemon.heldItem, itemData); }}
-                                        style={{ marginBottom: '12px', padding: '8px 10px', borderRadius: '8px', background: 'var(--bg-secondary)', border: '1px solid var(--border-light)', display: 'flex', alignItems: 'center', gap: '8px', cursor: showDetail && itemData ? 'pointer' : 'default' }}
-                                        title={itemData ? 'Click to view item details' : selectedPokemon.heldItem}
-                                    >
-                                        <span style={{ fontSize: '16px' }}>🎒</span>
-                                        <div style={{ flex: 1, minWidth: 0 }}>
-                                            <div style={{ fontSize: '12px', fontWeight: 'bold', color: 'var(--text-muted)' }}>Held Item</div>
-                                            <div style={{ fontSize: '13px', fontWeight: 'bold', color: 'var(--text-primary)' }}>{selectedPokemon.heldItem}</div>
-                                            {itemData?.effect && (
-                                                <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '2px' }}>{itemData.effect}</div>
-                                            )}
-                                        </div>
-                                        {showDetail && itemData && (
-                                            <span style={{ fontSize: '13px', color: '#667eea', flexShrink: 0 }}>Details →</span>
-                                        )}
-                                    </div>
-                                );
-                            })()}
-
-                            {/* Pokemon HP Tracker */}
-                            {selectedPokemon && (() => {
-                                const hp = getPokemonHP(selectedPokemon);
-                                return (
-                                    <HPTracker
-                                        label="HP"
-                                        currentHP={hp.current}
-                                        maxHP={hp.max}
-                                        level={selectedPokemon.level}
-                                        onDamage={(val) => updatePokemon(selectedPokemon.id, { currentDamage: Math.min(hp.max * 2, (selectedPokemon.currentDamage || 0) + val) })}
-                                        onHeal={(val) => updatePokemon(selectedPokemon.id, { currentDamage: Math.max(0, (selectedPokemon.currentDamage || 0) - val) })}
-                                        onFull={() => updatePokemon(selectedPokemon.id, { currentDamage: 0 })}
-                                    />
-                                );
-                            })()}
-
-                            <TypeMatchupDisplay selectedPokemon={selectedPokemon} megaEvolved={megaEvolved} currentMegaForm={currentMegaForm} />
-
-                            <StatusConditionUI selectedPokemon={selectedPokemon} updatePokemon={updatePokemon} />
-
-                            <MegaEvolutionPanel
-                                selectedPokemon={selectedPokemon}
-                                megaForms={megaForms}
-                                megaEvolved={megaEvolved}
-                                currentMegaForm={currentMegaForm}
-                                onMegaEvolve={handleMegaEvolve}
-                                onMegaRevert={handleMegaRevert}
-                                label={BATTLE_FORM_CHANGES[selectedPokemon?.species] ? 'Form Change' : 'Mega Evolution'}
-                                isFormChange={!!BATTLE_FORM_CHANGES[selectedPokemon?.species]}
-                            />
-
-                            <CombatStagesPanel
-                                selectedPokemon={selectedPokemon}
-                                combatStages={combatStages}
-                                getStatsWithMega={getStatsWithMega}
-                                updateCombatStage={updateCombatStage}
-                                resetCombatStages={resetCombatStages}
-                                onHelp={() => showHelp('combat-stages')}
-                                statusConditions={selectedPokemon?.statusConditions}
-                            />
-
-                            {/* STAB Toggle & AC Override */}
-                            {selectedPokemon && (
-                                <div style={{ marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-                                    <label
-                                        style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}
-                                        title="Same Type Attack Bonus - extra damage when using moves that match the Pokémon's type. Scales with level."
-                                    >
-                                        <input type="checkbox" checked={applyStab} onChange={(e) => setApplyStab(e.target.checked)} />
-                                        <span style={{ fontSize: '13px' }}>Apply STAB</span>
-                                    </label>
-                                    <span
-                                        style={{ fontSize: '12px', color: 'var(--text-secondary)' }}
-                                        title="Same Type Attack Bonus (STAB): +1 at Lv.5, +2 at Lv.10, +3 at Lv.15, +4 at Lv.20… (+1 per 5 levels)"
-                                    >
-                                        (+{calculateSTAB(selectedPokemon.level || 1)} for matching type)
-                                    </span>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginLeft: 'auto' }} title="Override move AC (higher = harder to hit)">
-                                        <label style={{ fontSize: '13px', fontWeight: 'bold', color: '#667eea' }}>AC Override:</label>
-                                        <input
-                                            type="number"
-                                            min="1"
-                                            max="20"
-                                            value={acOverride}
-                                            onChange={(e) => setAcOverride(e.target.value)}
-                                            placeholder={selectedMove ? String(parseACFromFrequency(selectedMove.frequency || selectedMove.freq)) : '-'}
-                                            style={{ width: '50px', padding: '4px 8px', borderRadius: '4px', border: acOverride !== '' ? '2px solid #667eea' : '1px solid var(--border-medium)', fontSize: '13px', textAlign: 'center', background: acOverride !== '' ? 'var(--input-bg-hover)' : 'var(--input-bg)' }}
-                                        />
-                                        {acOverride !== '' && (
-                                            <button onClick={() => setAcOverride('')} style={{ padding: '4px 8px', background: '#f44336', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }} title="Clear AC override" aria-label="Clear AC override">✕</button>
-                                        )}
-                                    </div>
-                                </div>
+                            {/* Contest sub-mode */}
+                            {subMode === 'contest' && (
+                                <ContestPanel selectedPokemon={selectedPokemon} gameData={GAME_DATA} />
                             )}
 
-                            <MoveSelector
-                                selectedPokemon={selectedPokemon}
-                                selectedMove={selectedMove}
-                                onSelectMove={setSelectedMove}
-                                showDetail={showDetail}
-                                gameData={GAME_DATA}
-                            />
+                            {/* Battle sub-mode */}
+                            {subMode === 'battle' && (
+                                <div>
+                                    {/* Held Item */}
+                                    {selectedPokemon?.heldItem && (() => {
+                                        const itemData = GAME_DATA?.items?.[selectedPokemon.heldItem];
+                                        return (
+                                            <div
+                                                onClick={() => { if (showDetail && itemData) showDetail('item', selectedPokemon.heldItem, itemData); }}
+                                                style={{ marginBottom: '12px', padding: '8px 10px', borderRadius: '8px', background: 'var(--bg-secondary)', border: '1px solid var(--border-light)', display: 'flex', alignItems: 'center', gap: '8px', cursor: showDetail && itemData ? 'pointer' : 'default' }}
+                                                title={itemData ? 'Click to view item details' : selectedPokemon.heldItem}
+                                            >
+                                                <span style={{ fontSize: '16px' }}>🎒</span>
+                                                <div style={{ flex: 1, minWidth: 0 }}>
+                                                    <div style={{ fontSize: '12px', fontWeight: 'bold', color: 'var(--text-muted)' }}>Held Item</div>
+                                                    <div style={{ fontSize: '13px', fontWeight: 'bold', color: 'var(--text-primary)' }}>{selectedPokemon.heldItem}</div>
+                                                    {itemData?.effect && (
+                                                        <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '2px' }}>{itemData.effect}</div>
+                                                    )}
+                                                </div>
+                                                {showDetail && itemData && (
+                                                    <span style={{ fontSize: '13px', color: '#667eea', flexShrink: 0 }}>Details →</span>
+                                                )}
+                                            </div>
+                                        );
+                                    })()}
 
-                            {/* Roll Button */}
-                            <button
-                                onClick={rollPokemonMove}
-                                disabled={!selectedPokemon || !selectedMove}
-                                style={{ width: '100%', padding: '15px', background: selectedPokemon && selectedMove ? 'linear-gradient(135deg, #667eea, #764ba2)' : '#ccc', color: selectedPokemon && selectedMove ? 'white' : '#555', border: 'none', borderRadius: '8px', cursor: selectedPokemon && selectedMove ? 'pointer' : 'not-allowed', fontSize: '16px', fontWeight: 'bold' }}
-                            >
-                                Roll Attack!
-                            </button>
+                                    {/* Pokemon HP Tracker */}
+                                    {selectedPokemon && (() => {
+                                        const hp = getPokemonHP(selectedPokemon);
+                                        return (
+                                            <HPTracker
+                                                label="HP"
+                                                currentHP={hp.current}
+                                                maxHP={hp.max}
+                                                level={selectedPokemon.level}
+                                                onDamage={(val) => updatePokemon(selectedPokemon.id, { currentDamage: Math.min(hp.max * 2, (selectedPokemon.currentDamage || 0) + val) })}
+                                                onHeal={(val) => updatePokemon(selectedPokemon.id, { currentDamage: Math.max(0, (selectedPokemon.currentDamage || 0) - val) })}
+                                                onFull={() => updatePokemon(selectedPokemon.id, { currentDamage: 0 })}
+                                            />
+                                        );
+                                    })()}
+
+                                    <TypeMatchupDisplay selectedPokemon={selectedPokemon} megaEvolved={megaEvolved} currentMegaForm={currentMegaForm} />
+
+                                    <StatusConditionUI selectedPokemon={selectedPokemon} updatePokemon={updatePokemon} />
+
+                                    <MegaEvolutionPanel
+                                        selectedPokemon={selectedPokemon}
+                                        megaForms={megaForms}
+                                        megaEvolved={megaEvolved}
+                                        currentMegaForm={currentMegaForm}
+                                        onMegaEvolve={handleMegaEvolve}
+                                        onMegaRevert={handleMegaRevert}
+                                        label={BATTLE_FORM_CHANGES[selectedPokemon?.species] ? 'Form Change' : 'Mega Evolution'}
+                                        isFormChange={!!BATTLE_FORM_CHANGES[selectedPokemon?.species]}
+                                    />
+
+                                    <CombatStagesPanel
+                                        selectedPokemon={selectedPokemon}
+                                        combatStages={combatStages}
+                                        getStatsWithMega={getStatsWithMega}
+                                        updateCombatStage={updateCombatStage}
+                                        resetCombatStages={resetCombatStages}
+                                        onHelp={() => showHelp('combat-stages')}
+                                        statusConditions={selectedPokemon?.statusConditions}
+                                    />
+
+                                    {/* STAB Toggle & AC Override */}
+                                    {selectedPokemon && (
+                                        <div style={{ marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                                            <label
+                                                style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}
+                                                title="Same Type Attack Bonus - extra damage when using moves that match the Pokémon's type. Scales with level."
+                                            >
+                                                <input type="checkbox" checked={applyStab} onChange={(e) => setApplyStab(e.target.checked)} />
+                                                <span style={{ fontSize: '13px' }}>Apply STAB</span>
+                                            </label>
+                                            <span
+                                                style={{ fontSize: '12px', color: 'var(--text-secondary)' }}
+                                                title="Same Type Attack Bonus (STAB): +1 at Lv.5, +2 at Lv.10, +3 at Lv.15, +4 at Lv.20… (+1 per 5 levels)"
+                                            >
+                                                (+{calculateSTAB(selectedPokemon.level || 1)} for matching type)
+                                            </span>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginLeft: 'auto' }} title="Override move AC (higher = harder to hit)">
+                                                <label style={{ fontSize: '13px', fontWeight: 'bold', color: '#667eea' }}>AC Override:</label>
+                                                <input
+                                                    type="number"
+                                                    min="1"
+                                                    max="20"
+                                                    value={acOverride}
+                                                    onChange={(e) => setAcOverride(e.target.value)}
+                                                    placeholder={selectedMove ? String(parseACFromFrequency(selectedMove.frequency || selectedMove.freq)) : '-'}
+                                                    style={{ width: '50px', padding: '4px 8px', borderRadius: '4px', border: acOverride !== '' ? '2px solid #667eea' : '1px solid var(--border-medium)', fontSize: '13px', textAlign: 'center', background: acOverride !== '' ? 'var(--input-bg-hover)' : 'var(--input-bg)' }}
+                                                />
+                                                {acOverride !== '' && (
+                                                    <button onClick={() => setAcOverride('')} style={{ padding: '4px 8px', background: '#f44336', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }} title="Clear AC override" aria-label="Clear AC override">✕</button>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    <MoveSelector
+                                        selectedPokemon={selectedPokemon}
+                                        selectedMove={selectedMove}
+                                        onSelectMove={setSelectedMove}
+                                        showDetail={showDetail}
+                                        gameData={GAME_DATA}
+                                    />
+
+                                    {/* Roll Button */}
+                                    <button
+                                        onClick={rollPokemonMove}
+                                        disabled={!selectedPokemon || !selectedMove}
+                                        style={{ width: '100%', padding: '15px', background: selectedPokemon && selectedMove ? 'linear-gradient(135deg, #667eea, #764ba2)' : '#ccc', color: selectedPokemon && selectedMove ? 'white' : '#555', border: 'none', borderRadius: '8px', cursor: selectedPokemon && selectedMove ? 'pointer' : 'not-allowed', fontSize: '16px', fontWeight: 'bold' }}
+                                    >
+                                        Roll Attack!
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     )}
 
@@ -643,10 +679,6 @@ const BattleTab = () => {
                             healingInventory={healingInventory}
                             onUseItem={rollHealItem}
                         />
-                    )}
-
-                    {mode === 'contest' && (
-                        <ContestPanel selectedPokemon={selectedPokemon} gameData={GAME_DATA} />
                     )}
 
                     <DiscordWebhookConfig />
