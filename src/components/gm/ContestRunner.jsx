@@ -143,7 +143,9 @@ const StepLabel = ({ n, label }) => (
 
 const ContestRunner = () => {
     const { GAME_DATA } = useGameData();
-    const { sendToDiscord } = useData();
+    const { sendToDiscord, discordWebhook } = useData();
+    const webhookActive = discordWebhook?.enabled && !!discordWebhook?.url?.trim();
+    const [discordEnabled, setDiscordEnabled] = useState(true);
 
     // ── Setup state ────────────────────────────────────────────────────────
     const [contestType, setContestType] = useState('');
@@ -336,7 +338,7 @@ const ContestRunner = () => {
             judgeIdx: judgeIndex, voltageChange, newVoltage,
             isSameMove, isMaxVoltage: maxVoltageBonusRolls.length > 0, effect,
         });
-        sendToDiscord({ _rawEmbed: turnEmbed });
+        if (webhookActive && discordEnabled) sendToDiscord({ _rawEmbed: turnEmbed });
 
         setPendingJudge(null);
         setPastedText('');
@@ -564,7 +566,7 @@ const ContestRunner = () => {
 
         const postResults = () => {
             const embed = buildContestResultsEmbed({ contestType, participants, getTotal });
-            sendToDiscord({ _rawEmbed: embed });
+            if (webhookActive && discordEnabled) sendToDiscord({ _rawEmbed: embed });
         };
 
         return (
@@ -630,9 +632,11 @@ const ContestRunner = () => {
                     <button onClick={copyResults} style={{ flex: 1, padding: '10px', borderRadius: 8, border: `1px solid ${color}55`, background: `${color}14`, color, fontWeight: 700, fontSize: 14, cursor: 'pointer' }}>
                         📋 Copy Results
                     </button>
-                    <button onClick={postResults} style={{ flex: 1, padding: '10px', borderRadius: 8, border: '1px solid #5865f266', background: 'rgba(88,101,242,0.08)', color: '#5865f2', fontWeight: 700, fontSize: 14, cursor: 'pointer' }}>
-                        💬 Post to Discord
-                    </button>
+                    {webhookActive && discordEnabled && (
+                        <button onClick={postResults} style={{ flex: 1, padding: '10px', borderRadius: 8, border: '1px solid #5865f266', background: 'rgba(88,101,242,0.08)', color: '#5865f2', fontWeight: 700, fontSize: 14, cursor: 'pointer' }}>
+                            💬 Post to Discord
+                        </button>
+                    )}
                 </div>
                 <button onClick={handleReset} style={{ width: '100%', padding: '10px', borderRadius: 8, border: '1px solid var(--border-light)', background: 'var(--surface-bg)', color: 'var(--text-primary)', fontWeight: 700, fontSize: 14, cursor: 'pointer' }}>
                     ↺ New Contest
@@ -673,13 +677,26 @@ const ContestRunner = () => {
                         {round % 2 === 1 ? 'Lowest → Highest appeal order' : 'Highest → Lowest appeal order'}
                     </p>
                 </div>
-                <button
-                    onClick={handleReset}
-                    title="Abandon this contest and return to setup"
-                    style={{ marginLeft: 'auto', padding: '5px 12px', borderRadius: 6, border: '1px solid var(--border-light)', background: 'var(--surface-bg)', color: 'var(--text-muted)', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
-                >
-                    ↺ Abandon
-                </button>
+                <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8 }}>
+                    {webhookActive && (
+                        <label style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, color: discordEnabled ? '#5865f2' : 'var(--text-muted)', cursor: 'pointer', userSelect: 'none' }}>
+                            <input
+                                type="checkbox"
+                                checked={discordEnabled}
+                                onChange={e => setDiscordEnabled(e.target.checked)}
+                                style={{ accentColor: '#5865f2', cursor: 'pointer' }}
+                            />
+                            💬 Discord
+                        </label>
+                    )}
+                    <button
+                        onClick={handleReset}
+                        title="Abandon this contest and return to setup"
+                        style={{ padding: '5px 12px', borderRadius: 6, border: '1px solid var(--border-light)', background: 'var(--surface-bg)', color: 'var(--text-muted)', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
+                    >
+                        ↺ Abandon
+                    </button>
+                </div>
             </div>
 
             {/* Judges */}
