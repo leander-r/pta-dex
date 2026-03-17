@@ -55,18 +55,27 @@ const ContestPanel = ({ selectedPokemon, gameData, onRoll }) => {
     const filteredMoves = contestMoves.filter(m => typeFilter === 'All' || m.contestType === typeFilter);
 
     const rollAppeal = () => {
-        if (!selectedMove?.contestDice) return;
-        const { count, sides, bonus } = parseDice(selectedMove.contestDice);
-        if (!count || !sides) { toast.warning('Could not parse contest dice.'); return; }
-        const rolls = Array.from({ length: count }, () => Math.floor(Math.random() * sides) + 1);
-        const total = rolls.reduce((a, b) => a + b, 0) + bonus;
+        if (!selectedMove) return;
+        let rolls, bonus, total;
+        if (selectedMove.contestDice) {
+            const parsed = parseDice(selectedMove.contestDice);
+            if (!parsed.count || !parsed.sides) { toast.warning('Could not parse contest dice.'); return; }
+            rolls = Array.from({ length: parsed.count }, () => Math.floor(Math.random() * parsed.sides) + 1);
+            bonus = parsed.bonus;
+            total = rolls.reduce((a, b) => a + b, 0) + bonus;
+        } else {
+            // No-dice move: 0 base appeal, keyword still fires
+            rolls = [];
+            bonus = 0;
+            total = 0;
+        }
         setRoll({ rolls, bonus, total });
         onRoll?.({
             type: 'contest',
             pokemon: selectedPokemon.name || selectedPokemon.species,
             moveName: selectedMove.name,
             contestType: selectedMove.contestType,
-            contestDice: selectedMove.contestDice,
+            contestDice: selectedMove.contestDice || null,
             contestEffect: selectedMove.contestEffect,
             contestTypeColor: CONTEST_COLORS[selectedMove.contestType] || '#667eea',
             rolls, bonus, total,
@@ -85,8 +94,8 @@ const ContestPanel = ({ selectedPokemon, gameData, onRoll }) => {
     };
 
     const color = CONTEST_COLORS[selectedMove?.contestType] || '#667eea';
-    const rollableSelected = !!selectedMove?.contestDice;
-    const noRollableSelected = selectedMove && !selectedMove.contestDice;
+    const rollableSelected = !!selectedMove;
+    const noDiceSelected = selectedMove && !selectedMove.contestDice;
 
     return (
         <div>
@@ -132,31 +141,34 @@ const ContestPanel = ({ selectedPokemon, gameData, onRoll }) => {
                         const c = CONTEST_COLORS[move.contestType] || '#9e9e9e';
                         const isSelected = selectedMove?.name === move.name;
 
-                        // No-dice moves — reference only, not interactive
+                        // No-dice moves — selectable, but yield 0 base appeal (keyword still fires)
                         if (!move.contestDice) {
                             return (
-                                <div
+                                <button
                                     key={idx}
+                                    onClick={() => { setSelectedMove(move); setRoll(null); }}
                                     style={{
                                         display: 'flex', alignItems: 'center', gap: 10,
-                                        padding: '6px 12px', borderRadius: 7,
-                                        border: '1px dashed var(--border-light)',
-                                        opacity: 0.5,
+                                        padding: '8px 12px', borderRadius: 7, cursor: 'pointer',
+                                        border: isSelected ? `2px solid ${c}` : `1px dashed ${c}66`,
+                                        background: isSelected ? `${c}22` : 'var(--surface-bg)',
+                                        textAlign: 'left', width: '100%',
+                                        transition: 'all 0.12s',
                                     }}
                                 >
                                     <div style={{ flex: 1, minWidth: 0 }}>
-                                        <div style={{ fontWeight: 600, fontSize: 12, color: 'var(--text-muted)' }}>{move.name}</div>
+                                        <div style={{ fontWeight: 700, fontSize: 13 }}>{move.name}</div>
                                         {move.contestEffect && (
                                             <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{move.contestEffect}</div>
                                         )}
                                     </div>
                                     {move.contestType && (
-                                        <span style={{ padding: '2px 8px', borderRadius: 8, fontSize: 11, fontWeight: 700, background: c + '44', color: 'var(--text-muted)', flexShrink: 0 }}>
+                                        <span style={{ padding: '2px 8px', borderRadius: 8, fontSize: 11, fontWeight: 700, background: c, color: 'white', flexShrink: 0 }}>
                                             {move.contestType}
                                         </span>
                                     )}
-                                    <span style={{ fontSize: 11, color: 'var(--text-muted)', flexShrink: 0 }}>no dice</span>
-                                </div>
+                                    <span style={{ fontSize: 11, color: 'var(--text-muted)', flexShrink: 0 }}>✦ effect only</span>
+                                </button>
                             );
                         }
 
@@ -204,10 +216,10 @@ const ContestPanel = ({ selectedPokemon, gameData, onRoll }) => {
                     marginBottom: roll ? 10 : 0,
                 }}
             >
-                {rollableSelected
+                {noDiceSelected
+                    ? `✦ Apply Effect (${selectedMove.name})`
+                    : rollableSelected
                     ? `🎭 Roll Appeal (${selectedMove.contestDice})`
-                    : noRollableSelected
-                    ? `${selectedMove.name} has no contest dice`
                     : 'Select a move to roll'}
             </button>
 
@@ -223,9 +235,11 @@ const ContestPanel = ({ selectedPokemon, gameData, onRoll }) => {
                             <div style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                                 {selectedMove.contestType} Appeal
                             </div>
-                            <div style={{ fontSize: 13, color: 'var(--text-muted)', marginTop: 2 }}>
-                                [{roll.rolls.join(', ')}]{roll.bonus !== 0 ? ` ${roll.bonus > 0 ? '+' : ''}${roll.bonus}` : ''}
-                            </div>
+                            {roll.rolls.length > 0 && (
+                                <div style={{ fontSize: 13, color: 'var(--text-muted)', marginTop: 2 }}>
+                                    [{roll.rolls.join(', ')}]{roll.bonus !== 0 ? ` ${roll.bonus > 0 ? '+' : ''}${roll.bonus}` : ''}
+                                </div>
+                            )}
                             {selectedMove.contestEffect && (
                                 <div style={{ fontSize: 12, color, fontWeight: 700, marginTop: 3 }}>
                                     ✦ {selectedMove.contestEffect}
