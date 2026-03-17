@@ -58,6 +58,7 @@ const KEYWORD_SET = new Set([
     'Special Attention', 'Attention Grabber', 'Big Show', 'Incentives', 'Excitement',
     'Hold That Thought', 'Scrambler', 'Quick Set', 'Slow Set', 'Good Show!',
     'Seen Nothing Yet', 'Interrupting Appeal', 'Unsettling', 'No Effect',
+    'Crowd Pleaser', 'Incredible', 'Start Set', 'End Set',
 ]);
 
 const normalizeKeyword = (effect) => {
@@ -74,8 +75,8 @@ const normalizeKeyword = (effect) => {
 const KEYWORD_DESC = {
     'Round Starter':      '+2d4 if you appeal first this round',
     'Round Ender':        '+2d4 if you appeal last this round',
-    'Get Ready!':         'Next appeal: double your dice',
-    'Reliable':           'Using this move again next round scores 1d4 instead of 0',
+    'Get Ready!':         'Next appeal: 2× dice (if max voltage: 14d4 total)',
+    'Reliable':           'Using this move again next round: normal dice + extra 1d4',
     'Torrential Appeal':  '1d4 / 2d4 / 3d4 based on turn position',
     'Reflective Appeal':  '1d4 per voltage the judge currently has',
     'Inversed Appeal':    '1d4 per voltage the judge is missing (6 − voltage)',
@@ -95,6 +96,10 @@ const KEYWORD_DESC = {
     'Interrupting Appeal':'Goes before all others this round regardless of order',
     'Unsettling':         'All judges lose 1 voltage',
     'No Effect':          'No special contest effect',
+    'Crowd Pleaser':      'Raises the target judge\'s voltage by 2 regardless of contest type',
+    'Incredible':         'Raises all judges\' voltage by 1 regardless of contest type',
+    'Start Set':          'Perform first, second, or third next round (Feature-modified — choose when used)',
+    'End Set':            'Perform third, fourth, or last next round (Feature-modified — choose when used)',
 };
 
 const KEYWORD_COLOR = {
@@ -108,7 +113,9 @@ const KEYWORD_COLOR = {
     'Excitement':         '#ff9800', 'Hold That Thought': '#ff9800', 'Unsettling': '#ff9800',
     'Scrambler':          '#9c27b0', 'Quick Set':         '#9c27b0',
     'Slow Set':           '#9c27b0', 'Interrupting Appeal':'#9c27b0',
+    'Start Set':          '#9c27b0', 'End Set':           '#9c27b0',
     'No Effect':          '#9e9e9e',
+    'Crowd Pleaser':      '#ff9800', 'Incredible':        '#ff9800',
 };
 
 // ── Dice helpers ───────────────────────────────────────────────────────────
@@ -281,8 +288,8 @@ const ContestRunner = () => {
         if (!contestType || !GAME_DATA?.moves) return {};
         return Object.fromEntries(
             Object.entries(GAME_DATA.moves)
-                .filter(([, m]) => m.contestType === contestType && m.contestDice)
-                .map(([name, m]) => [name, { dice: m.contestDice, keyword: m.contestEffect || '' }])
+                .filter(([, m]) => m.contestType === contestType && (m.contestDice || m.contestEffect))
+                .map(([name, m]) => [name, { dice: m.contestDice || null, keyword: m.contestEffect || '' }])
         );
     }, [contestType, GAME_DATA?.moves]);
 
@@ -398,12 +405,8 @@ const ContestRunner = () => {
 
         if (isSameMove) {
             appeal = 0;
-        } else if (reliableActive) {
-            // Reliable: same move again scores 1d4 instead of 0
-            reliableRolls = rollD4s(1);
-            appeal = reliableRolls[0];
         } else if (isNPC) {
-            // ── NPC path — apply replacement keywords ──────────────────────
+            // ── NPC path — replacement keywords override base dice ─────────
             if (keyword === 'Torrential Appeal') {
                 const pos    = turnIdx;
                 const isLast = pos === participants.length - 1;
@@ -418,8 +421,9 @@ const ContestRunner = () => {
                 const count = Math.max(1, 6 - judge.voltage);
                 baseRolls   = rollD4s(count);
                 appeal      = baseRolls.reduce((a, b) => a + b, 0);
-            } else {
-                let effectiveDice = diceStr || '1d4';
+            } else if (diceStr) {
+                // Normal base dice roll
+                let effectiveDice = diceStr;
                 // Get Ready! doubles the dice
                 if (getReadyActive) {
                     const { count: c, sides: s, bonus: b } = parseDice(effectiveDice);
@@ -439,13 +443,24 @@ const ContestRunner = () => {
                     appeal += typeBonusRolls[0];
                 }
             }
+            // else: no-dice move (diceStr is null) — base appeal stays 0; keyword still fires
+            // Reliable: +1d4 on top of whatever base was rolled (PH2: "additional 1d4")
+            if (reliableActive) {
+                reliableRolls = rollD4s(1);
+                appeal += reliableRolls[0];
+            }
         } else {
             // ── Player path — use submitted score as base ──────────────────
             appeal = manualScore;
+            // Reliable: add the +1d4 bonus the player should have rolled
+            if (reliableActive) {
+                reliableRolls = rollD4s(1);
+                appeal += reliableRolls[0];
+            }
         }
 
-        // ── Keyword additive bonuses (apply to both NPC and player) ────────
-        if (!isSameMove && !reliableActive) {
+        // ── Keyword additive bonuses (all non-same-move turns) ─────────────
+        if (!isSameMove) {
             if (keyword === 'Round Starter' && turnIdx === 0) {
                 const b = rollD4s(2);
                 keywordBonusRolls = b; keywordBonusLabel = 'Round Starter +2d4';
@@ -547,13 +562,32 @@ const ContestRunner = () => {
                 newVoltage    = judge.voltage + 1;
                 voltageChange = +1;
                 if (newVoltage === 6) {
-                    maxVoltageBonusRolls = rollD4s(4);
-                    appeal += maxVoltageBonusRolls.reduce((a, b) => a + b, 0);
+                    // Get Ready! + max voltage = 14d4 total (PH2: "14d4 instead of 7d4")
+                    const maxBonus = getReadyActive ? 14 : 4;
+                    maxVoltageBonusRolls = rollD4s(maxBonus);
+                    // Replace the entire appeal with 14d4 when Get Ready! + max voltage
+                    if (getReadyActive) appeal = maxVoltageBonusRolls.reduce((a, b) => a + b, 0);
+                    else               appeal += maxVoltageBonusRolls.reduce((a, b) => a + b, 0);
                     setMaxVoltageHitThisRound(true);
                 }
             } else if (canLower) {
                 newVoltage    = judge.voltage - 1;
                 voltageChange = -1;
+            }
+
+            // Crowd Pleaser: +2 voltage to target judge regardless of type
+            if (keyword === 'Crowd Pleaser' && judge.voltage < 6) {
+                const gain    = Math.min(2, 6 - judge.voltage);
+                newVoltage    = judge.voltage + gain;
+                voltageChange = gain;
+                if (newVoltage === 6) setMaxVoltageHitThisRound(true);
+            }
+            // Incredible: +1 voltage to ALL judges regardless of type
+            if (keyword === 'Incredible') {
+                newJudges = judges.map(j => ({ ...j, voltage: Math.min(6, j.voltage + 1) }));
+                if (newJudges.some(j => j.voltage === 6)) setMaxVoltageHitThisRound(true);
+                voltageChange = +1;
+                setJudges(newJudges);
             }
 
             // Incentives: +2d4 if voltage was raised
@@ -567,9 +601,8 @@ const ContestRunner = () => {
             // Unsettling: lower ALL judges by 1
             if (keyword === 'Unsettling') {
                 newJudges = judges.map(j => ({ ...j, voltage: Math.max(1, j.voltage - 1) }));
-                // The targeted judge's value is also updated via the map above
                 voltageChange = -1;
-            } else {
+            } else if (keyword !== 'Incredible') {
                 newJudges = judges.map(j => j.id === pendingJudge ? { ...j, voltage: newVoltage } : j);
             }
         }
@@ -697,7 +730,7 @@ const ContestRunner = () => {
         handleRoll({
             moveName:        parsedPaste.moveName,
             moveContestType: parsedPaste.moveContestType || gameMove?.contestType || '',
-            diceStr:         gameMove?.contestDice || '1d4',
+            diceStr:         gameMove?.contestDice || null,
             effect:          parsedPaste.effect || gameMove?.contestEffect || '',
             manualScore:     parsedPaste.score,
         });
@@ -709,7 +742,7 @@ const ContestRunner = () => {
         handleRoll({
             moveName:        npcMoveName.trim(),
             moveContestType: gameMove?.contestType || '',
-            diceStr:         gameMove?.contestDice || '1d4',
+            diceStr:         gameMove?.contestDice || null,
             effect:          gameMove?.contestEffect || '',
             manualScore:     null,
         });
@@ -1271,12 +1304,19 @@ const ContestRunner = () => {
                                 {npcMoveData ? (
                                     <div>
                                         <span style={{ color: npcTypeRel === 'same' ? 'var(--color-success-text)' : npcTypeRel === 'opposite' ? '#c62828' : 'var(--text-muted)' }}>
-                                            ✓ {npcMoveData.contestType} · {npcMoveData.contestDice}
+                                            ✓ {npcMoveData.contestType} · {npcMoveData.contestDice
+                                                ? npcMoveData.contestDice
+                                                : <em style={{ color: '#9c27b0' }}>no base dice</em>}
                                             {npcTypeRel === 'same'     && ' — +1d4 bonus + raises voltage'}
                                             {npcTypeRel === 'opposite' && ' — lowers voltage'}
                                         </span>
                                         {npcKeyword && (
                                             <span style={{ marginLeft: 6 }}><KeywordPill keyword={npcKeyword} /></span>
+                                        )}
+                                        {!npcMoveData.contestDice && (
+                                            <div style={{ marginTop: 3, color: '#9c27b0', fontWeight: 600, fontSize: 11 }}>
+                                                ✦ 0 base appeal — keyword fires; voltage still changes
+                                            </div>
                                         )}
                                         {npcKeyword && KEYWORD_DESC[npcKeyword] && (
                                             <div style={{ marginTop: 3, color: KEYWORD_COLOR[npcKeyword] || 'var(--text-muted)', fontWeight: 600 }}>
@@ -1285,7 +1325,7 @@ const ContestRunner = () => {
                                         )}
                                     </div>
                                 ) : (
-                                    <span style={{ color: '#e65100' }}>⚠ Move not found — will roll 1d4</span>
+                                    <span style={{ color: '#e65100' }}>⚠ Move not found — will roll 0 base appeal</span>
                                 )}
                             </div>
                         )}
@@ -1299,7 +1339,7 @@ const ContestRunner = () => {
                                         title={kw ? `${kw}: ${KEYWORD_DESC[normalizeKeyword(kw)] || kw}` : undefined}
                                         style={{ padding: '2px 8px', borderRadius: 10, fontSize: 11, background: `${color}18`, border: `1px solid ${color}44`, color: 'var(--text-primary)', cursor: 'pointer' }}
                                     >
-                                        {name} <strong>({dice})</strong>
+                                        {name} <strong>({dice || '—'})</strong>
                                         {kw && normalizeKeyword(kw) && normalizeKeyword(kw) !== 'No Effect' && (
                                             <span style={{ marginLeft: 3, color: KEYWORD_COLOR[normalizeKeyword(kw)] || 'var(--text-muted)' }}>· {normalizeKeyword(kw)}</span>
                                         )}
