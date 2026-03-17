@@ -728,7 +728,7 @@ export const DataProvider = ({ children }) => {
     // Send to Discord
     const sendToDiscord = useCallback(async (roll, trainerName) => {
         if (!discordWebhook.enabled || !discordWebhook.url?.trim()) return;
-        const embed = buildEmbed(roll, trainerName || 'Trainer');
+        const embed = roll._rawEmbed || buildEmbed(roll, trainerName || 'Trainer');
         if (!embed) return;
         try {
             const res = await fetch(discordWebhook.url, {

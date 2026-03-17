@@ -204,10 +204,11 @@ export const buildHealEmbed = (roll, trainerName) => {
     return embed;
 };
 
+const CONTEST_COLORS_INT = { Cool: 0x2196F3, Beauty: 0xE91E63, Cute: 0xFF9800, Smart: 0x4CAF50, Tough: 0x795548 };
+
 export const buildContestEmbed = (roll, trainerName) => {
     const bonusStr = roll.bonus ? ` ${roll.bonus > 0 ? '+' : ''}${roll.bonus}` : '';
-    const CONTEST_COLORS = { Cool: 0x2196F3, Beauty: 0xE91E63, Cute: 0xFF9800, Smart: 0x4CAF50, Tough: 0x795548 };
-    const color = CONTEST_COLORS[roll.contestType] || 0x667EEA;
+    const color = CONTEST_COLORS_INT[roll.contestType] || 0x667EEA;
     let description = `🎲 [${(roll.rolls || []).join(', ')}]${bonusStr} = **${roll.total}**`;
     if (roll.contestEffect) description += `\n*${roll.contestEffect}*`;
     return {
@@ -216,6 +217,65 @@ export const buildContestEmbed = (roll, trainerName) => {
         description,
         color,
         footer: roll.contestType ? { text: `${roll.contestType} Appeal · ${roll.contestDice}` } : undefined,
+        timestamp: new Date().toISOString(),
+    };
+};
+
+// Posted by GM after each appeal turn in ContestRunner
+export const buildContestTurnEmbed = ({ contestType, round, participantName, moveName, appeal, judgeIdx, voltageChange, newVoltage, isSameMove, isMaxVoltage, effect }) => {
+    const color = CONTEST_COLORS_INT[contestType] || 0x667EEA;
+    const CONTEST_ICONS = { Cool: '😎', Beauty: '💎', Cute: '🌸', Smart: '🔮', Tough: '💪' };
+    const icon = CONTEST_ICONS[contestType] || '🎭';
+
+    let description;
+    if (isSameMove) {
+        description = `**${participantName}** repeated **${moveName}** — **0 appeal** (same move penalty)`;
+    } else {
+        description = `**${participantName}** used **${moveName}** → **${appeal} appeal**`;
+        if (effect) description += `\n*${effect}*`;
+    }
+
+    const fields = [];
+    if (judgeIdx != null) {
+        let judgeVal = `Judge ${judgeIdx + 1} · Voltage now **${newVoltage}**`;
+        if (voltageChange > 0) judgeVal += ' ⚡▲';
+        if (voltageChange < 0) judgeVal += ' ⚡▼';
+        if (isMaxVoltage) judgeVal += ' 🔥 MAX VOLTAGE!';
+        fields.push({ name: 'Judge', value: judgeVal, inline: true });
+    }
+
+    return {
+        title: `${icon} Round ${round} Appeal`,
+        description,
+        color,
+        fields,
+        footer: { text: `${contestType} Contest` },
+        timestamp: new Date().toISOString(),
+    };
+};
+
+// Posted by GM at the end of a contest
+export const buildContestResultsEmbed = ({ contestType, participants, getTotal }) => {
+    const color = CONTEST_COLORS_INT[contestType] || 0x667EEA;
+    const CONTEST_ICONS = { Cool: '😎', Beauty: '💎', Cute: '🌸', Smart: '🔮', Tough: '💪' };
+    const icon = CONTEST_ICONS[contestType] || '🎭';
+    const sorted = [...participants].sort((a, b) => getTotal(b) - getTotal(a));
+    const medals = ['🥇', '🥈', '🥉'];
+
+    const fields = sorted.map((p, idx) => {
+        const rounds = p.rounds.map((r, i) => `R${i + 1}:${r.appeal}`).join('  ');
+        return {
+            name: `${medals[idx] || `#${idx + 1}`} ${p.name}`,
+            value: `**${getTotal(p)} total** · ${rounds}`,
+            inline: false,
+        };
+    });
+
+    return {
+        title: `🏆 ${icon} ${contestType} Contest — Final Results`,
+        description: `Winner: **${sorted[0]?.name}** with **${getTotal(sorted[0] || {})} appeal**!`,
+        color,
+        fields,
         timestamp: new Date().toISOString(),
     };
 };

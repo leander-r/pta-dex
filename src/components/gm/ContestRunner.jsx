@@ -18,7 +18,8 @@
 
 import React, { useState, useMemo } from 'react';
 import { parseDice } from '../../utils/dataUtils.js';
-import { useGameData } from '../../contexts/index.js';
+import { useGameData, useData } from '../../contexts/index.js';
+import { buildContestTurnEmbed, buildContestResultsEmbed } from '../../utils/discordEmbeds.js';
 import toast from '../../utils/toast.js';
 
 // ── Constants ──────────────────────────────────────────────────────────────
@@ -142,6 +143,7 @@ const StepLabel = ({ n, label }) => (
 
 const ContestRunner = () => {
     const { GAME_DATA } = useGameData();
+    const { sendToDiscord } = useData();
 
     // ── Setup state ────────────────────────────────────────────────────────
     const [contestType, setContestType] = useState('');
@@ -326,6 +328,16 @@ const ContestRunner = () => {
             : voltageChange > 0 ? '#4caf50' : voltageChange < 0 ? '#f44336' : 'var(--text-secondary)';
 
         setLog(prev => [...prev, { text: logParts.join(' '), color: logColor }]);
+
+        // Post turn result to Discord
+        const judgeIndex = judges.findIndex(j => j.id === pendingJudge);
+        const turnEmbed = buildContestTurnEmbed({
+            contestType, round, participantName: p.name, moveName, appeal,
+            judgeIdx: judgeIndex, voltageChange, newVoltage,
+            isSameMove, isMaxVoltage: maxVoltageBonusRolls.length > 0, effect,
+        });
+        sendToDiscord({ _rawEmbed: turnEmbed });
+
         setPendingJudge(null);
         setPastedText('');
         setParsedPaste(null);
@@ -550,6 +562,11 @@ const ContestRunner = () => {
             navigator.clipboard.writeText(lines.join('\n')).then(() => toast.success('Results copied!'));
         };
 
+        const postResults = () => {
+            const embed = buildContestResultsEmbed({ contestType, participants, getTotal });
+            sendToDiscord({ _rawEmbed: embed });
+        };
+
         return (
             <div>
                 <div style={{ textAlign: 'center', marginBottom: 20 }}>
@@ -609,14 +626,17 @@ const ContestRunner = () => {
                     </div>
                 )}
 
-                <div style={{ display: 'flex', gap: 8 }}>
+                <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
                     <button onClick={copyResults} style={{ flex: 1, padding: '10px', borderRadius: 8, border: `1px solid ${color}55`, background: `${color}14`, color, fontWeight: 700, fontSize: 14, cursor: 'pointer' }}>
                         📋 Copy Results
                     </button>
-                    <button onClick={handleReset} style={{ flex: 1, padding: '10px', borderRadius: 8, border: '1px solid var(--border-light)', background: 'var(--surface-bg)', color: 'var(--text-primary)', fontWeight: 700, fontSize: 14, cursor: 'pointer' }}>
-                        ↺ New Contest
+                    <button onClick={postResults} style={{ flex: 1, padding: '10px', borderRadius: 8, border: '1px solid #5865f266', background: 'rgba(88,101,242,0.08)', color: '#5865f2', fontWeight: 700, fontSize: 14, cursor: 'pointer' }}>
+                        💬 Post to Discord
                     </button>
                 </div>
+                <button onClick={handleReset} style={{ width: '100%', padding: '10px', borderRadius: 8, border: '1px solid var(--border-light)', background: 'var(--surface-bg)', color: 'var(--text-primary)', fontWeight: 700, fontSize: 14, cursor: 'pointer' }}>
+                    ↺ New Contest
+                </button>
             </div>
         );
     }
