@@ -78,17 +78,22 @@ const DiscordWebhookConfig = () => {
                         onClick={async () => {
                             if (!discordWebhook?.url) { toast.warning('Please enter a webhook URL first'); return; }
                             setIsTesting(true);
+                            const controller = new AbortController();
+                            const timeout = setTimeout(() => controller.abort(), 10000);
                             try {
                                 const res = await fetch(discordWebhook.url, {
                                     method: 'POST',
                                     headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify({ embeds: [{ title: '🎲 Test Message', description: 'Discord webhook is working! Dice rolls will appear here.', color: 0x5865F2 }] })
+                                    body: JSON.stringify({ embeds: [{ title: '🎲 Test Message', description: 'Discord webhook is working! Dice rolls will appear here.', color: 0x5865F2 }] }),
+                                    signal: controller.signal,
                                 });
                                 if (res.ok) toast.success('Test message sent! Check your Discord channel.');
                                 else toast.error('Failed to send. Check if the webhook URL is correct.');
-                            } catch {
-                                toast.error('Failed to send. Check the webhook URL.');
+                            } catch (e) {
+                                if (e.name === 'AbortError') toast.error('Request timed out. Check your webhook URL.');
+                                else toast.error('Failed to send. Check the webhook URL.');
                             } finally {
+                                clearTimeout(timeout);
                                 setIsTesting(false);
                             }
                         }}

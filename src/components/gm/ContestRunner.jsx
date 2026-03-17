@@ -311,7 +311,12 @@ const ContestRunner = () => {
     const computeTurnOrder = (pList, rnd, { firstId = null, lastId = null, scramble = false } = {}) => {
         let order;
         if (scramble) {
-            order = [...pList].sort(() => Math.random() - 0.5).map(p => p.id);
+            const arr = [...pList];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            order = arr.map(p => p.id);
         } else {
             const sorted = [...pList].sort((a, b) => {
                 const diff = getTotal(a) - getTotal(b);
@@ -647,13 +652,16 @@ const ContestRunner = () => {
             logParts.push(`${moveName}${moveContestType ? ` (${moveContestType})` : ''} [player] = ${appeal}`);
             if (keywordBonusLabel) logParts.push(`· ${keywordBonusLabel}`);
         } else {
-            logParts.push(`${moveName} [${baseRolls.join(',')}]${baseBonus ? `+${baseBonus}` : ''}`);
+            const diceLabel = getReadyActive ? `${moveName}★(2×)` : moveName;
+            logParts.push(`${diceLabel} [${baseRolls.join(',')}]${baseBonus ? `+${baseBonus}` : ''}`);
             if (typeBonusRolls.length)      logParts.push(`+[${typeBonusRolls[0]}] type`);
             if (maxVoltageBonusRolls.length) logParts.push(`+[${maxVoltageBonusRolls.join(',')}] MAX⚡`);
             if (keywordBonusRolls.length)    logParts.push(`+[${keywordBonusRolls.join(',')}] ${keyword}`);
             else if (keywordBonusLabel)      logParts.push(`· ${keywordBonusLabel}`);
             logParts.push(`= ${appeal}`);
         }
+        if (keyword === 'Interrupting Appeal')
+            logParts.push('· ⚠ INTERRUPTING APPEAL — acted first regardless of order');
         if (voltageChange !== 0)
             logParts.push(`· J${pendingJudge} ⚡${voltageChange > 0 ? '▲' : '▼'}${newVoltage}`);
         if (keyword === 'Unsettling')
@@ -1058,7 +1066,7 @@ const ContestRunner = () => {
 
     const pasteKeyword = parsedPaste ? normalizeKeyword(parsedPaste.effect || resolveMoveData(parsedPaste.moveName)?.contestEffect) : null;
 
-    const canConfirmPaste = !!parsedPaste && !!pendingJudge && !isSameMove;
+    const canConfirmPaste = !!parsedPaste && !!pendingJudge;
     const canRollNpc      = !!npcMoveName.trim() && !!pendingJudge;
 
     // Active effects for current participant
@@ -1222,7 +1230,7 @@ const ContestRunner = () => {
                                         cursor: canConfirmPaste ? 'pointer' : 'not-allowed',
                                     }}
                                 >
-                                    {!pendingJudge ? 'Select a judge to confirm' : isSameMove ? 'Same move — 0 appeal' : `✓ Confirm Score (${parsedPaste.score})`}
+                                    {!pendingJudge ? 'Select a judge to confirm' : isSameMove ? '✓ Confirm (0 appeal — same move)' : `✓ Confirm Score (${parsedPaste.score})`}
                                 </button>
                             </div>
                         )}

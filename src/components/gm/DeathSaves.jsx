@@ -133,7 +133,7 @@ const DeathSaves = () => {
                         }}>
                             Must roll ≤ <strong style={{ color: '#1976d2', fontSize: 18 }}>{trainerDC}</strong>
                             <span style={{ fontSize: 12, color: 'var(--text-muted)', marginLeft: 6 }}>
-                                ({trainerDC === 18 ? 'capped at 18' : `= level ${trainerLevel}`}, {trainerDC}% survival chance)
+                                ({trainerDC === 18 ? 'capped at 18' : `= level ${trainerLevel}`}, {Math.round(trainerDC / 20 * 100)}% survival chance)
                             </span>
                         </div>
                         <button

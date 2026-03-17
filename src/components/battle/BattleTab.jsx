@@ -134,6 +134,7 @@ const BattleTab = () => {
     const healingInventory = useMemo(() => inventory.filter(item => {
         const t = (item.type || '').toLowerCase();
         if (t !== 'healing' && t !== 'berry') return false;
+        if ((item.quantity ?? 1) <= 0) return false;
         return parseHealFormula(item.effect || '').type !== 'none';
     }), [inventory]);
 
