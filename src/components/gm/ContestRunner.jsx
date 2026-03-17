@@ -1185,7 +1185,7 @@ const ContestRunner = () => {
 
                     {/* SAME MOVE banner */}
                     {isSameMove && (
-                        <div style={{ padding: '8px 12px', borderRadius: 6, marginBottom: 10, background: 'rgba(198,40,40,0.08)', border: '1.5px solid #c62828', color: '#c62828', fontWeight: 700, fontSize: 13 }}>
+                        <div style={{ padding: '8px 12px', borderRadius: 6, marginBottom: 10, background: 'var(--tint-fail-bg)', border: '1.5px solid var(--color-danger-text)', color: 'var(--color-danger-text)', fontWeight: 700, fontSize: 13 }}>
                             ⚠ Same move as last round — 0 appeal this turn (voltage still applies)
                         </div>
                     )}
@@ -1241,7 +1241,7 @@ const ContestRunner = () => {
                                     <span style={{ marginLeft: 'auto', fontSize: 22, fontWeight: 800, color }}>{parsedPaste.score}</span>
                                 </div>
                                 {pasteTypeRel && !isSameMove && (
-                                    <div style={{ fontSize: 12, marginTop: 4, color: pasteTypeRel === 'same' ? 'var(--color-success-text)' : pasteTypeRel === 'opposite' ? '#c62828' : 'var(--text-muted)' }}>
+                                    <div style={{ fontSize: 12, marginTop: 4, color: pasteTypeRel === 'same' ? 'var(--color-success-text)' : pasteTypeRel === 'opposite' ? 'var(--color-danger-text)' : 'var(--text-muted)' }}>
                                         {pasteTypeRel === 'same'     && `✓ ${parsedPaste.moveContestType} move → raises judge voltage`}
                                         {pasteTypeRel === 'opposite' && `⚠ ${parsedPaste.moveContestType} move → lowers judge voltage`}
                                         {pasteTypeRel === 'adjacent' && `— no voltage effect`}
@@ -1303,7 +1303,7 @@ const ContestRunner = () => {
                             <div style={{ marginTop: 5, fontSize: 12 }}>
                                 {npcMoveData ? (
                                     <div>
-                                        <span style={{ color: npcTypeRel === 'same' ? 'var(--color-success-text)' : npcTypeRel === 'opposite' ? '#c62828' : 'var(--text-muted)' }}>
+                                        <span style={{ color: npcTypeRel === 'same' ? 'var(--color-success-text)' : npcTypeRel === 'opposite' ? 'var(--color-danger-text)' : 'var(--text-muted)' }}>
                                             ✓ {npcMoveData.contestType} · {npcMoveData.contestDice
                                                 ? npcMoveData.contestDice
                                                 : <em style={{ color: '#9c27b0' }}>no base dice</em>}
