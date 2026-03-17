@@ -204,6 +204,22 @@ export const buildHealEmbed = (roll, trainerName) => {
     return embed;
 };
 
+export const buildContestEmbed = (roll, trainerName) => {
+    const bonusStr = roll.bonus ? ` ${roll.bonus > 0 ? '+' : ''}${roll.bonus}` : '';
+    const CONTEST_COLORS = { Cool: 0x2196F3, Beauty: 0xE91E63, Cute: 0xFF9800, Smart: 0x4CAF50, Tough: 0x795548 };
+    const color = CONTEST_COLORS[roll.contestType] || 0x667EEA;
+    let description = `🎲 [${(roll.rolls || []).join(', ')}]${bonusStr} = **${roll.total}**`;
+    if (roll.contestEffect) description += `\n*${roll.contestEffect}*`;
+    return {
+        author: { name: trainerName },
+        title: `🎭 ${roll.pokemon} — ${roll.moveName}`,
+        description,
+        color,
+        footer: roll.contestType ? { text: `${roll.contestType} Appeal · ${roll.contestDice}` } : undefined,
+        timestamp: new Date().toISOString(),
+    };
+};
+
 export const buildCustomEmbed = (roll, trainerName) => {
     const bonusStr = roll.bonus ? ` + ${roll.bonus}` : '';
     return {
@@ -220,5 +236,6 @@ export const buildEmbed = (roll, trainerName) => {
     if (roll.type === 'trainer_skill') return buildTrainerSkillEmbed(roll, trainerName);
     if (roll.type === 'heal')          return buildHealEmbed(roll, trainerName);
     if (roll.type === 'custom')        return buildCustomEmbed(roll, trainerName);
+    if (roll.type === 'contest')       return buildContestEmbed(roll, trainerName);
     return null;
 };
