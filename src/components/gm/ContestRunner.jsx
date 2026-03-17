@@ -523,14 +523,15 @@ const ContestRunner = () => {
                 }
 
             } else if (keyword === 'Big Show') {
+                const isFourthOrFifth = turnIdx === 3 || turnIdx === 4;
                 const allSameJudge = roundJudgeTargets.length >= 3 &&
                     roundJudgeTargets.every(id => id === pendingJudge);
-                if (turnIdx >= 3 && allSameJudge) {
+                if (isFourthOrFifth && allSameJudge) {
                     const b = rollD4s(15);
                     keywordBonusRolls = b; keywordBonusLabel = 'Big Show! 15d4';
                     appeal = b.reduce((a, v) => a + v, 0); // replaces all
                 } else {
-                    keywordBonusLabel = turnIdx < 3
+                    keywordBonusLabel = !isFourthOrFifth
                         ? 'Big Show (not 4th/5th — no effect)'
                         : 'Big Show (not all same judge — no effect)';
                 }
