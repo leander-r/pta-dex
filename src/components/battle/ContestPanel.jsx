@@ -150,14 +150,15 @@ const ContestPanel = ({ selectedPokemon, gameData, onRoll }) => {
                                     style={{
                                         display: 'flex', alignItems: 'center', gap: 10,
                                         padding: '8px 12px', borderRadius: 7, cursor: 'pointer',
-                                        border: isSelected ? `2px solid ${c}` : `1px dashed ${c}66`,
+                                        border: isSelected ? `2px solid ${c}` : '1px dashed var(--border-medium)',
                                         background: isSelected ? `${c}22` : 'var(--surface-bg)',
+                                        color: 'var(--text-primary)',
                                         textAlign: 'left', width: '100%',
                                         transition: 'all 0.12s',
                                     }}
                                 >
                                     <div style={{ flex: 1, minWidth: 0 }}>
-                                        <div style={{ fontWeight: 700, fontSize: 13 }}>{move.name}</div>
+                                        <div style={{ fontWeight: 700, fontSize: 13, color: 'var(--text-primary)' }}>{move.name}</div>
                                         {move.contestEffect && (
                                             <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{move.contestEffect}</div>
                                         )}
@@ -180,14 +181,15 @@ const ContestPanel = ({ selectedPokemon, gameData, onRoll }) => {
                                 style={{
                                     display: 'flex', alignItems: 'center', gap: 10,
                                     padding: '8px 12px', borderRadius: 7, cursor: 'pointer',
-                                    border: isSelected ? `2px solid ${c}` : `1px solid ${c}33`,
+                                    border: isSelected ? `2px solid ${c}` : '1px solid var(--border-light)',
                                     background: isSelected ? `${c}22` : 'var(--surface-bg)',
+                                    color: 'var(--text-primary)',
                                     textAlign: 'left', width: '100%',
                                     transition: 'all 0.12s',
                                 }}
                             >
                                 <div style={{ flex: 1, minWidth: 0 }}>
-                                    <div style={{ fontWeight: 700, fontSize: 13 }}>{move.name}</div>
+                                    <div style={{ fontWeight: 700, fontSize: 13, color: 'var(--text-primary)' }}>{move.name}</div>
                                     {move.contestEffect && (
                                         <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{move.contestEffect}</div>
                                     )}
