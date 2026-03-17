@@ -386,6 +386,7 @@ const TrainerFeatures = () => {
                     <input
                         type="text"
                         placeholder="Search features..."
+                        aria-label="Search features"
                         value={featureSearch}
                         onChange={(e) => setFeatureSearch(e.target.value)}
                         style={{ flex: 1, minWidth: '150px', padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--border-medium, #ddd)', background: 'var(--input-bg)', color: 'var(--text-primary)' }}

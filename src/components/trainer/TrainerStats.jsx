@@ -71,7 +71,7 @@ const TrainerStats = () => {
                                     onClick={() => updateTrainerStat(stat.key, trainer.stats[stat.key] - 1)}
                                     aria-label={`Decrease ${stat.label}`}
                                     style={{
-                                        width: '24px', height: '24px', padding: 0,
+                                        width: '28px', height: '28px', padding: 0,
                                         fontSize: '16px', lineHeight: 1,
                                         border: `1px solid ${stat.color}66`,
                                         borderRadius: '4px',
@@ -109,7 +109,7 @@ const TrainerStats = () => {
                                     onClick={() => updateTrainerStat(stat.key, trainer.stats[stat.key] + 1)}
                                     aria-label={`Increase ${stat.label}`}
                                     style={{
-                                        width: '24px', height: '24px', padding: 0,
+                                        width: '28px', height: '28px', padding: 0,
                                         fontSize: '16px', lineHeight: 1,
                                         border: `1px solid ${stat.color}66`,
                                         borderRadius: '4px',

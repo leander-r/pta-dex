@@ -478,7 +478,7 @@ const PokemonCard = ({
                         {(() => {
                             const img = getPokemonDisplayImage(pokemon);
                             return img
-                                ? <img src={img} alt="" style={{ width: '56px', height: '56px', objectFit: 'cover' }} />
+                                ? <img src={img} alt={pokemon.name || pokemon.species || 'Pokémon'} style={{ width: '56px', height: '56px', objectFit: 'cover' }} />
                                 : <span style={{ fontSize: '24px' }}>🔴</span>;
                         })()}
                     </div>

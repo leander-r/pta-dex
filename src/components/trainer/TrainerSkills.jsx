@@ -144,6 +144,7 @@ const TrainerSkills = () => {
                 <input
                     type="text"
                     placeholder="Search skills..."
+                    aria-label="Search skills"
                     value={skillSearch}
                     onChange={e => setSkillSearch(e.target.value)}
                     style={{ flex: 1, minWidth: '140px', padding: '6px 10px', borderRadius: '6px', border: '1px solid var(--border-medium, #ddd)', background: 'var(--input-bg)', color: 'var(--text-primary)', fontSize: '13px' }}

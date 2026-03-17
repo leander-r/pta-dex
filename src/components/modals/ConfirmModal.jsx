@@ -93,6 +93,7 @@ const ConfirmModal = () => {
                         onClick={handleClose}
                         aria-label="Close modal"
                         title="Close"
+                        className="modal-close-btn"
                         style={{
                             background: 'rgba(255,255,255,0.2)',
                             border: '2px solid rgba(255,255,255,0.3)',
@@ -105,17 +106,9 @@ const ConfirmModal = () => {
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            transition: 'all 0.2s ease',
+                            transition: 'background 0.2s ease, transform 0.2s ease',
                             fontWeight: 'bold',
                             flexShrink: 0
-                        }}
-                        onMouseEnter={e => {
-                            e.currentTarget.style.background = 'rgba(255,255,255,0.35)';
-                            e.currentTarget.style.transform = 'rotate(90deg)';
-                        }}
-                        onMouseLeave={e => {
-                            e.currentTarget.style.background = 'rgba(255,255,255,0.2)';
-                            e.currentTarget.style.transform = 'rotate(0deg)';
                         }}
                     >
                         ×

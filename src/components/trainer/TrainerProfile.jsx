@@ -134,6 +134,7 @@ const TrainerProfile = () => {
                     value={trainer.name}
                     onChange={(e) => setTrainer(prev => ({ ...prev, name: e.target.value }))}
                     placeholder="Trainer Name..."
+                    aria-label="Trainer name"
                     style={{
                         flex: 1,
                         minWidth: 0,
@@ -175,6 +176,7 @@ const TrainerProfile = () => {
                         placeholder="—"
                         min="1"
                         max="999"
+                        aria-label="Trainer age"
                         style={{
                             width: '46px',
                             padding: '2px 4px',
@@ -300,6 +302,7 @@ const TrainerProfile = () => {
                     type="number"
                     value={trainer.money || 0}
                     onChange={(e) => setTrainer(prev => ({ ...prev, money: parseInt(e.target.value) || 0 }))}
+                    aria-label="Money (₽)"
                     style={{
                         flex: 1,
                         padding: '3px 6px',

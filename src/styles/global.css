@@ -1808,6 +1808,17 @@
             border-bottom: 2px solid var(--poke-orange-light);
         }
 
+        .modal-close-btn:hover {
+            background: rgba(255,255,255,0.35) !important;
+            transform: rotate(90deg);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .modal-close-btn:hover {
+                transform: none;
+            }
+        }
+
         .modal-header h3 {
             margin: 0;
             color: var(--poke-dark);
