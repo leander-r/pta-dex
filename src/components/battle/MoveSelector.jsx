@@ -37,8 +37,8 @@ const MoveSelector = ({ selectedPokemon, selectedMove, onSelectMove, showDetail,
                             className={selectedMove?.name !== move.name ? 'move-select-btn' : ''}
                             style={{
                                 flex: 1, padding: '10px',
-                                background: selectedMove?.name === move.name ? getTypeColor(move.type) : 'var(--surface-bg)',
-                                color: selectedMove?.name === move.name ? getContrastTextColor(getTypeColor(move.type)) : 'var(--text-primary)',
+                                background: selectedMove?.name === move.name ? `${getTypeColor(move.type)}22` : 'var(--surface-bg)',
+                                color: 'var(--text-primary)',
                                 border: 'none', cursor: 'pointer', textAlign: 'left'
                             }}
                         >
