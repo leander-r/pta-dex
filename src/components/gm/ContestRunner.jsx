@@ -8,6 +8,7 @@
 //   • Turn order: odd rounds low→high appeal; even rounds high→low
 //   • Move repetition: same move twice in a row = 0 appeal (voltage still changes)
 //   • Rounds = number of participants (standard)
+//   • All 23 PH2 contest effect keywords fully implemented
 //
 // Workflow:
 //   Setup  → GM enters participant names only (Trainer + Pokémon)
@@ -49,10 +50,71 @@ const getTypeRelation = (moveType, contestType) => {
 
 const ctColor = (id) => CONTEST_TYPES.find(t => t.id === id)?.color || '#667eea';
 
+// ── Contest effect keywords ─────────────────────────────────────────────────
+
+const KEYWORD_SET = new Set([
+    'Round Starter', 'Round Ender', 'Get Ready!', 'Reliable', 'Torrential Appeal',
+    'Reflective Appeal', 'Inversed Appeal', 'Final Appeal', 'Catching Up',
+    'Special Attention', 'Attention Grabber', 'Big Show', 'Incentives', 'Excitement',
+    'Hold That Thought', 'Scrambler', 'Quick Set', 'Slow Set', 'Good Show!',
+    'Seen Nothing Yet', 'Interrupting Appeal', 'Unsettling', 'No Effect',
+]);
+
+const normalizeKeyword = (effect) => {
+    if (!effect?.trim()) return null;
+    const t = effect.trim();
+    if (KEYWORD_SET.has(t)) return t;
+    const tl = t.toLowerCase();
+    for (const kw of KEYWORD_SET) {
+        if (kw.toLowerCase() === tl) return kw;
+    }
+    return null;
+};
+
+const KEYWORD_DESC = {
+    'Round Starter':      '+2d4 if you appeal first this round',
+    'Round Ender':        '+2d4 if you appeal last this round',
+    'Get Ready!':         'Next appeal: double your dice',
+    'Reliable':           'Using this move again next round scores 1d4 instead of 0',
+    'Torrential Appeal':  '1d4 / 2d4 / 3d4 based on turn position',
+    'Reflective Appeal':  '1d4 per voltage the judge currently has',
+    'Inversed Appeal':    '1d4 per voltage the judge is missing (6 − voltage)',
+    'Final Appeal':       '2× dice in the final round',
+    'Catching Up':        '+3d4 if you have the lowest total appeal',
+    'Special Attention':  '+3d4 if first to target this judge this round',
+    'Attention Grabber':  'Halve previous contestant\'s appeal for this judge; add difference to yours',
+    'Big Show':           '15d4 if all contestants target same judge (4th/5th turn only)',
+    'Incentives':         '+2d4 if you raise this judge\'s voltage',
+    'Excitement':         'This judge\'s voltage cannot decrease this round',
+    'Hold That Thought':  'This judge\'s voltage cannot increase this round',
+    'Scrambler':          'Next round\'s turn order is randomized',
+    'Quick Set':          'You go first in the next round',
+    'Slow Set':           'You go last in the next round',
+    'Good Show!':         '+3d4 if this judge\'s voltage was raised in each of the last 2 turns',
+    'Seen Nothing Yet':   '+3d4 if max voltage was reached this or last round',
+    'Interrupting Appeal':'Goes before all others this round regardless of order',
+    'Unsettling':         'All judges lose 1 voltage',
+    'No Effect':          'No special contest effect',
+};
+
+const KEYWORD_COLOR = {
+    'Round Starter':      '#4caf50', 'Round Ender':       '#4caf50',
+    'Final Appeal':       '#4caf50', 'Catching Up':       '#4caf50',
+    'Special Attention':  '#4caf50', 'Good Show!':        '#4caf50',
+    'Seen Nothing Yet':   '#4caf50', 'Incentives':        '#4caf50',
+    'Get Ready!':         '#e91e63', 'Reliable':          '#e91e63',
+    'Torrential Appeal':  '#2196f3', 'Reflective Appeal': '#2196f3', 'Inversed Appeal': '#2196f3',
+    'Attention Grabber':  '#f44336', 'Big Show':          '#f44336',
+    'Excitement':         '#ff9800', 'Hold That Thought': '#ff9800', 'Unsettling': '#ff9800',
+    'Scrambler':          '#9c27b0', 'Quick Set':         '#9c27b0',
+    'Slow Set':           '#9c27b0', 'Interrupting Appeal':'#9c27b0',
+    'No Effect':          '#9e9e9e',
+};
+
 // ── Dice helpers ───────────────────────────────────────────────────────────
 
 const rollD4s = (count) =>
-    Array.from({ length: count }, () => Math.floor(Math.random() * 4) + 1);
+    Array.from({ length: Math.max(0, Math.floor(count)) }, () => Math.floor(Math.random() * 4) + 1);
 
 const rollDiceStr = (diceStr) => {
     const { count, sides, bonus } = parseDice(diceStr);
@@ -61,22 +123,13 @@ const rollDiceStr = (diceStr) => {
     return { rolls, bonus, total: rolls.reduce((a, b) => a + b, 0) + bonus };
 };
 
-// Parse a string copied from ContestPanel's "Copy for GM" button.
-// Format: Name | Move | ContestType | Score | Effect  (effect optional)
-// Also accepts: Name | Move | Score  (older 3-field format)
 const parsePasteInput = (text) => {
     if (!text?.trim()) return null;
     const parts = text.split('|').map(s => s.trim());
     if (parts.length >= 4) {
         const score = parseInt(parts[3]);
         if (isNaN(score)) return null;
-        return {
-            name:            parts[0],
-            moveName:        parts[1],
-            moveContestType: parts[2],
-            score,
-            effect:          parts[4] || '',
-        };
+        return { name: parts[0], moveName: parts[1], moveContestType: parts[2], score, effect: parts[4] || '' };
     }
     if (parts.length === 3) {
         const score = parseInt(parts[2]);
@@ -105,7 +158,7 @@ const VoltageBar = ({ voltage, color }) => (
     </div>
 );
 
-const JudgeCard = ({ judge, color, selected, onSelect, disabled }) => (
+const JudgeCard = ({ judge, color, selected, onSelect, disabled, holdThought, excitement }) => (
     <button
         onClick={() => !disabled && onSelect(judge.id)}
         disabled={disabled}
@@ -123,9 +176,9 @@ const JudgeCard = ({ judge, color, selected, onSelect, disabled }) => (
             Judge {judge.id}
         </div>
         <VoltageBar voltage={judge.voltage} color={color} />
-        {judge.voltage === 6 && (
-            <div style={{ fontSize: 10, color: '#ff9800', fontWeight: 700, marginTop: 2 }}>MAX ⚡</div>
-        )}
+        {judge.voltage === 6 && <div style={{ fontSize: 10, color: '#ff9800', fontWeight: 700, marginTop: 2 }}>MAX ⚡</div>}
+        {holdThought && <div style={{ fontSize: 10, color: '#ff9800', fontWeight: 700, marginTop: 2 }}>🔒 Locked</div>}
+        {excitement && <div style={{ fontSize: 10, color: '#4caf50', fontWeight: 700, marginTop: 2 }}>🛡 Protected</div>}
     </button>
 );
 
@@ -138,6 +191,20 @@ const StepLabel = ({ n, label }) => (
         <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>{label}</span>
     </div>
 );
+
+const KeywordPill = ({ keyword }) => {
+    const kw = normalizeKeyword(keyword);
+    if (!kw || kw === 'No Effect') return null;
+    const c = KEYWORD_COLOR[kw] || '#9e9e9e';
+    return (
+        <span title={KEYWORD_DESC[kw]} style={{
+            padding: '1px 6px', borderRadius: 8, fontSize: 10, fontWeight: 700,
+            background: `${c}22`, border: `1px solid ${c}55`, color: c, cursor: 'help', whiteSpace: 'nowrap',
+        }}>
+            {kw}
+        </span>
+    );
+};
 
 // ── Main component ─────────────────────────────────────────────────────────
 
@@ -176,6 +243,28 @@ const ContestRunner = () => {
     // NPC roll path
     const [npcMoveName, setNpcMoveName] = useState('');
 
+    // ── Keyword effect state ───────────────────────────────────────────────
+    // Per-participant flags: { [id]: { getReadyActive: bool, reliableMove: string|null } }
+    const [participantEffects, setParticipantEffects] = useState({});
+    // Round-level: first to target each judge this round { [judgeId]: participantId }
+    const [judgeTargetedBy, setJudgeTargetedBy] = useState({});
+    // Ordered list of judgeIds targeted each turn this round (for Big Show check)
+    const [roundJudgeTargets, setRoundJudgeTargets] = useState([]);
+    // Last appeal result per judge { [judgeId]: { participantId, name, appeal } }
+    const [lastAppealByJudge, setLastAppealByJudge] = useState({});
+    // Judge protection flags (reset each round)
+    const [excitementJudges, setExcitementJudges]     = useState(new Set());
+    const [holdThoughtJudges, setHoldThoughtJudges]   = useState(new Set());
+    // Next-round order modifiers
+    const [nextRoundFirst,    setNextRoundFirst]       = useState(null);
+    const [nextRoundLast,     setNextRoundLast]        = useState(null);
+    const [scrambleNextRound, setScrambleNextRound]    = useState(false);
+    // Voltage raise history per judge (last 2 turns): { [judgeId]: bool[] }
+    const [recentVoltageRaises, setRecentVoltageRaises] = useState({});
+    // Max voltage tracking for Seen Nothing Yet
+    const [maxVoltageHitThisRound, setMaxVoltageHitThisRound] = useState(false);
+    const [maxVoltageHitLastRound, setMaxVoltageHitLastRound] = useState(false);
+
     const numRounds = participants.length || 4;
 
     // ── Move data helpers ──────────────────────────────────────────────────
@@ -188,7 +277,6 @@ const ContestRunner = () => {
         return key ? GAME_DATA.moves[key] : null;
     };
 
-    // NPC reference chips for the selected contest type
     const npcMoveOptions = useMemo(() => {
         if (!contestType || !GAME_DATA?.moves) return {};
         return Object.fromEntries(
@@ -220,12 +308,24 @@ const ContestRunner = () => {
         setShowImport(false);
     };
 
-    const computeTurnOrder = (pList, rnd) => {
-        const sorted = [...pList].sort((a, b) => {
-            const diff = getTotal(a) - getTotal(b);
-            return rnd % 2 === 1 ? diff : -diff;
-        });
-        return sorted.map(p => p.id);
+    const computeTurnOrder = (pList, rnd, { firstId = null, lastId = null, scramble = false } = {}) => {
+        let order;
+        if (scramble) {
+            order = [...pList].sort(() => Math.random() - 0.5).map(p => p.id);
+        } else {
+            const sorted = [...pList].sort((a, b) => {
+                const diff = getTotal(a) - getTotal(b);
+                return rnd % 2 === 1 ? diff : -diff;
+            });
+            order = sorted.map(p => p.id);
+        }
+        if (firstId && order.includes(firstId)) {
+            order = [firstId, ...order.filter(id => id !== firstId)];
+        }
+        if (lastId && order.includes(lastId)) {
+            order = [...order.filter(id => id !== lastId), lastId];
+        }
+        return order;
     };
 
     const handleStart = () => {
@@ -242,6 +342,18 @@ const ContestRunner = () => {
         setPastedText('');
         setParsedPaste(null);
         setNpcMoveName('');
+        setParticipantEffects({});
+        setJudgeTargetedBy({});
+        setRoundJudgeTargets([]);
+        setLastAppealByJudge({});
+        setExcitementJudges(new Set());
+        setHoldThoughtJudges(new Set());
+        setNextRoundFirst(null);
+        setNextRoundLast(null);
+        setScrambleNextRound(false);
+        setRecentVoltageRaises({});
+        setMaxVoltageHitThisRound(false);
+        setMaxVoltageHitLastRound(false);
     };
 
     // ── Appeal helpers ─────────────────────────────────────────────────────
@@ -261,80 +373,303 @@ const ContestRunner = () => {
     const handleRoll = ({ moveName, moveContestType, diceStr, effect = '', manualScore = null }) => {
         if (!pendingJudge || !currentParticipant) return;
 
-        const p         = currentParticipant;
-        const judge     = judges.find(j => j.id === pendingJudge);
-        const typeRel   = getTypeRelation(moveContestType, contestType);
-        const isSameMove = p.rounds.length > 0 && lastMoves[p.id] === moveName;
+        const p        = currentParticipant;
+        const judge    = judges.find(j => j.id === pendingJudge);
+        const typeRel  = getTypeRelation(moveContestType, contestType);
+        const pEffects = participantEffects[p.id] || {};
+        const keyword  = normalizeKeyword(effect);
+        const isNPC    = manualScore === null;
 
+        // ── Same-move check ────────────────────────────────────────────────
+        const reliableActive = pEffects.reliableMove === moveName;
+        const isSameMove     = p.rounds.length > 0 && lastMoves[p.id] === moveName && !reliableActive;
+        const getReadyActive = !!pEffects.getReadyActive;
+
+        // ── Compute base appeal ────────────────────────────────────────────
         let appeal = 0;
         let baseRolls = [], baseBonus = 0, typeBonusRolls = [], maxVoltageBonusRolls = [];
+        let keywordBonusRolls = [], keywordBonusLabel = '';
+        let reliableRolls = [];
 
         if (isSameMove) {
             appeal = 0;
-        } else if (manualScore !== null) {
-            appeal = manualScore;
+        } else if (reliableActive) {
+            // Reliable: same move again scores 1d4 instead of 0
+            reliableRolls = rollD4s(1);
+            appeal = reliableRolls[0];
+        } else if (isNPC) {
+            // ── NPC path — apply replacement keywords ──────────────────────
+            if (keyword === 'Torrential Appeal') {
+                const pos    = turnIdx;
+                const isLast = pos === participants.length - 1;
+                const count  = isLast ? 3 : pos <= 1 ? 1 : 2;
+                baseRolls = rollD4s(count);
+                appeal    = baseRolls.reduce((a, b) => a + b, 0);
+            } else if (keyword === 'Reflective Appeal') {
+                const count = Math.max(1, judge.voltage);
+                baseRolls   = rollD4s(count);
+                appeal      = baseRolls.reduce((a, b) => a + b, 0);
+            } else if (keyword === 'Inversed Appeal') {
+                const count = Math.max(1, 6 - judge.voltage);
+                baseRolls   = rollD4s(count);
+                appeal      = baseRolls.reduce((a, b) => a + b, 0);
+            } else {
+                let effectiveDice = diceStr || '1d4';
+                // Get Ready! doubles the dice
+                if (getReadyActive) {
+                    const { count: c, sides: s, bonus: b } = parseDice(effectiveDice);
+                    if (c && s) effectiveDice = `${c * 2}d${s}${b ? `+${b * 2}` : ''}`;
+                }
+                // Final Appeal doubles the dice in the last round
+                if (keyword === 'Final Appeal' && round === numRounds) {
+                    const { count: c, sides: s, bonus: b } = parseDice(effectiveDice);
+                    if (c && s) effectiveDice = `${c * 2}d${s}${b ? `+${b * 2}` : ''}`;
+                }
+                const base = rollDiceStr(effectiveDice);
+                baseRolls  = base.rolls;
+                baseBonus  = base.bonus;
+                appeal     = base.total;
+                if (typeRel === 'same') {
+                    typeBonusRolls = rollD4s(1);
+                    appeal += typeBonusRolls[0];
+                }
+            }
         } else {
-            const base = rollDiceStr(diceStr || '1d4');
-            baseRolls = base.rolls;
-            baseBonus = base.bonus;
-            appeal = base.total;
-            if (typeRel === 'same') {
-                typeBonusRolls = rollD4s(1);
-                appeal += typeBonusRolls[0];
+            // ── Player path — use submitted score as base ──────────────────
+            appeal = manualScore;
+        }
+
+        // ── Keyword additive bonuses (apply to both NPC and player) ────────
+        if (!isSameMove && !reliableActive) {
+            if (keyword === 'Round Starter' && turnIdx === 0) {
+                const b = rollD4s(2);
+                keywordBonusRolls = b; keywordBonusLabel = 'Round Starter +2d4';
+                appeal += b.reduce((a, v) => a + v, 0);
+
+            } else if (keyword === 'Round Ender' && turnIdx === participants.length - 1) {
+                const b = rollD4s(2);
+                keywordBonusRolls = b; keywordBonusLabel = 'Round Ender +2d4';
+                appeal += b.reduce((a, v) => a + v, 0);
+
+            } else if (keyword === 'Catching Up') {
+                const myTotal  = getTotal(p);
+                const isLowest = participants.every(other => other.id === p.id || getTotal(other) >= myTotal);
+                if (isLowest) {
+                    const b = rollD4s(3);
+                    keywordBonusRolls = b; keywordBonusLabel = 'Catching Up +3d4';
+                    appeal += b.reduce((a, v) => a + v, 0);
+                } else {
+                    keywordBonusLabel = 'Catching Up (not lowest — no bonus)';
+                }
+
+            } else if (keyword === 'Special Attention') {
+                if (!judgeTargetedBy[pendingJudge]) {
+                    const b = rollD4s(3);
+                    keywordBonusRolls = b; keywordBonusLabel = 'Special Attention +3d4';
+                    appeal += b.reduce((a, v) => a + v, 0);
+                } else {
+                    keywordBonusLabel = 'Special Attention (judge already targeted — no bonus)';
+                }
+
+            } else if (keyword === 'Good Show!') {
+                const raises = recentVoltageRaises[pendingJudge] || [];
+                if (raises.length >= 2 && raises[raises.length - 1] && raises[raises.length - 2]) {
+                    const b = rollD4s(3);
+                    keywordBonusRolls = b; keywordBonusLabel = 'Good Show! +3d4';
+                    appeal += b.reduce((a, v) => a + v, 0);
+                } else {
+                    keywordBonusLabel = 'Good Show! (voltage not raised last 2 turns — no bonus)';
+                }
+
+            } else if (keyword === 'Seen Nothing Yet') {
+                if (maxVoltageHitThisRound || maxVoltageHitLastRound) {
+                    const b = rollD4s(3);
+                    keywordBonusRolls = b; keywordBonusLabel = 'Seen Nothing Yet +3d4';
+                    appeal += b.reduce((a, v) => a + v, 0);
+                } else {
+                    keywordBonusLabel = 'Seen Nothing Yet (no max voltage — no bonus)';
+                }
+
+            } else if (keyword === 'Attention Grabber') {
+                const lastAppeal = lastAppealByJudge[pendingJudge];
+                if (lastAppeal && lastAppeal.appeal > 0) {
+                    const stolen = Math.floor(lastAppeal.appeal / 2);
+                    if (stolen > 0) {
+                        keywordBonusLabel = `Attention Grabber +${stolen} (halved ${lastAppeal.name})`;
+                        appeal += stolen;
+                    }
+                } else {
+                    keywordBonusLabel = 'Attention Grabber (no previous appeal — no bonus)';
+                }
+
+            } else if (keyword === 'Big Show') {
+                const allSameJudge = roundJudgeTargets.length >= 3 &&
+                    roundJudgeTargets.every(id => id === pendingJudge);
+                if (turnIdx >= 3 && allSameJudge) {
+                    const b = rollD4s(15);
+                    keywordBonusRolls = b; keywordBonusLabel = 'Big Show! 15d4';
+                    appeal = b.reduce((a, v) => a + v, 0); // replaces all
+                } else {
+                    keywordBonusLabel = turnIdx < 3
+                        ? 'Big Show (not 4th/5th — no effect)'
+                        : 'Big Show (not all same judge — no effect)';
+                }
+
+            } else if (keyword === 'Final Appeal' && !isNPC && round === numRounds) {
+                keywordBonusLabel = 'Final Appeal (player should have 2× dice applied)';
             }
         }
 
-        // Voltage
-        let newVoltage = judge.voltage;
+        // ── Voltage changes ────────────────────────────────────────────────
+        let newVoltage    = judge.voltage;
         let voltageChange = 0;
-        if (typeRel === 'same' && judge.voltage < 6) {
-            newVoltage = judge.voltage + 1;
-            voltageChange = +1;
-            if (newVoltage === 6) {
-                maxVoltageBonusRolls = rollD4s(4);
-                appeal += maxVoltageBonusRolls.reduce((a, b) => a + b, 0);
+        let newJudges     = [...judges];
+
+        if (!isSameMove) {
+            // Apply Excitement / Hold That Thought side effects first
+            if (keyword === 'Excitement') {
+                setExcitementJudges(prev => new Set([...prev, pendingJudge]));
             }
-        } else if (typeRel === 'opposite' && judge.voltage > 1) {
-            newVoltage = judge.voltage - 1;
-            voltageChange = -1;
+            if (keyword === 'Hold That Thought') {
+                setHoldThoughtJudges(prev => new Set([...prev, pendingJudge]));
+            }
+
+            // Type-based voltage change respecting judge protection
+            const canRaise = typeRel === 'same' && judge.voltage < 6 && !holdThoughtJudges.has(pendingJudge) && keyword !== 'Hold That Thought';
+            const canLower = typeRel === 'opposite' && judge.voltage > 1 && !excitementJudges.has(pendingJudge) && keyword !== 'Excitement';
+
+            if (canRaise) {
+                newVoltage    = judge.voltage + 1;
+                voltageChange = +1;
+                if (newVoltage === 6) {
+                    maxVoltageBonusRolls = rollD4s(4);
+                    appeal += maxVoltageBonusRolls.reduce((a, b) => a + b, 0);
+                    setMaxVoltageHitThisRound(true);
+                }
+            } else if (canLower) {
+                newVoltage    = judge.voltage - 1;
+                voltageChange = -1;
+            }
+
+            // Incentives: +2d4 if voltage was raised
+            if (keyword === 'Incentives' && voltageChange > 0) {
+                const b = rollD4s(2);
+                keywordBonusRolls = [...keywordBonusRolls, ...b];
+                keywordBonusLabel = 'Incentives +2d4';
+                appeal += b.reduce((a, v) => a + v, 0);
+            }
+
+            // Unsettling: lower ALL judges by 1
+            if (keyword === 'Unsettling') {
+                newJudges = judges.map(j => ({ ...j, voltage: Math.max(1, j.voltage - 1) }));
+                // The targeted judge's value is also updated via the map above
+                voltageChange = -1;
+            } else {
+                newJudges = judges.map(j => j.id === pendingJudge ? { ...j, voltage: newVoltage } : j);
+            }
         }
+        setJudges(newJudges);
 
-        setJudges(judges.map(j => j.id === pendingJudge ? { ...j, voltage: newVoltage } : j));
+        // ── Next-round order modifiers ─────────────────────────────────────
+        const newEffects = { ...pEffects };
+        if (keyword === 'Get Ready!') {
+            newEffects.getReadyActive = true;
+        } else if (getReadyActive) {
+            newEffects.getReadyActive = false; // consumed
+        }
+        if (keyword === 'Reliable') {
+            newEffects.reliableMove = moveName;
+        } else if (reliableActive) {
+            newEffects.reliableMove = null; // consumed
+        } else {
+            newEffects.reliableMove = null; // different move clears flag
+        }
+        if (keyword === 'Quick Set')    setNextRoundFirst(p.id);
+        if (keyword === 'Slow Set')     setNextRoundLast(p.id);
+        if (keyword === 'Scrambler')    setScrambleNextRound(true);
+        setParticipantEffects(prev => ({ ...prev, [p.id]: newEffects }));
 
-        setParticipants(prev => prev.map(p2 =>
-            p2.id === p.id ? { ...p2, rounds: [...p2.rounds, {
-                judgeId: pendingJudge,
-                moveName, moveContestType, effect, diceStr,
-                appeal, baseRolls, baseBonus, typeBonusRolls, maxVoltageBonusRolls,
-                isSameMove, typeRel, voltageChange,
-                isManual: manualScore !== null,
-            }] } : p2
-        ));
+        // ── Attention Grabber retroactive modification ─────────────────────
+        const lastAppeal = lastAppealByJudge[pendingJudge];
+        const attentionStolen = keyword === 'Attention Grabber' && lastAppeal && lastAppeal.appeal > 0
+            ? Math.floor(lastAppeal.appeal / 2)
+            : 0;
+
+        // ── Save round result + apply Attention Grabber in one update ──────
+        const roundEntry = {
+            judgeId: pendingJudge,
+            moveName, moveContestType, effect, keyword, diceStr,
+            appeal, baseRolls, baseBonus, typeBonusRolls, maxVoltageBonusRolls,
+            keywordBonusRolls, keywordBonusLabel, reliableRolls,
+            isSameMove, typeRel, voltageChange,
+            isManual: !isNPC, getReadyApplied: getReadyActive, reliableApplied: reliableActive,
+        };
+
+        setParticipants(prev => {
+            let updated = prev;
+            // Halve previous contestant's appeal for Attention Grabber
+            if (attentionStolen > 0) {
+                updated = prev.map(p2 => {
+                    if (p2.id !== lastAppeal.participantId) return p2;
+                    const newRounds = [...p2.rounds];
+                    const lastIdx   = newRounds.length - 1;
+                    if (lastIdx >= 0 && newRounds[lastIdx].judgeId === pendingJudge) {
+                        newRounds[lastIdx] = { ...newRounds[lastIdx], appeal: newRounds[lastIdx].appeal - attentionStolen };
+                    }
+                    return { ...p2, rounds: newRounds };
+                });
+            }
+            // Add this participant's round entry
+            return updated.map(p2 =>
+                p2.id === p.id ? { ...p2, rounds: [...p2.rounds, roundEntry] } : p2
+            );
+        });
+
         setLastMoves(prev => ({ ...prev, [p.id]: moveName }));
 
-        // Log
-        let logParts = [`${p.name} → J${pendingJudge}: `];
+        // ── Update round tracking state ────────────────────────────────────
+        setJudgeTargetedBy(prev => prev[pendingJudge] ? prev : { ...prev, [pendingJudge]: p.id });
+        setRoundJudgeTargets(prev => [...prev, pendingJudge]);
+        setLastAppealByJudge(prev => ({ ...prev, [pendingJudge]: { participantId: p.id, name: p.name, appeal } }));
+        setRecentVoltageRaises(prev => {
+            const raises  = prev[pendingJudge] || [];
+            const updated = [...raises, voltageChange > 0].slice(-2);
+            return { ...prev, [pendingJudge]: updated };
+        });
+
+        // ── Build log entry ────────────────────────────────────────────────
+        const logParts = [`${p.name} → J${pendingJudge}: `];
         if (isSameMove) {
             logParts.push('SAME MOVE — 0 appeal');
-        } else if (manualScore !== null) {
+        } else if (reliableActive) {
+            logParts.push(`${moveName} [Reliable: ${reliableRolls[0]}] = ${appeal}`);
+        } else if (!isNPC) {
             logParts.push(`${moveName}${moveContestType ? ` (${moveContestType})` : ''} [player] = ${appeal}`);
+            if (keywordBonusLabel) logParts.push(`· ${keywordBonusLabel}`);
         } else {
             logParts.push(`${moveName} [${baseRolls.join(',')}]${baseBonus ? `+${baseBonus}` : ''}`);
             if (typeBonusRolls.length)      logParts.push(`+[${typeBonusRolls[0]}] type`);
             if (maxVoltageBonusRolls.length) logParts.push(`+[${maxVoltageBonusRolls.join(',')}] MAX⚡`);
+            if (keywordBonusRolls.length)    logParts.push(`+[${keywordBonusRolls.join(',')}] ${keyword}`);
+            else if (keywordBonusLabel)      logParts.push(`· ${keywordBonusLabel}`);
             logParts.push(`= ${appeal}`);
         }
         if (voltageChange !== 0)
             logParts.push(`· J${pendingJudge} ⚡${voltageChange > 0 ? '▲' : '▼'}${newVoltage}`);
+        if (keyword === 'Unsettling')
+            logParts.push('· All judges ⚡▼');
 
         const logColor = maxVoltageBonusRolls.length ? '#ff9800'
-            : voltageChange > 0 ? '#4caf50' : voltageChange < 0 ? '#f44336' : 'var(--text-secondary)';
+            : keyword === 'Big Show' ? '#f44336'
+            : voltageChange > 0 ? '#4caf50'
+            : voltageChange < 0 ? '#f44336'
+            : 'var(--text-secondary)';
 
         setLog(prev => [...prev, { text: logParts.join(' '), color: logColor }]);
 
-        // Post turn result to Discord
+        // ── Post turn result to Discord ────────────────────────────────────
         const judgeIndex = judges.findIndex(j => j.id === pendingJudge);
-        const turnEmbed = buildContestTurnEmbed({
+        const turnEmbed  = buildContestTurnEmbed({
             contestType, round, participantName: p.name, moveName, appeal,
             judgeIdx: judgeIndex, voltageChange, newVoltage,
             isSameMove, isMaxVoltage: maxVoltageBonusRolls.length > 0, effect,
@@ -375,13 +710,30 @@ const ContestRunner = () => {
     const handleNextRound = () => {
         const nextRound = round + 1;
         if (nextRound > numRounds) { setPhase('results'); return; }
-        setTurnOrder(computeTurnOrder(participants, nextRound));
+        setTurnOrder(computeTurnOrder(participants, nextRound, {
+            firstId: nextRoundFirst,
+            lastId:  nextRoundLast,
+            scramble: scrambleNextRound,
+        }));
         setTurnIdx(0);
         setPendingJudge(null);
         setRound(nextRound);
         setPastedText('');
         setParsedPaste(null);
         setNpcMoveName('');
+        // Reset round-level state
+        setJudgeTargetedBy({});
+        setRoundJudgeTargets([]);
+        setLastAppealByJudge({});
+        setExcitementJudges(new Set());
+        setHoldThoughtJudges(new Set());
+        // Carry over max voltage flag
+        setMaxVoltageHitLastRound(maxVoltageHitThisRound);
+        setMaxVoltageHitThisRound(false);
+        // Reset next-round order modifiers
+        setNextRoundFirst(null);
+        setNextRoundLast(null);
+        setScrambleNextRound(false);
     };
 
     const handleReset = () => {
@@ -400,6 +752,18 @@ const ContestRunner = () => {
         setNpcMoveName('');
         setImportText('');
         setShowImport(false);
+        setParticipantEffects({});
+        setJudgeTargetedBy({});
+        setRoundJudgeTargets([]);
+        setLastAppealByJudge({});
+        setExcitementJudges(new Set());
+        setHoldThoughtJudges(new Set());
+        setNextRoundFirst(null);
+        setNextRoundLast(null);
+        setScrambleNextRound(false);
+        setRecentVoltageRaises({});
+        setMaxVoltageHitThisRound(false);
+        setMaxVoltageHitLastRound(false);
     };
 
     const sortedByAppeal = [...participants].sort((a, b) => getTotal(b) - getTotal(a));
@@ -430,14 +794,15 @@ const ContestRunner = () => {
                         <div style={{ padding: '12px 14px', borderRadius: '0 0 7px 7px', border: '1px solid var(--border-light)', borderTop: 'none', background: 'var(--bg-light)', fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
                             <ol style={{ margin: 0, paddingLeft: 18 }}>
                                 <li><strong>Setup:</strong> Choose contest type, add all participants (Trainer + Pokémon name).</li>
-                                <li><strong>Each turn:</strong> The active participant rolls their appeal in the Dice Roller tab, then copies the result with "Copy for GM".</li>
-                                <li><strong>Paste:</strong> Paste their result in the field below, select which Judge they declared, and hit Confirm.</li>
-                                <li><strong>NPC turns:</strong> Use the NPC section to pick a move and roll directly for non-player entries.</li>
-                                <li><strong>Round end:</strong> After all participants appeal, click Next Round. Repeat for all rounds.</li>
-                                <li><strong>Results:</strong> Final standings shown after the last round. Post to Discord if webhook is configured.</li>
+                                <li><strong>Each turn:</strong> The active participant rolls in the Dice Roller tab, then copies with "Copy for GM".</li>
+                                <li><strong>Paste:</strong> Paste their result here, select which Judge they declared, and hit Confirm.</li>
+                                <li><strong>NPC turns:</strong> Use the NPC section to pick a move and roll directly.</li>
+                                <li><strong>Round end:</strong> After all appeals, click Next Round. Repeat for all rounds.</li>
+                                <li><strong>Results:</strong> Final standings shown after the last round.</li>
                             </ol>
                             <div style={{ marginTop: 8, color: 'var(--text-muted)', fontSize: 11 }}>
                                 Turn order: Rounds 1, 3, 5… go lowest→highest appeal. Rounds 2, 4, 6… go highest→lowest.
+                                Move keywords (Round Starter, Get Ready!, etc.) are applied automatically.
                             </div>
                         </div>
                     )}
@@ -584,7 +949,7 @@ const ContestRunner = () => {
         const copyResults = () => {
             const lines = [`🏆 ${contestType} Contest Results`, ''];
             sortedByAppeal.forEach((p, idx) => {
-                const medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `#${idx + 1}`;
+                const medal  = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `#${idx + 1}`;
                 const rounds = p.rounds.map((r, i) => `R${i + 1}:${r.appeal}`).join('  ');
                 lines.push(`${medal} ${p.name} — ${getTotal(p)} appeal  (${rounds})`);
             });
@@ -675,7 +1040,8 @@ const ContestRunner = () => {
     // ── Appeal phase ───────────────────────────────────────────────────────
 
     const isSameMove = currentParticipant && parsedPaste
-        ? lastMoves[currentParticipant.id] === parsedPaste.moveName
+        ? lastMoves[currentParticipant.id] === parsedPaste.moveName &&
+          (participantEffects[currentParticipant.id]?.reliableMove !== parsedPaste.moveName)
         : false;
 
     const pasteTypeRel = parsedPaste?.moveContestType
@@ -688,9 +1054,17 @@ const ContestRunner = () => {
 
     const npcMoveData = resolveMoveData(npcMoveName);
     const npcTypeRel  = npcMoveData?.contestType ? getTypeRelation(npcMoveData.contestType, contestType) : null;
+    const npcKeyword  = normalizeKeyword(npcMoveData?.contestEffect);
+
+    const pasteKeyword = parsedPaste ? normalizeKeyword(parsedPaste.effect || resolveMoveData(parsedPaste.moveName)?.contestEffect) : null;
 
     const canConfirmPaste = !!parsedPaste && !!pendingJudge && !isSameMove;
     const canRollNpc      = !!npcMoveName.trim() && !!pendingJudge;
+
+    // Active effects for current participant
+    const curEffects       = currentParticipant ? (participantEffects[currentParticipant.id] || {}) : {};
+    const curGetReady      = !!curEffects.getReadyActive;
+    const curReliableMove  = curEffects.reliableMove || null;
 
     return (
         <div>
@@ -702,6 +1076,7 @@ const ContestRunner = () => {
                     <p style={{ margin: 0, fontSize: 13, color: 'var(--text-muted)' }}>
                         Round {round} of {numRounds} &nbsp;·&nbsp;
                         {round % 2 === 1 ? 'Lowest → Highest appeal order' : 'Highest → Lowest appeal order'}
+                        {scrambleNextRound && <span style={{ color: '#9c27b0', marginLeft: 6 }}>· Next round scrambled 🔀</span>}
                     </p>
                 </div>
                 <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -734,6 +1109,8 @@ const ContestRunner = () => {
                         selected={pendingJudge === j.id}
                         onSelect={setPendingJudge}
                         disabled={allDoneThisRound || !currentParticipant}
+                        holdThought={holdThoughtJudges.has(j.id)}
+                        excitement={excitementJudges.has(j.id)}
                     />
                 ))}
             </div>
@@ -742,11 +1119,23 @@ const ContestRunner = () => {
             {!allDoneThisRound && currentParticipant ? (
                 <div style={{ padding: '14px 16px', borderRadius: 10, marginBottom: 14, background: `${color}12`, border: `2px solid ${color}55` }}>
 
-                    {/* Who's up */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+                    {/* Who's up + active effect flags */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10, flexWrap: 'wrap' }}>
                         <div style={{ flex: 1 }}>
                             <span style={{ fontWeight: 800, fontSize: 17 }}>{currentParticipant.name}</span>
                             <span style={{ fontSize: 12, color: 'var(--text-muted)', marginLeft: 8 }}>— it's your turn!</span>
+                        </div>
+                        <div style={{ display: 'flex', gap: 4, alignItems: 'center', flexWrap: 'wrap' }}>
+                            {curGetReady && (
+                                <span title="Get Ready! is active — this turn's dice are doubled" style={{ padding: '2px 8px', borderRadius: 8, fontSize: 11, fontWeight: 700, background: '#e91e6322', border: '1px solid #e91e6344', color: '#e91e63' }}>
+                                    ⚡ Get Ready! (2× dice)
+                                </span>
+                            )}
+                            {curReliableMove && (
+                                <span title={`Reliable: using ${curReliableMove} again scores 1d4`} style={{ padding: '2px 8px', borderRadius: 8, fontSize: 11, fontWeight: 700, background: '#e91e6322', border: '1px solid #e91e6344', color: '#e91e63' }}>
+                                    ♻ Reliable ({curReliableMove})
+                                </span>
+                            )}
                         </div>
                         <div style={{ fontSize: 12, color: 'var(--text-muted)', flexShrink: 0 }}>
                             Total: <strong style={{ fontSize: 15, color: 'var(--text-primary)' }}>{getTotal(currentParticipant)}</strong>
@@ -797,23 +1186,29 @@ const ContestRunner = () => {
                                         ⚠ Name "{parsedPaste.name}" doesn't match current participant — check you're entering the right score
                                     </div>
                                 )}
-                                <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                                     <span style={{ fontWeight: 700, fontSize: 14 }}>{parsedPaste.moveName || '—'}</span>
                                     {parsedPaste.moveContestType && (
                                         <span style={{ fontSize: 11, padding: '1px 7px', borderRadius: 8, background: ctColor(parsedPaste.moveContestType), color: 'white', fontWeight: 700 }}>
                                             {parsedPaste.moveContestType}
                                         </span>
                                     )}
-                                    {parsedPaste.effect && (
+                                    {pasteKeyword && <KeywordPill keyword={pasteKeyword} />}
+                                    {parsedPaste.effect && !pasteKeyword && (
                                         <span style={{ fontSize: 11, color: 'var(--text-muted)', fontStyle: 'italic' }}>{parsedPaste.effect}</span>
                                     )}
                                     <span style={{ marginLeft: 'auto', fontSize: 22, fontWeight: 800, color }}>{parsedPaste.score}</span>
                                 </div>
                                 {pasteTypeRel && !isSameMove && (
                                     <div style={{ fontSize: 12, marginTop: 4, color: pasteTypeRel === 'same' ? 'var(--color-success-text)' : pasteTypeRel === 'opposite' ? '#c62828' : 'var(--text-muted)' }}>
-                                        {pasteTypeRel === 'same'     && `✓ ${parsedPaste.moveContestType} move → +1d4 bonus + raises judge voltage`}
+                                        {pasteTypeRel === 'same'     && `✓ ${parsedPaste.moveContestType} move → raises judge voltage`}
                                         {pasteTypeRel === 'opposite' && `⚠ ${parsedPaste.moveContestType} move → lowers judge voltage`}
                                         {pasteTypeRel === 'adjacent' && `— no voltage effect`}
+                                    </div>
+                                )}
+                                {pasteKeyword && KEYWORD_DESC[pasteKeyword] && (
+                                    <div style={{ fontSize: 11, marginTop: 4, color: KEYWORD_COLOR[pasteKeyword] || 'var(--text-muted)', fontWeight: 600 }}>
+                                        ✦ {KEYWORD_DESC[pasteKeyword]}
                                     </div>
                                 )}
                                 <button
@@ -866,12 +1261,21 @@ const ContestRunner = () => {
                         {npcMoveName.trim() && (
                             <div style={{ marginTop: 5, fontSize: 12 }}>
                                 {npcMoveData ? (
-                                    <span style={{ color: npcTypeRel === 'same' ? 'var(--color-success-text)' : npcTypeRel === 'opposite' ? '#c62828' : 'var(--text-muted)' }}>
-                                        ✓ {npcMoveData.contestType} · {npcMoveData.contestDice}
-                                        {npcMoveData.contestEffect && ` · ${npcMoveData.contestEffect}`}
-                                        {npcTypeRel === 'same'     && ' — +1d4 bonus + raises voltage'}
-                                        {npcTypeRel === 'opposite' && ' — lowers voltage'}
-                                    </span>
+                                    <div>
+                                        <span style={{ color: npcTypeRel === 'same' ? 'var(--color-success-text)' : npcTypeRel === 'opposite' ? '#c62828' : 'var(--text-muted)' }}>
+                                            ✓ {npcMoveData.contestType} · {npcMoveData.contestDice}
+                                            {npcTypeRel === 'same'     && ' — +1d4 bonus + raises voltage'}
+                                            {npcTypeRel === 'opposite' && ' — lowers voltage'}
+                                        </span>
+                                        {npcKeyword && (
+                                            <span style={{ marginLeft: 6 }}><KeywordPill keyword={npcKeyword} /></span>
+                                        )}
+                                        {npcKeyword && KEYWORD_DESC[npcKeyword] && (
+                                            <div style={{ marginTop: 3, color: KEYWORD_COLOR[npcKeyword] || 'var(--text-muted)', fontWeight: 600 }}>
+                                                ✦ {KEYWORD_DESC[npcKeyword]}
+                                            </div>
+                                        )}
+                                    </div>
                                 ) : (
                                     <span style={{ color: '#e65100' }}>⚠ Move not found — will roll 1d4</span>
                                 )}
@@ -880,13 +1284,17 @@ const ContestRunner = () => {
                         {/* NPC move chips */}
                         {Object.keys(npcMoveOptions).length > 0 && (
                             <div style={{ marginTop: 8, display: 'flex', flexWrap: 'wrap', gap: 4, maxHeight: 80, overflowY: 'auto' }}>
-                                {Object.entries(npcMoveOptions).map(([name, { dice }]) => (
+                                {Object.entries(npcMoveOptions).map(([name, { dice, keyword: kw }]) => (
                                     <span
                                         key={name}
                                         onClick={() => setNpcMoveName(name)}
+                                        title={kw ? `${kw}: ${KEYWORD_DESC[normalizeKeyword(kw)] || kw}` : undefined}
                                         style={{ padding: '2px 8px', borderRadius: 10, fontSize: 11, background: `${color}18`, border: `1px solid ${color}44`, color: 'var(--text-primary)', cursor: 'pointer' }}
                                     >
                                         {name} <strong>({dice})</strong>
+                                        {kw && normalizeKeyword(kw) && normalizeKeyword(kw) !== 'No Effect' && (
+                                            <span style={{ marginLeft: 3, color: KEYWORD_COLOR[normalizeKeyword(kw)] || 'var(--text-muted)' }}>· {normalizeKeyword(kw)}</span>
+                                        )}
                                     </span>
                                 ))}
                             </div>
@@ -908,11 +1316,12 @@ const ContestRunner = () => {
             {/* Turn order */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 5, marginBottom: 14 }}>
                 {turnOrder.map((id, pos) => {
-                    const p = participants.find(x => x.id === id);
+                    const p        = participants.find(x => x.id === id);
                     if (!p) return null;
                     const done      = pos < turnIdx;
                     const isCurrent = pos === turnIdx;
                     const rResult   = done ? p.rounds[p.rounds.length - 1] : null;
+                    const pFx       = participantEffects[id] || {};
                     return (
                         <div key={id} style={{
                             display: 'flex', alignItems: 'center', gap: 10,
@@ -925,10 +1334,30 @@ const ContestRunner = () => {
                                 {done ? '✓' : isCurrent ? '▶' : `${pos + 1}`}
                             </span>
                             <span style={{ fontWeight: isCurrent ? 700 : 500, fontSize: 13, flex: 1 }}>{p.name}</span>
+                            {/* Active effect flags */}
+                            {!done && (
+                                <div style={{ display: 'flex', gap: 3 }}>
+                                    {pFx.getReadyActive && (
+                                        <span title="Get Ready! — dice doubled this turn" style={{ fontSize: 10, padding: '1px 5px', borderRadius: 6, background: '#e91e6322', color: '#e91e63', fontWeight: 700 }}>⚡ GR</span>
+                                    )}
+                                    {pFx.reliableMove && (
+                                        <span title={`Reliable: ${pFx.reliableMove}`} style={{ fontSize: 10, padding: '1px 5px', borderRadius: 6, background: '#e91e6322', color: '#e91e63', fontWeight: 700 }}>♻ Rel</span>
+                                    )}
+                                    {nextRoundFirst === id && (
+                                        <span title="Quick Set — goes first next round" style={{ fontSize: 10, padding: '1px 5px', borderRadius: 6, background: '#9c27b022', color: '#9c27b0', fontWeight: 700 }}>⏩ QS</span>
+                                    )}
+                                    {nextRoundLast === id && (
+                                        <span title="Slow Set — goes last next round" style={{ fontSize: 10, padding: '1px 5px', borderRadius: 6, background: '#9c27b022', color: '#9c27b0', fontWeight: 700 }}>⏪ SS</span>
+                                    )}
+                                </div>
+                            )}
                             {done && rResult && (
                                 <span style={{ fontSize: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
                                     {rResult.moveName && rResult.moveName !== '—' && (
                                         <span style={{ color: 'var(--text-muted)', fontSize: 11 }}>{rResult.moveName}</span>
+                                    )}
+                                    {rResult.keyword && rResult.keyword !== 'No Effect' && (
+                                        <KeywordPill keyword={rResult.keyword} />
                                     )}
                                     <span style={{ color: 'var(--text-muted)' }}>J{rResult.judgeId}</span>
                                     <strong style={{ color: rResult.isSameMove ? '#f44336' : rResult.maxVoltageBonusRolls?.length ? '#ff9800' : 'var(--text-primary)' }}>
