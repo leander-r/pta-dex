@@ -12,7 +12,7 @@ const MoveSelector = ({ selectedPokemon, selectedMove, onSelectMove, showDetail,
 
     return (
         <div style={{ marginBottom: '12px' }}>
-            <label style={{ fontSize: '12px', fontWeight: 'bold', marginBottom: '4px', display: 'block' }}>
+            <label style={{ fontSize: '12px', fontWeight: 'bold', marginBottom: '4px', display: 'block', color: 'var(--text-primary)' }}>
                 Select Move
             </label>
             <div style={{ display: 'grid', gap: '6px' }}>
@@ -37,13 +37,13 @@ const MoveSelector = ({ selectedPokemon, selectedMove, onSelectMove, showDetail,
                             className={selectedMove?.name !== move.name ? 'move-select-btn' : ''}
                             style={{
                                 flex: 1, padding: '10px',
-                                background: selectedMove?.name === move.name ? getTypeColor(move.type) : undefined,
-                                color: selectedMove?.name === move.name ? getContrastTextColor(getTypeColor(move.type)) : undefined,
+                                background: selectedMove?.name === move.name ? getTypeColor(move.type) : 'var(--surface-bg)',
+                                color: selectedMove?.name === move.name ? getContrastTextColor(getTypeColor(move.type)) : 'var(--text-primary)',
                                 border: 'none', cursor: 'pointer', textAlign: 'left'
                             }}
                         >
                             <div style={{ fontWeight: 'bold' }}>{move.name}</div>
-                            <div style={{ fontSize: '12px', opacity: 0.8 }}>
+                            <div style={{ fontSize: '12px', opacity: 0.8, color: 'inherit' }}>
                                 {move.type} | {move.category || gameData?.moves?.[move.name]?.category || '—'} | {move.damage || gameData?.moves?.[move.name]?.damage || 'Status'} |{' '}
                                 <span title="Accuracy Class - Roll 1d20, need to meet or beat this number to hit. Natural 20 always hits and crits.">
                                     AC {parseACFromFrequency(move.frequency || move.freq)}
