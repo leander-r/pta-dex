@@ -9,7 +9,8 @@ const DiscordWebhookConfig = () => {
     return (
         <div style={{
             marginTop: '20px',
-            background: expanded ? '#36393f' : '#5865F2',
+            background: expanded ? 'var(--surface-bg)' : '#5865F2',
+            border: expanded ? '1px solid var(--border-medium)' : 'none',
             borderRadius: '8px',
             overflow: 'hidden',
             transition: 'all 0.2s ease'
@@ -47,14 +48,14 @@ const DiscordWebhookConfig = () => {
 
             {/* Expanded content */}
             {expanded && (
-                <div style={{ padding: '12px', background: '#36393f' }}>
-                    <div style={{ fontSize: '12px', color: '#b9bbbe', marginBottom: '10px', lineHeight: '1.4' }}>
+                <div style={{ padding: '12px', background: 'var(--surface-bg)' }}>
+                    <div style={{ fontSize: '12px', color: 'var(--text-primary)', marginBottom: '10px', lineHeight: '1.4' }}>
                         Send dice rolls to a Discord channel via webhook.
                         <br />
-                        <span style={{ fontSize: '12px', color: '#72767d' }}>
+                        <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
                             Server Settings → Integrations → Webhooks → New Webhook
                         </span>
-                        <div style={{ marginTop: '8px', padding: '8px 10px', background: 'rgba(250,166,26,0.15)', border: '1px solid rgba(250,166,26,0.4)', borderRadius: '4px', fontSize: '12px', color: '#FAA61A', lineHeight: '1.4' }}>
+                        <div style={{ marginTop: '8px', padding: '8px 10px', background: 'var(--tint-warn-bg, rgba(250,166,26,0.15))', border: '1px solid rgba(250,166,26,0.4)', borderRadius: '4px', fontSize: '12px', color: '#FAA61A', lineHeight: '1.4' }}>
                             ⚠️ Your webhook URL is stored in plain text in your browser's localStorage and is visible to anyone with access to your browser's Developer Tools. Do not use this on a shared or public computer.
                         </div>
                     </div>
@@ -69,7 +70,7 @@ const DiscordWebhookConfig = () => {
                                 toast.warning('That doesn\'t look like a valid Discord webhook URL.');
                             }
                         }}
-                        style={{ width: '100%', padding: '10px', borderRadius: '4px', border: 'none', fontSize: '13px', background: '#40444b', color: '#dcddde', marginBottom: '10px' }}
+                        style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid var(--border-medium)', fontSize: '13px', background: 'var(--input-bg)', color: 'var(--text-primary)', marginBottom: '10px' }}
                     />
                     <button
                         onClick={() => {

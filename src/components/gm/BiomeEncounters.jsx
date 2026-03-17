@@ -206,7 +206,7 @@ const BiomeEncounters = () => {
                     ) : (
                         <div style={{
                             display: 'grid',
-                            gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))',
+                            gridTemplateColumns: 'repeat(auto-fill, minmax(110px, 1fr))',
                             gap: 6,
                         }}>
                             {filtered.map(p => (

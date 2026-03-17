@@ -20,6 +20,7 @@ const getModifiedStat = (baseStat, stages) => {
 
 const CombatStagesPanel = ({ selectedPokemon, combatStages, getStatsWithMega, updateCombatStage, resetCombatStages, onHelp, statusConditions }) => {
     const [show, setShow] = useState(false);
+    const [showEva, setShowEva] = useState(false);
 
     if (!selectedPokemon) return null;
 
@@ -94,7 +95,7 @@ const CombatStagesPanel = ({ selectedPokemon, combatStages, getStatsWithMega, up
                     <div className="text-muted" style={{ fontSize: '12px', marginBottom: '8px', textAlign: 'center' }}>
                         +1 stage = +25% stat | −1 stage = −10% stat | At ±6: 250% / 40% | Range: −6 to +6
                     </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(90px, 1fr))', gap: '8px' }}>
                         {STATS.map(stat => {
                             const baseStat = actualStats[stat.key] || 0;
                             const stages = combatStages[stat.key] || 0;
@@ -148,40 +149,46 @@ const CombatStagesPanel = ({ selectedPokemon, combatStages, getStatsWithMega, up
                         Reset All Stages
                     </button>
 
-                    {/* Base Evasion — derived from stats, before EVA stage modifier (PH2 p.255) */}
-                    <div
-                        title="Base evasion values derived from stats (PH2 p.255). Add the EVA combat stage modifier above for total evasion used in accuracy checks."
-                        style={{ marginTop: '10px', padding: '7px 10px', borderRadius: '5px', background: 'var(--bg-secondary, #f5f5f5)', border: '1px solid var(--border-light)' }}
-                    >
-                        <div style={{ fontSize: '11px', fontWeight: 'bold', color: 'var(--text-muted)', marginBottom: '5px', textTransform: 'uppercase', letterSpacing: '0.4px' }}>
-                            Base Evasion (from stats)
+                    {/* Base Evasion — collapsible, derived from stats, before EVA stage modifier (PH2 p.255) */}
+                    <div style={{ marginTop: '10px', borderRadius: '5px', background: 'var(--surface-bg)', border: '1px solid var(--border-light)' }}>
+                        <div
+                            onClick={() => setShowEva(v => !v)}
+                            title="Base evasion values derived from stats (PH2 p.255). Add the EVA combat stage modifier above for total evasion used in accuracy checks."
+                            style={{ padding: '7px 10px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '11px', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.4px' }}
+                        >
+                            <span>Base Evasion (from stats)</span>
+                            <span>{showEva ? '▲' : '▼'}</span>
                         </div>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px', textAlign: 'center' }}>
-                            <div title="Physical Evasion = DEF stat ÷ 5, max 6 (PH2 p.255)">
-                                <div style={{ fontSize: '10px', color: '#2196f3' }}>Phys Eva</div>
-                                <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#2196f3' }}>
-                                    +{Math.min(6, Math.floor((actualStats.def || 0) / 5))}
+                        {showEva && (
+                            <div style={{ padding: '0 10px 8px' }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px', textAlign: 'center' }}>
+                                    <div title="Physical Evasion = DEF stat ÷ 5, max 6 (PH2 p.255)">
+                                        <div style={{ fontSize: '10px', color: '#2196f3' }}>Phys Eva</div>
+                                        <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#2196f3' }}>
+                                            +{Math.min(6, Math.floor((actualStats.def || 0) / 5))}
+                                        </div>
+                                        <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>DEF÷5</div>
+                                    </div>
+                                    <div title="Special Evasion = SDEF stat ÷ 5, max 6 (PH2 p.255)">
+                                        <div style={{ fontSize: '10px', color: '#ff9800' }}>Spec Eva</div>
+                                        <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#ff9800' }}>
+                                            +{Math.min(6, Math.floor((actualStats.sdef || 0) / 5))}
+                                        </div>
+                                        <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>SDEF÷5</div>
+                                    </div>
+                                    <div title="Speed Evasion = SPD stat ÷ 10, max 6 (PH2 p.255)">
+                                        <div style={{ fontSize: '10px', color: '#00bcd4' }}>Spd Eva</div>
+                                        <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#00bcd4' }}>
+                                            +{Math.min(6, Math.floor((actualStats.spd || 0) / 10))}
+                                        </div>
+                                        <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>SPD÷10</div>
+                                    </div>
                                 </div>
-                                <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>DEF÷5</div>
-                            </div>
-                            <div title="Special Evasion = SDEF stat ÷ 5, max 6 (PH2 p.255)">
-                                <div style={{ fontSize: '10px', color: '#ff9800' }}>Spec Eva</div>
-                                <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#ff9800' }}>
-                                    +{Math.min(6, Math.floor((actualStats.sdef || 0) / 5))}
+                                <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '4px', textAlign: 'center' }}>
+                                    Total EVA = base + EVA stage modifier above
                                 </div>
-                                <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>SDEF÷5</div>
                             </div>
-                            <div title="Speed Evasion = SPD stat ÷ 10, max 6 (PH2 p.255)">
-                                <div style={{ fontSize: '10px', color: '#00bcd4' }}>Spd Eva</div>
-                                <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#00bcd4' }}>
-                                    +{Math.min(6, Math.floor((actualStats.spd || 0) / 10))}
-                                </div>
-                                <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>SPD÷10</div>
-                            </div>
-                        </div>
-                        <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '4px', textAlign: 'center' }}>
-                            Total EVA = base + EVA stage modifier above
-                        </div>
+                        )}
                     </div>
                 </div>
             )}

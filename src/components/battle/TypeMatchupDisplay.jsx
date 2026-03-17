@@ -71,7 +71,7 @@ const TypeMatchupDisplay = ({ selectedPokemon, megaEvolved, currentMegaForm }) =
                     <Row heading="Weak ×2"    headingColor="#f44336" items={eff.weak} />
                     <Row heading="Resists"    headingColor="#388e3c" items={eff.resist} />
                     <Row heading="Resists ×¼" headingColor="#1b5e20" items={eff.superResist} label=" ×¼" />
-                    <Row heading="Immune"     headingColor="#555"    items={eff.immune}      label=" ×0" />
+                    <Row heading="Immune"     headingColor="var(--text-secondary)"    items={eff.immune}      label=" ×0" />
                 </div>
             )}
         </div>

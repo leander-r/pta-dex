@@ -359,7 +359,7 @@ const SkillChecks = () => {
                                 padding: '7px 12px', borderRadius: 6,
                                 background: 'linear-gradient(135deg, #667eea, #764ba2)',
                                 border: 'none', color: 'white', fontSize: 12,
-                                fontWeight: 600, cursor: 'pointer'
+                                fontWeight: 600, cursor: 'pointer', minWidth: '80px'
                             }}
                         >
                             {label}

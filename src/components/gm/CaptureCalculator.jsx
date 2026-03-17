@@ -115,21 +115,13 @@ const CaptureCalculator = () => {
                             width: '100%', padding: '8px 10px', borderRadius: 6,
                             border: '1px solid var(--border-light)',
                             background: 'var(--surface-bg)', color: 'var(--text-primary)',
-                            fontSize: 14, boxSizing: 'border-box', marginBottom: 10
+                            fontSize: 14, boxSizing: 'border-box'
                         }}
                     >
                         {HP_MODS.map(m => (
                             <option key={m.label} value={m.value}>{m.label} ({sign(m.value)})</option>
                         ))}
                     </select>
-                    <div style={{ fontSize: 12 }}>
-                        {HP_MODS.map(m => (
-                            <div key={m.label} style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0', color: 'var(--text-muted)' }}>
-                                <span>{m.label}</span>
-                                <span style={{ fontWeight: 600, color: m.value >= 0 ? '#43a047' : '#e53935' }}>{sign(m.value)}</span>
-                            </div>
-                        ))}
-                    </div>
                 </div>
 
                 {/* Status modifier */}
@@ -144,21 +136,13 @@ const CaptureCalculator = () => {
                             width: '100%', padding: '8px 10px', borderRadius: 6,
                             border: '1px solid var(--border-light)',
                             background: 'var(--surface-bg)', color: 'var(--text-primary)',
-                            fontSize: 14, boxSizing: 'border-box', marginBottom: 10
+                            fontSize: 14, boxSizing: 'border-box'
                         }}
                     >
                         {STATUS_MODS.map(m => (
                             <option key={m.label} value={m.value}>{m.label} ({sign(m.value)})</option>
                         ))}
                     </select>
-                    <div style={{ fontSize: 12 }}>
-                        {STATUS_MODS.filter(m => m.value > 0).map(m => (
-                            <div key={m.label} style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0', color: 'var(--text-muted)' }}>
-                                <span>{m.label}</span>
-                                <span style={{ fontWeight: 600, color: '#43a047' }}>{sign(m.value)}</span>
-                            </div>
-                        ))}
-                    </div>
                 </div>
 
                 {/* Level modifier */}
@@ -173,21 +157,13 @@ const CaptureCalculator = () => {
                             width: '100%', padding: '8px 10px', borderRadius: 6,
                             border: '1px solid var(--border-light)',
                             background: 'var(--surface-bg)', color: 'var(--text-primary)',
-                            fontSize: 14, boxSizing: 'border-box', marginBottom: 10
+                            fontSize: 14, boxSizing: 'border-box'
                         }}
                     >
                         {LEVEL_MODS.map(m => (
                             <option key={m.label} value={m.value}>{m.label} ({sign(m.value)})</option>
                         ))}
                     </select>
-                    <div style={{ fontSize: 12 }}>
-                        {LEVEL_MODS.map(m => (
-                            <div key={m.label} style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0', color: 'var(--text-muted)' }}>
-                                <span>{m.label}</span>
-                                <span style={{ fontWeight: 600, color: m.value >= 0 ? '#43a047' : '#e53935' }}>{sign(m.value)}</span>
-                            </div>
-                        ))}
-                    </div>
                 </div>
             </div>
 
