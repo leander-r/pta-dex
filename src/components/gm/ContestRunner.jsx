@@ -418,7 +418,7 @@ const ContestRunner = () => {
                 baseRolls   = rollD4s(count);
                 appeal      = baseRolls.reduce((a, b) => a + b, 0);
             } else if (keyword === 'Inversed Appeal') {
-                const count = Math.max(1, 6 - judge.voltage);
+                const count = Math.max(0, 6 - judge.voltage);
                 baseRolls   = rollD4s(count);
                 appeal      = baseRolls.reduce((a, b) => a + b, 0);
             } else if (diceStr) {
@@ -545,6 +545,30 @@ const ContestRunner = () => {
         let voltageChange = 0;
         let newJudges     = [...judges];
 
+        // Type-based voltage change always applies — even on same-move turns
+        // (PH2 rule: "same move twice in a row = 0 appeal, voltage still changes")
+        const canRaise = typeRel === 'same' && judge.voltage < 6 && !holdThoughtJudges.has(pendingJudge) && keyword !== 'Hold That Thought';
+        const canLower = typeRel === 'opposite' && judge.voltage > 1 && !excitementJudges.has(pendingJudge) && keyword !== 'Excitement';
+
+        if (canRaise) {
+            newVoltage    = judge.voltage + 1;
+            voltageChange = +1;
+            if (newVoltage === 6) {
+                setMaxVoltageHitThisRound(true);
+                if (!isSameMove) {
+                    // Max voltage appeal bonus only applies when the move has appeal
+                    // Get Ready! + max voltage = 14d4 total (PH2: "14d4 instead of 7d4")
+                    const maxBonus = getReadyActive ? 14 : 4;
+                    maxVoltageBonusRolls = rollD4s(maxBonus);
+                    if (getReadyActive) appeal = maxVoltageBonusRolls.reduce((a, b) => a + b, 0);
+                    else               appeal += maxVoltageBonusRolls.reduce((a, b) => a + b, 0);
+                }
+            }
+        } else if (canLower) {
+            newVoltage    = judge.voltage - 1;
+            voltageChange = -1;
+        }
+
         if (!isSameMove) {
             // Apply Excitement / Hold That Thought side effects first
             if (keyword === 'Excitement') {
@@ -552,27 +576,6 @@ const ContestRunner = () => {
             }
             if (keyword === 'Hold That Thought') {
                 setHoldThoughtJudges(prev => new Set([...prev, pendingJudge]));
-            }
-
-            // Type-based voltage change respecting judge protection
-            const canRaise = typeRel === 'same' && judge.voltage < 6 && !holdThoughtJudges.has(pendingJudge) && keyword !== 'Hold That Thought';
-            const canLower = typeRel === 'opposite' && judge.voltage > 1 && !excitementJudges.has(pendingJudge) && keyword !== 'Excitement';
-
-            if (canRaise) {
-                newVoltage    = judge.voltage + 1;
-                voltageChange = +1;
-                if (newVoltage === 6) {
-                    // Get Ready! + max voltage = 14d4 total (PH2: "14d4 instead of 7d4")
-                    const maxBonus = getReadyActive ? 14 : 4;
-                    maxVoltageBonusRolls = rollD4s(maxBonus);
-                    // Replace the entire appeal with 14d4 when Get Ready! + max voltage
-                    if (getReadyActive) appeal = maxVoltageBonusRolls.reduce((a, b) => a + b, 0);
-                    else               appeal += maxVoltageBonusRolls.reduce((a, b) => a + b, 0);
-                    setMaxVoltageHitThisRound(true);
-                }
-            } else if (canLower) {
-                newVoltage    = judge.voltage - 1;
-                voltageChange = -1;
             }
 
             // Crowd Pleaser: +2 voltage to target judge regardless of type
@@ -605,6 +608,9 @@ const ContestRunner = () => {
             } else if (keyword !== 'Incredible') {
                 newJudges = judges.map(j => j.id === pendingJudge ? { ...j, voltage: newVoltage } : j);
             }
+        } else {
+            // Same-move: apply type-relation voltage change to targeted judge
+            newJudges = judges.map(j => j.id === pendingJudge ? { ...j, voltage: newVoltage } : j);
         }
         setJudges(newJudges);
 
