@@ -86,7 +86,7 @@ const RollHistory = ({ rollHistory, setRollHistory, mode, subMode }) => {
                         <div ref={exportDropdownRef} style={{ position: 'relative' }}>
                             <button
                                 onClick={() => setShowExportOptions(v => !v)}
-                                style={{ padding: '4px 8px', background: 'var(--poke-orange, #f5a623)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}
+                                style={{ padding: '4px 8px', background: 'var(--poke-orange, #f5a623)', color: '#1a1a1a', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '13px', fontWeight: '600' }}
                             >
                                 Export Log
                             </button>

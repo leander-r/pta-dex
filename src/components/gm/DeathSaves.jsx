@@ -47,14 +47,14 @@ const DeathSaves = () => {
                 <h3 className="card-header font-bold">😵 Fainting Rules</h3>
                 <div style={{ padding: '14px 16px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 12 }}>
                     <div style={{ padding: '12px 14px', borderRadius: 8, background: 'var(--tint-blue-bg)', border: '1px solid var(--tint-blue-border)' }}>
-                        <div style={{ fontWeight: 700, color: '#1976d2', marginBottom: 6 }}>🧑 Trainer Fainting</div>
+                        <div style={{ fontWeight: 700, color: 'var(--poke-blue)', marginBottom: 6 }}>🧑 Trainer Fainting</div>
                         <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
                             At <strong>0 HP</strong>: Fainted. Cannot Shift, issue commands, or use Trainer Actions.
                             Can still be attacked and suffer status ailment damage.
                         </div>
                     </div>
                     <div style={{ padding: '12px 14px', borderRadius: 8, background: 'var(--tint-orange-bg)', border: '1px solid var(--tint-orange-border)' }}>
-                        <div style={{ fontWeight: 700, color: '#bf360c', marginBottom: 6 }}>🐾 Pokémon Fainting</div>
+                        <div style={{ fontWeight: 700, color: 'var(--poke-orange)', marginBottom: 6 }}>🐾 Pokémon Fainting</div>
                         <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
                             At <strong>0 HP</strong>: Fainted. Cannot act. Can still be attacked and suffer status damage
                             until returned to Poké Ball. Wild Pokémon have <strong>no Death Saving Throws</strong>.
@@ -72,7 +72,7 @@ const DeathSaves = () => {
                             padding: '12px 14px', borderRadius: 8,
                             background: 'var(--tint-red-bg)', border: '1px solid var(--tint-red-border)'
                         }}>
-                            <div style={{ fontWeight: 700, color: '#e53935', marginBottom: 4 }}>Trainer Death</div>
+                            <div style={{ fontWeight: 700, color: 'var(--color-danger-text)', marginBottom: 4 }}>Trainer Death</div>
                             <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
                                 HP reaches <strong>−100%</strong> of max HP → Roll a Death Saving Throw.
                                 If stabilized after success, another DST in 10 minutes if not treated.
@@ -82,7 +82,7 @@ const DeathSaves = () => {
                             padding: '12px 14px', borderRadius: 8,
                             background: 'var(--tint-red-bg)', border: '1px solid var(--tint-red-border)'
                         }}>
-                            <div style={{ fontWeight: 700, color: '#e53935', marginBottom: 4 }}>Pokémon Death</div>
+                            <div style={{ fontWeight: 700, color: 'var(--color-danger-text)', marginBottom: 4 }}>Pokémon Death</div>
                             <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
                                 HP reaches <strong>−100%</strong> of max HP → Roll a Death Saving Throw.
                                 If not stabilized, returned to ball, or treated — another DST in 2 minutes.
@@ -131,7 +131,7 @@ const DeathSaves = () => {
                             background: 'var(--surface-bg)', border: '1px solid var(--border-light)',
                             fontSize: 14
                         }}>
-                            Must roll ≤ <strong style={{ color: '#1976d2', fontSize: 18 }}>{trainerDC}</strong>
+                            Must roll ≤ <strong style={{ color: 'var(--poke-blue)', fontSize: 18 }}>{trainerDC}</strong>
                             <span style={{ fontSize: 12, color: 'var(--text-muted)', marginLeft: 6 }}>
                                 ({trainerDC === 18 ? 'capped at 18' : `= level ${trainerLevel}`}, {Math.round(trainerDC / 20 * 100)}% survival chance)
                             </span>
@@ -153,12 +153,12 @@ const DeathSaves = () => {
                         <div style={{
                             padding: '12px 16px', borderRadius: 8,
                             background: trainerRoll.success ? 'var(--tint-success-bg)' : 'var(--tint-fail-bg)',
-                            border: `1px solid ${trainerRoll.success ? '#43a047' : '#e53935'}`,
+                            border: `1px solid ${trainerRoll.success ? 'var(--color-success-text)' : 'var(--color-danger-text)'}`,
                             display: 'flex', gap: 12, alignItems: 'center'
                         }}>
                             <span style={{ fontSize: 22 }}>{trainerRoll.success ? '✅' : '☠️'}</span>
                             <div>
-                                <div style={{ fontWeight: 700, color: trainerRoll.success ? '#43a047' : '#e53935' }}>
+                                <div style={{ fontWeight: 700, color: trainerRoll.success ? 'var(--color-success-text)' : 'var(--color-danger-text)' }}>
                                     Rolled {trainerRoll.value} — {trainerRoll.success ? 'SURVIVED! Must be stabilized.' : 'DIED!'}
                                 </div>
                                 <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>
@@ -201,7 +201,7 @@ const DeathSaves = () => {
                             background: 'var(--surface-bg)', border: '1px solid var(--border-light)',
                             fontSize: 14
                         }}>
-                            Must roll ≤ <strong style={{ color: '#bf360c', fontSize: 18 }}>{pokeDC}</strong>
+                            Must roll ≤ <strong style={{ color: 'var(--poke-orange)', fontSize: 18 }}>{pokeDC}</strong>
                             <span style={{ fontSize: 12, color: 'var(--text-muted)', marginLeft: 6 }}>
                                 ({pokeDC === 90 ? 'capped at 90' : `= ${pokeLevel}×2`}, {pokeDC}% survival chance)
                             </span>
@@ -223,12 +223,12 @@ const DeathSaves = () => {
                         <div style={{
                             padding: '12px 16px', borderRadius: 8,
                             background: pokeRoll.success ? 'var(--tint-success-bg)' : 'var(--tint-fail-bg)',
-                            border: `1px solid ${pokeRoll.success ? '#43a047' : '#e53935'}`,
+                            border: `1px solid ${pokeRoll.success ? 'var(--color-success-text)' : 'var(--color-danger-text)'}`,
                             display: 'flex', gap: 12, alignItems: 'center'
                         }}>
                             <span style={{ fontSize: 22 }}>{pokeRoll.success ? '✅' : '☠️'}</span>
                             <div>
-                                <div style={{ fontWeight: 700, color: pokeRoll.success ? '#43a047' : '#e53935' }}>
+                                <div style={{ fontWeight: 700, color: pokeRoll.success ? 'var(--color-success-text)' : 'var(--color-danger-text)' }}>
                                     Rolled {pokeRoll.value} — {pokeRoll.success ? 'SURVIVED! Must be stabilized or returned to ball.' : 'DIED!'}
                                 </div>
                                 <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>
