@@ -140,7 +140,7 @@ const DeathSaves = () => {
                             onClick={rollTrainer}
                             style={{
                                 padding: '9px 20px',
-                                background: 'linear-gradient(135deg, #1976d2, #0d47a1)',
+                                background: 'linear-gradient(135deg, #2196f3, #1565c0)',
                                 border: 'none', borderRadius: 8, color: 'white',
                                 fontSize: 14, fontWeight: 700, cursor: 'pointer',
                                 boxShadow: '0 2px 6px rgba(0,0,0,0.18)'
@@ -210,7 +210,7 @@ const DeathSaves = () => {
                             onClick={rollPoke}
                             style={{
                                 padding: '9px 20px',
-                                background: 'linear-gradient(135deg, #bf360c, #870000)',
+                                background: 'linear-gradient(135deg, #f44336, #c62828)',
                                 border: 'none', borderRadius: 8, color: 'white',
                                 fontSize: 14, fontWeight: 700, cursor: 'pointer',
                                 boxShadow: '0 2px 6px rgba(0,0,0,0.18)'

@@ -5,6 +5,7 @@ import toast from '../../utils/toast.js';
 const DiscordWebhookConfig = () => {
     const { discordWebhook, setDiscordWebhook } = useData();
     const [expanded, setExpanded] = useState(false);
+    const [isTesting, setIsTesting] = useState(false);
 
     return (
         <div style={{
@@ -73,21 +74,27 @@ const DiscordWebhookConfig = () => {
                         style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid var(--border-medium)', fontSize: '13px', background: 'var(--input-bg)', color: 'var(--text-primary)', marginBottom: '10px' }}
                     />
                     <button
-                        onClick={() => {
+                        disabled={isTesting}
+                        onClick={async () => {
                             if (!discordWebhook?.url) { toast.warning('Please enter a webhook URL first'); return; }
-                            fetch(discordWebhook.url, {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ embeds: [{ title: '🎲 Test Message', description: 'Discord webhook is working! Dice rolls will appear here.', color: 0x5865F2 }] })
-                            })
-                            .then(res => res.ok
-                                ? toast.success('Test message sent! Check your Discord channel.')
-                                : toast.error('Failed to send. Check if the webhook URL is correct.'))
-                            .catch(() => toast.error('Failed to send. Check the webhook URL.'));
+                            setIsTesting(true);
+                            try {
+                                const res = await fetch(discordWebhook.url, {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ embeds: [{ title: '🎲 Test Message', description: 'Discord webhook is working! Dice rolls will appear here.', color: 0x5865F2 }] })
+                                });
+                                if (res.ok) toast.success('Test message sent! Check your Discord channel.');
+                                else toast.error('Failed to send. Check if the webhook URL is correct.');
+                            } catch {
+                                toast.error('Failed to send. Check the webhook URL.');
+                            } finally {
+                                setIsTesting(false);
+                            }
                         }}
-                        style={{ width: '100%', padding: '10px', background: '#5865F2', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', fontSize: '13px' }}
+                        style={{ width: '100%', padding: '10px', background: '#5865F2', color: 'white', border: 'none', borderRadius: '4px', cursor: isTesting ? 'not-allowed' : 'pointer', fontWeight: 'bold', fontSize: '13px', opacity: isTesting ? 0.6 : 1 }}
                     >
-                        Send Test Message
+                        {isTesting ? 'Sending...' : 'Send Test Message'}
                     </button>
                     {discordWebhook?.enabled && discordWebhook?.url && (
                         <div style={{ fontSize: '12px', color: '#57F287', marginTop: '8px', display: 'flex', alignItems: 'center', gap: '4px' }}>

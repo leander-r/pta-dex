@@ -103,11 +103,7 @@ const RollHistory = ({ rollHistory, setRollHistory, mode, subMode }) => {
                         </div>
                         <button
                             onClick={() => {
-                                if (rollHistory.length > 3) {
-                                    showConfirm({ title: 'Clear History', message: `Clear ${rollHistory.length} rolls from history?`, danger: true, confirmLabel: 'Clear', onConfirm: () => setRollHistory([]) });
-                                } else {
-                                    setRollHistory([]);
-                                }
+                                showConfirm({ title: 'Clear History', message: `Clear ${rollHistory.length} roll${rollHistory.length === 1 ? '' : 's'} from history?`, danger: true, confirmLabel: 'Clear', onConfirm: () => setRollHistory([]) });
                             }}
                             style={{ padding: '4px 8px', background: '#f44336', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}
                         >

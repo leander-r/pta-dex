@@ -124,8 +124,9 @@ const CombatStagesPanel = ({ selectedPokemon, combatStages, getStatsWithMega, up
                                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', marginTop: '4px' }}>
                                         <button
                                             onClick={() => updateCombatStage(stat.key, -1)}
+                                            disabled={stages <= -6}
                                             className="combat-stage-btn combat-stage-btn-minus"
-                                            style={{ width: '24px', height: '24px', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '14px' }}
+                                            style={{ width: '24px', height: '24px', border: 'none', borderRadius: '4px', fontSize: '14px', opacity: stages <= -6 ? 0.35 : 1, cursor: stages <= -6 ? 'not-allowed' : 'pointer' }}
                                             aria-label={`Decrease ${stat.label}`}
                                         >−</button>
                                         <span style={{ fontSize: '12px', fontWeight: 'bold', color: stages > 0 ? '#4caf50' : stages < 0 ? '#f44336' : '#999', minWidth: '20px' }}>
@@ -133,8 +134,9 @@ const CombatStagesPanel = ({ selectedPokemon, combatStages, getStatsWithMega, up
                                         </span>
                                         <button
                                             onClick={() => updateCombatStage(stat.key, 1)}
+                                            disabled={stages >= 6}
                                             className="combat-stage-btn combat-stage-btn-plus"
-                                            style={{ width: '24px', height: '24px', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '14px' }}
+                                            style={{ width: '24px', height: '24px', border: 'none', borderRadius: '4px', fontSize: '14px', opacity: stages >= 6 ? 0.35 : 1, cursor: stages >= 6 ? 'not-allowed' : 'pointer' }}
                                             aria-label={`Increase ${stat.label}`}
                                         >+</button>
                                     </div>

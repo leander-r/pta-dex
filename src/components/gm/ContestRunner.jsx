@@ -148,6 +148,7 @@ const ContestRunner = () => {
     const [discordEnabled, setDiscordEnabled] = useState(true);
 
     // ── Setup state ────────────────────────────────────────────────────────
+    const [showGuide, setShowGuide] = useState(false);
     const [contestType, setContestType] = useState('');
     const [participants, setParticipants] = useState([]);
     const [newName, setNewName] = useState('');
@@ -415,6 +416,32 @@ const ContestRunner = () => {
                     Set up participants, then start the contest. During each turn the player rolls in the
                     Dice Roller and copies their result here. NPC entries roll directly.
                 </p>
+
+                {/* How to Run guide */}
+                <div style={{ marginBottom: 16 }}>
+                    <button
+                        onClick={() => setShowGuide(v => !v)}
+                        style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px', borderRadius: 7, border: '1px solid var(--border-light)', background: 'var(--surface-bg)', cursor: 'pointer', fontSize: 13, fontWeight: 700, color: 'var(--text-secondary)' }}
+                    >
+                        <span>📖 How to Run a Contest</span>
+                        <span>{showGuide ? '▲' : '▼'}</span>
+                    </button>
+                    {showGuide && (
+                        <div style={{ padding: '12px 14px', borderRadius: '0 0 7px 7px', border: '1px solid var(--border-light)', borderTop: 'none', background: 'var(--bg-light)', fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+                            <ol style={{ margin: 0, paddingLeft: 18 }}>
+                                <li><strong>Setup:</strong> Choose contest type, add all participants (Trainer + Pokémon name).</li>
+                                <li><strong>Each turn:</strong> The active participant rolls their appeal in the Dice Roller tab, then copies the result with "Copy for GM".</li>
+                                <li><strong>Paste:</strong> Paste their result in the field below, select which Judge they declared, and hit Confirm.</li>
+                                <li><strong>NPC turns:</strong> Use the NPC section to pick a move and roll directly for non-player entries.</li>
+                                <li><strong>Round end:</strong> After all participants appeal, click Next Round. Repeat for all rounds.</li>
+                                <li><strong>Results:</strong> Final standings shown after the last round. Post to Discord if webhook is configured.</li>
+                            </ol>
+                            <div style={{ marginTop: 8, color: 'var(--text-muted)', fontSize: 11 }}>
+                                Turn order: Rounds 1, 3, 5… go lowest→highest appeal. Rounds 2, 4, 6… go highest→lowest.
+                            </div>
+                        </div>
+                    )}
+                </div>
 
                 {/* Step 1 */}
                 <div className="card-orange" style={{ marginBottom: 14 }}>

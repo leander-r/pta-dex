@@ -177,8 +177,14 @@ const BiomeEncounters = () => {
                         <span>🎲 Last roll:</span>
                         <span>{rolled}</span>
                         <button
+                            onClick={() => navigator.clipboard.writeText(rolled).then(() => toast.success('Copied!'))}
+                            style={{ marginLeft: 'auto', padding: '3px 10px', borderRadius: 5, border: '1px solid var(--border-light)', background: 'var(--surface-bg)', color: 'var(--text-secondary)', fontSize: 12, cursor: 'pointer' }}
+                        >
+                            📋 Copy
+                        </button>
+                        <button
                             onClick={() => setRolled(null)}
-                            style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: 'var(--text-muted)' }}
+                            style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: 'var(--text-muted)' }}
                         >
                             ✕
                         </button>

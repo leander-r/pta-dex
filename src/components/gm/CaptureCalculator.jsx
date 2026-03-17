@@ -92,7 +92,7 @@ const CaptureCalculator = () => {
                     <input
                         type="number" min={0} max={100}
                         value={baseRate}
-                        onChange={e => setBaseRate(Number(e.target.value))}
+                        onChange={e => { setBaseRate(Number(e.target.value)); setRollResult(null); }}
                         style={{
                             width: '100%', padding: '8px 10px', borderRadius: 6,
                             border: '1px solid var(--border-light)',
@@ -110,7 +110,7 @@ const CaptureCalculator = () => {
                     </div>
                     <select
                         value={hpMod}
-                        onChange={e => setHpMod(Number(e.target.value))}
+                        onChange={e => { setHpMod(Number(e.target.value)); setRollResult(null); }}
                         style={{
                             width: '100%', padding: '8px 10px', borderRadius: 6,
                             border: '1px solid var(--border-light)',
@@ -131,7 +131,7 @@ const CaptureCalculator = () => {
                     </div>
                     <select
                         value={statMod}
-                        onChange={e => setStatMod(Number(e.target.value))}
+                        onChange={e => { setStatMod(Number(e.target.value)); setRollResult(null); }}
                         style={{
                             width: '100%', padding: '8px 10px', borderRadius: 6,
                             border: '1px solid var(--border-light)',
@@ -152,7 +152,7 @@ const CaptureCalculator = () => {
                     </div>
                     <select
                         value={levelMod}
-                        onChange={e => setLevelMod(Number(e.target.value))}
+                        onChange={e => { setLevelMod(Number(e.target.value)); setRollResult(null); }}
                         style={{
                             width: '100%', padding: '8px 10px', borderRadius: 6,
                             border: '1px solid var(--border-light)',
