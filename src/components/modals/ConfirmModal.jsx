@@ -73,9 +73,8 @@ const ConfirmModal = () => {
                         padding: '18px 20px',
                         borderRadius: '17px 17px 0 0',
                         borderBottom: 'none',
-                        position: 'sticky',
-                        top: 0,
-                        zIndex: 1
+                        position: 'relative',
+                        zIndex: 2
                     }}
                 >
                     <h3
@@ -149,8 +148,7 @@ const ConfirmModal = () => {
                     gap: '10px',
                     justifyContent: 'flex-end',
                     padding: '16px 25px',
-                    position: 'sticky',
-                    bottom: 0,
+                    position: 'relative',
                     background: 'var(--card-bg)',
                     borderTop: '1px solid var(--border-light)'
                 }}>

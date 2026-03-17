@@ -107,9 +107,8 @@ const SkillPickerModal = () => {
                         padding: '18px 20px',
                         borderRadius: '17px 17px 0 0',
                         borderBottom: 'none',
-                        position: 'sticky',
-                        top: 0,
-                        zIndex: 1
+                        position: 'relative',
+                        zIndex: 2
                     }}
                 >
                     <h3

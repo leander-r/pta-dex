@@ -64,7 +64,7 @@ const MoveLearnModal = () => {
                 aria-labelledby="move-learn-modal-title"
                 style={{ maxHeight: 'min(90vh, 700px)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
             >
-                <div className={`modal-header move-learn-header ${isNatural ? 'natural' : 'taught'}`} style={{ position: 'sticky', top: 0, zIndex: 1 }}>
+                <div className={`modal-header move-learn-header ${isNatural ? 'natural' : 'taught'}`} style={{ position: 'relative', zIndex: 2 }}>
                     <h3 id="move-learn-modal-title">🎉 New Move Available!</h3>
                 </div>
 
