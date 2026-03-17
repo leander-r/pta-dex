@@ -216,6 +216,7 @@ const ContestPanel = ({ selectedPokemon, gameData, onRoll }) => {
                     color: rollableSelected ? 'white' : 'var(--collapsed-btn-text)',
                     cursor: rollableSelected ? 'pointer' : 'not-allowed',
                     marginBottom: roll ? 10 : 0,
+                    transition: 'background var(--transition-normal), opacity var(--transition-fast)',
                 }}
             >
                 {noDiceSelected

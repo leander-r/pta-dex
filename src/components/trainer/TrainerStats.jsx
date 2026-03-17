@@ -122,7 +122,7 @@ const TrainerStats = () => {
                             </div>
                             <div style={{
                                 fontSize: '12px',
-                                color: mod >= 0 ? '#4caf50' : '#f44336',
+                                color: mod >= 0 ? 'var(--color-success-text)' : 'var(--color-danger-text)',
                                 fontWeight: 'bold',
                                 marginTop: '3px'
                             }}>
@@ -136,8 +136,8 @@ const TrainerStats = () => {
             {/* Evasion Display + Undo */}
             <div style={{ marginTop: '8px', display: 'flex', gap: '6px', alignItems: 'center' }}>
                 <div className="evasion-box-spd" style={{ flex: 1, textAlign: 'center', padding: '5px 4px', borderRadius: '6px' }} title="Speed Evasion = SPD modifier (capped 0–6). Per PH2 p.11, this is the only evasion stat defined for Trainers.">
-                    <div style={{ fontSize: '12px', color: '#00838f' }}>Speed Evasion</div>
-                    <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#00838f' }}>+{Math.min(6, Math.max(0, calculateModifier('spd')))}</div>
+                    <div style={{ fontSize: '12px', color: 'var(--stat-spd)' }}>Speed Evasion</div>
+                    <div style={{ fontSize: '16px', fontWeight: 'bold', color: 'var(--stat-spd)' }}>+{Math.min(6, Math.max(0, calculateModifier('spd')))}</div>
                 </div>
                 <button
                     onClick={undoStatAllocation}

@@ -324,7 +324,7 @@ const TrainerClasses = () => {
                         <span style={{
                             marginLeft: '8px',
                             padding: '2px 8px',
-                            background: GAME_DATA.trainerClasses[pendingClass]?.type === 'base' ? '#667eea' : '#9c27b0',
+                            background: GAME_DATA.trainerClasses[pendingClass]?.type === 'base' ? 'var(--color-purple)' : 'var(--stat-satk)',
                             color: 'white',
                             borderRadius: '10px',
                             fontSize: '11px'
@@ -353,10 +353,11 @@ const TrainerClasses = () => {
                                         padding: '6px 12px',
                                         background: isSelected ? 'var(--poke-orange, #f5a623)' : isMaxed ? 'var(--skill-btn-disabled-bg, #e0e0e0)' : alreadyHas ? 'var(--skill-btn-has-bg, #fff3e0)' : 'var(--skill-btn-bg, white)',
                                         color: isSelected ? 'white' : isMaxed ? 'var(--skill-btn-disabled-text, #999)' : 'var(--skill-btn-text, #333)',
-                                        border: `2px solid ${isSelected ? 'var(--poke-orange-dark, #e8941c)' : isMaxed ? 'var(--skill-btn-disabled-border, #bdbdbd)' : alreadyHas ? '#ff9800' : 'var(--skill-btn-border, #e0d0f0)'}`,
+                                        border: `2px solid ${isSelected ? 'var(--poke-orange-dark, #e8941c)' : isMaxed ? 'var(--skill-btn-disabled-border, #bdbdbd)' : alreadyHas ? 'var(--stat-sdef)' : 'var(--skill-btn-border, #e0d0f0)'}`,
                                         borderRadius: '20px',
                                         cursor: isMaxed ? 'not-allowed' : 'pointer',
-                                        fontSize: '12px'
+                                        fontSize: '12px',
+                                        transition: 'background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast)'
                                     }}
                                 >
                                     {skillName}
@@ -373,12 +374,13 @@ const TrainerClasses = () => {
                             style={{
                                 flex: 1,
                                 padding: '10px',
-                                background: selectedClassSkills.length >= getSkillCount(pendingClass) ? 'linear-gradient(135deg, var(--poke-orange, #f5a623), var(--poke-orange-dark, #e8941c))' : '#ccc',
-                                color: 'white',
+                                background: selectedClassSkills.length >= getSkillCount(pendingClass) ? 'linear-gradient(135deg, var(--poke-orange, #f5a623), var(--poke-orange-dark, #e8941c))' : 'var(--collapsed-btn-bg, #ccc)',
+                                color: selectedClassSkills.length >= getSkillCount(pendingClass) ? 'white' : 'var(--collapsed-btn-text, #999)',
                                 border: 'none',
                                 borderRadius: '6px',
                                 cursor: selectedClassSkills.length >= getSkillCount(pendingClass) ? 'pointer' : 'not-allowed',
-                                fontWeight: 'bold'
+                                fontWeight: 'bold',
+                                transition: 'background var(--transition-normal), color var(--transition-normal)'
                             }}
                         >
                             Confirm ({selectedClassSkills.length}/{getSkillCount(pendingClass)} selected)
@@ -387,7 +389,7 @@ const TrainerClasses = () => {
                             onClick={handleCancelClass}
                             style={{
                                 padding: '10px 20px',
-                                background: '#f44336',
+                                background: 'var(--danger-btn-start, #f44336)',
                                 color: 'white',
                                 border: 'none',
                                 borderRadius: '6px',

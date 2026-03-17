@@ -1104,6 +1104,13 @@
         }
         [data-compact="true"] .trainer-layout { gap: 10px; }
 
+        /* ========== UPPERCASE LABEL POLISH ========== */
+        /* Any element using text-transform: uppercase gets automatic letter-spacing
+           for improved readability — applies to both class-based and inline-styled elements */
+        [style*="text-transform: uppercase"] {
+            letter-spacing: 0.5px;
+        }
+
         /* ========== GAME RULES CONTENT ========== */
 
         .game-rules-content h4 {

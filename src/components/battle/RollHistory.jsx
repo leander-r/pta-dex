@@ -91,7 +91,7 @@ const RollHistory = ({ rollHistory, setRollHistory, mode, subMode }) => {
                                 Export Log
                             </button>
                             {showExportOptions && (
-                                <div style={{ position: 'absolute', top: '100%', right: 0, marginTop: '4px', background: 'var(--surface-bg)', border: '1px solid var(--border-medium)', borderRadius: '8px', boxShadow: '0 4px 20px rgba(0,0,0,0.15)', minWidth: '160px', zIndex: 100, overflow: 'hidden' }}>
+                                <div style={{ position: 'absolute', top: '100%', right: 0, marginTop: '4px', background: 'var(--surface-bg)', border: '1px solid var(--border-medium)', borderRadius: '8px', boxShadow: 'var(--shadow-lg)', minWidth: '160px', zIndex: 100, overflow: 'hidden' }}>
                                     <button onClick={handleCopyLog} style={{ width: '100%', padding: '10px 14px', border: 'none', background: 'transparent', cursor: 'pointer', textAlign: 'left', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '8px' }} className="pokemon-import-option">
                                         📋 Copy as text
                                     </button>
@@ -105,7 +105,7 @@ const RollHistory = ({ rollHistory, setRollHistory, mode, subMode }) => {
                             onClick={() => {
                                 showConfirm({ title: 'Clear History', message: `Clear ${rollHistory.length} roll${rollHistory.length === 1 ? '' : 's'} from history?`, danger: true, confirmLabel: 'Clear', onConfirm: () => setRollHistory([]) });
                             }}
-                            style={{ padding: '4px 8px', background: '#f44336', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}
+                            style={{ padding: '4px 8px', background: 'var(--danger-btn-start, #f44336)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '13px', transition: 'opacity var(--transition-fast)' }}
                         >
                             Clear
                         </button>

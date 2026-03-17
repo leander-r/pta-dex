@@ -160,7 +160,8 @@ const TrainerSkills = () => {
                         fontSize: '12px',
                         fontWeight: 'bold',
                         cursor: 'pointer',
-                        whiteSpace: 'nowrap'
+                        whiteSpace: 'nowrap',
+                        transition: 'background var(--transition-normal), color var(--transition-normal)'
                     }}
                 >
                     {showTrainedOnly ? '★ Trained only' : '☆ Show all'}

@@ -77,7 +77,7 @@ const GMTab = () => {
                             borderRadius: '7px',
                             border: 'none',
                             background: activeSection === id
-                                ? 'linear-gradient(135deg, #f5a623, #e8941c)'
+                                ? 'linear-gradient(135deg, var(--poke-orange), var(--poke-orange-dark))'
                                 : 'transparent',
                             color: activeSection === id ? 'white' : 'var(--text-secondary)',
                             fontWeight: activeSection === id ? 700 : 500,

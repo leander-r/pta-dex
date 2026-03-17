@@ -344,13 +344,14 @@ const TrainerFeatures = () => {
                                 onClick={() => handleStatChoice(stat)}
                                 style={{
                                     padding: '10px',
-                                    background: 'linear-gradient(135deg, #667eea, #764ba2)',
+                                    background: 'var(--gradient-purple)',
                                     color: 'white',
                                     border: 'none',
                                     borderRadius: '6px',
                                     cursor: 'pointer',
                                     fontSize: '13px',
-                                    fontWeight: 'bold'
+                                    fontWeight: 'bold',
+                                    transition: 'opacity var(--transition-fast)'
                                 }}
                             >
                                 {STAT_LABELS[stat]} +{pendingStatFeature.data.value}
@@ -377,7 +378,7 @@ const TrainerFeatures = () => {
 
             {/* Add Feature Section */}
             {!pendingStatFeature && (trainer.featPoints || 0) <= 0 && (
-                <div style={{ fontSize: '12px', color: '#e65100', marginBottom: '8px', padding: '6px 10px', background: 'rgba(255,152,0,0.1)', borderRadius: '6px', border: '1px solid rgba(255,152,0,0.3)' }}>
+                <div style={{ fontSize: '12px', color: 'var(--poke-orange-dark)', marginBottom: '8px', padding: '6px 10px', background: 'var(--tint-orange-bg)', borderRadius: '6px', border: '1px solid var(--tint-orange-border)' }}>
                     ⚠ No feat points — free features are still available. Earn points by leveling up.
                 </div>
             )}
@@ -407,8 +408,10 @@ const TrainerFeatures = () => {
                 {/* Feature List */}
                 <div>
                     {availableFeatures.length === 0 ? (
-                        <div style={{ textAlign: 'center', padding: '20px', color: 'var(--text-muted)' }}>
-                            No features found
+                        <div className="empty-state" style={{ padding: '20px' }}>
+                            <span className="empty-state-icon" style={{ fontSize: '28px' }}>🔍</span>
+                            <div className="empty-state-title">No features found</div>
+                            <div className="empty-state-description">Try a different search term or class filter.</div>
                         </div>
                     ) : (
                         availableFeatures.slice(0, 50).map(([name, data]) => (
