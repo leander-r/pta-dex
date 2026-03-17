@@ -140,7 +140,7 @@ const MainNavigation = ({ activeTab, setActiveTab }) => {
                                     display: 'flex',
                                     alignItems: 'center',
                                     gap: '7px',
-                                    color: '#2e7d32',
+                                    color: 'var(--color-success-text)',
                                     fontWeight: 600
                                 }}>
                                     <span>✓</span>
@@ -192,10 +192,10 @@ const MainNavigation = ({ activeTab, setActiveTab }) => {
                     margin: '10px 8px 0',
                     padding: '8px 10px',
                     borderRadius: '8px',
-                    background: '#e8f5e9',
-                    border: '1px solid #a5d6a7',
+                    background: 'var(--success-bg)',
+                    border: '1px solid var(--success-border)',
                     fontSize: '12px',
-                    color: '#2e7d32',
+                    color: 'var(--color-success-text)',
                     lineHeight: '1.5'
                 }}>
                     <div style={{ fontWeight: 700, marginBottom: '4px' }}>✓ All set! You're ready to play.</div>
@@ -204,7 +204,7 @@ const MainNavigation = ({ activeTab, setActiveTab }) => {
                         style={{
                             background: 'none',
                             border: 'none',
-                            color: '#2e7d32',
+                            color: 'var(--color-success-text)',
                             cursor: 'pointer',
                             fontSize: '13px',
                             padding: '4px 0',

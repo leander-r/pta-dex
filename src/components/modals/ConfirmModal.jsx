@@ -139,10 +139,10 @@ const ConfirmModal = () => {
                                 width: '100%',
                                 padding: '8px 12px',
                                 marginTop: '10px',
-                                border: '1px solid var(--border-color, #ccc)',
+                                border: '1px solid var(--border-medium)',
                                 borderRadius: '6px',
-                                background: 'var(--input-bg, #fff)',
-                                color: 'var(--text-color, #333)',
+                                background: 'var(--input-bg)',
+                                color: 'var(--text-primary)',
                                 fontSize: '14px',
                                 boxSizing: 'border-box'
                             }}
@@ -165,10 +165,10 @@ const ConfirmModal = () => {
                         onClick={handleClose}
                         style={{
                             padding: '10px 20px',
-                            border: '1px solid var(--border-color, #ddd)',
+                            border: '1px solid var(--border-medium)',
                             borderRadius: '6px',
-                            background: 'var(--surface-bg, white)',
-                            color: 'var(--text-color, #333)',
+                            background: 'var(--surface-bg)',
+                            color: 'var(--text-primary)',
                             cursor: 'pointer',
                             fontSize: '14px'
                         }}

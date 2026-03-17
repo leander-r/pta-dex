@@ -60,7 +60,7 @@ const TrainerStats = () => {
                                 textAlign: 'center',
                                 border: `1px solid ${stat.color}55`,
                                 borderTop: `3px solid ${stat.color}`,
-                                background: `linear-gradient(180deg, ${stat.color}25 0%, transparent 70%)`
+                                background: `linear-gradient(180deg, ${stat.color}33 0%, transparent 70%)`
                             }}
                         >
                             <div style={{ fontSize: '12px', fontWeight: 'bold', color: stat.color, marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
@@ -75,7 +75,7 @@ const TrainerStats = () => {
                                         fontSize: '16px', lineHeight: 1,
                                         border: `1px solid ${stat.color}66`,
                                         borderRadius: '4px',
-                                        background: `${stat.color}15`,
+                                        background: `${stat.color}22`,
                                         color: stat.color,
                                         cursor: 'pointer',
                                         flexShrink: 0
@@ -113,7 +113,7 @@ const TrainerStats = () => {
                                         fontSize: '16px', lineHeight: 1,
                                         border: `1px solid ${stat.color}66`,
                                         borderRadius: '4px',
-                                        background: `${stat.color}15`,
+                                        background: `${stat.color}22`,
                                         color: stat.color,
                                         cursor: 'pointer',
                                         flexShrink: 0
@@ -146,9 +146,9 @@ const TrainerStats = () => {
                     style={{
                         padding: '4px 10px',
                         fontSize: '12px',
-                        background: canUndoStat ? '#ff9800' : 'var(--bg-light, #f5f5f5)',
+                        background: canUndoStat ? '#ff9800' : 'var(--surface-bg)',
                         color: canUndoStat ? 'white' : 'var(--text-muted)',
-                        border: canUndoStat ? 'none' : '1px solid var(--border-medium, #ddd)',
+                        border: canUndoStat ? 'none' : '1px solid var(--border-medium)',
                         borderRadius: '4px',
                         cursor: canUndoStat ? 'pointer' : 'not-allowed',
                         fontWeight: 'bold',
@@ -166,7 +166,7 @@ const TrainerStats = () => {
                         return (
                             <span key={stat.key} style={{
                                 padding: '3px 8px', borderRadius: '10px', fontSize: '12px', fontWeight: 'bold',
-                                background: `${stat.color}15`, color: stat.color, border: `1px solid ${stat.color}40`
+                                background: `${stat.color}22`, color: stat.color, border: `1px solid ${stat.color}40`
                             }}>
                                 {stat.label} {trainer.stats[stat.key]}
                                 <span style={{ opacity: 0.65, marginLeft: '2px' }}>({mod >= 0 ? '+' : ''}{mod})</span>

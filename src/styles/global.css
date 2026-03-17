@@ -203,6 +203,12 @@
             /* Semantic text colors for roll results */
             --color-success-text: #2e7d32;
             --color-danger-text: #c62828;
+
+            /* Surface hover (used for hover states that need to work in both themes) */
+            --surface-hover: rgba(0, 0, 0, 0.04);
+
+            /* Card background (alias for poke-cream, used in modals and card footers) */
+            --card-bg: var(--poke-cream);
         }
 
         /* ========== DARK MODE ========== */
@@ -309,6 +315,12 @@
             /* Semantic text colors - dark mode */
             --color-success-text: #81c784;
             --color-danger-text: #ef9a9a;
+
+            /* Surface hover - dark mode */
+            --surface-hover: rgba(255, 255, 255, 0.06);
+
+            /* Card background - dark mode */
+            --card-bg: var(--poke-cream);
 
             /* Species selection dropdown colors - dark mode */
             --species-dropdown-bg: #2a2a3a;
@@ -688,11 +700,11 @@
         .form-group textarea {
             width: 100%;
             padding: 12px 15px;
-            border: 2px solid #e0e0e0;
+            border: 2px solid var(--border-light);
             border-radius: 12px;
             font-size: var(--font-base);
             transition: all 0.2s ease;
-            background: white;
+            background: var(--input-bg);
             color: var(--text-primary);
         }
         
@@ -825,12 +837,12 @@
         .btn-secondary {
             background: var(--poke-gray);
             color: var(--text-primary);
-            border: 2px solid #ddd;
+            border: 2px solid var(--border-light);
         }
 
         .btn-secondary:hover:not(:disabled) {
-            background: #e8e8e8;
-            border-color: #ccc;
+            background: var(--hover-bg);
+            border-color: var(--border-medium);
             transform: translateY(-1px);
         }
 
@@ -914,14 +926,14 @@
         /* Styled select with gradient border accent */
         select.select-styled {
             border: 2px solid transparent;
-            background: 
-                linear-gradient(white, white) padding-box,
+            background:
+                linear-gradient(var(--input-bg), var(--input-bg)) padding-box,
                 linear-gradient(135deg, var(--poke-orange-light), var(--color-purple)) border-box;
         }
-        
+
         select.select-styled:focus {
-            background: 
-                linear-gradient(white, white) padding-box,
+            background:
+                linear-gradient(var(--input-bg-hover), var(--input-bg-hover)) padding-box,
                 linear-gradient(135deg, var(--poke-orange), var(--color-purple-dark)) border-box;
             box-shadow: 0 0 0 3px rgba(245, 166, 35, 0.2);
         }
@@ -930,7 +942,7 @@
         optgroup {
             font-weight: 700;
             color: var(--color-purple);
-            background: #f8f9fa;
+            background: var(--bg-light);
         }
         
         option {
@@ -982,10 +994,10 @@
         
         /* Purple variant */
         .section-card-purple {
-            background: linear-gradient(135deg, #f8f9fa 0%, #f0f0ff 100%);
+            background: var(--section-bg);
             padding: 20px;
             border-radius: var(--radius-lg);
-            border: 2px solid #e0e0f0;
+            border: 2px solid var(--section-border);
             position: relative;
         }
         
@@ -1001,10 +1013,10 @@
 
         /* Orange variant (identity/profile card) */
         .section-card-orange {
-            background: linear-gradient(135deg, #f8f9fa 0%, #fff8f0 100%);
+            background: linear-gradient(135deg, var(--bg-light) 0%, var(--poke-cream) 100%);
             padding: 20px;
             border-radius: var(--radius-lg);
-            border: 2px solid #ffe0b2;
+            border: 2px solid var(--section-border-accent);
             position: relative;
         }
 
@@ -1162,11 +1174,11 @@
         /* ========== EXISTING STYLES (preserved) ========== */
         
         .pokemon-card {
-            background: white;
+            background: var(--card-bg);
             border-radius: 16px;
             padding: 20px;
             margin-bottom: 16px;
-            border: 2px solid #e0e0e0;
+            border: 2px solid var(--border-light);
             transition: all var(--transition-normal);
             cursor: pointer;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
@@ -1323,10 +1335,10 @@
         }
         
         .move-item {
-            background: white;
+            background: var(--card-bg);
             padding: 12px 16px;
             border-radius: 10px;
-            border: 2px solid #eee;
+            border: 2px solid var(--border-light);
             font-size: var(--font-sm);
             cursor: pointer;
             transition: all var(--transition-normal);
@@ -1408,12 +1420,13 @@
         .stat-input input {
             width: 100%;
             padding: 10px;
-            border: 2px solid #e0e0e0;
+            border: 2px solid var(--border-light);
             border-radius: 10px;
             text-align: center;
             font-size: var(--font-md);
             font-weight: 800;
             color: var(--text-primary);
+            background: var(--input-bg);
         }
         
         .section-title {
@@ -1463,11 +1476,11 @@
         }
         
         .feature-item {
-            background: white;
+            background: var(--card-bg);
             padding: 16px;
             margin-bottom: 10px;
             border-radius: 12px;
-            border: 2px solid #eee;
+            border: 2px solid var(--border-light);
             border-left: 4px solid var(--poke-orange);
             cursor: pointer;
             transition: all var(--transition-normal);
@@ -1663,10 +1676,10 @@
             display: flex;
             gap: 5px;
             margin-bottom: 20px;
-            background: white;
+            background: var(--card-bg);
             padding: 6px;
             border-radius: 15px;
-            border: 2px solid #eee;
+            border: 2px solid var(--border-light);
             position: relative;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
         }
@@ -2184,7 +2197,7 @@
         }
         
         .close {
-            color: #555;
+            color: var(--text-secondary);
             font-size: 24px;
             font-weight: bold;
             cursor: pointer;
@@ -2195,14 +2208,14 @@
             align-items: center;
             justify-content: center;
             border-radius: 50%;
-            background: #f0f0f0;
+            background: var(--surface-bg);
             border: 2px solid transparent;
             flex-shrink: 0;
         }
 
         .close:hover {
             color: var(--poke-red);
-            background: #ffe5e5;
+            background: var(--surface-hover);
             transform: rotate(90deg);
         }
 
@@ -2226,13 +2239,13 @@
         }
         
         .nature-effect.buff {
-            background: #e8f5e9;
-            color: #2e7d32;
+            background: var(--tint-success-bg);
+            color: var(--color-success-text);
         }
-        
+
         .nature-effect.nerf {
-            background: #ffebee;
-            color: #c62828;
+            background: var(--tint-fail-bg);
+            color: var(--color-danger-text);
         }
         
         .reference-grid {
@@ -2243,10 +2256,10 @@
         }
         
         .reference-card {
-            background: white;
+            background: var(--card-bg);
             padding: 16px;
             border-radius: 12px;
-            border: 2px solid #eee;
+            border: 2px solid var(--border-light);
             cursor: pointer;
             transition: all 0.2s ease;
         }
@@ -2460,7 +2473,7 @@
         .w-full { width: 100%; }
         .h-full { height: 100%; }
         
-        .bg-white { background: white; }
+        .bg-white { background: var(--card-bg); }
         .bg-cream { background: var(--poke-cream); }
         .bg-gray { background: var(--poke-gray); }
         .bg-orange { background: var(--poke-orange); }
@@ -2495,17 +2508,17 @@
         
         /* Card styles */
         .card {
-            background: white;
+            background: var(--card-bg);
             border-radius: 12px;
             padding: 20px;
-            border: 1px solid #e0e0e0;
+            border: 1px solid var(--border-light);
         }
-        
+
         .card-orange {
-            background: #f8f9fa;
+            background: var(--bg-light);
             border-radius: 12px;
             padding: 20px;
-            border: 1px solid #e0e0e0;
+            border: 1px solid var(--border-light);
         }
         
         .card-header {
@@ -2534,12 +2547,14 @@
         /* Input styles */
         .input-compact {
             padding: 8px 12px;
-            border: 2px solid #e0e0e0;
+            border: 2px solid var(--border-light);
             border-radius: 8px;
             font-size: 14px;
             transition: all 0.2s ease;
+            background: var(--input-bg);
+            color: var(--text-primary);
         }
-        
+
         .input-compact:focus {
             outline: none;
             border-color: var(--poke-orange);
@@ -2549,7 +2564,7 @@
         .stat-display {
             text-align: center;
             padding: 10px;
-            background: white;
+            background: var(--card-bg);
             border-radius: 8px;
         }
         
@@ -2571,14 +2586,14 @@
             justify-content: space-between;
             align-items: center;
             padding: 8px;
-            background: white;
+            background: var(--card-bg);
             border-radius: 6px;
             margin-bottom: 6px;
             border-left: 3px solid var(--poke-orange);
         }
-        
+
         .list-item:hover {
-            background: #fffbf5;
+            background: var(--surface-hover);
             transform: translateX(3px);
         }
         
@@ -2728,15 +2743,15 @@
             justify-content: space-between;
             align-items: center;
             padding: 8px;
-            background: white;
+            background: var(--card-bg);
             border-radius: 6px;
             margin-bottom: 6px;
             cursor: pointer;
             transition: all 0.2s ease;
         }
-        
+
         .list-item:hover {
-            background: #f5f5f5;
+            background: var(--surface-hover);
         }
         
         .list-item-border-green { border-left: 3px solid #4caf50; }
@@ -2775,10 +2790,10 @@
         
         /* Section styles */
         .section-card {
-            background: #f8f9fa;
+            background: var(--bg-light);
             padding: 20px;
             border-radius: 12px;
-            border: 1px solid #e0e0e0;
+            border: 1px solid var(--border-light);
         }
         
         .section-title-sm {
@@ -4043,6 +4058,7 @@
 
         [data-theme="dark"] .tabs {
             background: var(--bg-section);
+            border-color: var(--border-medium);
         }
 
         [data-theme="dark"] .tab {
@@ -4287,7 +4303,7 @@
 
         /* Pokemon card base styles */
         .pokemon-card {
-            background: white;
+            background: var(--card-bg);
             border-radius: 12px;
             transition: background 0.3s ease;
         }
@@ -4472,7 +4488,7 @@
 
         /* Card/box backgrounds */
         .bg-card {
-            background: white;
+            background: var(--card-bg);
             transition: background 0.3s ease;
         }
 
@@ -4803,6 +4819,14 @@
                 --skill-btn-disabled-bg: #1e1e28;
                 --skill-btn-disabled-text: #999;
                 --skill-btn-disabled-border: #3a3a4a;
+
+                /* Surface hover and card bg - dark mode */
+                --surface-hover: rgba(255, 255, 255, 0.06);
+                --card-bg: var(--poke-cream);
+
+                /* Semantic colors - dark mode */
+                --color-success-text: #81c784;
+                --color-danger-text: #ef9a9a;
             }
         }
 
