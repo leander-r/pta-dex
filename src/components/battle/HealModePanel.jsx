@@ -3,27 +3,34 @@ import { calculatePokemonHP, parseHealFormula } from '../../utils/dataUtils.js';
 
 const HealModePanel = ({ selectedPokemonId, setSelectedPokemonId, party, healingInventory, onUseItem }) => (
     <div>
-        <div style={{ marginBottom: '12px' }}>
-            <label style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '4px', display: 'block' }}>
-                Target Pokémon
-            </label>
-            <select
-                value={selectedPokemonId || ''}
-                onChange={(e) => setSelectedPokemonId(parseInt(e.target.value) || null)}
-                style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--input-bg)', color: 'var(--text-primary)' }}
-            >
-                <option value="">— Select Pokémon —</option>
-                {party.map(p => {
-                    const maxHP = calculatePokemonHP(p);
-                    const currentHP = maxHP - (p.currentDamage || 0);
-                    return (
-                        <option key={p.id} value={p.id}>
-                            {p.name || p.species} ({currentHP}/{maxHP} HP)
-                        </option>
-                    );
-                })}
-            </select>
-        </div>
+        {party.length === 0 && (
+            <div style={{ textAlign: 'center', padding: '16px', color: 'var(--text-muted)', fontSize: '13px', marginBottom: '8px' }}>
+                No Pokémon in party to heal.
+            </div>
+        )}
+        {party.length > 0 && (
+            <div style={{ marginBottom: '12px' }}>
+                <label style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '4px', display: 'block' }}>
+                    Target Pokémon
+                </label>
+                <select
+                    value={selectedPokemonId || ''}
+                    onChange={(e) => setSelectedPokemonId(parseInt(e.target.value) || null)}
+                    style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--input-bg)', color: 'var(--text-primary)' }}
+                >
+                    <option value="">— Select Pokémon —</option>
+                    {party.map(p => {
+                        const maxHP = calculatePokemonHP(p);
+                        const currentHP = maxHP - (p.currentDamage || 0);
+                        return (
+                            <option key={p.id} value={p.id}>
+                                {p.name || p.species} ({currentHP}/{maxHP} HP)
+                            </option>
+                        );
+                    })}
+                </select>
+            </div>
+        )}
 
         {healingInventory.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '20px', color: 'var(--text-muted)', fontSize: '13px' }}>

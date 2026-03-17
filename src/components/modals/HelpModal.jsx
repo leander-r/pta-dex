@@ -173,7 +173,7 @@ const HelpModal = () => {
             <div
                 ref={modalRef}
                 className="modal"
-                style={{ maxWidth: 'min(95vw, 480px)', maxHeight: '80vh', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
+                style={{ maxWidth: 'min(95vw, 480px)', maxHeight: 'min(90vh, 700px)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
                 onClick={e => e.stopPropagation()}
                 role="dialog"
                 aria-modal="true"
@@ -184,10 +184,13 @@ const HelpModal = () => {
                     style={{
                         background: 'linear-gradient(135deg, #f5a623, #e8941c)',
                         color: 'white',
-                        margin: '-25px -25px 20px -25px',
+                        margin: '-25px -25px 0 -25px',
                         padding: '18px 20px',
                         borderRadius: '17px 17px 0 0',
-                        borderBottom: 'none'
+                        borderBottom: 'none',
+                        position: 'sticky',
+                        top: 0,
+                        zIndex: 1
                     }}
                 >
                     <h3
@@ -229,7 +232,7 @@ const HelpModal = () => {
                     </button>
                 </div>
 
-                <div style={{ padding: '0 25px 25px', fontSize: '14px', lineHeight: '1.6', color: 'var(--text-color)', overflowY: 'auto', flex: 1 }}>
+                <div style={{ padding: '20px 25px 25px', fontSize: '14px', lineHeight: '1.6', color: 'var(--text-color)', overflowY: 'auto', flex: 1 }}>
                     <Body />
                 </div>
             </div>

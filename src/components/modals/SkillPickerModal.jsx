@@ -92,7 +92,7 @@ const SkillPickerModal = () => {
             <div
                 ref={modalRef}
                 className="modal"
-                style={{ maxWidth: '500px' }}
+                style={{ maxWidth: '500px', maxHeight: 'min(90vh, 700px)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
                 onClick={e => e.stopPropagation()}
                 role="dialog"
                 aria-modal="true"
@@ -103,10 +103,13 @@ const SkillPickerModal = () => {
                     style={{
                         background: 'linear-gradient(135deg, #4caf50, #2e7d32)',
                         color: 'white',
-                        margin: '-25px -25px 20px -25px',
+                        margin: '-25px -25px 0 -25px',
                         padding: '18px 20px',
                         borderRadius: '17px 17px 0 0',
-                        borderBottom: 'none'
+                        borderBottom: 'none',
+                        position: 'sticky',
+                        top: 0,
+                        zIndex: 1
                     }}
                 >
                     <h3
@@ -156,7 +159,7 @@ const SkillPickerModal = () => {
                     </button>
                 </div>
 
-                <div className="p-20">
+                <div className="p-20" style={{ overflowY: 'auto', flex: 1 }}>
                     <p style={{ marginBottom: '15px', color: '#666' }}>
                         Select <strong>{skillPickerModal.skillCount}</strong> skill{skillPickerModal.skillCount > 1 ? 's' : ''} from the {skillPickerModal.className} skill pool:
                     </p>

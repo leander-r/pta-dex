@@ -36,12 +36,19 @@ const ReferenceTab = () => {
             <h2 className="section-title">Quick Reference</h2>
 
             {/* Tab Navigation */}
-            <div className="tabs">
+            <div className="tabs" style={{ display: 'flex', overflowX: 'auto', flexWrap: 'nowrap', WebkitOverflowScrolling: 'touch', gap: '4px', marginBottom: '16px' }}>
                 {sections.map(section => (
                     <button
                         key={section.id}
                         className={`tab ${activeSection === section.id ? 'active' : ''}`}
                         onClick={() => setActiveSection(section.id)}
+                        style={{
+                            flexShrink: 0,
+                            background: activeSection === section.id ? 'var(--poke-orange, #667eea)' : 'transparent',
+                            color: activeSection === section.id ? 'white' : 'var(--poke-orange, #667eea)',
+                            border: activeSection === section.id ? 'none' : '1px solid var(--poke-orange, #667eea)',
+                            fontWeight: activeSection === section.id ? 700 : 500
+                        }}
                     >
                         {section.label}
                     </button>

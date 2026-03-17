@@ -254,7 +254,7 @@ const CardExportModal = () => {
             <div
                 ref={modalRef}
                 className="modal"
-                style={{ maxWidth: cardType === 'team' ? '680px' : '550px', maxHeight: '90vh', overflow: 'auto' }}
+                style={{ maxWidth: cardType === 'team' ? '680px' : '550px', maxHeight: 'min(90vh, 700px)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
                 onClick={e => e.stopPropagation()}
                 role="dialog"
                 aria-modal="true"
@@ -265,10 +265,13 @@ const CardExportModal = () => {
                     style={{
                         background: 'linear-gradient(135deg, #f5a623, #f7b731)',
                         color: 'white',
-                        margin: '-25px -25px 20px -25px',
+                        margin: '-25px -25px 0 -25px',
                         padding: '18px 20px',
                         borderRadius: '17px 17px 0 0',
-                        borderBottom: 'none'
+                        borderBottom: 'none',
+                        position: 'sticky',
+                        top: 0,
+                        zIndex: 1
                     }}
                 >
                     <h3
@@ -318,7 +321,7 @@ const CardExportModal = () => {
                     </button>
                 </div>
 
-                <div className="mb-15">
+                <div className="mb-15" style={{ overflowY: 'auto', flex: 1, padding: '20px 25px' }}>
                     <div className="tabs">
                         <button
                             className={`tab ${cardType === 'trainer' ? 'active' : ''}`}

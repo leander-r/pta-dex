@@ -9,7 +9,7 @@ import { useTrainerContext, useModal } from '../../contexts/index.js';
 const QUEST_STATUSES = [
     { key: 'active',     label: 'Active',     color: '#4caf50' },
     { key: 'completed',  label: 'Completed',  color: '#667eea' },
-    { key: 'abandoned',  label: 'Abandoned',  color: '#9e9e9e' },
+    { key: 'abandoned',  label: 'Abandoned',  color: 'var(--text-secondary)' },
 ];
 
 /**

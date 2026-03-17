@@ -168,8 +168,8 @@ const ContestPanel = ({ selectedPokemon, gameData, onRoll }) => {
                                 style={{
                                     display: 'flex', alignItems: 'center', gap: 10,
                                     padding: '8px 12px', borderRadius: 7, cursor: 'pointer',
-                                    border: `2px solid ${isSelected ? c : c + '44'}`,
-                                    background: isSelected ? `${c}18` : 'var(--surface-bg)',
+                                    border: isSelected ? `2px solid ${c}` : `1px solid ${c}33`,
+                                    background: isSelected ? `${c}22` : 'var(--surface-bg)',
                                     textAlign: 'left', width: '100%',
                                     transition: 'all 0.12s',
                                 }}

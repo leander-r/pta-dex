@@ -39,7 +39,7 @@ const CustomFeatureModal = () => {
                 ref={modalRef}
                 className="modal"
                 onClick={(e) => e.stopPropagation()}
-                style={{ maxWidth: '500px' }}
+                style={{ maxWidth: '500px', maxHeight: 'min(90vh, 700px)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="custom-feature-modal-title"
@@ -49,10 +49,13 @@ const CustomFeatureModal = () => {
                     style={{
                         background: 'linear-gradient(135deg, #4facfe, #00f2fe)',
                         color: 'white',
-                        margin: '-25px -25px 20px -25px',
+                        margin: '-25px -25px 0 -25px',
                         padding: '18px 20px',
                         borderRadius: '17px 17px 0 0',
-                        borderBottom: 'none'
+                        borderBottom: 'none',
+                        position: 'sticky',
+                        top: 0,
+                        zIndex: 1
                     }}
                 >
                     <h3
@@ -101,7 +104,7 @@ const CustomFeatureModal = () => {
                         ×
                     </button>
                 </div>
-                <div className="modal-content">
+                <div className="modal-content" style={{ overflowY: 'auto', flex: 1 }}>
                     <div className="form-group">
                         <label>Feature Name *</label>
                         <input

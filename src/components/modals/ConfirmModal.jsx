@@ -58,7 +58,7 @@ const ConfirmModal = () => {
             <div
                 ref={modalRef}
                 className="modal"
-                style={{ maxWidth: 'min(95vw, 480px)' }}
+                style={{ maxWidth: 'min(95vw, 480px)', maxHeight: 'min(90vh, 700px)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
                 onClick={e => e.stopPropagation()}
                 role="dialog"
                 aria-modal="true"
@@ -69,10 +69,13 @@ const ConfirmModal = () => {
                     style={{
                         background: headerBg,
                         color: 'white',
-                        margin: '-25px -25px 20px -25px',
+                        margin: '-25px -25px 0 -25px',
                         padding: '18px 20px',
                         borderRadius: '17px 17px 0 0',
-                        borderBottom: 'none'
+                        borderBottom: 'none',
+                        position: 'sticky',
+                        top: 0,
+                        zIndex: 1
                     }}
                 >
                     <h3
@@ -119,7 +122,7 @@ const ConfirmModal = () => {
                     </button>
                 </div>
 
-                <div style={{ padding: '0 25px 8px 25px' }}>
+                <div style={{ padding: '16px 25px 8px 25px', overflowY: 'auto', flex: 1 }}>
                     {message.split('\n').map((line, i) => (
                         <p key={i} style={{ margin: '0 0 6px 0', lineHeight: '1.5' }}>{line}</p>
                     ))}
@@ -152,7 +155,11 @@ const ConfirmModal = () => {
                     display: 'flex',
                     gap: '10px',
                     justifyContent: 'flex-end',
-                    padding: '16px 25px 25px 25px'
+                    padding: '16px 25px',
+                    position: 'sticky',
+                    bottom: 0,
+                    background: 'var(--card-bg)',
+                    borderTop: '1px solid var(--border-light)'
                 }}>
                     <button
                         onClick={handleClose}

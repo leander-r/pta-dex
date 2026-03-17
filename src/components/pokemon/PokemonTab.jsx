@@ -567,12 +567,17 @@ const PokemonTab = () => {
                             {sortDir === 'asc' ? 'A-Z' : 'Z-A'}
                         </button>
                         {(filter.search || filter.type) && (
-                            <button
-                                onClick={() => setFilter({ search: '', type: '' })}
-                                style={{ padding: '8px 12px', borderRadius: '6px', border: 'none', background: '#dc3545', color: 'white', cursor: 'pointer', fontSize: '13px' }}
-                            >
-                                Clear
-                            </button>
+                            <>
+                                <span style={{ fontSize: '12px', color: 'var(--text-muted)', alignSelf: 'center' }}>
+                                    {filteredList.length} result{filteredList.length !== 1 ? 's' : ''}
+                                </span>
+                                <button
+                                    onClick={() => setFilter({ search: '', type: '' })}
+                                    style={{ padding: '8px 12px', borderRadius: '6px', border: 'none', background: '#dc3545', color: 'white', cursor: 'pointer', fontSize: '13px' }}
+                                >
+                                    Clear
+                                </button>
+                            </>
                         )}
                     </div>
                 </div>

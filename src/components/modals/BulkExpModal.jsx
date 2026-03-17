@@ -117,17 +117,20 @@ const BulkExpModal = () => {
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="bulk-exp-modal-title"
-                style={{ maxWidth: '500px', width: '95%' }}
+                style={{ maxWidth: '500px', width: '95%', maxHeight: 'min(90vh, 700px)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
             >
                 <div
                     className="modal-header"
                     style={{
                         background: 'linear-gradient(135deg, #f5a623, #f7b731)',
                         color: 'white',
-                        margin: '-25px -25px 20px -25px',
+                        margin: '-25px -25px 0 -25px',
                         padding: '18px 20px',
                         borderRadius: '17px 17px 0 0',
-                        borderBottom: 'none'
+                        borderBottom: 'none',
+                        position: 'sticky',
+                        top: 0,
+                        zIndex: 1
                     }}
                 >
                     <h3
@@ -177,7 +180,7 @@ const BulkExpModal = () => {
                     </button>
                 </div>
 
-                <div className="modal-content" style={{ padding: '20px' }}>
+                <div className="modal-content" style={{ padding: '20px', overflowY: 'auto', flex: 1 }}>
                     {/* Party Pokemon List */}
                     {party.length === 0 ? (
                         <div style={{ textAlign: 'center', padding: '20px', color: '#666' }}>
@@ -343,6 +346,13 @@ const BulkExpModal = () => {
                                             </span>
                                         </div>
                                     ))}
+                                </div>
+                            )}
+
+                            {/* Apply info */}
+                            {selectedIds.size > 0 && expAmount > 0 && (
+                                <div style={{ fontSize: '12px', color: 'var(--text-muted)', textAlign: 'center', marginBottom: '8px' }}>
+                                    Applies to {selectedIds.size} Pokémon in your party
                                 </div>
                             )}
 

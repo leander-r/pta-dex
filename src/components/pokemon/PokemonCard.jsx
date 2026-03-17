@@ -432,9 +432,10 @@ const PokemonCard = ({
                     borderRight: secondaryType
                         ? `3px solid ${secondaryColor}`
                         : 'none',
-                    opacity: isDragging ? 0.4 : 1,
+                    opacity: isDragging ? 0.5 : 1,
+                    transform: isDragging ? 'scale(0.98)' : 'none',
                     outline: isDragOver ? '2px dashed #667eea' : 'none',
-                    transition: 'opacity 0.2s, outline 0.1s'
+                    transition: 'opacity 0.2s, outline 0.1s, transform 0.1s'
                 }}
                 onClick={() => { if (!compareMode) setEditing(true); }}
             >
@@ -485,7 +486,7 @@ const PokemonCard = ({
                     {/* Info */}
                     <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                            <span style={{ fontWeight: 'bold', fontSize: '16px' }}>
+                            <span style={{ fontWeight: 'bold', fontSize: '16px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '160px' }}>
                                 {pokemon.name || pokemon.species || 'Unknown'}
                             </span>
                             {pokemon.species && pokemon.species !== pokemon.name && (

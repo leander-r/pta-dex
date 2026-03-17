@@ -56,7 +56,7 @@ const TrainerStats = () => {
                             key={stat.key}
                             style={{
                                 borderRadius: '7px',
-                                padding: '9px 6px',
+                                padding: '8px',
                                 textAlign: 'center',
                                 border: `1px solid ${stat.color}55`,
                                 borderTop: `3px solid ${stat.color}`,
@@ -142,7 +142,7 @@ const TrainerStats = () => {
                 <button
                     onClick={undoStatAllocation}
                     disabled={!canUndoStat}
-                    title="Undo last stat change"
+                    title="Undo last stat point change"
                     style={{
                         padding: '4px 10px',
                         fontSize: '12px',

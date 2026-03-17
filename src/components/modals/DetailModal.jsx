@@ -81,7 +81,7 @@ const DetailModal = () => {
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="detail-modal-title"
-                style={{ maxWidth: 'min(95vw, 550px)', width: '100%', maxHeight: '80vh', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
+                style={{ maxWidth: 'min(95vw, 550px)', width: '100%', maxHeight: 'min(90vh, 700px)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
                 onClick={e => e.stopPropagation()}
             >
                 <div
@@ -89,10 +89,13 @@ const DetailModal = () => {
                     style={{
                         background: getHeaderBackground(),
                         color: 'white',
-                        margin: '-25px -25px 20px -25px',
+                        margin: '-25px -25px 0 -25px',
                         padding: '18px 20px',
                         borderRadius: '17px 17px 0 0',
-                        borderBottom: 'none'
+                        borderBottom: 'none',
+                        position: 'sticky',
+                        top: 0,
+                        zIndex: 1
                     }}
                 >
                     <h3
@@ -142,7 +145,7 @@ const DetailModal = () => {
                     </button>
                 </div>
 
-                <div className="p-20" style={{ overflowY: 'auto', flex: 1 }}>
+                <div className="p-20" style={{ overflowY: 'auto', flex: 1, padding: '20px 25px' }}>
                     {/* Move Details */}
                     {detailModal.type === 'move' && detailModal.data && (
                         <MoveDetails data={detailModal.data} moveName={detailModal.name} getContestTypeColor={getContestTypeColor} />

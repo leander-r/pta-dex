@@ -404,6 +404,11 @@ const InventoryTab = () => {
                             color: 'var(--text-primary)'
                         }}
                     />
+                    {(searchQuery || filter !== 'all') && (
+                        <span style={{ fontSize: '12px', color: 'var(--text-muted)', alignSelf: 'center', whiteSpace: 'nowrap' }}>
+                            {filteredInventory.length} item{filteredInventory.length !== 1 ? 's' : ''}
+                        </span>
+                    )}
                     <select
                         value={filter}
                         onChange={(e) => setFilter(e.target.value)}
@@ -433,9 +438,9 @@ const InventoryTab = () => {
                         }}
                     >
                         <option value="">Sort by...</option>
-                        <option value="name">Name {inventorySort === 'name' ? '✓' : ''}</option>
-                        <option value="type">Type {inventorySort === 'type' ? '✓' : ''}</option>
-                        <option value="quantity">Quantity {inventorySort === 'quantity' ? '✓' : ''}</option>
+                        <option value="name">Name (A→Z) {inventorySort === 'name' ? '✓' : ''}</option>
+                        <option value="type">Type (A→Z) {inventorySort === 'type' ? '✓' : ''}</option>
+                        <option value="quantity">Quantity (High→Low) {inventorySort === 'quantity' ? '✓' : ''}</option>
                     </select>
                 </div>}
 
@@ -591,6 +596,11 @@ const InventoryTab = () => {
                                                         {data.type || 'misc'}
                                                     </span>
                                                 </div>
+                                                {data.effect && (
+                                                    <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginTop: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                        {data.effect}
+                                                    </div>
+                                                )}
                                             </div>
                                             <div style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
                                                 <button
@@ -843,6 +853,12 @@ const InventoryTab = () => {
                                             gap: '8px',
                                             alignItems: 'center'
                                         }}>
+                                            {party.length === 0 ? (
+                                                <span style={{ fontSize: '13px', color: 'var(--text-muted)', flex: 1 }}>
+                                                    No Pokémon in your party.
+                                                </span>
+                                            ) : null}
+                                            {party.length > 0 && (
                                             <select
                                                 value={healTargetId}
                                                 onChange={(e) => setHealTargetId(e.target.value)}
@@ -868,6 +884,7 @@ const InventoryTab = () => {
                                                     );
                                                 })}
                                             </select>
+                                            )}
                                             {(() => {
                                                 const invItem = inventory.find(i => i.name.toLowerCase() === healPanel.itemName.toLowerCase());
                                                 const formula = parseHealFormula(invItem?.effect || '');

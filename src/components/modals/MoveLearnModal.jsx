@@ -62,12 +62,13 @@ const MoveLearnModal = () => {
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="move-learn-modal-title"
+                style={{ maxHeight: 'min(90vh, 700px)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
             >
-                <div className={`modal-header move-learn-header ${isNatural ? 'natural' : 'taught'}`}>
+                <div className={`modal-header move-learn-header ${isNatural ? 'natural' : 'taught'}`} style={{ position: 'sticky', top: 0, zIndex: 1 }}>
                     <h3 id="move-learn-modal-title">🎉 New Move Available!</h3>
                 </div>
 
-                <div className="move-learn-content">
+                <div className="move-learn-content" style={{ overflowY: 'auto', flex: 1 }}>
                     <div className="move-learn-new-move-section">
                         <div className="move-learn-pokemon-name">
                             {moveLearnData.pokemonName} wants to learn

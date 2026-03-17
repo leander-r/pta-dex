@@ -336,7 +336,7 @@ const SaveLoadModal = () => {
             <div
                 ref={modalRef}
                 className="modal"
-                style={{ maxWidth: 'min(95vw, 520px)', width: '100%' }}
+                style={{ maxWidth: 'min(95vw, 520px)', width: '100%', maxHeight: 'min(90vh, 700px)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
                 onClick={e => e.stopPropagation()}
                 role="dialog"
                 aria-modal="true"
@@ -348,10 +348,13 @@ const SaveLoadModal = () => {
                     style={{
                         background: 'linear-gradient(135deg, #f7971e, #ffd200)',
                         color: '#1a1a1a',
-                        margin: '-25px -25px 20px -25px',
+                        margin: '-25px -25px 0 -25px',
                         padding: '18px 20px',
                         borderRadius: '17px 17px 0 0',
-                        borderBottom: 'none'
+                        borderBottom: 'none',
+                        position: 'sticky',
+                        top: 0,
+                        zIndex: 1
                     }}
                 >
                     <h3
@@ -406,7 +409,7 @@ const SaveLoadModal = () => {
                 </div>
 
                 {/* Body */}
-                <div style={{ padding: '0 25px 20px 25px', overflowY: 'auto', maxHeight: '70vh' }}>
+                <div style={{ padding: '16px 25px 20px 25px', overflowY: 'auto', flex: 1 }}>
                     {/* Auto-save */}
                     <AutoSaveCard autoSave={autoSave} onLoad={restoreAutoBackup} />
 

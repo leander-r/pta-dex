@@ -39,13 +39,13 @@ const PrintSheetModal = () => {
             <div
                 ref={modalRef}
                 className="modal"
-                style={{ maxWidth: '480px', width: '90%' }}
+                style={{ maxWidth: '480px', width: '90%', maxHeight: 'min(90vh, 700px)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="print-sheet-title"
             >
                 {/* Header */}
-                <div className="modal-header" style={{ background: 'linear-gradient(135deg, #f5a623, #e8941c)' }}>
+                <div className="modal-header" style={{ background: 'linear-gradient(135deg, #f5a623, #e8941c)', margin: '-25px -25px 0 -25px', position: 'sticky', top: 0, zIndex: 1, borderRadius: '17px 17px 0 0', borderBottom: 'none' }}>
                     <h2 id="print-sheet-title" style={{ margin: 0, color: 'white', fontSize: '16px', fontWeight: 700 }}>
                         Print Character Sheet
                     </h2>
@@ -62,7 +62,7 @@ const PrintSheetModal = () => {
                 </div>
 
                 {/* Body */}
-                <div style={{ padding: '20px' }}>
+                <div style={{ padding: '20px', overflowY: 'auto', flex: 1 }}>
                     <p style={{ margin: '0 0 16px', fontSize: '13px', color: 'var(--text-secondary)' }}>
                         Click <strong>Print / Save as PDF</strong> to open a print-ready sheet in a new tab.
                         Your browser's print dialog will appear — choose "Save as PDF" to export.

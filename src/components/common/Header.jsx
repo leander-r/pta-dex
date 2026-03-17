@@ -354,7 +354,7 @@ const Header = () => {
                             zIndex: 1000,
                             overflow: 'hidden',
                             animation: 'fadeIn 0.15s ease-out',
-                            border: '2px solid #ffc966'
+                            border: '2px solid var(--poke-orange, #ffc966)'
                         }}>
                             {/* Header */}
                             <div style={{
@@ -402,7 +402,7 @@ const Header = () => {
                                 />
                             </div>
 
-                            <hr style={{ margin: '0 12px', border: 'none', borderTop: '1px solid #ffc966' }} />
+                            <hr style={{ margin: '0 12px', border: 'none', borderTop: '1px solid var(--poke-orange, #ffc966)' }} />
 
                             {/* Data Section */}
                             <div style={{ padding: '8px 0' }}>
@@ -514,7 +514,7 @@ const Header = () => {
                                 </label>
                             </div>
 
-                            <hr style={{ margin: '0 12px', border: 'none', borderTop: '1px solid #ffc966' }} />
+                            <hr style={{ margin: '0 12px', border: 'none', borderTop: '1px solid var(--poke-orange, #ffc966)' }} />
 
                             {/* Preferences */}
                             <div style={{ padding: '8px 0' }}>
@@ -561,7 +561,7 @@ const Header = () => {
                                 />
                             </div>
 
-                            <hr style={{ margin: '0 12px', border: 'none', borderTop: '1px solid #ffc966' }} />
+                            <hr style={{ margin: '0 12px', border: 'none', borderTop: '1px solid var(--poke-orange, #ffc966)' }} />
 
                             {/* Danger Zone */}
                             <div style={{ padding: '8px 0' }}>
@@ -611,7 +611,7 @@ const Header = () => {
                             {/* Archived Trainers Section */}
                             {archivedTrainers.length > 0 && (
                                 <>
-                                    <hr style={{ margin: '0 12px', border: 'none', borderTop: '1px solid #ffc966' }} />
+                                    <hr style={{ margin: '0 12px', border: 'none', borderTop: '1px solid var(--poke-orange, #ffc966)' }} />
                                     <div style={{ padding: '4px 0' }}>
                                         <button
                                             onClick={() => setShowArchivedSection(p => !p)}

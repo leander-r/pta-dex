@@ -364,7 +364,7 @@ const CustomSpeciesModal = () => {
                 ref={modalRef}
                 className="modal"
                 onClick={(e) => e.stopPropagation()}
-                style={{ maxWidth: '700px', maxHeight: '90vh', overflow: 'auto' }}
+                style={{ maxWidth: '700px', maxHeight: 'min(90vh, 700px)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="custom-species-modal-title"
@@ -374,10 +374,13 @@ const CustomSpeciesModal = () => {
                     style={{
                         background: 'linear-gradient(135deg, #667eea, #764ba2)',
                         color: 'white',
-                        margin: '-25px -25px 20px -25px',
+                        margin: '-25px -25px 0 -25px',
                         padding: '18px 20px',
                         borderRadius: '17px 17px 0 0',
-                        borderBottom: 'none'
+                        borderBottom: 'none',
+                        position: 'sticky',
+                        top: 0,
+                        zIndex: 1
                     }}
                 >
                     <h3
@@ -426,7 +429,7 @@ const CustomSpeciesModal = () => {
                         ×
                     </button>
                 </div>
-                <div className="modal-content">
+                <div className="modal-content" style={{ overflowY: 'auto', flex: 1 }}>
                     {/* Data Status */}
                     <div style={{ fontSize: '10px', color: 'var(--text-secondary)', marginBottom: '10px' }}>
                         Game Data: {totalMoves} moves, {totalAbilities} abilities loaded
