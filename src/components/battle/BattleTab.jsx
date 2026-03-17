@@ -611,7 +611,7 @@ const BattleTab = () => {
                                                 <div key={stat.key} className="trainer-stat-mini-box" style={{ textAlign: 'center', padding: '4px', borderRadius: '4px', outline: isActive ? `2px solid ${stat.color}` : 'none', background: isActive ? `${stat.color}18` : undefined }}>
                                                     <div style={{ fontSize: '12px', fontWeight: 'bold', color: stat.color }}>{stat.label}</div>
                                                     <div style={{ fontSize: '14px', fontWeight: 'bold' }}>{value}</div>
-                                                    <div style={{ fontSize: '12px', color: mod >= 0 ? '#4caf50' : '#f44336' }}>{mod >= 0 ? '+' : ''}{mod}</div>
+                                                    <div style={{ fontSize: '12px', color: mod >= 0 ? 'var(--color-success-text)' : 'var(--color-danger-text)' }}>{mod >= 0 ? '+' : ''}{mod}</div>
                                                 </div>
                                             );
                                         });
@@ -680,7 +680,7 @@ const BattleTab = () => {
                                         <div><strong>{selectedSkill}</strong> ({skillData.stat})</div>
                                         <div style={{ marginTop: '4px' }} title="Roll 1d20. Trained skills add a bonus: Rank 1 = +2 + modifier, Rank 2 = +4 + (2× modifier). No skill = plain 1d20.">
                                             Roll: 1d20
-                                            {hasTrained && <span style={{ color: '#4caf50' }} title={`Rank ${skillRank} trained skill bonus`}> +{trainedBonus} (rank {skillRank})</span>}
+                                            {hasTrained && <span style={{ color: 'var(--color-success-text)' }} title={`Rank ${skillRank} trained skill bonus`}> +{trainedBonus} (rank {skillRank})</span>}
                                         </div>
                                         <div className="text-muted" style={{ marginTop: '2px' }}>{skillData.description}</div>
                                     </div>

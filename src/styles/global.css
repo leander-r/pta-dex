@@ -128,6 +128,12 @@
             --focus-ring: 0 0 0 3px rgba(245, 166, 35, 0.4);
             --focus-ring-purple: 0 0 0 3px rgba(102, 126, 234, 0.4);
 
+            /* Shadow scale */
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+            --shadow-lg: 0 8px 28px rgba(0, 0, 0, 0.18);
+            --shadow-float: 0 20px 60px rgba(0, 0, 0, 0.28);
+
             /* Body background (for theme switching) */
             --body-bg: linear-gradient(180deg, #ffecd2 0%, #fcb69f 50%, #ee9ca7 100%);
             --body-bg-fallback: #ffecd2;
@@ -325,6 +331,12 @@
             /* Surface hover - dark mode */
             --surface-hover: rgba(255, 255, 255, 0.06);
 
+            /* Shadow scale - dark mode (stronger for depth) */
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.38);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.48);
+            --shadow-lg: 0 8px 28px rgba(0, 0, 0, 0.58);
+            --shadow-float: 0 20px 60px rgba(0, 0, 0, 0.72);
+
             /* Card background - dark mode */
             --card-bg: var(--poke-cream);
 
@@ -397,6 +409,35 @@
         /* Global readability improvements */
         p, span, div {
             line-height: 1.6;
+        }
+
+        /* Global button baseline — ensures all buttons are cursor:pointer
+           and inherit font. More specific rules below override these. */
+        button {
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        button:disabled {
+            cursor: not-allowed;
+        }
+
+        /* Global input baseline — consistent border/bg for inputs not wrapped
+           in .form-group. Inline styles in JSX override this via specificity. */
+        input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="color"]),
+        textarea {
+            border: 1.5px solid var(--input-border);
+            background: var(--input-bg);
+            color: var(--text-primary);
+            font-family: inherit;
+            transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+        }
+
+        input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="color"]):focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--poke-orange);
+            box-shadow: 0 0 0 3px rgba(245, 166, 35, 0.15);
         }
         
         h1, h2, h3, h4, h5, h6 {
@@ -483,7 +524,7 @@
             background: var(--poke-white);
             border-radius: 20px;
             padding: 15px;
-            box-shadow: 0 4px 20px var(--poke-shadow);
+            box-shadow: var(--shadow-md);
             height: fit-content;
             position: sticky;
             top: 80px;
@@ -496,7 +537,7 @@
             background: var(--poke-cream);
             border-radius: 20px;
             padding: 25px;
-            box-shadow: 0 4px 20px var(--poke-shadow);
+            box-shadow: var(--shadow-md);
             min-height: 600px;
             border: 3px solid var(--poke-orange-light);
             position: relative;
@@ -1187,7 +1228,7 @@
             border: 2px solid var(--border-light);
             transition: all var(--transition-normal);
             cursor: pointer;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            box-shadow: var(--shadow-sm);
             position: relative;
             overflow: hidden;
         }
@@ -1778,7 +1819,7 @@
             width: 90%;
             max-height: 85vh;
             overflow-y: auto;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            box-shadow: var(--shadow-float);
             border: 3px solid var(--poke-orange);
             animation: modalSlideIn 0.25s ease;
             position: relative;
@@ -1816,6 +1857,14 @@
         @media (prefers-reduced-motion: reduce) {
             .modal-close-btn:hover {
                 transform: none;
+            }
+
+            /* Suppress all motion for users who have requested reduced motion */
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
             }
         }
 
@@ -2048,7 +2097,7 @@
             width: 90%;
             max-height: 80vh;
             overflow: auto;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            box-shadow: var(--shadow-float);
             z-index: 2002;
         }
 
@@ -2283,7 +2332,7 @@
         
         .reference-card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px var(--poke-shadow);
+            box-shadow: var(--shadow-md);
             border-color: var(--poke-orange);
         }
         
@@ -2303,11 +2352,11 @@
         .exp-progress {
             width: 100%;
             height: 14px;
-            background: #e0e0e0;
+            background: var(--border-light);
             border-radius: 10px;
             overflow: hidden;
             margin-top: 8px;
-            border: 2px solid #ccc;
+            border: 2px solid var(--border-medium);
             position: relative;
         }
 
@@ -4844,6 +4893,12 @@
                 /* Semantic colors - dark mode */
                 --color-success-text: #81c784;
                 --color-danger-text: #ef9a9a;
+
+                /* Shadow scale - dark mode */
+                --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.38);
+                --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.48);
+                --shadow-lg: 0 8px 28px rgba(0, 0, 0, 0.58);
+                --shadow-float: 0 20px 60px rgba(0, 0, 0, 0.72);
             }
         }
 
