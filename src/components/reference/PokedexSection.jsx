@@ -421,8 +421,8 @@ const PokedexSection = () => {
                 )}
             </div>
 
-            {/* ── Sort row ── */}
-            <div style={{ display: 'flex', gap: '4px', marginBottom: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
+            {/* ── Sort row — full (desktop) ── */}
+            <div className="pokedex-sort-full" style={{ display: 'flex', gap: '4px', marginBottom: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
                 <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 600, marginRight: '2px', flexShrink: 0 }}>Sort:</span>
                 {SORT_OPTIONS.map(opt => {
                     const isActive = sortKey === opt.key;
@@ -449,6 +449,25 @@ const PokedexSection = () => {
                         </button>
                     );
                 })}
+            </div>
+
+            {/* ── Sort row — compact (mobile) ── */}
+            <div className="pokedex-sort-mobile" style={{ display: 'none', gap: '6px', marginBottom: '8px', alignItems: 'center' }}>
+                <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 600, flexShrink: 0 }}>Sort:</span>
+                <select
+                    value={sortKey}
+                    onChange={e => { setSortKey(e.target.value); setSortDir(e.target.value === 'name' || e.target.value === 'id' ? 'asc' : 'desc'); }}
+                    style={{ flex: 1, padding: '6px 8px', borderRadius: '8px', border: '1px solid var(--input-border)', background: 'var(--input-bg)', color: 'var(--text-primary)', fontSize: '13px' }}
+                >
+                    {SORT_OPTIONS.map(opt => <option key={opt.key} value={opt.key}>{opt.label}</option>)}
+                </select>
+                <button
+                    onClick={() => setSortDir(d => d === 'asc' ? 'desc' : 'asc')}
+                    title="Toggle sort direction"
+                    style={{ padding: '6px 10px', borderRadius: '8px', border: '1.5px solid var(--poke-orange, #f5a623)', background: 'rgba(245,166,35,0.12)', color: 'var(--poke-orange-dark, #c47d00)', fontWeight: 700, fontSize: '12px', cursor: 'pointer', flexShrink: 0 }}
+                >
+                    {sortDir === 'asc' ? '▲ Asc' : '▼ Desc'}
+                </button>
             </div>
 
             {/* ── Count ── */}
@@ -518,7 +537,7 @@ const PokedexSection = () => {
                                         #{s.id || '?'}
                                     </span>
                                     {/* Name */}
-                                    <span style={{ fontWeight: 700, fontSize: '14px', flex: 1, minWidth: 0 }}>
+                                    <span style={{ fontWeight: 700, fontSize: '14px', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                         {s.species}
                                     </span>
                                     {/* Types */}
@@ -527,6 +546,7 @@ const PokedexSection = () => {
                                     </div>
                                     {/* BST */}
                                     <span
+                                        className="pokedex-bst"
                                         title="Base Stat Total"
                                         style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 600, flexShrink: 0, minWidth: '44px', textAlign: 'right' }}
                                     >

@@ -3604,7 +3604,12 @@
             .reference-grid {
                 grid-template-columns: 1fr;
             }
-            
+
+            /* ===== MOBILE POKÉDEX ===== */
+            /* Swap 9-button sort row for a compact select+direction button */
+            .pokedex-sort-full { display: none !important; }
+            .pokedex-sort-mobile { display: flex !important; }
+
             /* ===== MOBILE TABLES ===== */
             table {
                 display: block;
@@ -3720,9 +3725,10 @@
                 padding: 12px 12px calc(72px + env(safe-area-inset-bottom, 0px)) 12px;
             }
 
-            /* Prevent iOS Safari from zooming in when tapping any input */
+            /* Prevent iOS Safari from zooming in when tapping any input.
+               !important needed to override inline fontSize styles. */
             input, select, textarea {
-                font-size: max(16px, 1em);
+                font-size: max(16px, 1em) !important;
             }
             
             /* Section titles */
@@ -3866,6 +3872,9 @@
             .nav-button .nav-icon {
                 font-size: 1.3em;
             }
+
+            /* Pokédex — hide BST column on very small screens, name needs the space */
+            .pokedex-bst { display: none !important; }
 
         }
 
