@@ -365,6 +365,9 @@ const PokedexSection = () => {
     const [sortDir,      setSortDir]      = useState('asc');
     const [expandedId,   setExpandedId]   = useState(null);
     const [hoveredId,    setHoveredId]    = useState(null);
+    const [page,         setPage]         = useState(0);
+
+    const PAGE_SIZE = 50;
 
     const allSpecies = useMemo(() =>
         [...(pokedex || []), ...(customSpecies || [])],
@@ -402,6 +405,7 @@ const PokedexSection = () => {
     }, [allSpecies, search, typeFilter, type2Filter, abilitySearch, sortKey, sortDir]);
 
     const handleSort = (key) => {
+        setPage(0);
         if (sortKey === key) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
         else { setSortKey(key); setSortDir(key === 'name' || key === 'id' ? 'asc' : 'desc'); }
     };
@@ -411,8 +415,20 @@ const PokedexSection = () => {
 
     const resetAll = () => {
         setSearch(''); setTypeFilter(''); setType2Filter('');
-        setAbilitySearch(''); setSortKey('id'); setSortDir('asc');
+        setAbilitySearch(''); setSortKey('id'); setSortDir('asc'); setPage(0);
     };
+
+    // Reset page when filters change
+    const prevFiltersRef = React.useRef({ search, typeFilter, type2Filter, abilitySearch });
+    if (
+        prevFiltersRef.current.search       !== search       ||
+        prevFiltersRef.current.typeFilter   !== typeFilter   ||
+        prevFiltersRef.current.type2Filter  !== type2Filter  ||
+        prevFiltersRef.current.abilitySearch !== abilitySearch
+    ) {
+        prevFiltersRef.current = { search, typeFilter, type2Filter, abilitySearch };
+        if (page !== 0) setPage(0);
+    }
 
     const handleRowClick = useCallback((id) => setExpandedId(prev => prev === id ? null : id), []);
 
@@ -542,14 +558,22 @@ const PokedexSection = () => {
             </div>
 
             {/* ── Count ── */}
-            <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '8px' }}>
-                {filtered.length === allSpecies.length
-                    ? `${allSpecies.length} species`
-                    : `${filtered.length} of ${allSpecies.length} species`}
-                {type2Filter && typeFilter && typeFilter !== type2Filter && (
-                    <span style={{ marginLeft: '6px', opacity: 0.75 }}>
-                        ({typeFilter} + {type2Filter} dual-type)
-                    </span>
+            {/* ── Count + pagination info ── */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px', flexWrap: 'wrap', gap: '4px' }}>
+                <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+                    {filtered.length === allSpecies.length
+                        ? `${allSpecies.length} species`
+                        : `${filtered.length} of ${allSpecies.length} species`}
+                    {type2Filter && typeFilter && typeFilter !== type2Filter && (
+                        <span style={{ marginLeft: '6px', opacity: 0.75 }}>
+                            ({typeFilter} + {type2Filter} dual-type)
+                        </span>
+                    )}
+                </div>
+                {filtered.length > PAGE_SIZE && (
+                    <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+                        {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, filtered.length)} / {filtered.length}
+                    </div>
                 )}
             </div>
 
@@ -563,7 +587,7 @@ const PokedexSection = () => {
                         </button>
                     </div>
                 ) : (
-                    filtered.map((s, idx) => {
+                    filtered.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE).map((s, idx) => {
                         const rowId = s.id ?? s.species;
                         return (
                             <PokedexRow
@@ -580,6 +604,38 @@ const PokedexSection = () => {
                     })
                 )}
             </div>
+
+            {/* ── Pagination controls ── */}
+            {filtered.length > PAGE_SIZE && (() => {
+                const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+                return (
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', marginTop: '10px', flexWrap: 'wrap' }}>
+                        <button
+                            onClick={() => { setPage(0); setExpandedId(null); }}
+                            disabled={page === 0}
+                            style={{ padding: '5px 10px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--bg-secondary)', cursor: page === 0 ? 'not-allowed' : 'pointer', opacity: page === 0 ? 0.4 : 1, fontSize: '12px' }}
+                        >«</button>
+                        <button
+                            onClick={() => { setPage(p => p - 1); setExpandedId(null); }}
+                            disabled={page === 0}
+                            style={{ padding: '5px 10px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--bg-secondary)', cursor: page === 0 ? 'not-allowed' : 'pointer', opacity: page === 0 ? 0.4 : 1, fontSize: '12px' }}
+                        >‹ Prev</button>
+                        <span style={{ fontSize: '12px', color: 'var(--text-muted)', padding: '0 4px' }}>
+                            Page {page + 1} of {totalPages}
+                        </span>
+                        <button
+                            onClick={() => { setPage(p => p + 1); setExpandedId(null); }}
+                            disabled={page >= totalPages - 1}
+                            style={{ padding: '5px 10px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--bg-secondary)', cursor: page >= totalPages - 1 ? 'not-allowed' : 'pointer', opacity: page >= totalPages - 1 ? 0.4 : 1, fontSize: '12px' }}
+                        >Next ›</button>
+                        <button
+                            onClick={() => { setPage(totalPages - 1); setExpandedId(null); }}
+                            disabled={page >= totalPages - 1}
+                            style={{ padding: '5px 10px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--bg-secondary)', cursor: page >= totalPages - 1 ? 'not-allowed' : 'pointer', opacity: page >= totalPages - 1 ? 0.4 : 1, fontSize: '12px' }}
+                        >»</button>
+                    </div>
+                );
+            })()}
         </div>
     );
 };
