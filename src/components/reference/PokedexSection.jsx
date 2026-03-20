@@ -32,15 +32,27 @@ const getBST = (s) => STAT_KEYS.reduce((sum, k) => sum + (s.baseStats?.[k] || 0)
 
 // ── Sub-components ───────────────────────────────────────────
 
-const TypeChip = ({ type }) => {
-    const bg    = getTypeColor(type);
-    const color = getContrastTextColor(bg);
+const TypeChip = ({ type }) => (
+    <span
+        className={`type-pill-single type-${type.toLowerCase()}`}
+        style={{ color: getContrastTextColor(getTypeColor(type)), flexShrink: 0 }}
+    >{type}</span>
+);
+
+const DualTypeDisplay = ({ types }) => {
+    if (!types || types.length === 0) return null;
+    if (types.length === 1) return <TypeChip type={types[0]} />;
     return (
-        <span style={{
-            background: bg, color, padding: '2px 8px', borderRadius: '10px',
-            fontSize: '11px', fontWeight: 700, letterSpacing: '0.3px',
-            flexShrink: 0, display: 'inline-block'
-        }}>{type}</span>
+        <div className="type-pill-dual" style={{ flexShrink: 0 }}>
+            <span
+                className={`type-${types[0].toLowerCase()}`}
+                style={{ color: getContrastTextColor(getTypeColor(types[0])) }}
+            >{types[0]}</span>
+            <span
+                className={`type-${types[1].toLowerCase()}`}
+                style={{ color: getContrastTextColor(getTypeColor(types[1])) }}
+            >{types[1]}</span>
+        </div>
     );
 };
 
@@ -541,9 +553,7 @@ const PokedexSection = () => {
                                         {s.species}
                                     </span>
                                     {/* Types */}
-                                    <div style={{ display: 'flex', gap: '4px', flexShrink: 0 }}>
-                                        {(s.types || []).map(t => <TypeChip key={t} type={t} />)}
-                                    </div>
+                                    <DualTypeDisplay types={s.types} />
                                     {/* BST */}
                                     <span
                                         className="pokedex-bst"
