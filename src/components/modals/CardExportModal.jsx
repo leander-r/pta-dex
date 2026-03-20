@@ -430,29 +430,6 @@ const TrainerCard = ({ trainer, pokemon }) => (
             border: '3px solid rgba(255,255,255,0.3)'
         }}
     >
-        {/* Subtle corner accents */}
-        <div style={{
-            position: 'absolute',
-            top: '-40px',
-            right: '-40px',
-            width: '160px',
-            height: '160px',
-            borderRadius: '50%',
-            border: '2px solid rgba(255,255,255,0.12)',
-            background: 'transparent',
-            pointerEvents: 'none'
-        }} />
-        <div style={{
-            position: 'absolute',
-            bottom: '-30px',
-            left: '-30px',
-            width: '100px',
-            height: '100px',
-            borderRadius: '50%',
-            background: 'rgba(255,255,255,0.05)',
-            pointerEvents: 'none'
-        }} />
-
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '18px', position: 'relative', zIndex: 1 }}>
             <div style={{
@@ -643,27 +620,6 @@ const TeamCard = ({ trainer, party }) => (
             pointerEvents: 'none'
         }} />
 
-        {/* Decorative circles */}
-        <div style={{
-            position: 'absolute',
-            top: '-60px',
-            right: '-60px',
-            width: '150px',
-            height: '150px',
-            borderRadius: '50%',
-            border: '2px solid rgba(245, 166, 35, 0.2)',
-            background: 'transparent'
-        }} />
-        <div style={{
-            position: 'absolute',
-            bottom: '-30px',
-            left: '-30px',
-            width: '100px',
-            height: '100px',
-            borderRadius: '50%',
-            background: 'rgba(245, 166, 35, 0.05)'
-        }} />
-
         {/* Header - Trainer Info */}
         <div style={{
             display: 'flex',
@@ -797,10 +753,10 @@ const TeamPokemonSlot = ({ poke, idx }) => {
         ? `linear-gradient(145deg, ${getTypeColor(primaryType)}cc, ${getTypeColor(secondaryType)}cc)`
         : `linear-gradient(145deg, ${getTypeColor(primaryType)}cc, ${getTypeColor(primaryType)}66)`;
 
-    // Get primary ability
-    const abilityText = poke.abilities && poke.abilities.length > 0
-        ? poke.abilities[0]
-        : poke.ability || '';
+    // All abilities
+    const abilities = poke.abilities && poke.abilities.length > 0
+        ? poke.abilities
+        : poke.ability ? [poke.ability] : [];
 
     return (
         <div style={{
@@ -855,15 +811,29 @@ const TeamPokemonSlot = ({ poke, idx }) => {
                 }}>
                     {poke.name || poke.species || 'Unknown'}{genderIcon ? ` ${genderIcon}` : ''}
                 </div>
-                <div style={{
-                    fontSize: '10px',
-                    opacity: 0.85,
-                    fontWeight: 600,
-                    marginTop: '1px'
-                }}>
-                    Lv.{poke.level}{abilityText ? ` · ${abilityText}` : ''}
+                <div style={{ fontSize: '10px', opacity: 0.85, fontWeight: 600, marginTop: '1px' }}>
+                    Lv.{poke.level}
                 </div>
             </div>
+
+            {/* Abilities */}
+            {abilities.length > 0 && (
+                <div style={{ display: 'flex', gap: '3px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                    {abilities.map((ab, i) => (
+                        <span key={i} style={{
+                            padding: '1px 6px',
+                            borderRadius: '8px',
+                            fontSize: '9px',
+                            fontWeight: 600,
+                            background: 'rgba(255,255,255,0.15)',
+                            border: '1px solid rgba(255,255,255,0.25)',
+                            fontStyle: 'italic'
+                        }}>
+                            {ab}
+                        </span>
+                    ))}
+                </div>
+            )}
 
             {/* Type pills */}
             <div style={{ display: 'flex', gap: '3px', justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -1010,19 +980,6 @@ const PokemonCard = ({ poke }) => {
                 border: '3px solid rgba(255,255,255,0.3)'
             }}
         >
-            {/* Subtle corner accent */}
-            <div style={{
-                position: 'absolute',
-                top: '-50px',
-                right: '-50px',
-                width: '180px',
-                height: '180px',
-                borderRadius: '50%',
-                border: '2px solid rgba(255,255,255,0.1)',
-                background: 'transparent',
-                pointerEvents: 'none'
-            }} />
-
             {/* Header */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '16px', position: 'relative', zIndex: 1 }}>
                 {(() => {
