@@ -325,7 +325,8 @@ const CardExportModal = () => {
                     </button>
                 </div>
 
-                <div className="mb-15" style={{ overflowY: 'auto', flex: 1, padding: '20px 25px' }}>
+                {/* Scrollable content: tabs + card preview */}
+                <div style={{ overflowY: 'auto', flex: 1, padding: '20px 25px' }}>
                     <div className="tabs">
                         <button
                             className={`tab ${cardType === 'trainer' ? 'active' : ''}`}
@@ -361,31 +362,36 @@ const CardExportModal = () => {
                             </select>
                         </div>
                     )}
+
+                    {/* Card previews */}
+                    <div style={{ marginTop: '16px' }}>
+                        {cardType === 'trainer' && (
+                            <TrainerCard trainer={trainer} pokemon={allPokemon} />
+                        )}
+                        {cardType === 'team' && (
+                            <TeamCard trainer={trainer} party={party} />
+                        )}
+                        {cardType === 'pokemon' && selectedCardPokemon && (
+                            <PokemonCard poke={selectedCardPokemon} />
+                        )}
+                        {cardType === 'pokemon' && !selectedCardPokemon && (
+                            <div className="empty-state">
+                                <p>Select a Pokémon above to preview their card</p>
+                            </div>
+                        )}
+                    </div>
                 </div>
 
-                {/* Trainer Card Preview */}
-                {cardType === 'trainer' && (
-                    <TrainerCard trainer={trainer} pokemon={allPokemon} />
-                )}
-
-                {/* Team Card Preview */}
-                {cardType === 'team' && (
-                    <TeamCard trainer={trainer} party={party} />
-                )}
-
-                {/* Pokemon Card Preview */}
-                {cardType === 'pokemon' && selectedCardPokemon && (
-                    <PokemonCard poke={selectedCardPokemon} />
-                )}
-
-                {cardType === 'pokemon' && !selectedCardPokemon && (
-                    <div className="empty-state">
-                        <p>Select a Pokémon above to preview their card</p>
-                    </div>
-                )}
-
-                {/* Action Buttons */}
-                <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '20px', flexWrap: 'wrap' }}>
+                {/* Action Buttons — pinned footer */}
+                <div style={{
+                    display: 'flex',
+                    gap: '10px',
+                    justifyContent: 'flex-end',
+                    padding: '12px 25px 20px',
+                    borderTop: '1px solid var(--border-color, rgba(0,0,0,0.1))',
+                    flexWrap: 'wrap',
+                    flexShrink: 0
+                }}>
                     <button
                         className="btn btn-secondary"
                         onClick={handleCopyText}
@@ -517,7 +523,7 @@ const TrainerCard = ({ trainer, pokemon }) => (
         </div>
 
         {/* Features - Pill badges */}
-        {trainer.features.length > 0 && (
+        {trainer.features?.length > 0 && (
             <div style={{ marginBottom: '12px', position: 'relative', zIndex: 1 }}>
                 <SectionHeader label="Features" />
                 <div style={{
@@ -737,11 +743,11 @@ const TeamCard = ({ trainer, party }) => (
             }}>{party.length}/6</span>
         </div>
 
-        {/* Party Pokemon Grid - 2 columns */}
+        {/* Party Pokemon Grid - 3 columns (2 rows of 3 = full team) */}
         <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(2, 1fr)',
-            gap: '12px',
+            gridTemplateColumns: 'repeat(3, 1fr)',
+            gap: '10px',
             position: 'relative',
             zIndex: 1
         }}>
@@ -800,27 +806,28 @@ const TeamPokemonSlot = ({ poke, idx }) => {
         <div style={{
             background: bgGradient,
             borderRadius: '12px',
-            padding: '12px',
+            padding: '10px 10px 8px',
             border: '2px solid rgba(255,255,255,0.25)',
             position: 'relative',
             boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
             display: 'flex',
-            gap: '12px',
-            alignItems: 'flex-start'
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '6px'
         }}>
-            {/* Slot number */}
+            {/* Slot number badge */}
             <div style={{
                 position: 'absolute',
                 top: '-8px',
                 left: '-8px',
-                width: '24px',
-                height: '24px',
+                width: '22px',
+                height: '22px',
                 background: 'linear-gradient(135deg, #f5a623, #e8941c)',
                 borderRadius: '50%',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: '12px',
+                fontSize: '11px',
                 fontWeight: 'bold',
                 border: '2px solid #1a1a1a',
                 boxShadow: '0 2px 6px rgba(0,0,0,0.3)'
@@ -828,128 +835,96 @@ const TeamPokemonSlot = ({ poke, idx }) => {
                 {idx + 1}
             </div>
 
-            {/* Left: Avatar */}
-            <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
-                {(() => {
-                    const img = getPokemonDisplayImage(poke);
-                    return img
-                        ? <img src={img} alt={poke.name} onError={e => { e.currentTarget.style.display = 'none'; }} style={{ width: '56px', height: '56px', borderRadius: '10px', objectFit: 'cover', border: '2px solid rgba(255,255,255,0.4)', boxShadow: '0 3px 10px rgba(0,0,0,0.3)' }} />
-                        : <div style={{ width: '56px', height: '56px', borderRadius: '10px', background: 'rgba(255,255,255,0.2)', border: '2px solid rgba(255,255,255,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '28px' }}>🎴</div>;
-                })()}
-                {/* Types under avatar */}
-                <div style={{ display: 'flex', gap: '3px' }}>
-                    {poke.types?.map(type => (
-                        <span key={type} style={{
-                            padding: '1px 6px',
-                            borderRadius: '8px',
-                            fontSize: '10px',
-                            fontWeight: 'bold',
-                            background: 'rgba(0,0,0,0.35)',
-                            border: `1px solid ${getTypeColor(type)}`,
-                            textShadow: '0 1px 2px rgba(0,0,0,0.4)'
-                        }}>
-                            {type}
-                        </span>
-                    ))}
-                </div>
-            </div>
+            {/* Sprite */}
+            {(() => {
+                const img = getPokemonDisplayImage(poke);
+                return img
+                    ? <img src={img} alt={poke.name} onError={e => { e.currentTarget.style.display = 'none'; }} style={{ width: '64px', height: '64px', objectFit: 'contain', filter: 'drop-shadow(0 3px 6px rgba(0,0,0,0.4))' }} />
+                    : <div style={{ width: '64px', height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '32px', opacity: 0.6 }}>🎴</div>;
+            })()}
 
-            {/* Right: Info */}
-            <div style={{ flex: 1, minWidth: 0 }}>
-                {/* Name and level */}
+            {/* Name + level */}
+            <div style={{ textAlign: 'center', width: '100%' }}>
                 <div style={{
-                    fontSize: '13px',
+                    fontSize: '12px',
                     fontWeight: 700,
-                    marginBottom: '2px',
-                    textShadow: '0 2px 4px rgba(0,0,0,0.4)',
+                    textShadow: '0 1px 3px rgba(0,0,0,0.5)',
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis'
                 }}>
-                    {poke.name || poke.species || 'Unknown'} {genderIcon}
-                    <span style={{
-                        fontSize: '11px',
-                        opacity: 0.9,
-                        background: 'rgba(0,0,0,0.2)',
-                        padding: '1px 6px',
+                    {poke.name || poke.species || 'Unknown'}{genderIcon ? ` ${genderIcon}` : ''}
+                </div>
+                <div style={{
+                    fontSize: '10px',
+                    opacity: 0.85,
+                    fontWeight: 600,
+                    marginTop: '1px'
+                }}>
+                    Lv.{poke.level}{abilityText ? ` · ${abilityText}` : ''}
+                </div>
+            </div>
+
+            {/* Type pills */}
+            <div style={{ display: 'flex', gap: '3px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                {poke.types?.map(type => (
+                    <span key={type} style={{
+                        padding: '1px 7px',
                         borderRadius: '8px',
-                        marginLeft: '6px',
-                        fontWeight: 600
+                        fontSize: '9px',
+                        fontWeight: 'bold',
+                        background: 'rgba(0,0,0,0.35)',
+                        border: `1px solid ${getTypeColor(type)}`
                     }}>
-                        Lv.{poke.level}
+                        {type}
                     </span>
-                </div>
+                ))}
+            </div>
 
-                {/* Ability */}
-                {abilityText && (
-                    <div style={{
-                        fontSize: '10px',
-                        opacity: 0.85,
-                        marginBottom: '4px',
-                        fontStyle: 'italic'
-                    }}>
-                        {abilityText}
-                    </div>
-                )}
-
-                {/* HP Bar */}
-                <div style={{ marginBottom: '6px' }}>
-                    <div style={{
-                        fontSize: '11px',
-                        marginBottom: '3px',
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center'
-                    }}>
-                        <span style={{ opacity: 0.8, fontWeight: 600, fontSize: '10px' }}>HP</span>
-                        <span style={{ fontWeight: 700, fontSize: '11px' }}>{currentHP}/{maxHP}</span>
-                    </div>
-                    <div style={{
-                        height: '8px',
-                        background: 'rgba(0,0,0,0.4)',
-                        borderRadius: '4px',
-                        overflow: 'hidden'
-                    }}>
-                        <div style={{
-                            height: '100%',
-                            width: `${hpPercent}%`,
-                            background: hpPercent > 50 ? 'linear-gradient(90deg, #4caf50, #8bc34a)' :
-                                hpPercent > 25 ? 'linear-gradient(90deg, #ff9800, #ffc107)' : 'linear-gradient(90deg, #f44336, #e91e63)',
-                            borderRadius: '4px',
-                            boxShadow: '0 0 6px rgba(255,255,255,0.3)'
-                        }} />
-                    </div>
-                </div>
-
-                {/* Stats - Compact inline colored labels */}
+            {/* HP bar */}
+            <div style={{ width: '100%' }}>
                 <div style={{
                     display: 'flex',
-                    flexWrap: 'wrap',
-                    gap: '3px'
+                    justifyContent: 'space-between',
+                    fontSize: '9px',
+                    fontWeight: 700,
+                    marginBottom: '2px',
+                    opacity: 0.9
                 }}>
-                    {[
-                        { label: 'HP', value: pokeStats.hp, color: CARD_TOKENS.statColors.HP },
-                        { label: 'ATK', value: pokeStats.atk, color: CARD_TOKENS.statColors.ATK },
-                        { label: 'DEF', value: pokeStats.def, color: CARD_TOKENS.statColors.DEF },
-                        { label: 'SAT', value: pokeStats.satk, color: CARD_TOKENS.statColors.SATK },
-                        { label: 'SDF', value: pokeStats.sdef, color: CARD_TOKENS.statColors.SDEF },
-                        { label: 'SPD', value: pokeStats.spd, color: CARD_TOKENS.statColors.SPD }
-                    ].map(stat => (
-                        <span key={stat.label} style={{
-                            fontSize: '11px',
-                            fontWeight: 700,
-                            background: `${stat.color}99`,
-                            padding: '1px 5px',
-                            borderRadius: '4px',
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '2px'
-                        }}>
-                            <span style={{ fontSize: '10px', opacity: 0.85, fontWeight: 600 }}>{stat.label}</span>
-                            {stat.value}
-                        </span>
-                    ))}
+                    <span>HP</span>
+                    <span>{currentHP}/{maxHP}</span>
                 </div>
+                <div style={{ height: '6px', background: 'rgba(0,0,0,0.4)', borderRadius: '3px', overflow: 'hidden' }}>
+                    <div style={{
+                        height: '100%',
+                        width: `${hpPercent}%`,
+                        background: hpPercent > 50 ? 'linear-gradient(90deg, #4caf50, #8bc34a)' :
+                            hpPercent > 25 ? 'linear-gradient(90deg, #ff9800, #ffc107)' : 'linear-gradient(90deg, #f44336, #e91e63)',
+                        borderRadius: '3px'
+                    }} />
+                </div>
+            </div>
+
+            {/* Stat chips */}
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2px', justifyContent: 'center' }}>
+                {[
+                    { label: 'HP', value: pokeStats.hp, color: CARD_TOKENS.statColors.HP },
+                    { label: 'AT', value: pokeStats.atk, color: CARD_TOKENS.statColors.ATK },
+                    { label: 'DF', value: pokeStats.def, color: CARD_TOKENS.statColors.DEF },
+                    { label: 'SA', value: pokeStats.satk, color: CARD_TOKENS.statColors.SATK },
+                    { label: 'SD', value: pokeStats.sdef, color: CARD_TOKENS.statColors.SDEF },
+                    { label: 'SP', value: pokeStats.spd, color: CARD_TOKENS.statColors.SPD }
+                ].map(stat => (
+                    <span key={stat.label} style={{
+                        fontSize: '9px',
+                        fontWeight: 700,
+                        background: `${stat.color}99`,
+                        padding: '1px 4px',
+                        borderRadius: '3px'
+                    }}>
+                        {stat.label} {stat.value}
+                    </span>
+                ))}
             </div>
         </div>
     );
@@ -962,24 +937,24 @@ const EmptySlot = () => (
     <div style={{
         background: 'rgba(255,255,255,0.03)',
         borderRadius: '12px',
-        padding: '20px',
+        padding: '16px 10px',
         border: '2px dashed rgba(255,255,255,0.15)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        minHeight: '80px',
+        minHeight: '130px',
         flexDirection: 'column',
-        gap: '8px'
+        gap: '6px'
     }}>
         <div style={{
-            width: '36px',
-            height: '36px',
+            width: '32px',
+            height: '32px',
             borderRadius: '50%',
             border: '2px dashed rgba(255,255,255,0.2)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontSize: '16px',
+            fontSize: '14px',
             opacity: 0.3
         }}>
             +
