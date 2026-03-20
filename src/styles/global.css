@@ -135,8 +135,8 @@
             --shadow-float: 0 20px 60px rgba(0, 0, 0, 0.28);
 
             /* Body background (for theme switching) */
-            --body-bg: linear-gradient(180deg, #ffecd2 0%, #fcb69f 50%, #ee9ca7 100%);
-            --body-bg-fallback: #ffecd2;
+            --body-bg: linear-gradient(180deg, #f5f0e8 0%, #ece5d8 100%);
+            --body-bg-fallback: #f0ebe0;
 
             /* Collapsed Pokemon card colors */
             --collapsed-btn-bg: #f5f5f5;
@@ -501,7 +501,7 @@
         }
         
         .header h1 {
-            font-size: 1.8em;
+            font-size: var(--font-2xl);
             font-weight: 800;
             text-shadow: 2px 2px 0 rgba(0,0,0,0.2);
             display: flex;
@@ -517,7 +517,7 @@
         .main-content {
             display: grid;
             grid-template-columns: 220px 1fr;
-            gap: 15px;
+            gap: 16px;
         }
         
         .sidebar {
@@ -528,7 +528,7 @@
             height: fit-content;
             position: sticky;
             top: 80px;
-            border: 3px solid var(--poke-orange-light);
+            border: 2px solid var(--poke-orange-light);
             z-index: 50;
             transition: background 0.3s ease, border-color 0.3s ease;
         }
@@ -539,7 +539,7 @@
             padding: 25px;
             box-shadow: var(--shadow-md);
             min-height: 600px;
-            border: 3px solid var(--poke-orange-light);
+            border: 2px solid var(--poke-orange-light);
             position: relative;
             z-index: 1;
             animation: fadeInUp 0.3s ease;
@@ -594,28 +594,11 @@
             gap: 10px;
             border: 2px solid transparent;
             position: relative;
-            overflow: hidden;
-        }
-
-        .nav-button::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 0;
-            background: linear-gradient(135deg, var(--poke-orange) 0%, var(--poke-orange-dark) 100%);
-            transition: width var(--transition-normal);
-            opacity: 0.1;
         }
 
         .nav-button:hover {
             background: var(--poke-orange-light);
             transform: translateX(3px);
-        }
-
-        .nav-button:hover::before {
-            width: 100%;
         }
 
         .nav-button:focus-visible {
@@ -628,10 +611,6 @@
             color: white;
             border-color: var(--poke-orange-dark);
             box-shadow: 0 3px 10px rgba(245, 166, 35, 0.4);
-        }
-
-        .nav-button.active::before {
-            display: none;
         }
 
         .nav-button .nav-icon {
@@ -1028,6 +1007,7 @@
             height: 3px;
             background: linear-gradient(90deg, var(--poke-orange), var(--color-purple), var(--poke-orange));
             opacity: 0.6;
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
         }
         
         /* Section card with left accent */
@@ -1056,6 +1036,7 @@
             right: 0;
             height: 3px;
             background: linear-gradient(90deg, var(--color-purple), var(--color-purple-dark));
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
         }
 
         /* Orange variant (identity/profile card) */
@@ -1827,7 +1808,7 @@
             max-height: 85vh;
             overflow-y: auto;
             box-shadow: var(--shadow-float);
-            border: 3px solid var(--poke-orange);
+            border: 2px solid var(--poke-orange);
             animation: modalSlideIn 0.25s ease;
             position: relative;
         }
@@ -2265,7 +2246,7 @@
             max-height: 80vh;
             overflow-y: auto;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-            border: 3px solid var(--poke-orange);
+            border: 2px solid var(--poke-orange);
         }
         
         .close {
@@ -2805,7 +2786,7 @@
         }
         
         .pill-purple {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, var(--color-purple), var(--color-purple-dark));
             color: white;
         }
         
@@ -2826,51 +2807,43 @@
             background: var(--surface-hover);
         }
         
-        .list-item-border-green { border-left: 3px solid #4caf50; }
-        .list-item-border-orange { border-left: 3px solid #ff9800; }
-        .list-item-border-red { border-left: 3px solid #f44336; }
-        .list-item-border-purple { border-left: 3px solid #667eea; }
-        .list-item-border-blue { border-left: 3px solid #2196f3; }
-        
+        .list-item-border-green { border-left: 3px solid var(--stat-hp); }
+        .list-item-border-orange { border-left: 3px solid var(--stat-sdef); }
+        .list-item-border-red { border-left: 3px solid var(--stat-atk); }
+        .list-item-border-purple { border-left: 3px solid var(--color-purple); }
+        .list-item-border-blue { border-left: 3px solid var(--stat-def); }
+
         /* Stat color classes */
-        .stat-hp { color: #4caf50; }
-        .stat-atk { color: #f44336; }
-        .stat-def { color: #2196f3; }
-        .stat-satk { color: #9c27b0; }
-        .stat-sdef { color: #ff9800; }
-        .stat-spd { color: #00bcd4; }
-        
-        .bg-stat-hp { background: #4caf50; color: white; }
-        .bg-stat-atk { background: #f44336; color: white; }
-        .bg-stat-def { background: #2196f3; color: white; }
-        .bg-stat-satk { background: #9c27b0; color: white; }
-        .bg-stat-sdef { background: #ff9800; color: white; }
-        .bg-stat-spd { background: #00bcd4; color: white; }
+        .stat-hp { color: var(--stat-hp); }
+        .stat-atk { color: var(--stat-atk); }
+        .stat-def { color: var(--stat-def); }
+        .stat-satk { color: var(--stat-satk); }
+        .stat-sdef { color: var(--stat-sdef); }
+        .stat-spd { color: var(--stat-spd); }
+
+        .bg-stat-hp { background: var(--stat-hp); color: white; }
+        .bg-stat-atk { background: var(--stat-atk); color: white; }
+        .bg-stat-def { background: var(--stat-def); color: white; }
+        .bg-stat-satk { background: var(--stat-satk); color: white; }
+        .bg-stat-sdef { background: var(--stat-sdef); color: white; }
+        .bg-stat-spd { background: var(--stat-spd); color: white; }
         
         /* Badge styles */
         .badge {
             display: inline-block;
             padding: 2px 8px;
             border-radius: 10px;
-            font-size: 10px;
+            font-size: var(--font-xs);
             font-weight: bold;
         }
-        
-        .badge-base { background: #ff9800; color: white; }
-        .badge-adv { background: #667eea; color: white; }
-        .badge-free { background: #4caf50; color: white; }
-        
-        /* Section styles */
-        .section-card {
-            background: var(--bg-light);
-            padding: 20px;
-            border-radius: 12px;
-            border: 1px solid var(--border-light);
-        }
+
+        .badge-base { background: var(--stat-sdef); color: white; }
+        .badge-adv { background: var(--color-purple); color: white; }
+        .badge-free { background: var(--stat-hp); color: white; }
         
         .section-title-sm {
             margin-bottom: 15px;
-            color: #667eea;
+            color: var(--color-purple);
             display: flex;
             align-items: center;
             gap: 8px;
@@ -4536,7 +4509,7 @@
         }
 
         .text-light {
-            color: #999;
+            color: var(--text-light);
             transition: color 0.3s ease;
         }
 
@@ -4546,10 +4519,6 @@
 
         [data-theme="dark"] .text-secondary {
             color: var(--text-muted) !important;
-        }
-
-        [data-theme="dark"] .text-light {
-            color: var(--text-light) !important;
         }
 
         /* Section description helper class */
@@ -4573,25 +4542,17 @@
         }
 
         .bg-light {
-            background: #f8f9fa;
+            background: var(--bg-light);
             transition: background 0.3s ease;
         }
 
         .bg-muted {
-            background: #f5f5f5;
+            background: var(--bg-section);
             transition: background 0.3s ease;
         }
 
         [data-theme="dark"] .bg-card {
             background: var(--poke-white) !important;
-        }
-
-        [data-theme="dark"] .bg-light {
-            background: var(--bg-light) !important;
-        }
-
-        [data-theme="dark"] .bg-muted {
-            background: var(--bg-section) !important;
         }
 
         /* Pokemon card tabs */
