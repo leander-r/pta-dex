@@ -19,6 +19,25 @@ export const speciesSlug = (species) =>
         .replace(/-+/g, '-')
         .replace(/^-|-$/g, '');
 
+// Pokémon whose Showdown sprite filenames differ from the standard slug
+// (Showdown drops hyphens for these specific names).
+const SLUG_OVERRIDES = {
+    'mime-jr':   'mimejr',
+    'mr-mime':   'mrmime',
+    'jangmo-o':  'jangmoo',
+    'hakamo-o':  'hakamoo',
+    'kommo-o':   'kommoo',
+    'porygon-z': 'porygonz',
+    'type-null': 'typenull',
+    'nidoran-f': 'nidoranf',
+    'nidoran-m': 'nidoranm',
+    'tapu-bulu': 'tapubulu',
+    'tapu-fini': 'tapufini',
+    'tapu-koko': 'tapukoko',
+    'tapu-lele': 'tapulele',
+    'ho-oh':     'hooh',
+};
+
 // Maps PTA regional/alternate form names to Pokémon Showdown sprite suffixes.
 const REGIONAL_FORM_SUFFIXES = {
     // Regional variants
@@ -37,7 +56,8 @@ export const getPokemonSprite = (pokemon) => {
     const slug = speciesSlug(pokemon?.species);
     if (!slug) return null;
     const formSuffix = REGIONAL_FORM_SUFFIXES[(pokemon?.regionalForm || '').toLowerCase()];
-    const fullSlug = formSuffix ? `${slug}-${formSuffix}` : slug;
+    const baseSlug = SLUG_OVERRIDES[slug] ?? slug;
+    const fullSlug = formSuffix ? `${baseSlug}-${formSuffix}` : baseSlug;
     return `https://play.pokemonshowdown.com/sprites/gen5/${fullSlug}.png`;
 };
 
@@ -50,8 +70,9 @@ export const getPokemonSprite = (pokemon) => {
 //   "Attack"  → deoxys-attack
 export const getMegaSprite = (pokemon, megaForm) => {
     // Allow form data to override the base species slug (e.g. Zygarde-10% → Complete uses Zygarde's sprite)
-    const base = speciesSlug(megaForm?.baseSpeciesOverride || pokemon?.species);
-    if (!base || !megaForm?.name) return getPokemonSprite(pokemon);
+    const slug = speciesSlug(megaForm?.baseSpeciesOverride || pokemon?.species);
+    if (!slug || !megaForm?.name) return getPokemonSprite(pokemon);
+    const base = SLUG_OVERRIDES[slug] ?? slug;
     const formSlug = megaForm.name.toLowerCase().replace(/[\s%]/g, ''); // strip spaces and % (e.g. "10%" → "10")
     return `https://play.pokemonshowdown.com/sprites/gen5/${base}-${formSlug}.png`;
 };
