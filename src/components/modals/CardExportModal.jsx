@@ -196,6 +196,8 @@ const CardExportModal = () => {
     const { party, reserve } = usePokemonContext();
     const { exportTrainerText, exportTeamText, exportPokemonText } = useData();
 
+    const [isExporting, setIsExporting] = React.useState(false);
+
     // Combine party and reserve for all pokemon
     const allPokemon = [...(party || []), ...(reserve || [])];
 
@@ -229,6 +231,7 @@ const CardExportModal = () => {
             cardId = 'pokemonCardExport';
             filename = `${selectedCardPokemon?.name || 'pokemon'}-card`;
         }
+        setIsExporting(true);
         try {
             await downloadCardAsImage(cardId, filename);
         } catch (err) {
@@ -246,6 +249,8 @@ const CardExportModal = () => {
                     }
                 }
             });
+        } finally {
+            setIsExporting(false);
         }
     };
 
@@ -254,7 +259,7 @@ const CardExportModal = () => {
             <div
                 ref={modalRef}
                 className="modal"
-                style={{ maxWidth: cardType === 'team' ? '680px' : '550px', maxHeight: 'min(90vh, 700px)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
+                style={{ maxWidth: `min(calc(100vw - 20px), ${cardType === 'team' ? '680px' : '550px'})`, maxHeight: 'min(90vh, 700px)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
                 onClick={e => e.stopPropagation()}
                 role="dialog"
                 aria-modal="true"
@@ -346,7 +351,7 @@ const CardExportModal = () => {
                         <div className="mt-10">
                             <select
                                 value={selectedCardPokemon?.id || ''}
-                                onChange={(e) => setSelectedCardPokemon(allPokemon.find(p => p.id === parseInt(e.target.value)))}
+                                onChange={(e) => setSelectedCardPokemon(allPokemon.find(p => String(p.id) === e.target.value))}
                                 className="w-full"
                             >
                                 <option value="">Select a Pokémon...</option>
@@ -391,9 +396,9 @@ const CardExportModal = () => {
                     <button
                         className="btn btn-primary"
                         onClick={handleDownloadImage}
-                        disabled={cardType === 'pokemon' && !selectedCardPokemon}
+                        disabled={(cardType === 'pokemon' && !selectedCardPokemon) || isExporting}
                     >
-                        📷 Download Image
+                        {isExporting ? '⏳ Exporting…' : '📷 Download Image'}
                     </button>
                 </div>
             </div>
@@ -419,46 +424,27 @@ const TrainerCard = ({ trainer, pokemon }) => (
             border: '3px solid rgba(255,255,255,0.3)'
         }}
     >
-        {/* Decorative pokeball watermark - outer ring */}
+        {/* Subtle corner accents */}
         <div style={{
             position: 'absolute',
-            top: '-60px',
-            right: '-60px',
-            width: '200px',
-            height: '200px',
+            top: '-40px',
+            right: '-40px',
+            width: '160px',
+            height: '160px',
             borderRadius: '50%',
-            border: '16px solid rgba(255,255,255,0.08)',
-            background: 'transparent'
+            border: '2px solid rgba(255,255,255,0.12)',
+            background: 'transparent',
+            pointerEvents: 'none'
         }} />
-        {/* Pokeball center band */}
         <div style={{
             position: 'absolute',
-            top: '36px',
-            right: '-60px',
-            width: '200px',
-            height: '10px',
-            background: 'rgba(255,255,255,0.06)'
-        }} />
-        {/* Pokeball center dot */}
-        <div style={{
-            position: 'absolute',
-            top: '26px',
-            right: '26px',
-            width: '30px',
-            height: '30px',
+            bottom: '-30px',
+            left: '-30px',
+            width: '100px',
+            height: '100px',
             borderRadius: '50%',
-            border: '4px solid rgba(255,255,255,0.1)',
-            background: 'rgba(255,255,255,0.05)'
-        }} />
-        {/* Bottom-left decorative circle */}
-        <div style={{
-            position: 'absolute',
-            bottom: '-50px',
-            left: '-50px',
-            width: '140px',
-            height: '140px',
-            background: 'rgba(255,255,255,0.06)',
-            borderRadius: '50%'
+            background: 'rgba(255,255,255,0.05)',
+            pointerEvents: 'none'
         }} />
 
         {/* Header */}
@@ -847,7 +833,7 @@ const TeamPokemonSlot = ({ poke, idx }) => {
                 {(() => {
                     const img = getPokemonDisplayImage(poke);
                     return img
-                        ? <img src={img} alt={poke.name} style={{ width: '56px', height: '56px', borderRadius: '10px', objectFit: 'cover', border: '2px solid rgba(255,255,255,0.4)', boxShadow: '0 3px 10px rgba(0,0,0,0.3)' }} />
+                        ? <img src={img} alt={poke.name} onError={e => { e.currentTarget.style.display = 'none'; }} style={{ width: '56px', height: '56px', borderRadius: '10px', objectFit: 'cover', border: '2px solid rgba(255,255,255,0.4)', boxShadow: '0 3px 10px rgba(0,0,0,0.3)' }} />
                         : <div style={{ width: '56px', height: '56px', borderRadius: '10px', background: 'rgba(255,255,255,0.2)', border: '2px solid rgba(255,255,255,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '28px' }}>🎴</div>;
                 })()}
                 {/* Types under avatar */}
@@ -1022,12 +1008,12 @@ const PokemonCard = ({ poke }) => {
     const natureDisplay = poke.nature ? (
         <span>
             {poke.nature}
-            {natureData && (
+            {natureData?.buff && natureData?.nerf && (
                 <span style={{ fontSize: '11px' }}>
                     {' ('}
-                    <span style={{ color: '#69f0ae', fontWeight: 700 }}>+{natureData.buff?.toUpperCase()}</span>
+                    <span style={{ color: '#69f0ae', fontWeight: 700 }}>+{natureData.buff.toUpperCase()}</span>
                     {' / '}
-                    <span style={{ color: '#ff8a80', fontWeight: 700 }}>-{natureData.nerf?.toUpperCase()}</span>
+                    <span style={{ color: '#ff8a80', fontWeight: 700 }}>-{natureData.nerf.toUpperCase()}</span>
                     {')'}
                 </span>
             )}
@@ -1049,39 +1035,18 @@ const PokemonCard = ({ poke }) => {
                 border: '3px solid rgba(255,255,255,0.3)'
             }}
         >
-            {/* Pokeball watermark */}
+            {/* Subtle corner accent */}
             <div style={{
                 position: 'absolute',
-                top: '50%',
-                right: '-70px',
-                transform: 'translateY(-50%)',
-                width: '220px',
-                height: '220px',
+                top: '-50px',
+                right: '-50px',
+                width: '180px',
+                height: '180px',
                 borderRadius: '50%',
-                border: '12px solid rgba(255,255,255,0.08)',
-                opacity: 0.5
-            }}>
-                <div style={{
-                    position: 'absolute',
-                    top: '50%',
-                    left: 0,
-                    right: 0,
-                    height: '12px',
-                    background: 'rgba(255,255,255,0.08)',
-                    transform: 'translateY(-50%)'
-                }} />
-                <div style={{
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    width: '50px',
-                    height: '50px',
-                    borderRadius: '50%',
-                    border: '8px solid rgba(255,255,255,0.08)',
-                    background: 'transparent'
-                }} />
-            </div>
+                border: '2px solid rgba(255,255,255,0.1)',
+                background: 'transparent',
+                pointerEvents: 'none'
+            }} />
 
             {/* Header */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '16px', position: 'relative', zIndex: 1 }}>
@@ -1321,6 +1286,31 @@ const PokemonCard = ({ poke }) => {
                             );
                         })}
                     </div>
+                </div>
+            )}
+
+            {/* Notes */}
+            {poke.notes && (
+                <div style={{
+                    background: 'rgba(0,0,0,0.2)',
+                    borderRadius: '10px',
+                    padding: '10px 14px',
+                    marginBottom: '14px',
+                    position: 'relative',
+                    zIndex: 1,
+                    border: '1px solid rgba(255,255,255,0.1)'
+                }}>
+                    <SectionHeader label="Notes" />
+                    <p style={{
+                        margin: 0,
+                        fontSize: '11px',
+                        opacity: 0.85,
+                        lineHeight: '1.5',
+                        whiteSpace: 'pre-wrap',
+                        wordBreak: 'break-word'
+                    }}>
+                        {poke.notes}
+                    </p>
                 </div>
             )}
 
