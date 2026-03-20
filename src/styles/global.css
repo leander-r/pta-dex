@@ -1209,7 +1209,7 @@
         /* ========== EXISTING STYLES (preserved) ========== */
         
         .pokemon-card {
-            background: var(--card-bg);
+            background-color: var(--card-bg);
             border-radius: 16px;
             padding: 20px;
             margin-bottom: 16px;
@@ -1229,7 +1229,7 @@
             left: 0;
             right: 0;
             height: 4px;
-            background: linear-gradient(90deg, var(--poke-orange), var(--color-purple));
+            background: linear-gradient(90deg, var(--type-primary, var(--poke-orange)), var(--type-secondary, var(--color-purple)));
             opacity: 0;
             transition: opacity var(--transition-normal);
         }
@@ -1251,8 +1251,8 @@
         }
 
         .pokemon-card:hover {
-            border-color: var(--poke-orange);
-            box-shadow: 0 8px 24px rgba(245, 166, 35, 0.2);
+            border-color: var(--type-primary, var(--poke-orange));
+            box-shadow: 0 8px 24px var(--type-shadow-color, rgba(245, 166, 35, 0.2));
             transform: translateY(-3px);
         }
 
@@ -1353,15 +1353,79 @@
         .type-poison { background: linear-gradient(135deg, #A040A0 0%, #802080 100%); }
         .type-ground { background: linear-gradient(135deg, #E0C068 0%, #c8a850 100%); color: #333; }
         .type-flying { background: linear-gradient(135deg, #A890F0 0%, #8870d8 100%); }
-        .type-psychic { background: linear-gradient(135deg, #F85888 0%, #e83868 100%); }
+        /* Psychic: animated shimmer version below */
         .type-bug { background: linear-gradient(135deg, #A8B820 0%, #889810 100%); }
         .type-rock { background: linear-gradient(135deg, #B8A038 0%, #988020 100%); }
-        .type-ghost { background: linear-gradient(135deg, #705898 0%, #504078 100%); }
-        .type-dragon { background: linear-gradient(135deg, #7038F8 0%, #5020d8 100%); }
+        /* Ghost, Dragon, Psychic, Fairy: animated shimmer versions below */
         .type-dark { background: linear-gradient(135deg, #705848 0%, #503830 100%); }
         .type-steel { background: linear-gradient(135deg, #B8B8D0 0%, #9898b0 100%); color: #333; }
-        .type-fairy { background: linear-gradient(135deg, #EE99AC 0%, #d87090 100%); }
-        
+
+        /* Animated shimmer for rare/mystical types */
+        @keyframes type-shimmer {
+            0%   { background-position: 0% 50%; }
+            50%  { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .type-dragon {
+            background: linear-gradient(135deg, #7038F8, #9060ff, #5020d8, #7038F8);
+            background-size: 300% 300%;
+            animation: type-shimmer 4s ease infinite;
+        }
+        .type-ghost {
+            background: linear-gradient(135deg, #705898, #8868b0, #504078, #705898);
+            background-size: 300% 300%;
+            animation: type-shimmer 5s ease infinite;
+        }
+        .type-psychic {
+            background: linear-gradient(135deg, #F85888, #ff78a8, #e83868, #F85888);
+            background-size: 300% 300%;
+            animation: type-shimmer 4s ease infinite;
+        }
+        .type-fairy {
+            background: linear-gradient(135deg, #EE99AC, #ffaabf, #d87090, #EE99AC);
+            background-size: 300% 300%;
+            animation: type-shimmer 5s ease infinite;
+        }
+
+        /* Compact type pills used in the collapsed Pokémon card */
+        .type-pill-single {
+            display: inline-flex;
+            align-items: center;
+            border-radius: 12px;
+            padding: 3px 10px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Split pill for dual-type Pokémon */
+        .type-pill-dual {
+            display: inline-flex;
+            border-radius: 12px;
+            overflow: hidden;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .type-pill-dual span {
+            padding: 3px 10px;
+        }
+
+        .type-pill-dual span:first-child {
+            padding-right: 7px;
+            border-right: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .type-pill-dual span:last-child {
+            padding-left: 7px;
+        }
+
         .moves-list {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));

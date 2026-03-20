@@ -454,12 +454,14 @@ const PokemonCard = ({
                 onDrop={!compareMode ? (e) => { e.preventDefault(); onDrop?.(pokemon.id); } : undefined}
                 onDragEnd={!compareMode ? () => onDragEnd?.() : undefined}
                 style={{
-                    borderLeft: secondaryType
-                        ? `5px solid ${primaryColor}`
-                        : `5px solid ${primaryColor}`,
-                    borderRight: secondaryType
-                        ? `3px solid ${secondaryColor}`
-                        : 'none',
+                    '--type-primary': primaryColor,
+                    '--type-secondary': secondaryColor,
+                    '--type-shadow-color': `${primaryColor}33`,
+                    borderLeft: `5px solid ${primaryColor}`,
+                    borderRight: secondaryType ? `3px solid ${secondaryColor}` : 'none',
+                    backgroundImage: secondaryType
+                        ? `linear-gradient(to right, ${primaryColor}12 0%, transparent 35%, transparent 65%, ${secondaryColor}12 100%)`
+                        : `linear-gradient(to right, ${primaryColor}12 0%, transparent 35%)`,
                     opacity: isDragging ? 0.5 : 1,
                     transform: isDragging ? 'scale(0.98)' : 'none',
                     outline: isDragOver ? '2px dashed #667eea' : 'none',
@@ -544,18 +546,27 @@ const PokemonCard = ({
                             })()}
                         </div>
 
-                        <div style={{ display: 'flex', gap: '4px', marginTop: '4px', flexWrap: 'wrap', alignItems: 'center' }}>
-                            {pokemon.types?.map(type => (
+                        <div style={{ display: 'flex', gap: '6px', marginTop: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
+                            {pokemon.types?.length === 2 ? (
+                                <div className="type-pill-dual">
+                                    <span
+                                        className={`type-${pokemon.types[0].toLowerCase()}`}
+                                        style={{ color: getContrastTextColor(primaryColor) }}
+                                    >
+                                        {pokemon.types[0]}
+                                    </span>
+                                    <span
+                                        className={`type-${pokemon.types[1].toLowerCase()}`}
+                                        style={{ color: getContrastTextColor(secondaryColor) }}
+                                    >
+                                        {pokemon.types[1]}
+                                    </span>
+                                </div>
+                            ) : pokemon.types?.map(type => (
                                 <span
                                     key={type}
-                                    style={{
-                                        padding: '2px 8px',
-                                        borderRadius: '10px',
-                                        background: getTypeColor(type),
-                                        color: getContrastTextColor(getTypeColor(type)),
-                                        fontSize: '10px',
-                                        fontWeight: 'bold'
-                                    }}
+                                    className={`type-pill-single type-${type.toLowerCase()}`}
+                                    style={{ color: getContrastTextColor(getTypeColor(type)) }}
                                 >
                                     {type}
                                 </span>
@@ -890,6 +901,9 @@ const PokemonCard = ({
         <div
             className="pokemon-card pokemon-card-expanded"
             style={{
+                '--type-primary': primaryColor,
+                '--type-secondary': secondaryColor,
+                '--type-shadow-color': `${primaryColor}33`,
                 borderLeft: `5px solid ${primaryColor}`,
                 borderRight: secondaryType ? `3px solid ${secondaryColor}` : 'none'
             }}
