@@ -67,6 +67,19 @@ const battleContext = (pokemon, hp, megaEvolved, currentMegaForm) => ({
     megaFormName: megaEvolved && currentMegaForm ? currentMegaForm.name : null,
 });
 
+// PTA Damage Base table (dice objects for rolling)
+const ARMS_DB = {
+    1: { count: 1, sides: 10, bonus:  4 },
+    2: { count: 1, sides: 12, bonus:  6 },
+    3: { count: 2, sides:  8, bonus:  6 },
+    4: { count: 2, sides: 10, bonus:  8 },
+    5: { count: 2, sides: 12, bonus: 10 },
+    6: { count: 3, sides: 10, bonus: 12 },
+};
+
+// Calculate stat modifier (PTA formula)
+const calcStatMod = (stat) => stat >= 10 ? Math.floor((stat - 10) / 2) : -(10 - stat);
+
 // Build a normalized roll-history entry for a Pokemon attack.
 // Extra fields (typeColor, attackerCurrentHP, etc.) are spread through unchanged.
 const buildPokemonRollEntry = ({
@@ -111,6 +124,7 @@ const BattleTab = () => {
     const [combatStages, setCombatStages] = useState({ atk: 0, satk: 0, def: 0, sdef: 0, spd: 0, acc: 0, eva: 0 });
     const [applyStab, setApplyStab] = useState(true);
     const [selectedPokemonId, setSelectedPokemonId] = useState(null);
+    const [selectedWeapon, setSelectedWeapon] = useState(null);
     const [acOverride, setAcOverride] = useState('');
     const [megaEvolved, setMegaEvolved] = useState(false);
     const [currentMegaForm, setCurrentMegaForm] = useState(null);
@@ -130,6 +144,18 @@ const BattleTab = () => {
         const fromOverride = BATTLE_FORM_CHANGES[selectedPokemon.species] || [];
         return [...fromPokedex, ...fromOverride];
     }, [selectedPokemon, pokedex]);
+
+    // Build the list of weapons the trainer can use for Arms attacks.
+    // Unarmed is always available (Arms User). Each Weapon of Choice instance adds its weapon.
+    const trainerWeapons = useMemo(() => {
+        const weapons = [{ name: 'Unarmed', ac: 6, source: 'Arms User' }];
+        (trainer.features || []).forEach(f => {
+            if (typeof f === 'object' && f.name === 'Weapon of Choice' && f.weaponType) {
+                weapons.push({ name: f.weaponType, ac: 4, source: 'Weapon of Choice' });
+            }
+        });
+        return weapons;
+    }, [trainer.features]);
 
     const healingInventory = useMemo(() => inventory.filter(item => {
         const t = (item.type || '').toLowerCase();
@@ -291,6 +317,55 @@ const BattleTab = () => {
         const trainerMaxHP = calculateMaxHP();
         const trainerCurrentHP = trainerMaxHP - (trainer.currentDamage || 0);
         addToHistory({ type: 'trainer_skill', skill: selectedSkill, skillStat: skillData.stat, dice: '1d20', rolls, baseStat, modifier, hasSkill, bonus: skillBonus, total, trainerCurrentHP, trainerMaxHP, timestamp: Date.now() });
+    };
+
+    const rollTrainerAttack = () => {
+        const weapon = trainerWeapons.find(w => w.name === selectedWeapon);
+        if (!weapon) return;
+
+        const level = trainer.level || 1;
+        const isWoC = weapon.source === 'Weapon of Choice';
+        const db = isWoC
+            ? (level >= 15 ? 6 : level >= 7 ? 4 : 2)
+            : (level >= 15 ? 3 : level >= 7 ? 2 : 1);
+        const { count, sides, bonus } = ARMS_DB[db];
+
+        const atkMod = calcStatMod(trainer.stats?.atk || 10);
+        const spdMod = calcStatMod(trainer.stats?.spd || 10);
+        const statMod = Math.max(atkMod, spdMod);
+        const statModLabel = atkMod >= spdMod ? 'ATK' : 'SPD';
+
+        const accRoll = Math.floor(Math.random() * 20) + 1;
+        const isCrit = accRoll === 20;
+        const isHit = isCrit || accRoll >= weapon.ac;
+
+        const trainerMaxHP = calculateMaxHP();
+        const trainerCurrentHP = trainerMaxHP - (trainer.currentDamage || 0);
+
+        let rolls = [], diceTotal = 0, diceBonus = 0, total = 0;
+        if (isHit) {
+            const diceCount = isCrit ? count * 2 : count;
+            rolls = rollDice(diceCount, sides);
+            diceTotal = rolls.reduce((s, r) => s + r, 0);
+            diceBonus = isCrit ? bonus * 2 : bonus;
+            total = diceTotal + diceBonus + statMod;
+        }
+
+        addToHistory({
+            type: 'trainer_attack',
+            trainer: trainer.name || 'Trainer',
+            weapon: weapon.name,
+            weaponSource: weapon.source,
+            weaponAC: weapon.ac,
+            db,
+            dice: `${count}d${sides}+${bonus}`,
+            accRoll, isCrit, isHit,
+            rolls, diceTotal, diceBonus,
+            statMod, statModLabel,
+            total,
+            trainerCurrentHP, trainerMaxHP,
+            timestamp: Date.now()
+        });
     };
 
     const rollCustomDice = () => {
@@ -694,6 +769,58 @@ const BattleTab = () => {
                             >
                                 Roll Skill Check!
                             </button>
+
+                            {/* Arms Attack */}
+                            <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid var(--border-light)' }}>
+                                <label style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '4px', display: 'block' }}>Arms Attack</label>
+                                <select
+                                    value={selectedWeapon || ''}
+                                    onChange={e => setSelectedWeapon(e.target.value || null)}
+                                    style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid var(--border-medium)', marginBottom: '8px', background: 'var(--input-bg)', color: 'var(--text-primary)' }}
+                                >
+                                    <option value="">Choose weapon...</option>
+                                    {trainerWeapons.map(w => (
+                                        <option key={w.name} value={w.name}>{w.name} — AC {w.ac} ({w.source})</option>
+                                    ))}
+                                </select>
+
+                                {selectedWeapon && (() => {
+                                    const weapon = trainerWeapons.find(w => w.name === selectedWeapon);
+                                    if (!weapon) return null;
+                                    const level = trainer.level || 1;
+                                    const isWoC = weapon.source === 'Weapon of Choice';
+                                    const db = isWoC ? (level >= 15 ? 6 : level >= 7 ? 4 : 2) : (level >= 15 ? 3 : level >= 7 ? 2 : 1);
+                                    const { count, sides, bonus } = ARMS_DB[db];
+                                    const atkMod = calcStatMod(trainer.stats?.atk || 10);
+                                    const spdMod = calcStatMod(trainer.stats?.spd || 10);
+                                    const statMod = Math.max(atkMod, spdMod);
+                                    const statModLabel = atkMod >= spdMod ? 'ATK' : 'SPD';
+                                    return (
+                                        <div className="skill-info-box" style={{ marginBottom: '8px', padding: '10px', borderRadius: '6px', fontSize: '13px' }}>
+                                            <div><strong>{weapon.name}</strong> — {weapon.source}</div>
+                                            <div style={{ marginTop: '4px' }}>
+                                                AC: <strong>{weapon.ac}</strong>
+                                                {'  ·  '}
+                                                DB{db}: <strong>{count}d{sides}+{bonus}</strong>
+                                                {statMod !== 0 && (
+                                                    <span style={{ color: statMod > 0 ? 'var(--color-success-text)' : 'var(--color-danger-text)' }}>
+                                                        {' '}{statMod > 0 ? '+' : ''}{statMod} {statModLabel}
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <div className="text-muted" style={{ marginTop: '2px' }}>Normal type · Physical · Natural 20 = crit (double dice & bonus)</div>
+                                        </div>
+                                    );
+                                })()}
+
+                                <button
+                                    onClick={rollTrainerAttack}
+                                    disabled={!selectedWeapon}
+                                    style={{ width: '100%', padding: '15px', background: selectedWeapon ? 'linear-gradient(135deg, #e53935, #c62828)' : 'var(--collapsed-btn-bg)', color: selectedWeapon ? 'white' : 'var(--collapsed-btn-text)', border: 'none', borderRadius: '8px', cursor: selectedWeapon ? 'pointer' : 'not-allowed', fontSize: '16px', fontWeight: 'bold' }}
+                                >
+                                    {selectedWeapon ? `Roll Attack (${selectedWeapon})!` : 'Select a weapon'}
+                                </button>
+                            </div>
                         </div>
                     )}
 

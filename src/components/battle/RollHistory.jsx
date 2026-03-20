@@ -138,10 +138,11 @@ const RollHistory = ({ rollHistory, setRollHistory, mode, subMode }) => {
                             style={{
                                 padding: '10px', marginBottom: '8px', borderRadius: '6px',
                                 borderLeft: `4px solid ${
-                                    roll.type === 'pokemon'       ? getTypeColor(roll.moveType || 'Normal') :
-                                    roll.type === 'trainer_skill' ? '#667eea' :
-                                    roll.type === 'heal'          ? '#4caf50' :
-                                    roll.type === 'contest'       ? (roll.contestTypeColor || '#e91e63') : '#95a5a6'
+                                    roll.type === 'pokemon'         ? getTypeColor(roll.moveType || 'Normal') :
+                                    roll.type === 'trainer_skill'   ? '#667eea' :
+                                    roll.type === 'trainer_attack'  ? '#e53935' :
+                                    roll.type === 'heal'            ? '#4caf50' :
+                                    roll.type === 'contest'         ? (roll.contestTypeColor || '#e91e63') : '#95a5a6'
                                 }`
                             }}
                         >
@@ -187,6 +188,36 @@ const RollHistory = ({ rollHistory, setRollHistory, mode, subMode }) => {
                                         <span style={{ fontWeight: 'bold', fontSize: '18px' }}>{roll.total}</span>
                                         <span> | [{roll.rolls?.join(', ')}] {roll.modifier >= 0 ? '+' : ''}{roll.modifier} stat</span>
                                         {roll.hasSkill && <span> +2 trained</span>}
+                                    </div>
+                                </>
+                            )}
+                            {roll.type === 'trainer_attack' && (
+                                <>
+                                    <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>
+                                        ⚔ {roll.trainer} — {roll.weapon}
+                                        {roll.isCrit && <span style={{ marginLeft: '8px', color: '#ff6f00' }}>CRITICAL!</span>}
+                                        {!roll.isHit && <span style={{ marginLeft: '8px', color: 'var(--color-danger-text)', fontWeight: 'bold' }}>MISS!</span>}
+                                    </div>
+                                    <div style={{ fontSize: '12px', padding: '4px 8px', background: roll.isHit ? (roll.isCrit ? 'var(--roll-crit-bg)' : 'var(--roll-hit-bg)') : 'var(--roll-miss-bg)', borderRadius: '4px', marginBottom: '4px', display: 'inline-block' }}>
+                                        <span style={{ fontWeight: 'bold' }}>AC Roll: </span>
+                                        <span style={{ fontWeight: 'bold', color: roll.isCrit ? '#ff6f00' : (roll.isHit ? 'var(--color-success-text)' : 'var(--color-danger-text)') }}>
+                                            {roll.accRoll}
+                                        </span>
+                                        <span style={{ color: 'var(--text-secondary)' }}> vs AC {roll.weaponAC}</span>
+                                        {roll.isCrit && <span style={{ color: '#ff6f00', marginLeft: '4px' }}>(Natural 20!)</span>}
+                                    </div>
+                                    <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
+                                        {roll.isHit ? (
+                                            <>
+                                                <span style={{ fontWeight: 'bold', fontSize: '18px', color: 'var(--text-primary)' }}>{roll.total}</span>
+                                                <span> damage | [{roll.rolls?.join(', ')}] = {roll.diceTotal}</span>
+                                                {(roll.diceBonus ?? 0) > 0 && <span> + {roll.diceBonus} (base)</span>}
+                                                {roll.statMod !== 0 && <span> {roll.statMod > 0 ? '+' : ''}{roll.statMod} ({roll.statModLabel})</span>}
+                                                <div className="text-muted" style={{ marginTop: '2px' }}>DB{roll.db} — {roll.dice} · {roll.weaponSource}</div>
+                                            </>
+                                        ) : (
+                                            <span style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>Attack missed — no damage</span>
+                                        )}
                                     </div>
                                 </>
                             )}
