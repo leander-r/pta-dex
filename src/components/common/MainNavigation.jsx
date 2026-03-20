@@ -94,13 +94,13 @@ const MainNavigation = ({ activeTab, setActiveTab }) => {
                 <div className="nav-checklist" style={{
                     margin: '10px 8px 0',
                     borderRadius: '8px',
-                    border: '1px solid #f5a62366',
+                    border: '1px solid var(--tint-orange-border)',
                     overflow: 'hidden',
                     fontSize: '12px'
                 }}>
                     {/* Header */}
                     <div style={{
-                        background: 'linear-gradient(135deg, #f5a623, #e8941c)',
+                        background: 'linear-gradient(135deg, var(--poke-orange), var(--poke-orange-dark))',
                         color: 'white',
                         padding: '7px 10px',
                         display: 'flex',

@@ -44,9 +44,9 @@ const ReferenceTab = () => {
                         onClick={() => setActiveSection(section.id)}
                         style={{
                             flexShrink: 0,
-                            background: activeSection === section.id ? 'var(--poke-orange, #667eea)' : 'transparent',
-                            color: activeSection === section.id ? 'white' : 'var(--poke-orange, #667eea)',
-                            border: activeSection === section.id ? 'none' : '1px solid var(--poke-orange, #667eea)',
+                            background: activeSection === section.id ? 'var(--poke-orange)' : 'transparent',
+                            color: activeSection === section.id ? 'white' : 'var(--poke-orange)',
+                            border: activeSection === section.id ? 'none' : '1px solid var(--poke-orange)',
                             fontWeight: activeSection === section.id ? 700 : 500
                         }}
                     >

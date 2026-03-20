@@ -68,24 +68,25 @@ const InventoryTab = () => {
         });
     }, [inventory]);
 
-    // Get type color
+    // Get type color — hex values kept for template-literal usage (gradients, opacity suffixes).
+    // Values mirror existing CSS vars where available.
     const getTypeColor = (type) => {
         const t = (type || '').toLowerCase();
         const colors = {
-            'healing': '#4caf50',
-            'medicine': '#4caf50',
-            'ball': '#f44336',
-            'pokeball': '#f44336',
-            'battle': '#ff9800',
-            'berry': '#e91e63',
-            'held': '#00bcd4',
+            'healing':   '#4caf50', // --stat-hp / --poke-green
+            'medicine':  '#4caf50',
+            'ball':      '#f44336', // --stat-atk / --poke-red
+            'pokeball':  '#f44336',
+            'battle':    '#ff9800', // --stat-sdef
+            'berry':     '#e91e63',
+            'held':      '#00bcd4', // --stat-spd
             'hold item': '#00bcd4',
-            'evolution': '#9c27b0',
-            'key': '#ffd700',
-            'tm': '#3f51b5',
-            'hm': '#3f51b5',
-            'food': '#8bc34a',
-            'misc': '#667eea'
+            'evolution': '#9c27b0', // --stat-satk
+            'key':       '#ffd700',
+            'tm':        '#3f51b5',
+            'hm':        '#3f51b5',
+            'food':      '#8bc34a',
+            'misc':      '#667eea', // --color-purple
         };
         return colors[t] || '#667eea';
     };

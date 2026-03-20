@@ -6,13 +6,15 @@ import React, { useState } from 'react';
 import { useTrainerContext, useUI } from '../../contexts/index.js';
 import { HELP_BTN_STYLE } from '../common/helpBtnStyle.js';
 
+// Hex values mirror the --stat-* CSS variables in global.css (kept as hex so
+// they can be used in JS template literals for semi-transparent overlays).
 const STAT_CONFIG = [
-    { key: 'hp', label: 'HP', color: '#e53935' },
-    { key: 'atk', label: 'ATK', color: '#ff5722' },
-    { key: 'def', label: 'DEF', color: '#2196f3' },
-    { key: 'satk', label: 'SATK', color: '#9c27b0' },
-    { key: 'sdef', label: 'SDEF', color: '#ff9800' },
-    { key: 'spd', label: 'SPD', color: '#00bcd4' }
+    { key: 'hp',   label: 'HP',   color: '#4caf50' }, // --stat-hp
+    { key: 'atk',  label: 'ATK',  color: '#f44336' }, // --stat-atk
+    { key: 'def',  label: 'DEF',  color: '#2196f3' }, // --stat-def
+    { key: 'satk', label: 'SATK', color: '#9c27b0' }, // --stat-satk
+    { key: 'sdef', label: 'SDEF', color: '#ff9800' }, // --stat-sdef
+    { key: 'spd',  label: 'SPD',  color: '#00bcd4' }, // --stat-spd
 ];
 
 /**
@@ -146,7 +148,7 @@ const TrainerStats = () => {
                     style={{
                         padding: '4px 10px',
                         fontSize: '12px',
-                        background: canUndoStat ? '#ff9800' : 'var(--surface-bg)',
+                        background: canUndoStat ? 'var(--poke-orange)' : 'var(--surface-bg)',
                         color: canUndoStat ? 'white' : 'var(--text-muted)',
                         border: canUndoStat ? 'none' : '1px solid var(--border-medium)',
                         borderRadius: '4px',

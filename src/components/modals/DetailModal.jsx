@@ -61,16 +61,17 @@ const DetailModal = () => {
         }
     };
 
+    // Hex values mirror --stat-* CSS vars (kept as hex for use in gradient template literals)
     const getStatColor = (stat) => {
         const colors = {
-            HP: '#4caf50',
-            ATK: '#f44336',
-            DEF: '#2196f3',
-            SATK: '#9c27b0',
-            SDEF: '#ff9800',
-            SPD: '#00bcd4'
+            HP:   '#4caf50', // --stat-hp
+            ATK:  '#f44336', // --stat-atk
+            DEF:  '#2196f3', // --stat-def
+            SATK: '#9c27b0', // --stat-satk
+            SDEF: '#ff9800', // --stat-sdef
+            SPD:  '#00bcd4', // --stat-spd
         };
-        return colors[stat] || '#667eea';
+        return colors[stat] || '#667eea'; // --color-purple
     };
 
     return (
@@ -183,13 +184,13 @@ const DetailModal = () => {
 // Shared styles for info boxes
 const InfoBox = ({ label, icon, children, variant = 'default' }) => {
     const variants = {
-        default: { bg: 'linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%)', border: '#e0e0e0', labelColor: '#666', textColor: '#333' },
-        orange: { bg: 'linear-gradient(135deg, #fff8e7 0%, #fff3e0 100%)', border: '#ffc966', labelColor: '#e65100', textColor: '#bf360c' },
-        purple: { bg: 'linear-gradient(135deg, #f3e5f5 0%, #ede7f6 100%)', border: '#ce93d8', labelColor: '#7b1fa2', textColor: '#4a148c' },
-        blue: { bg: 'linear-gradient(135deg, #e3f2fd 0%, #e8eaf6 100%)', border: '#90caf9', labelColor: '#1565c0', textColor: '#0d47a1' },
-        green: { bg: 'linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%)', border: '#a5d6a7', labelColor: '#2e7d32', textColor: '#1b5e20' },
-        red: { bg: 'linear-gradient(135deg, #ffebee 0%, #fce4ec 100%)', border: '#ef9a9a', labelColor: '#c62828', textColor: '#b71c1c' },
-        pink: { bg: 'linear-gradient(135deg, #fce4ec 0%, #f3e5f5 100%)', border: '#f8bbd9', labelColor: '#ad1457', textColor: '#880e4f' }
+        default: { bg: 'var(--bg-section)',      border: 'var(--border-light)',        labelColor: 'var(--text-muted)',         textColor: 'var(--text-primary)' },
+        orange:  { bg: 'var(--tint-orange-bg)',  border: 'var(--tint-orange-border)',  labelColor: 'var(--poke-orange-dark)',   textColor: '#bf360c' },
+        purple:  { bg: 'var(--tint-purple-bg)',  border: 'var(--tint-purple-border)',  labelColor: 'var(--color-purple-dark)', textColor: '#4a148c' },
+        blue:    { bg: 'var(--tint-blue-bg)',    border: 'var(--tint-blue-border)',    labelColor: 'var(--info-text)',          textColor: '#0d47a1' },
+        green:   { bg: 'var(--tint-success-bg)', border: 'var(--success-border)',     labelColor: 'var(--success-text)',       textColor: '#1b5e20' },
+        red:     { bg: 'var(--tint-fail-bg)',    border: 'var(--tint-fail-border)',    labelColor: '#c62828',                  textColor: '#b71c1c' },
+        pink:    { bg: 'linear-gradient(135deg, #fce4ec 0%, #f3e5f5 100%)', border: '#f8bbd9', labelColor: '#ad1457', textColor: '#880e4f' },
     };
     const v = variants[variant] || variants.default;
     return (
@@ -562,38 +563,38 @@ const SkillDetails = ({ data, getStatColor }) => (
         {/* Roll info */}
         {data.type === 'passive' ? (
             <div style={{
-                background: 'linear-gradient(135deg, #f3e5f5 0%, #ede7f6 100%)',
+                background: 'var(--tint-purple-bg)',
                 padding: '14px 16px',
                 borderRadius: '12px',
                 marginBottom: '12px',
-                border: '2px solid #ce93d8',
+                border: '2px solid var(--tint-purple-border)',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '12px'
             }}>
                 <span style={{ fontSize: '24px' }}>✨</span>
                 <div>
-                    <div style={{ fontSize: '11px', color: '#6a1b9a', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Passive</div>
-                    <div style={{ fontSize: '14px', fontWeight: '700', color: '#6a1b9a' }}>No roll — automatic benefit</div>
+                    <div style={{ fontSize: '11px', color: 'var(--color-purple-dark)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Passive</div>
+                    <div style={{ fontSize: '14px', fontWeight: '700', color: 'var(--color-purple-dark)' }}>No roll — automatic benefit</div>
                 </div>
             </div>
         ) : (
             <div style={{
-                background: 'linear-gradient(135deg, #e3f2fd 0%, #e8eaf6 100%)',
+                background: 'var(--tint-blue-bg)',
                 padding: '14px 16px',
                 borderRadius: '12px',
                 marginBottom: '12px',
-                border: '2px solid #90caf9',
+                border: '2px solid var(--tint-blue-border)',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '12px'
             }}>
                 <span style={{ fontSize: '24px' }}>🎲</span>
                 <div>
-                    <div style={{ fontSize: '11px', color: '#1565c0', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Roll (1d20)</div>
-                    <div style={{ fontSize: '13px', fontWeight: '700', color: '#0d47a1' }}>No rank: 1d20 (no modifier)</div>
-                    <div style={{ fontSize: '13px', color: '#1565c0' }}>Rank 1: 1d20 + 2 + {data.stat} modifier</div>
-                    <div style={{ fontSize: '13px', color: '#1565c0' }}>Rank 2: 1d20 + 4 + 2× {data.stat} modifier</div>
+                    <div style={{ fontSize: '11px', color: 'var(--info-text)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Roll (1d20)</div>
+                    <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--info-text)' }}>No rank: 1d20 (no modifier)</div>
+                    <div style={{ fontSize: '13px', color: 'var(--info-text)' }}>Rank 1: 1d20 + 2 + {data.stat} modifier</div>
+                    <div style={{ fontSize: '13px', color: 'var(--info-text)' }}>Rank 2: 1d20 + 4 + 2× {data.stat} modifier</div>
                 </div>
             </div>
         )}
