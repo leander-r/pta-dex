@@ -731,15 +731,37 @@ export const DataProvider = ({ children }) => {
         const embed = roll._rawEmbed || buildEmbed(roll, trainerName || 'Trainer');
         if (!embed) return;
         try {
-            const res = await fetch(discordWebhook.url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    username: 'PTA Dice Roller',
-                    avatar_url: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png',
-                    embeds: [embed],
-                }),
-            });
+            const payload = {
+                username: 'PTA Dice Roller',
+                avatar_url: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png',
+                embeds: [embed],
+            };
+
+            // If the embed thumbnail is a data URL (e.g. trainer avatar uploaded as base64),
+            // convert it to a file attachment and reference via attachment:// so Discord can display it.
+            let fetchOptions;
+            const thumbnailUrl = embed.thumbnail?.url;
+            if (thumbnailUrl?.startsWith('data:')) {
+                const dataRes = await fetch(thumbnailUrl);
+                const blob = await dataRes.blob();
+                const ext = blob.type.includes('png') ? 'png' : 'jpg';
+                const filename = `avatar.${ext}`;
+                const formData = new FormData();
+                formData.append('payload_json', JSON.stringify({
+                    ...payload,
+                    embeds: [{ ...embed, thumbnail: { url: `attachment://${filename}` } }],
+                }));
+                formData.append('files[0]', blob, filename);
+                fetchOptions = { method: 'POST', body: formData };
+            } else {
+                fetchOptions = {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                };
+            }
+
+            const res = await fetch(discordWebhook.url, fetchOptions);
             if (!res.ok) {
                 const msg = res.status === 401 || res.status === 403
                     ? 'Discord webhook rejected. Check your webhook URL.'

@@ -157,7 +157,7 @@ export const buildTrainerSkillEmbed = (roll, trainerName) => {
         });
     }
 
-    return {
+    const embed = {
         author: { name: trainerName },
         title: `📚 ${roll.skill} Check`,
         description,
@@ -165,6 +165,8 @@ export const buildTrainerSkillEmbed = (roll, trainerName) => {
         fields,
         timestamp: new Date().toISOString(),
     };
+    if (roll.trainerAvatarUrl) embed.thumbnail = { url: roll.trainerAvatarUrl };
+    return embed;
 };
 
 export const buildHealEmbed = (roll, trainerName) => {
@@ -298,7 +300,7 @@ export const buildTrainerAttackEmbed = (roll, trainerName) => {
     }
     fields.push({ name: 'Weapon', value: `${roll.weapon} (${roll.weaponSource}) · DB${roll.db}: ${roll.dice}`, inline: false });
 
-    return {
+    const embed = {
         author: { name: trainerName },
         title: `⚔ ${roll.trainer} — ${roll.weapon}`,
         description,
@@ -306,6 +308,8 @@ export const buildTrainerAttackEmbed = (roll, trainerName) => {
         fields,
         timestamp: new Date().toISOString(),
     };
+    if (roll.trainerAvatarUrl) embed.thumbnail = { url: roll.trainerAvatarUrl };
+    return embed;
 };
 
 export const buildCustomEmbed = (roll, trainerName) => {

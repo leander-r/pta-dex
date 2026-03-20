@@ -316,7 +316,7 @@ const BattleTab = () => {
 
         const trainerMaxHP = calculateMaxHP();
         const trainerCurrentHP = trainerMaxHP - (trainer.currentDamage || 0);
-        addToHistory({ type: 'trainer_skill', skill: selectedSkill, skillStat: skillData.stat, dice: '1d20', rolls, baseStat, modifier, hasSkill, bonus: skillBonus, total, trainerCurrentHP, trainerMaxHP, timestamp: Date.now() });
+        addToHistory({ type: 'trainer_skill', skill: selectedSkill, skillStat: skillData.stat, dice: '1d20', rolls, baseStat, modifier, hasSkill, bonus: skillBonus, total, trainerCurrentHP, trainerMaxHP, trainerAvatarUrl: trainer.avatar || null, timestamp: Date.now() });
     };
 
     const rollTrainerAttack = () => {
@@ -364,6 +364,7 @@ const BattleTab = () => {
             statMod, statModLabel,
             total,
             trainerCurrentHP, trainerMaxHP,
+            trainerAvatarUrl: trainer.avatar || null,
             timestamp: Date.now()
         });
     };
