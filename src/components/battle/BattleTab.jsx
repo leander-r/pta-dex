@@ -417,7 +417,7 @@ const BattleTab = () => {
                                     onClick={() => setSubMode('battle')}
                                     style={{
                                         flex: 1, padding: '6px 0', borderRadius: 6, border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 700,
-                                        background: subMode === 'battle' ? 'linear-gradient(135deg, #667eea, #764ba2)' : 'transparent',
+                                        background: subMode === 'battle' ? 'var(--gradient-purple)' : 'transparent',
                                         color: subMode === 'battle' ? 'white' : 'var(--text-secondary)',
                                         transition: 'all 0.15s',
                                     }}
@@ -459,7 +459,7 @@ const BattleTab = () => {
                                                     )}
                                                 </div>
                                                 {showDetail && itemData && (
-                                                    <span style={{ fontSize: '13px', color: '#667eea', flexShrink: 0 }}>Details →</span>
+                                                    <span style={{ fontSize: '13px', color: 'var(--color-purple)', flexShrink: 0 }}>Details →</span>
                                                 )}
                                             </div>
                                         );
@@ -499,7 +499,7 @@ const BattleTab = () => {
                                     {/* Section divider */}
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: '10px 0 8px' }}>
                                         <div style={{ flex: 1, height: '1px', background: 'var(--border-light)' }} />
-                                        <span style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px', whiteSpace: 'nowrap' }}>Combat Modifiers</span>
+                                        <span style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px', whiteSpace: 'nowrap' }}>Combat Modifiers</span>
                                         <div style={{ flex: 1, height: '1px', background: 'var(--border-light)' }} />
                                     </div>
 
@@ -543,10 +543,10 @@ const BattleTab = () => {
                                                 value={acOverride}
                                                 onChange={(e) => setAcOverride(e.target.value)}
                                                 placeholder={selectedMove ? String(parseACFromFrequency(selectedMove.frequency || selectedMove.freq)) : 'default'}
-                                                style={{ width: '70px', padding: '4px 8px', borderRadius: '4px', border: acOverride !== '' ? '2px solid #667eea' : '1px solid var(--border-medium)', fontSize: '13px', textAlign: 'center', background: acOverride !== '' ? 'var(--input-bg-hover)' : 'var(--input-bg)', color: 'var(--text-primary)' }}
+                                                style={{ width: '70px', padding: '4px 8px', borderRadius: '4px', border: acOverride !== '' ? '2px solid var(--color-purple)' : '1px solid var(--border-medium)', fontSize: '13px', textAlign: 'center', background: acOverride !== '' ? 'var(--input-bg-hover)' : 'var(--input-bg)', color: 'var(--text-primary)' }}
                                             />
                                             {acOverride !== '' ? (
-                                                <button onClick={() => setAcOverride('')} style={{ padding: '4px 8px', background: '#f44336', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }} title="Clear AC override" aria-label="Clear AC override">✕ Clear</button>
+                                                <button onClick={() => setAcOverride('')} style={{ padding: '4px 8px', background: 'var(--tint-fail-bg)', color: 'var(--color-danger-text)', border: '1px solid var(--tint-fail-border)', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }} title="Clear AC override" aria-label="Clear AC override">✕ Clear</button>
                                             ) : (
                                                 <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
                                                     {selectedMove ? `Default: AC ${parseACFromFrequency(selectedMove.frequency || selectedMove.freq)}` : 'Set to override move default'}
@@ -558,7 +558,7 @@ const BattleTab = () => {
                                     {/* Section divider */}
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: '10px 0 8px' }}>
                                         <div style={{ flex: 1, height: '1px', background: 'var(--border-light)' }} />
-                                        <span style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px', whiteSpace: 'nowrap' }}>Select Move &amp; Roll</span>
+                                        <span style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px', whiteSpace: 'nowrap' }}>Select Move &amp; Roll</span>
                                         <div style={{ flex: 1, height: '1px', background: 'var(--border-light)' }} />
                                     </div>
 
@@ -575,7 +575,7 @@ const BattleTab = () => {
                                         onClick={rollPokemonMove}
                                         disabled={!selectedPokemon || !selectedMove}
                                         title={!selectedPokemon ? 'Select a Pokémon first' : !selectedMove ? 'Select a move first' : undefined}
-                                        style={{ width: '100%', padding: '15px', background: selectedPokemon && selectedMove ? 'linear-gradient(135deg, #667eea, #764ba2)' : 'var(--collapsed-btn-bg)', color: selectedPokemon && selectedMove ? 'white' : 'var(--collapsed-btn-text)', border: 'none', borderRadius: '8px', cursor: selectedPokemon && selectedMove ? 'pointer' : 'not-allowed', fontSize: '16px', fontWeight: 'bold' }}
+                                        style={{ width: '100%', padding: '15px', background: selectedPokemon && selectedMove ? 'var(--gradient-purple)' : 'var(--collapsed-btn-bg)', color: selectedPokemon && selectedMove ? 'white' : 'var(--collapsed-btn-text)', border: 'none', borderRadius: '8px', cursor: selectedPokemon && selectedMove ? 'pointer' : 'not-allowed', fontSize: '16px', fontWeight: 'bold' }}
                                     >
                                         {selectedPokemon && selectedMove ? `Roll ${selectedMove.name}!` : 'Select a Pokémon & move'}
                                     </button>
@@ -690,7 +690,7 @@ const BattleTab = () => {
                             <button
                                 onClick={rollTrainerSkill}
                                 disabled={!selectedSkill}
-                                style={{ width: '100%', padding: '15px', background: selectedSkill ? 'linear-gradient(135deg, #667eea, #764ba2)' : '#ccc', color: selectedSkill ? 'white' : '#555', border: 'none', borderRadius: '8px', cursor: selectedSkill ? 'pointer' : 'not-allowed', fontSize: '16px', fontWeight: 'bold' }}
+                                style={{ width: '100%', padding: '15px', background: selectedSkill ? 'var(--gradient-purple)' : 'var(--collapsed-btn-bg)', color: selectedSkill ? 'white' : 'var(--collapsed-btn-text)', border: 'none', borderRadius: '8px', cursor: selectedSkill ? 'pointer' : 'not-allowed', fontSize: '16px', fontWeight: 'bold' }}
                             >
                                 Roll Skill Check!
                             </button>

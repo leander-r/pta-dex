@@ -330,7 +330,7 @@ const PokemonTab = () => {
                         }}>
                             <div style={{
                                 padding: '10px 14px',
-                                background: 'linear-gradient(135deg, #4caf50, #43a047)',
+                                background: 'linear-gradient(135deg, var(--poke-orange), var(--poke-orange-dark))',
                                 color: 'white',
                                 fontSize: '12px',
                                 fontWeight: 700
@@ -354,7 +354,7 @@ const PokemonTab = () => {
                                     transition: 'background 0.15s'
                                 }}
                             >
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#667eea" strokeWidth="2">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-purple)" strokeWidth="2">
                                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                                     <polyline points="14 2 14 8 20 8"></polyline>
                                 </svg>
@@ -454,8 +454,8 @@ const PokemonTab = () => {
                     aria-pressed={activePanel === 'search'}
                     style={{
                         padding: '6px 13px', borderRadius: '20px', cursor: 'pointer',
-                        border: `1.5px solid ${activePanel === 'search' ? '#667eea' : 'var(--border-medium)'}`,
-                        background: activePanel === 'search' ? '#667eea' : 'var(--input-bg)',
+                        border: `1.5px solid ${activePanel === 'search' ? 'var(--color-purple)' : 'var(--border-medium)'}`,
+                        background: activePanel === 'search' ? 'var(--color-purple)' : 'var(--input-bg)',
                         color: activePanel === 'search' ? 'white' : 'var(--text-primary)',
                         fontSize: '12px', fontWeight: 'bold',
                         display: 'flex', alignItems: 'center', gap: '5px'
@@ -463,7 +463,7 @@ const PokemonTab = () => {
                 >
                     🔍 Search
                     {(filter.search || filter.type) && (
-                        <span style={{ background: activePanel === 'search' ? 'rgba(255,255,255,0.35)' : '#dc3545', color: 'white', borderRadius: '8px', padding: '0 5px', fontSize: '10px', fontWeight: 'bold' }}>
+                        <span style={{ background: activePanel === 'search' ? 'rgba(255,255,255,0.35)' : 'var(--poke-orange)', color: 'white', borderRadius: '8px', padding: '0 5px', fontSize: '11px', fontWeight: 'bold' }}>
                             {[filter.search && '✓', filter.type && filter.type].filter(Boolean).join(' ')}
                         </span>
                     )}
@@ -475,8 +475,8 @@ const PokemonTab = () => {
                         aria-pressed={activePanel === 'coverage'}
                         style={{
                             padding: '6px 13px', borderRadius: '20px', cursor: 'pointer',
-                            border: `1.5px solid ${activePanel === 'coverage' ? '#2196f3' : 'var(--border-medium)'}`,
-                            background: activePanel === 'coverage' ? '#2196f3' : 'var(--input-bg)',
+                            border: `1.5px solid ${activePanel === 'coverage' ? 'var(--color-purple)' : 'var(--border-medium)'}`,
+                            background: activePanel === 'coverage' ? 'var(--color-purple)' : 'var(--input-bg)',
                             color: activePanel === 'coverage' ? 'white' : 'var(--text-primary)',
                             fontSize: '12px', fontWeight: 'bold',
                             display: 'flex', alignItems: 'center', gap: '5px'
@@ -492,8 +492,8 @@ const PokemonTab = () => {
                         aria-pressed={activePanel === 'presets'}
                         style={{
                             padding: '6px 13px', borderRadius: '20px', cursor: 'pointer',
-                            border: `1.5px solid ${activePanel === 'presets' ? '#ff9800' : 'var(--border-medium)'}`,
-                            background: activePanel === 'presets' ? '#ff9800' : 'var(--input-bg)',
+                            border: `1.5px solid ${activePanel === 'presets' ? 'var(--color-purple)' : 'var(--border-medium)'}`,
+                            background: activePanel === 'presets' ? 'var(--color-purple)' : 'var(--input-bg)',
                             color: activePanel === 'presets' ? 'white' : 'var(--text-primary)',
                             fontSize: '12px', fontWeight: 'bold',
                             display: 'flex', alignItems: 'center', gap: '5px'
@@ -501,7 +501,7 @@ const PokemonTab = () => {
                     >
                         ⭐ Presets
                         {partyPresets.length > 0 && (
-                            <span style={{ background: activePanel === 'presets' ? 'rgba(255,255,255,0.3)' : 'var(--border-medium)', borderRadius: '8px', padding: '0 5px', fontSize: '10px' }}>
+                            <span style={{ background: activePanel === 'presets' ? 'rgba(255,255,255,0.3)' : 'var(--border-medium)', borderRadius: '8px', padding: '0 5px', fontSize: '11px' }}>
                                 {partyPresets.length}
                             </span>
                         )}
@@ -573,7 +573,7 @@ const PokemonTab = () => {
                                 </span>
                                 <button
                                     onClick={() => setFilter({ search: '', type: '' })}
-                                    style={{ padding: '8px 12px', borderRadius: '6px', border: 'none', background: '#dc3545', color: 'white', cursor: 'pointer', fontSize: '13px' }}
+                                    style={{ padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--tint-fail-border)', background: 'var(--tint-fail-bg)', color: 'var(--color-danger-text)', cursor: 'pointer', fontSize: '13px' }}
                                 >
                                     Clear
                                 </button>
@@ -596,7 +596,7 @@ const PokemonTab = () => {
                                 .filter(t => teamCoverage.weakCount[t])
                                 .sort((a, b) => (teamCoverage.weakCount[b] || 0) - (teamCoverage.weakCount[a] || 0));
                             if (!sorted.length) return (
-                                <span style={{ fontSize: '12px', color: '#4caf50' }}>✅ No shared weaknesses!</span>
+                                <span style={{ fontSize: '12px', color: 'var(--color-success-text)' }}>✅ No shared weaknesses!</span>
                             );
                             return (
                                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
@@ -628,12 +628,13 @@ const PokemonTab = () => {
                                 {POKEMON_TYPES.filter(t => teamCoverage.immuneCount[t]).map(t => (
                                     <span key={t} style={{
                                         padding: '3px 8px', borderRadius: '10px',
-                                        background: '#333', color: 'white',
+                                        background: 'var(--bg-secondary)', color: 'var(--text-primary)',
+                                        border: '1px solid var(--border-medium)',
                                         fontSize: '11px', fontWeight: 'bold',
                                         display: 'flex', alignItems: 'center', gap: '4px'
                                     }}>
                                         {t}
-                                        <span style={{ background: 'rgba(255,255,255,0.2)', borderRadius: '8px', padding: '0 4px', fontSize: '10px' }}>
+                                        <span style={{ background: 'var(--border-medium)', borderRadius: '8px', padding: '0 4px', fontSize: '10px' }}>
                                             ×{teamCoverage.immuneCount[t]}
                                         </span>
                                     </span>
@@ -690,7 +691,7 @@ const PokemonTab = () => {
                         />
                         <button
                             onClick={handleSavePreset}
-                            style={{ padding: '8px 14px', background: '#667eea', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold', whiteSpace: 'nowrap' }}
+                            style={{ padding: '8px 14px', background: 'var(--color-purple)', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold', whiteSpace: 'nowrap' }}
                         >
                             Save Party
                         </button>
@@ -718,7 +719,7 @@ const PokemonTab = () => {
                                         </div>
                                         <button
                                             onClick={() => handleLoadPreset(preset)}
-                                            style={{ padding: '5px 10px', background: '#4caf50', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '11px', fontWeight: 'bold', whiteSpace: 'nowrap' }}
+                                            style={{ padding: '5px 10px', background: 'var(--color-purple)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '11px', fontWeight: 'bold', whiteSpace: 'nowrap' }}
                                         >
                                             Load
                                         </button>
@@ -745,7 +746,7 @@ const PokemonTab = () => {
                     </span>
                     <button
                         onClick={handleExportCustomSpecies}
-                        style={{ padding: '6px 12px', background: '#667eea', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}
+                        style={{ padding: '6px 12px', background: 'var(--color-purple)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}
                     >
                         ↑ Export Custom Species
                     </button>

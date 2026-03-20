@@ -36,7 +36,7 @@ const TabFallback = () => (
                 width: '32px',
                 height: '32px',
                 border: '3px solid var(--border-light)',
-                borderTopColor: '#667eea',
+                borderTopColor: 'var(--poke-orange)',
                 borderRadius: '50%',
                 animation: 'spin 0.8s linear infinite'
             }}
@@ -81,7 +81,7 @@ const ClearCacheButton = () => {
                 style={{
                     padding: '8px 16px',
                     fontSize: '12px',
-                    background: 'linear-gradient(135deg, #42a5f5, #1e88e5)',
+                    background: 'linear-gradient(135deg, var(--poke-orange), var(--poke-orange-dark))',
                     border: 'none',
                     borderRadius: '6px',
                     cursor: 'pointer',
@@ -92,7 +92,7 @@ const ClearCacheButton = () => {
             >
                 🔄 Refresh Game Data
             </button>
-            <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.6)', maxWidth: '300px' }}>
+            <span style={{ fontSize: '11px', color: 'var(--text-muted)', maxWidth: '300px' }}>
                 Clears cached Pokédex and game data (moves, abilities, items, etc.) and reloads the latest version from the server.
             </span>
         </div>
@@ -132,7 +132,7 @@ const AppLayout = () => {
                     left: '-999px',
                     zIndex: 9999,
                     padding: '8px 16px',
-                    background: '#667eea',
+                    background: 'var(--color-purple)',
                     color: 'white',
                     borderRadius: '0 0 6px 6px',
                     fontWeight: 'bold',
@@ -178,10 +178,10 @@ const AppLayout = () => {
                             style={{
                                 margin: '16px 0',
                                 padding: '12px 16px',
-                                background: 'rgba(231, 76, 60, 0.15)',
-                                border: '1px solid #e74c3c',
+                                background: 'var(--tint-fail-bg)',
+                                border: '1px solid var(--tint-fail-border)',
                                 borderRadius: '8px',
-                                color: '#e74c3c',
+                                color: 'var(--color-danger-text)',
                                 fontSize: '14px',
                                 display: 'flex',
                                 alignItems: 'center',
@@ -214,7 +214,7 @@ const AppLayout = () => {
                                     width: '48px',
                                     height: '48px',
                                     border: '4px solid var(--border-light)',
-                                    borderTopColor: '#667eea',
+                                    borderTopColor: 'var(--poke-orange)',
                                     borderRadius: '50%',
                                     animation: 'spin 0.8s linear infinite',
                                     marginBottom: '20px'
@@ -282,10 +282,10 @@ const AppLayout = () => {
             <footer style={{
                 marginTop: '40px',
                 padding: '20px',
-                background: 'rgba(255,255,255,0.1)',
+                background: 'var(--bg-secondary)',
                 borderRadius: '10px',
                 textAlign: 'center',
-                color: 'rgba(255,255,255,0.8)',
+                color: 'var(--text-primary)',
                 fontSize: '11px',
                 lineHeight: '1.6'
             }}>
@@ -293,12 +293,13 @@ const AppLayout = () => {
                 <div style={{
                     marginBottom: '20px',
                     padding: '15px',
-                    background: 'rgba(0,0,0,0.15)',
+                    background: 'var(--bg-section)',
+                    border: '1px solid var(--border-light)',
                     borderRadius: '8px',
                     maxWidth: '600px',
                     margin: '0 auto 20px auto'
                 }}>
-                    <div style={{ fontWeight: 'bold', marginBottom: '10px', color: '#81d4fa', fontSize: '12px' }}>
+                    <div style={{ fontWeight: 'bold', marginBottom: '10px', color: 'var(--color-purple)', fontSize: '12px' }}>
                         📊 Data Management
                     </div>
                     <div style={{
@@ -309,10 +310,10 @@ const AppLayout = () => {
                         flexWrap: 'wrap',
                         marginBottom: '10px'
                     }}>
-                        <span style={{ color: pokedex.length > 0 ? '#a5d6a7' : '#ffcc80' }}>
+                        <span style={{ color: pokedex.length > 0 ? 'var(--color-success-text)' : 'var(--poke-orange)' }}>
                             {pokedex.length > 0 ? `✓ Pokédex: ${pokedex.length} species` : '⏳ Loading Pokédex...'}
                         </span>
-                        <span style={{ color: gameDataLoaded ? '#a5d6a7' : '#ffcc80' }}>
+                        <span style={{ color: gameDataLoaded ? 'var(--color-success-text)' : 'var(--poke-orange)' }}>
                             {gameDataLoaded
                                 ? `✓ Game Data: ${Object.keys(GAME_DATA.moves || {}).length} moves, ${Object.keys(GAME_DATA.features || {}).length} features`
                                 : '⏳ Loading Game Data...'}
@@ -326,12 +327,13 @@ const AppLayout = () => {
                 </div>
                 <div style={{
                     padding: '15px',
-                    background: 'rgba(0,0,0,0.2)',
+                    background: 'var(--bg-section)',
+                    border: '1px solid var(--border-light)',
                     borderRadius: '8px',
                     maxWidth: '800px',
                     margin: '0 auto'
                 }}>
-                    <div style={{ fontWeight: 'bold', marginBottom: '8px', color: '#ffd54f' }}>
+                    <div style={{ fontWeight: 'bold', marginBottom: '8px', color: 'var(--poke-orange)' }}>
                         ⚠️ LEGAL DISCLAIMER
                     </div>
                     <p className="mb-8">
@@ -347,7 +349,7 @@ const AppLayout = () => {
                         This tool is <strong>NOT</strong> affiliated with, endorsed by, or sponsored by any of these companies.
                         It is intended solely as a companion tool for the fan-made <strong>Pokémon Tabletop Adventures</strong> RPG system.
                     </p>
-                    <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.6)' }}>
+                    <p style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
                         All original code and design © leander_rsr. Provided "AS IS" without warranty.
                         For personal, non-commercial use only.
                     </p>
