@@ -118,7 +118,7 @@ const captureCard = async (card, filename) => {
 
     try {
         const canvas = await html2canvas(card, {
-            backgroundColor: '#ffffff',
+            backgroundColor: null,
             scale: 2,
             useCORS: false,   // not needed — all imgs are now data URLs
             allowTaint: false,
