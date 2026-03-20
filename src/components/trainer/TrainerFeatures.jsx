@@ -21,6 +21,16 @@ const STAT_MODIFYING_FEATURES = {
     'Mystic Veil': { hpBonus: 'mystic', label: 'Adds DEF modifier × 3 to Max HP' }
 };
 
+// Features that can be taken multiple times (once per different choice)
+const REPEATABLE_FEATURES = new Set(['Weapon of Choice']);
+
+// PTA Damage Base table
+const DB_TABLE = { 1: '1d10+4', 2: '1d12+6', 3: '2d8+6', 4: '2d10+8', 5: '2d12+10', 6: '3d10+12' };
+const getWeaponOfChoiceDamage = (level) => {
+    const db = (level || 1) >= 15 ? 6 : (level || 1) >= 7 ? 4 : 2;
+    return `DB${db} (${DB_TABLE[db]})`;
+};
+
 // Calculate stat modifier (PTA formula)
 const calculateModifier = (stat) => {
     if (stat === 10) return 0;
@@ -49,6 +59,8 @@ const TrainerFeatures = () => {
     const [featureFilter, setFeatureFilter] = useState('all');
     const [featureSearch, setFeatureSearch] = useState('');
     const [pendingStatFeature, setPendingStatFeature] = useState(null); // { name, data, featureData }
+    const [pendingWeaponChoice, setPendingWeaponChoice] = useState(null); // { isFree }
+    const [weaponChoiceInput, setWeaponChoiceInput] = useState('');
     const [collapsed, setCollapsed] = useState(true);
 
     const currentFeatures = trainer.features || [];
@@ -57,8 +69,8 @@ const TrainerFeatures = () => {
     const availableFeatures = useMemo(() => {
         return Object.entries(GAME_DATA.features || {})
             .filter(([name, data]) => {
-                // Don't show already owned features
-                if (currentFeatures.some(f => (typeof f === 'object' ? f.name : f) === name)) return false;
+                // Don't show already owned features (repeatable features are always shown)
+                if (!REPEATABLE_FEATURES.has(name) && currentFeatures.some(f => (typeof f === 'object' ? f.name : f) === name)) return false;
 
                 // Filter by category
                 if (featureFilter !== 'all' && data.category !== featureFilter) return false;
@@ -90,6 +102,13 @@ const TrainerFeatures = () => {
 
         if (!isFree && (trainer.featPoints || 0) <= 0) {
             toast.warning('Not enough feat points!');
+            return;
+        }
+
+        // Weapon of Choice needs a weapon type input
+        if (featureName === 'Weapon of Choice') {
+            setPendingWeaponChoice({ isFree });
+            setWeaponChoiceInput('');
             return;
         }
 
@@ -170,7 +189,20 @@ const TrainerFeatures = () => {
         setPendingStatFeature(null);
     };
 
-    const handleRemoveFeature = (featureName) => {
+    const handleWeaponChoiceConfirm = () => {
+        const weaponType = weaponChoiceInput.trim();
+        if (!weaponType || !pendingWeaponChoice) return;
+        const { isFree } = pendingWeaponChoice;
+        setTrainer(prev => ({
+            ...prev,
+            features: [...(prev.features || []), { name: 'Weapon of Choice', weaponType }],
+            featPoints: isFree ? prev.featPoints : (prev.featPoints || 0) - 1
+        }));
+        setPendingWeaponChoice(null);
+        setWeaponChoiceInput('');
+    };
+
+    const handleRemoveFeature = (featureName, featureIndex) => {
         const featureData = GAME_DATA.features[featureName];
         const isFree = featureData?.category === 'General (Free)' || featureData?.isBase;
 
@@ -194,8 +226,10 @@ const TrainerFeatures = () => {
         setTrainer(prev => {
             const newState = {
                 ...prev,
-                features: (prev.features || []).filter(f =>
-                    (typeof f === 'object' ? f.name : f) !== featureName
+                features: (prev.features || []).filter((f, i) =>
+                    featureIndex !== undefined
+                        ? i !== featureIndex
+                        : (typeof f === 'object' ? f.name : f) !== featureName
                 ),
                 featPoints: isFree ? prev.featPoints : (prev.featPoints || 0) + 1
             };
@@ -266,6 +300,16 @@ const TrainerFeatures = () => {
                             >
                                 <span>{featureName}</span>
                                 {isBase && <span style={{ fontSize: '9px', opacity: 0.8 }}>(Base)</span>}
+                                {typeof feature === 'object' && feature.weaponType && (
+                                    <span style={{ fontSize: '9px', opacity: 0.9, background: 'rgba(255,255,255,0.2)', padding: '1px 4px', borderRadius: '4px' }}>
+                                        {feature.weaponType}
+                                    </span>
+                                )}
+                                {featureName === 'Weapon of Choice' && (
+                                    <span style={{ fontSize: '9px', opacity: 0.85, background: 'rgba(255,255,255,0.15)', padding: '1px 4px', borderRadius: '4px' }}>
+                                        {getWeaponOfChoiceDamage(trainer.level)}
+                                    </span>
+                                )}
                                 {typeof feature === 'object' && feature.statBoost && feature.statBoost.value > 0 && (
                                     <span style={{ fontSize: '9px', opacity: 0.9, background: 'rgba(255,255,255,0.2)', padding: '1px 4px', borderRadius: '4px' }}>
                                         +{feature.statBoost.value} {STAT_LABELS[feature.statBoost.stat]}
@@ -292,12 +336,15 @@ const TrainerFeatures = () => {
                                     <button
                                         onClick={(e) => {
                                             e.stopPropagation();
+                                            const displayName = typeof feature === 'object' && feature.weaponType
+                                                ? `${featureName} (${feature.weaponType})`
+                                                : featureName;
                                             showConfirm({
                                                 title: 'Remove Feature',
-                                                message: `Remove "${featureName}"?${!featureData?.isBase && featureData?.category !== 'General (Free)' ? ' This will refund 1 feat point.' : ''}`,
+                                                message: `Remove "${displayName}"?${!featureData?.isBase && featureData?.category !== 'General (Free)' ? ' This will refund 1 feat point.' : ''}`,
                                                 confirmLabel: 'Remove',
                                                 danger: true,
-                                                onConfirm: () => handleRemoveFeature(featureName)
+                                                onConfirm: () => handleRemoveFeature(featureName, index)
                                             });
                                         }}
                                         style={{
@@ -376,13 +423,56 @@ const TrainerFeatures = () => {
                 </div>
             )}
 
+            {/* Weapon of Choice picker */}
+            {pendingWeaponChoice && (
+                <div style={{
+                    padding: '15px',
+                    background: 'var(--bg-light, #f5f5f5)',
+                    borderRadius: '8px',
+                    border: '2px solid var(--color-purple, #667eea)',
+                    marginBottom: '10px'
+                }}>
+                    <h4 style={{ margin: '0 0 4px 0', color: 'var(--color-purple, #667eea)', fontSize: '14px' }}>
+                        Weapon of Choice
+                    </h4>
+                    <p style={{ margin: '0 0 10px 0', fontSize: '13px', color: 'var(--text-secondary)' }}>
+                        Choose a specific weapon type (e.g. <em>longsword</em>, <em>unarmed</em>, <em>slingshot</em>, <em>bow</em>).
+                        You may take this feature again for each new weapon.
+                    </p>
+                    <input
+                        type="text"
+                        value={weaponChoiceInput}
+                        onChange={e => setWeaponChoiceInput(e.target.value)}
+                        onKeyDown={e => e.key === 'Enter' && handleWeaponChoiceConfirm()}
+                        placeholder="Weapon name..."
+                        autoFocus
+                        style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--border-medium, #ddd)', background: 'var(--input-bg)', color: 'var(--text-primary)', marginBottom: '10px', boxSizing: 'border-box' }}
+                    />
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                        <button
+                            onClick={handleWeaponChoiceConfirm}
+                            disabled={!weaponChoiceInput.trim()}
+                            style={{ flex: 1, padding: '10px', background: 'var(--gradient-purple)', color: 'white', border: 'none', borderRadius: '6px', cursor: weaponChoiceInput.trim() ? 'pointer' : 'not-allowed', fontSize: '13px', fontWeight: 'bold', opacity: weaponChoiceInput.trim() ? 1 : 0.5 }}
+                        >
+                            Confirm (1 pt)
+                        </button>
+                        <button
+                            onClick={() => setPendingWeaponChoice(null)}
+                            style={{ padding: '10px 16px', background: 'none', border: '1px solid var(--border-medium, #ddd)', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', color: 'var(--text-muted)' }}
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            )}
+
             {/* Add Feature Section */}
-            {!pendingStatFeature && (trainer.featPoints || 0) <= 0 && (
+            {!pendingStatFeature && !pendingWeaponChoice && (trainer.featPoints || 0) <= 0 && (
                 <div style={{ fontSize: '12px', color: 'var(--poke-orange-dark)', marginBottom: '8px', padding: '6px 10px', background: 'var(--tint-orange-bg)', borderRadius: '6px', border: '1px solid var(--tint-orange-border)' }}>
                     ⚠ No feat points — free features are still available. Earn points by leveling up.
                 </div>
             )}
-            {!pendingStatFeature && <div className="bg-light" style={{ padding: '12px', borderRadius: '8px' }}>
+            {!pendingStatFeature && !pendingWeaponChoice && <div className="bg-light" style={{ padding: '12px', borderRadius: '8px' }}>
                 <div style={{ display: 'flex', gap: '10px', marginBottom: '10px', flexWrap: 'wrap' }}>
                     <input
                         type="text"
@@ -532,7 +622,7 @@ const TrainerFeatures = () => {
                                         cursor: 'pointer'
                                     }}
                                 >
-                                    {name}
+                                    {name}{typeof f === 'object' && f.weaponType ? ` (${f.weaponType})` : ''}
                                 </span>
                             );
                         })}
