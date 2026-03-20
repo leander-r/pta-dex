@@ -372,7 +372,7 @@ const CustomSpeciesModal = () => {
                 <div
                     className="modal-header"
                     style={{
-                        background: 'linear-gradient(135deg, #667eea, #764ba2)',
+                        background: 'var(--gradient-purple)',
                         color: 'white',
                         margin: '-25px -25px 0 -25px',
                         padding: '18px 20px',

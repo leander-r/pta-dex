@@ -774,7 +774,8 @@ export const DataProvider = ({ children }) => {
         }
     }, [discordWebhook.enabled, discordWebhook.url]);
 
-    // Load data on mount
+    // Load data on mount — intentionally empty dep array; loadData is stable (useCallback with
+    // stable deps) and we only ever want to load once on initial mount.
     useEffect(() => {
         loadData();
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -789,6 +790,12 @@ export const DataProvider = ({ children }) => {
 
         return () => clearTimeout(saveTimeout);
     }, [trainers, inventory, activeTrainerId, customSpecies]);
+
+    // Flush any pending debounced save on unmount so data changed just before
+    // the component tears down (e.g. rapid tab close) is not silently dropped.
+    useEffect(() => {
+        return () => { saveDataRef.current?.(); };
+    }, []);
 
     // Interval-based auto-save (every 2 minutes, only if changed)
     // No data dependencies — interval should not restart on every data change

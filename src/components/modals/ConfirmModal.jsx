@@ -50,8 +50,8 @@ const ConfirmModal = () => {
     const { title, message, confirmLabel, cancelLabel, danger, inputConfig } = confirmModal;
 
     const headerBg = danger
-        ? 'linear-gradient(135deg, #e74c3c, #c0392b)'
-        : 'linear-gradient(135deg, #667eea, #764ba2)';
+        ? 'linear-gradient(135deg, var(--danger-btn-start), var(--danger-btn-end))'
+        : 'var(--gradient-purple)';
 
     return (
         <div className="modal-overlay" onClick={handleClose} role="presentation">
@@ -173,7 +173,7 @@ const ConfirmModal = () => {
                             padding: '10px 20px',
                             border: 'none',
                             borderRadius: '6px',
-                            background: danger ? '#e74c3c' : 'linear-gradient(135deg, #667eea, #764ba2)',
+                            background: danger ? 'var(--danger-btn-start)' : 'var(--gradient-purple)',
                             color: 'white',
                             cursor: (inputConfig && !inputValue.trim()) ? 'not-allowed' : 'pointer',
                             fontSize: '14px',

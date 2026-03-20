@@ -30,7 +30,7 @@ const MenuItem = ({ id, icon, label, onClick, danger, disabled, hoveredItem, set
             gap: '12px',
             opacity: disabled ? 0.5 : 1,
             transition: 'all 0.15s ease',
-            borderLeft: hoveredItem === id && !danger ? '3px solid #f5a623' : '3px solid transparent',
+            borderLeft: hoveredItem === id && !danger ? '3px solid var(--poke-orange)' : '3px solid transparent',
             WebkitTapHighlightColor: 'transparent',
             touchAction: 'manipulation'
         }}
@@ -39,7 +39,7 @@ const MenuItem = ({ id, icon, label, onClick, danger, disabled, hoveredItem, set
             width: '20px',
             display: 'flex',
             justifyContent: 'center',
-            color: hoveredItem === id && !danger ? '#f5a623' : 'inherit'
+            color: hoveredItem === id && !danger ? 'var(--poke-orange)' : 'inherit'
         }}>{icon}</span>
         <span>{label}</span>
     </button>
@@ -307,8 +307,8 @@ const Header = () => {
                         }}
                         className={`header-menu-button ${showCharacterMenu ? 'active' : ''}`}
                         style={{
-                            width: isMobile ? '44px' : (isScrolled ? '36px' : '42px'),
-                            height: isMobile ? '44px' : (isScrolled ? '36px' : '42px'),
+                            width: isMobile ? '44px' : (isScrolled ? '40px' : '42px'),
+                            height: isMobile ? '44px' : (isScrolled ? '40px' : '42px'),
                             borderRadius: isMobile ? '8px' : '12px',
                             cursor: 'pointer',
                             display: 'flex',
@@ -331,10 +331,9 @@ const Header = () => {
                             height={isMobile ? "18" : (isScrolled ? "18" : "20")}
                             viewBox="0 0 24 24"
                             fill="none"
-                            stroke={showCharacterMenu ? '#e8941c' : '#f5a623'}
                             strokeWidth="2.5"
                             strokeLinecap="round"
-                            style={{ transition: 'all 0.25s ease', pointerEvents: 'none', display: 'block' }}
+                            style={{ stroke: showCharacterMenu ? 'var(--poke-orange-dark)' : 'var(--poke-orange)', transition: 'all 0.25s ease', pointerEvents: 'none', display: 'block' }}
                         >
                             <line x1="3" y1="6" x2="21" y2="6"></line>
                             <line x1="3" y1="12" x2="21" y2="12"></line>
@@ -360,7 +359,7 @@ const Header = () => {
                             {/* Header */}
                             <div style={{
                                 padding: '14px 18px',
-                                background: 'linear-gradient(135deg, #f5a623, #e8941c)',
+                                background: 'linear-gradient(135deg, var(--poke-orange), var(--poke-orange-dark))',
                                 color: 'white',
                                 fontSize: '12px',
                                 fontWeight: 700,
@@ -483,7 +482,7 @@ const Header = () => {
                                         gap: '12px',
                                         transition: 'all 0.15s ease',
                                         boxSizing: 'border-box',
-                                        borderLeft: hoveredItem === 'import' ? '3px solid #f5a623' : '3px solid transparent',
+                                        borderLeft: hoveredItem === 'import' ? '3px solid var(--poke-orange)' : '3px solid transparent',
                                         WebkitTapHighlightColor: 'transparent',
                                         touchAction: 'manipulation'
                                     }}
@@ -492,7 +491,7 @@ const Header = () => {
                                         width: '20px',
                                         display: 'flex',
                                         justifyContent: 'center',
-                                        color: hoveredItem === 'import' ? '#f5a623' : 'inherit'
+                                        color: hoveredItem === 'import' ? 'var(--poke-orange)' : 'inherit'
                                     }}>
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -627,7 +626,7 @@ const Header = () => {
                                                 gap: '8px',
                                                 fontSize: '12px',
                                                 fontWeight: 700,
-                                                color: '#888',
+                                                color: 'var(--text-muted)',
                                                 textTransform: 'uppercase',
                                                 letterSpacing: '0.5px'
                                             }}
@@ -646,7 +645,7 @@ const Header = () => {
                                                 padding: '6px 18px',
                                                 gap: '8px'
                                             }}>
-                                                <span style={{ fontSize: '13px', color: '#888', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                <span style={{ fontSize: '13px', color: 'var(--text-muted)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                                     {t.name || 'Unnamed'} (Lv.{t.level})
                                                 </span>
                                                 <button
@@ -658,7 +657,7 @@ const Header = () => {
                                                         padding: '3px 10px',
                                                         fontSize: '11px',
                                                         fontWeight: 700,
-                                                        background: '#f5a623',
+                                                        background: 'var(--poke-orange)',
                                                         color: 'white',
                                                         border: 'none',
                                                         borderRadius: '4px',

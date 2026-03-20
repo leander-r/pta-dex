@@ -24,7 +24,7 @@ const DetailModal = () => {
             case 'move':
                 return `linear-gradient(135deg, ${getTypeColor(detailModal.data?.type)}, ${getTypeColor(detailModal.data?.type)}dd)`;
             case 'feature':
-                return 'linear-gradient(135deg, #667eea, #764ba2)';
+                return 'var(--gradient-purple)';
             case 'ability':
                 return 'linear-gradient(135deg, #f093fb, #f5576c)';
             case 'skill':
@@ -34,7 +34,7 @@ const DetailModal = () => {
             case 'item':
                 return 'linear-gradient(135deg, #fa709a, #fee140)';
             default:
-                return 'linear-gradient(135deg, #667eea, #764ba2)';
+                return 'var(--gradient-purple)';
         }
     };
 

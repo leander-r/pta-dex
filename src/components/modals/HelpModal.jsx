@@ -182,7 +182,7 @@ const HelpModal = () => {
                 <div
                     className="modal-header"
                     style={{
-                        background: 'linear-gradient(135deg, #f5a623, #e8941c)',
+                        background: 'linear-gradient(135deg, var(--poke-orange), var(--poke-orange-dark))',
                         color: 'white',
                         margin: '-25px -25px 0 -25px',
                         padding: '18px 20px',

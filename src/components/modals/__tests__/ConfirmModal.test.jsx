@@ -82,14 +82,14 @@ describe('ConfirmModal', () => {
 
         const header = document.querySelector('.modal-header');
         expect(header).not.toBeNull();
-        expect(header.style.background).toContain('#e74c3c');
+        expect(header.style.background).toContain('var(--danger-btn-start)');
     });
 
     it('applies purple gradient in non-danger mode', () => {
         renderModal({ ...BASE, danger: false });
 
         const header = document.querySelector('.modal-header');
-        expect(header.style.background).toContain('#667eea');
+        expect(header.style.background).toContain('var(--gradient-purple)');
     });
 
     // ── inputConfig ───────────────────────────────────────────

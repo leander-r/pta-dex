@@ -53,6 +53,7 @@ import ErrorBoundary from './ErrorBoundary.jsx';
 import { useUI } from '../contexts/UIContext.jsx';
 import { useModal } from '../contexts/ModalContext.jsx';
 import { useGameData } from '../contexts/GameDataContext.jsx';
+import toast from '../utils/toast.js';
 
 // ── Clear Cache Button ───────────────────────────────────────
 const ClearCacheButton = () => {
@@ -73,6 +74,7 @@ const ClearCacheButton = () => {
                                 indexedDB.deleteDatabase(DATA_CONFIG.dbName);
                                 window.location.reload();
                             } catch (e) {
+                                toast.error('Cache clear encountered an error. Reloading anyway.');
                                 window.location.reload();
                             }
                         }

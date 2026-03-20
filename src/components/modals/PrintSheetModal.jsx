@@ -45,7 +45,7 @@ const PrintSheetModal = () => {
                 aria-labelledby="print-sheet-title"
             >
                 {/* Header */}
-                <div className="modal-header" style={{ background: 'linear-gradient(135deg, #f5a623, #e8941c)', margin: '-25px -25px 0 -25px', position: 'relative', zIndex: 2, borderRadius: '17px 17px 0 0', borderBottom: 'none' }}>
+                <div className="modal-header" style={{ background: 'linear-gradient(135deg, var(--poke-orange), var(--poke-orange-dark))', margin: '-25px -25px 0 -25px', position: 'relative', zIndex: 2, borderRadius: '17px 17px 0 0', borderBottom: 'none' }}>
                     <h2 id="print-sheet-title" style={{ margin: 0, color: 'white', fontSize: '16px', fontWeight: 700 }}>
                         Print Character Sheet
                     </h2>

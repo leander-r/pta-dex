@@ -110,7 +110,7 @@ export const TrainerProvider = ({ children }) => {
                 `Consider using Respec to rebuild.`
             );
         }
-    }, [trainer?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [trainer?.id]); // eslint-disable-line react-hooks/exhaustive-deps — intentional: re-check only on trainer switch, not on every field update (GAME_DATA is module-level constant)
 
     // Helper to update current trainer
     const setTrainer = useCallback((updater) => {

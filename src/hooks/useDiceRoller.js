@@ -7,6 +7,8 @@ import { useState, useCallback } from 'react';
 import { calculateSTAB, getActualStats, calculatePokemonHP, parseCritThreshold } from '../utils/dataUtils.js';
 import { GAME_DATA } from '../data/configs.js';
 
+const MAX_ROLL_HISTORY = 50;
+
 /**
  * Parse dice notation (e.g., "2d6+5", "3d12+14")
  * @param {string} diceStr - Dice notation string
@@ -81,7 +83,7 @@ export const useDiceRoller = (sendToDiscord = null) => {
     const addToHistory = useCallback((roll) => {
         setState(prev => ({
             ...prev,
-            rollHistory: [roll, ...prev.rollHistory].slice(0, 50) // Keep last 50 rolls
+            rollHistory: [roll, ...prev.rollHistory].slice(0, MAX_ROLL_HISTORY)
         }));
     }, []);
 

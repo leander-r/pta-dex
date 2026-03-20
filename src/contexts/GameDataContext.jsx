@@ -60,7 +60,7 @@ export const GameDataProvider = ({ children }) => {
 
     // Get level-up moves for a Pokemon (supports regional forms)
     const getLevelUpMovesForPokemon = useCallback((pokemon) => {
-        if (pokemon?.availableLevelUpMoves && pokemon.availableLevelUpMoves.length > 0) {
+        if (Array.isArray(pokemon?.availableLevelUpMoves) && pokemon.availableLevelUpMoves.length > 0) {
             return pokemon.availableLevelUpMoves;
         }
 

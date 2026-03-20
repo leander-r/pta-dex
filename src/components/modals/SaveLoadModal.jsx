@@ -97,7 +97,7 @@ const SlotCard = ({ index, slot, onSave, onLoad, onDelete, onRename }) => {
                 </div>
                 <button
                     onClick={() => onSave(index)}
-                    style={{ ...BTN_BASE, background: 'linear-gradient(135deg, #667eea, #764ba2)', color: 'white' }}
+                    style={{ ...BTN_BASE, background: 'var(--gradient-purple)', color: 'white' }}
                 >
                     Save Here
                 </button>
@@ -202,7 +202,7 @@ const SlotCard = ({ index, slot, onSave, onLoad, onDelete, onRename }) => {
             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                 <button
                     onClick={() => onLoad(index)}
-                    style={{ ...BTN_BASE, background: 'linear-gradient(135deg, #667eea, #764ba2)', color: 'white' }}
+                    style={{ ...BTN_BASE, background: 'var(--gradient-purple)', color: 'white' }}
                 >
                     Load
                 </button>

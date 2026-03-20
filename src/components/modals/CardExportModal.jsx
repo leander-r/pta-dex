@@ -268,7 +268,7 @@ const CardExportModal = () => {
                 <div
                     className="modal-header"
                     style={{
-                        background: 'linear-gradient(135deg, #f5a623, #f7b731)',
+                        background: 'linear-gradient(135deg, var(--poke-orange), var(--poke-orange-light))',
                         color: 'white',
                         margin: '-25px -25px 0 -25px',
                         padding: '18px 20px',
@@ -775,7 +775,7 @@ const TeamPokemonSlot = ({ poke, idx }) => {
                 left: '-8px',
                 width: '22px',
                 height: '22px',
-                background: 'linear-gradient(135deg, #f5a623, #e8941c)',
+                background: 'linear-gradient(135deg, var(--poke-orange), var(--poke-orange-dark))',
                 borderRadius: '50%',
                 display: 'flex',
                 alignItems: 'center',

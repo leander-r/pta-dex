@@ -122,7 +122,7 @@ const BulkExpModal = () => {
                 <div
                     className="modal-header"
                     style={{
-                        background: 'linear-gradient(135deg, #f5a623, #f7b731)',
+                        background: 'linear-gradient(135deg, var(--poke-orange), var(--poke-orange-light))',
                         color: 'white',
                         margin: '-25px -25px 0 -25px',
                         padding: '18px 20px',

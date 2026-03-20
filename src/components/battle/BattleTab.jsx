@@ -180,7 +180,7 @@ const BattleTab = () => {
         setAcOverride('');
         // Combat stages reset on switch per PTA rules (PH2 p.256)
         resetCombatStages();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps — intentional: reset on pokemon switch only; resetCombatStages is stable (useCallback with no deps)
     }, [selectedPokemonId]);
 
     // Apply mega stat boosts to actual stats
