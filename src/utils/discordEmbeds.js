@@ -122,6 +122,15 @@ export const buildPokemonEmbed = (roll, trainerName) => {
         });
     }
 
+    // Status penalties (burn/poison/paralysis stat modifiers)
+    if (roll.statusPenalties?.length > 0) {
+        fields.push({
+            name: '⚠️ Status Penalties',
+            value: roll.statusPenalties.map(p => `**${p.status}**: ${p.penalty}`).join('\n'),
+            inline: true,
+        });
+    }
+
     // Mega form
     if (roll.megaEvolved && roll.megaFormName) {
         fields.push({ name: 'Mega', value: roll.megaFormName, inline: true });

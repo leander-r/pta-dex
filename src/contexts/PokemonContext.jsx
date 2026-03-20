@@ -205,7 +205,10 @@ export const PokemonProvider = ({ children }) => {
             skills: [],
             notes: '',
             loyalty: 1,
-            statPointsAvailable: 0
+            statPointsAvailable: 0,
+            origin: 'caught',
+            contestStats: { cool: 0, beauty: 0, cute: 0, smart: 0, tough: 0 },
+            ribbons: { cool: 0, beauty: 0, cute: 0, smart: 0, tough: 0 }
         };
 
         if (pokemonView === 'party' && partyRef.current.length < MAX_PARTY_SIZE) {

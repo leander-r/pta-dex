@@ -395,6 +395,65 @@ const TrainerProfile = () => {
                     </div>
                 )}
             </div>
+
+            {/* Trainer Ribbons */}
+            {(() => {
+                const RIBBON_TYPES = [
+                    { key: 'cool',   icon: '😎', label: 'Cool'   },
+                    { key: 'beauty', icon: '💎', label: 'Beauty' },
+                    { key: 'cute',   icon: '🌸', label: 'Cute'   },
+                    { key: 'smart',  icon: '🔮', label: 'Smart'  },
+                    { key: 'tough',  icon: '💪', label: 'Tough'  },
+                ];
+                const ribbons = trainer.ribbons || {};
+                const totalRibbons = RIBBON_TYPES.reduce((s, r) => s + (ribbons[r.key] || 0), 0);
+
+                const updateRibbon = (key, delta) => {
+                    setTrainer(prev => ({
+                        ...prev,
+                        ribbons: {
+                            ...(prev.ribbons || {}),
+                            [key]: Math.max(0, (prev.ribbons?.[key] || 0) + delta)
+                        }
+                    }));
+                };
+
+                return (
+                    <div style={{ marginTop: '12px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                            <span style={{ fontWeight: 'bold', color: 'var(--color-purple, #667eea)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                                🏆 Contest Ribbons {totalRibbons > 0 && `(${totalRibbons})`}
+                            </span>
+                        </div>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '6px' }}>
+                            {RIBBON_TYPES.map(({ key, icon, label }) => {
+                                const count = ribbons[key] || 0;
+                                return (
+                                    <div key={key} style={{ textAlign: 'center' }}>
+                                        <div style={{ fontSize: '10px', fontWeight: 'bold', color: 'var(--text-muted)', marginBottom: '3px' }}>
+                                            {icon} {label}
+                                        </div>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+                                            <button
+                                                onClick={() => updateRibbon(key, -1)}
+                                                disabled={count === 0}
+                                                style={{ flex: 1, padding: '4px 2px', background: 'var(--bg-light, #e0e0e0)', border: 'none', borderRadius: '4px', cursor: count === 0 ? 'not-allowed' : 'pointer', opacity: count === 0 ? 0.4 : 1, fontSize: '12px' }}
+                                            >−</button>
+                                            <span style={{ minWidth: '20px', textAlign: 'center', fontWeight: 'bold', fontSize: '13px' }}>
+                                                {count > 0 ? count : '—'}
+                                            </span>
+                                            <button
+                                                onClick={() => updateRibbon(key, 1)}
+                                                style={{ flex: 1, padding: '4px 2px', background: 'var(--bg-light, #e0e0e0)', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px' }}
+                                            >+</button>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                );
+            })()}
         </div>
     );
 };

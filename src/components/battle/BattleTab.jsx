@@ -255,6 +255,14 @@ const BattleTab = () => {
 
         const diceData = parseDice(selectedMove.damage);
 
+        // Status condition penalties (informational — affect defensive stats)
+        const statuses = selectedPokemon.statusConditions || {};
+        const statusPenalties = [];
+        if (statuses.burned)   statusPenalties.push({ status: 'burned',   penalty: 'DEF −2 CS' });
+        if (statuses.poisoned || statuses.badlyPoisoned)
+            statusPenalties.push({ status: statuses.badlyPoisoned ? 'badly poisoned' : 'poisoned', penalty: 'SDEF −2 CS' });
+        if (statuses.paralyzed) statusPenalties.push({ status: 'paralyzed', penalty: 'SPD ÷2' });
+
         // Collect non-zero combat stages relevant to this roll
         const statLabel = isPhysical ? 'ATK' : 'SATK';
         const baseStatVal = actualStats[statKey] || 0;
@@ -266,7 +274,7 @@ const BattleTab = () => {
         ].filter(Boolean);
 
         if (diceData.count === 0) {
-            addToHistory(buildPokemonRollEntry({ ...commonFields, isStatus: true, relevantStages }));
+            addToHistory(buildPokemonRollEntry({ ...commonFields, isStatus: true, relevantStages, statusPenalties }));
             return;
         }
 
@@ -285,7 +293,7 @@ const BattleTab = () => {
             ...commonFields,
             dice: isHit ? `${diceCount}d${diceData.sides}` : null,
             diceBonus: diceData.bonus,
-            rolls, diceTotal, statBonus: statMod, stabBonus, total, relevantStages
+            rolls, diceTotal, statBonus: statMod, stabBonus, total, relevantStages, statusPenalties
         }));
     };
 

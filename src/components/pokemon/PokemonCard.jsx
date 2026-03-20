@@ -1560,6 +1560,28 @@ const PokemonCard = ({
                             </select>
                         </div>
 
+                        {/* Origin */}
+                        <div style={{ marginBottom: '15px' }}>
+                            <label style={{ fontSize: '12px', fontWeight: 'bold', marginBottom: '4px', display: 'block' }}>Origin</label>
+                            <select
+                                value={pokemon.origin || 'caught'}
+                                onChange={(e) => {
+                                    const origin = e.target.value;
+                                    const updates = { origin };
+                                    if (origin === 'hatched') {
+                                        updates.loyalty = Math.max(pokemon.loyalty ?? 1, 2);
+                                    }
+                                    updatePokemon(updates);
+                                }}
+                                style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #ddd' }}
+                            >
+                                <option value="caught">Caught</option>
+                                <option value="hatched">Hatched (Loyalty ≥2)</option>
+                                <option value="traded">Traded</option>
+                                <option value="befriended">Befriended</option>
+                            </select>
+                        </div>
+
                         {/* Loyalty */}
                         {(() => {
                             const LOYALTY_LABELS = ['Defiant', 'Wary', 'Neutral', 'Friendly', 'Loyal'];
@@ -1601,6 +1623,76 @@ const PokemonCard = ({
                                         {currentLoyalty <= 1 && '⚠ Can use Frustration. May refuse to evolve.'}
                                         {currentLoyalty === 2 && '✓ Immune to Snagging. Follows commands.'}
                                         {currentLoyalty >= 3 && '★ Can use Return. Immune to Snagging.'}
+                                    </div>
+                                </div>
+                            );
+                        })()}
+
+                        {/* Contest Stats */}
+                        {(() => {
+                            const CONTEST_STATS = [['cool', '😎'], ['beauty', '💎'], ['cute', '🌸'], ['smart', '🔮'], ['tough', '💪']];
+                            const contestStats = pokemon.contestStats || {};
+                            return (
+                                <div style={{ marginBottom: '15px' }}>
+                                    <label style={{ fontSize: '12px', fontWeight: 'bold', marginBottom: '6px', display: 'block' }}>Contest Stats</label>
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '6px' }}>
+                                        {CONTEST_STATS.map(([stat, icon]) => {
+                                            const val = contestStats[stat] || 0;
+                                            return (
+                                                <div key={stat} style={{ textAlign: 'center' }}>
+                                                    <div style={{ fontSize: '10px', fontWeight: 'bold', color: 'var(--text-muted)', marginBottom: '2px', textTransform: 'capitalize' }}>{icon} {stat}</div>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+                                                        <button
+                                                            onClick={() => updatePokemon({ contestStats: { ...contestStats, [stat]: Math.max(0, val - 1) } })}
+                                                            disabled={val === 0}
+                                                            style={{ flex: 1, padding: '4px 2px', background: 'var(--bg-light, #e0e0e0)', border: 'none', borderRadius: '4px', cursor: val === 0 ? 'not-allowed' : 'pointer', opacity: val === 0 ? 0.4 : 1, fontSize: '12px' }}
+                                                        >−</button>
+                                                        <span style={{ minWidth: '20px', textAlign: 'center', fontWeight: 'bold', fontSize: '13px' }}>{val}</span>
+                                                        <button
+                                                            onClick={() => updatePokemon({ contestStats: { ...contestStats, [stat]: val + 1 } })}
+                                                            style={{ flex: 1, padding: '4px 2px', background: 'var(--bg-light, #e0e0e0)', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px' }}
+                                                        >+</button>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            );
+                        })()}
+
+                        {/* Ribbons */}
+                        {(() => {
+                            const RIBBON_TYPES = [['cool', '😎'], ['beauty', '💎'], ['cute', '🌸'], ['smart', '🔮'], ['tough', '💪']];
+                            const ribbons = pokemon.ribbons || {};
+                            const totalRibbons = Object.values(ribbons).reduce((s, v) => s + (v || 0), 0);
+                            return (
+                                <div style={{ marginBottom: '15px' }}>
+                                    <label style={{ fontSize: '12px', fontWeight: 'bold', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                        <span>Ribbons</span>
+                                        {totalRibbons > 0 && <span style={{ fontSize: '11px', fontWeight: 'normal', color: 'var(--text-muted)' }}>{totalRibbons} total</span>}
+                                    </label>
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '6px' }}>
+                                        {RIBBON_TYPES.map(([type, icon]) => {
+                                            const count = ribbons[type] || 0;
+                                            return (
+                                                <div key={type} style={{ textAlign: 'center' }}>
+                                                    <div style={{ fontSize: '10px', fontWeight: 'bold', color: 'var(--text-muted)', marginBottom: '2px', textTransform: 'capitalize' }}>{icon} {type}</div>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+                                                        <button
+                                                            onClick={() => updatePokemon({ ribbons: { ...ribbons, [type]: Math.max(0, count - 1) } })}
+                                                            disabled={count === 0}
+                                                            style={{ flex: 1, padding: '4px 2px', background: 'var(--bg-light, #e0e0e0)', border: 'none', borderRadius: '4px', cursor: count === 0 ? 'not-allowed' : 'pointer', opacity: count === 0 ? 0.4 : 1, fontSize: '12px' }}
+                                                        >−</button>
+                                                        <span style={{ minWidth: '20px', textAlign: 'center', fontWeight: 'bold', fontSize: '13px' }}>{count > 0 ? count : '—'}</span>
+                                                        <button
+                                                            onClick={() => updatePokemon({ ribbons: { ...ribbons, [type]: count + 1 } })}
+                                                            style={{ flex: 1, padding: '4px 2px', background: 'var(--bg-light, #e0e0e0)', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px' }}
+                                                        >+</button>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
                                     </div>
                                 </div>
                             );

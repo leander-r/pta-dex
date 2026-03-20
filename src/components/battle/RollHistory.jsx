@@ -179,6 +179,11 @@ const RollHistory = ({ rollHistory, setRollHistory, mode, subMode }) => {
                                             <span style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>Attack missed - no damage</span>
                                         )}
                                     </div>
+                                    {roll.statusPenalties?.length > 0 && (
+                                        <div style={{ fontSize: '11px', color: '#ff9800', marginTop: '3px' }}>
+                                            ⚠ Status penalties: {roll.statusPenalties.map(p => `${p.status} (${p.penalty})`).join(', ')}
+                                        </div>
+                                    )}
                                 </>
                             )}
                             {roll.type === 'trainer_skill' && (

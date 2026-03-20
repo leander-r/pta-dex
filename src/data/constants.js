@@ -33,7 +33,9 @@ export const DEFAULT_TRAINER = {
     money: 0,
     party: [],             // Active party - max 6 Pokemon
     reserve: [],           // Reserve/PC storage - unlimited
-    archived: false        // Soft-delete: archived trainers are hidden but recoverable
+    archived: false,       // Soft-delete: archived trainers are hidden but recoverable
+    ribbons: { cool: 0, beauty: 0, cute: 0, smart: 0, tough: 0 },
+    pokedexSeen: []        // Array of species IDs seen in the Pokédex
 };
 
 /**
@@ -73,7 +75,10 @@ export const DEFAULT_POKEMON = {
     notes: '',
     loyalty: 1,
     heldItem: '',
-    statPointsAvailable: 0
+    statPointsAvailable: 0,
+    origin: 'caught',
+    contestStats: { cool: 0, beauty: 0, cute: 0, smart: 0, tough: 0 },
+    ribbons: { cool: 0, beauty: 0, cute: 0, smart: 0, tough: 0 }
 };
 
 /**
