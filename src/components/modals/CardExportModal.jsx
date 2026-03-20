@@ -424,10 +424,9 @@ const TrainerCard = ({ trainer, pokemon }) => (
             padding: '24px',
             color: 'white',
             fontFamily: 'system-ui, -apple-system, sans-serif',
-            boxShadow: '0 12px 40px rgba(245, 166, 35, 0.4), 0 4px 12px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.2)',
+            boxShadow: '0 12px 40px rgba(245, 166, 35, 0.4), 0 4px 12px rgba(0,0,0,0.2)',
             position: 'relative',
             overflow: 'hidden',
-            border: '3px solid rgba(255,255,255,0.3)'
         }}
     >
         {/* Header */}
@@ -602,11 +601,10 @@ const TeamCard = ({ trainer, party }) => (
             padding: '24px',
             color: 'white',
             fontFamily: 'system-ui, -apple-system, sans-serif',
-            boxShadow: '0 12px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1)',
+            boxShadow: '0 12px 40px rgba(0,0,0,0.5)',
             position: 'relative',
             overflow: 'hidden',
             minWidth: '520px',
-            border: '2px solid rgba(255,255,255,0.1)'
         }}
     >
         {/* Background gradient overlay */}
@@ -763,7 +761,6 @@ const TeamPokemonSlot = ({ poke, idx }) => {
             background: bgGradient,
             borderRadius: '12px',
             padding: '10px 10px 8px',
-            border: '2px solid rgba(255,255,255,0.25)',
             position: 'relative',
             boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
             display: 'flex',
@@ -977,7 +974,6 @@ const PokemonCard = ({ poke }) => {
                 boxShadow: `0 12px 40px ${getTypeColor(primaryType)}66, 0 4px 12px rgba(0,0,0,0.2)`,
                 position: 'relative',
                 overflow: 'hidden',
-                border: '3px solid rgba(255,255,255,0.3)'
             }}
         >
             {/* Header */}
