@@ -43,8 +43,12 @@ const MoveSelector = ({ selectedPokemon, selectedMove, onSelectMove, showDetail,
                             }}
                         >
                             <div style={{ fontWeight: 'bold' }}>{move.name}</div>
-                            <div style={{ fontSize: '12px', opacity: 0.8, color: 'inherit' }}>
-                                {move.type} | {move.category || gameData?.moves?.[move.name]?.category || '—'} | {move.damage || gameData?.moves?.[move.name]?.damage || 'Status'} |{' '}
+                            <div style={{ fontSize: '12px', opacity: 0.8, color: 'inherit', display: 'flex', alignItems: 'center', gap: '5px', flexWrap: 'wrap' }}>
+                                <span
+                                    className={`type-pill-single type-${(move.type || 'normal').toLowerCase()}`}
+                                    style={{ color: getContrastTextColor(getTypeColor(move.type)), fontSize: '10px', padding: '1px 6px' }}
+                                >{move.type}</span>
+                                {move.category || gameData?.moves?.[move.name]?.category || '—'} | {move.damage || gameData?.moves?.[move.name]?.damage || 'Status'} |{' '}
                                 <span title="Accuracy Class - Roll 1d20, need to meet or beat this number to hit. Natural 20 always hits and crits.">
                                     AC {parseACFromFrequency(move.frequency || move.freq)}
                                 </span>

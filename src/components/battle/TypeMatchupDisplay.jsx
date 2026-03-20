@@ -1,17 +1,32 @@
 import React, { useState } from 'react';
-import { getTypeColor } from '../../utils/typeUtils.js';
+import { getTypeColor, getContrastTextColor } from '../../utils/typeUtils.js';
 import { getCombinedTypeEffectiveness } from '../../data/typeChart.js';
 
 const TypeChip = ({ type, label }) => (
-    <span style={{
-        display: 'inline-flex', alignItems: 'center', gap: '3px',
-        padding: '2px 7px', borderRadius: '10px',
-        background: getTypeColor(type), color: 'white',
-        fontSize: '10px', fontWeight: 'bold', whiteSpace: 'nowrap'
-    }}>
+    <span
+        className={`type-pill-single type-${(type || 'normal').toLowerCase()}`}
+        style={{ color: getContrastTextColor(getTypeColor(type)), whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', gap: '3px' }}
+    >
         {type}{label && <span style={{ opacity: 0.85 }}>{label}</span>}
     </span>
 );
+
+const ActiveTypeDisplay = ({ types }) => {
+    if (!types || types.length === 0) return null;
+    if (types.length === 1) return <TypeChip type={types[0]} />;
+    return (
+        <div className="type-pill-dual">
+            <span
+                className={`type-${types[0].toLowerCase()}`}
+                style={{ color: getContrastTextColor(getTypeColor(types[0])) }}
+            >{types[0]}</span>
+            <span
+                className={`type-${types[1].toLowerCase()}`}
+                style={{ color: getContrastTextColor(getTypeColor(types[1])) }}
+            >{types[1]}</span>
+        </div>
+    );
+};
 
 const Row = ({ heading, headingColor, items, label }) => items.length === 0 ? null : (
     <div style={{ display: 'flex', alignItems: 'flex-start', gap: '6px', marginBottom: '5px' }}>
@@ -61,7 +76,7 @@ const TypeMatchupDisplay = ({ selectedPokemon, megaEvolved, currentMegaForm }) =
                     )}
                 </span>
                 <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-                    {activeTypes.map(t => <TypeChip key={t} type={t} />)}
+                    <ActiveTypeDisplay types={activeTypes} />
                     <Chevron open={open} />
                 </div>
             </div>
