@@ -60,6 +60,7 @@ const PokemonCard = ({
     const [moveSearch, setMoveSearch] = useState('');
     const [moveTypeFilter, setMoveTypeFilter] = useState('all');
     const [moveCategoryFilter, setMoveCategoryFilter] = useState('all');
+    const [moveSourceFilter, setMoveSourceFilter] = useState('all'); // 'all'|'levelup'|'tutor'|'egg'
     const [showMoveDropdown, setShowMoveDropdown] = useState(false);
     // Held item selection state
     const [heldItemSearch, setHeldItemSearch] = useState('');
@@ -194,7 +195,33 @@ const PokemonCard = ({
     const filteredMoves = useMemo(() => {
         if (!GAME_DATA?.moves) return [];
 
-        let moves = Object.entries(GAME_DATA.moves);
+        let moves;
+        let levelUpLevels = {}; // track level for level-up moves
+
+        if (moveSourceFilter === 'levelup') {
+            const available = pokemon.availableLevelUpMoves || [];
+            available.forEach(m => { levelUpLevels[m.move] = m.level; });
+            moves = available
+                .map(m => [m.move, GAME_DATA.moves[m.move] || { type: m.type, category: 'Physical' }])
+                .filter(([name]) => name);
+            // Sort by level, then alphabetically
+            moves.sort((a, b) => (levelUpLevels[a[0]] ?? 999) - (levelUpLevels[b[0]] ?? 999) || a[0].localeCompare(b[0]));
+        } else if (moveSourceFilter === 'tutor') {
+            const available = pokemon.availableTutorMoves || [];
+            moves = available
+                .map(name => [name, GAME_DATA.moves[name] || {}])
+                .filter(([name]) => name);
+            moves.sort((a, b) => a[0].localeCompare(b[0]));
+        } else if (moveSourceFilter === 'egg') {
+            const available = pokemon.availableEggMoves || [];
+            moves = available
+                .map(name => [name, GAME_DATA.moves[name] || {}])
+                .filter(([name]) => name);
+            moves.sort((a, b) => a[0].localeCompare(b[0]));
+        } else {
+            moves = Object.entries(GAME_DATA.moves);
+            moves.sort((a, b) => a[0].localeCompare(b[0]));
+        }
 
         // Apply type filter
         if (moveTypeFilter !== 'all') {
@@ -219,11 +246,12 @@ const PokemonCard = ({
             );
         }
 
-        // Sort alphabetically by name
-        moves.sort((a, b) => a[0].localeCompare(b[0]));
+        // Cap 'all' at 100 to avoid rendering thousands of rows; source-filtered lists are already small
+        if (moveSourceFilter === 'all') moves = moves.slice(0, 100);
 
-        return moves.slice(0, 100);
-    }, [moveSearch, moveTypeFilter, moveCategoryFilter, GAME_DATA]);
+        // Attach level info for level-up moves so the render can display it
+        return moves.map(([name, data]) => [name, data, levelUpLevels[name]]);
+    }, [moveSearch, moveTypeFilter, moveCategoryFilter, moveSourceFilter, GAME_DATA, pokemon.availableLevelUpMoves, pokemon.availableTutorMoves, pokemon.availableEggMoves]);
 
     // Helper function to add a move with specified source (natural/taught)
     const addMoveWithSource = (moveName, moveData, source) => {
@@ -2182,6 +2210,47 @@ const PokemonCard = ({
                                     Search for moves below, then click <span style={{ background: '#4caf50', color: 'white', padding: '1px 4px', borderRadius: '3px', fontWeight: 'bold', fontStyle: 'normal' }}>N</span> for Natural or <span style={{ background: '#2196f3', color: 'white', padding: '1px 4px', borderRadius: '3px', fontWeight: 'bold', fontStyle: 'normal' }}>T</span> for Taught to add
                                 </div>
 
+                                {/* Source Filter Pills */}
+                                {(() => {
+                                    const hasLevelUp = (pokemon.availableLevelUpMoves?.length || 0) > 0;
+                                    const hasTutor   = (pokemon.availableTutorMoves?.length  || 0) > 0;
+                                    const hasEgg     = (pokemon.availableEggMoves?.length    || 0) > 0;
+                                    const sources = [
+                                        { key: 'all',     label: 'All',      count: null },
+                                        { key: 'levelup', label: 'Level Up', count: pokemon.availableLevelUpMoves?.length || 0, show: hasLevelUp },
+                                        { key: 'tutor',   label: 'Tutor',    count: pokemon.availableTutorMoves?.length  || 0, show: hasTutor  },
+                                        { key: 'egg',     label: 'Egg',      count: pokemon.availableEggMoves?.length    || 0, show: hasEgg    },
+                                    ].filter(s => s.key === 'all' || s.show);
+                                    if (sources.length <= 1) return null;
+                                    return (
+                                        <div style={{ display: 'flex', gap: '4px', marginBottom: '10px', flexWrap: 'wrap' }}>
+                                            {sources.map(({ key, label, count }) => {
+                                                const active = moveSourceFilter === key;
+                                                return (
+                                                    <button
+                                                        key={key}
+                                                        onClick={() => { setMoveSourceFilter(key); setShowMoveDropdown(true); }}
+                                                        style={{
+                                                            padding: '3px 10px',
+                                                            borderRadius: '12px',
+                                                            border: '1px solid',
+                                                            borderColor: active ? 'var(--color-purple)' : 'var(--border-light)',
+                                                            background: active ? 'var(--color-purple)' : 'var(--bg-primary)',
+                                                            color: active ? 'white' : 'var(--text-secondary)',
+                                                            fontSize: '11px',
+                                                            fontWeight: active ? 'bold' : 'normal',
+                                                            cursor: 'pointer',
+                                                            transition: 'all 0.15s ease',
+                                                        }}
+                                                    >
+                                                        {label}{count != null ? ` (${count})` : ''}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    );
+                                })()}
+
                                 {/* Search Input */}
                                 <div style={{ position: 'relative', marginBottom: '10px' }}>
                                     <input
@@ -2286,7 +2355,7 @@ const PokemonCard = ({
                                         borderRadius: '6px'
                                     }}>
                                         {filteredMoves.length > 0 ? (
-                                            filteredMoves.map(([name, data]) => (
+                                            filteredMoves.map(([name, data, moveLevel]) => (
                                                 <div
                                                     key={name}
                                                     className="move-list-item"
@@ -2299,6 +2368,9 @@ const PokemonCard = ({
                                                 >
                                                     <div style={{ flex: 1 }}>
                                                         <span style={{ fontWeight: 'bold', fontSize: '13px' }}>{name}</span>
+                                                        {moveLevel != null && (
+                                                            <span style={{ fontSize: '10px', color: 'var(--text-muted)', marginLeft: '5px' }}>Lv.{moveLevel === 0 ? 'E' : moveLevel}</span>
+                                                        )}
                                                         <div className="text-muted" style={{ fontSize: '11px' }}>
                                                             {data.damage || 'Status'} | {data.frequency || 'At-Will'}
                                                         </div>
@@ -2382,7 +2454,7 @@ const PokemonCard = ({
                                             ))
                                         ) : (
                                             <div className="text-light" style={{ padding: '20px', textAlign: 'center' }}>
-                                                {moveSearch || moveTypeFilter !== 'all' || moveCategoryFilter !== 'all'
+                                                {moveSearch || moveTypeFilter !== 'all' || moveCategoryFilter !== 'all' || moveSourceFilter !== 'all'
                                                     ? 'No moves match your filters'
                                                     : 'Search or filter to find moves'}
                                             </div>
