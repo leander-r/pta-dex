@@ -81,7 +81,7 @@ const StatBar = ({ label, value, maxStat, color, indicator }) => {
             <div style={{
                 flex: 1,
                 height: '10px',
-                background: 'rgba(0,0,0,0.3)',
+                border: '1px solid rgba(255,255,255,0.45)',
                 borderRadius: '5px',
                 overflow: 'hidden'
             }}>
@@ -801,7 +801,7 @@ const TeamPokemonSlot = ({ poke, idx }) => {
                     <span>HP</span>
                     <span>{currentHP}/{maxHP}</span>
                 </div>
-                <div style={{ height: '6px', background: 'rgba(0,0,0,0.4)', borderRadius: '3px', overflow: 'hidden' }}>
+                <div style={{ height: '6px', border: '1px solid rgba(255,255,255,0.4)', borderRadius: '3px', overflow: 'hidden' }}>
                     <div style={{
                         height: '100%',
                         width: `${hpPercent}%`,
@@ -981,7 +981,7 @@ const PokemonCard = ({ poke }) => {
                     <span style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '1px' }}>HP</span>
                     <span style={{ fontSize: '14px', fontWeight: 700 }}>{currentHP} / {maxHP}</span>
                 </div>
-                <div style={{ height: '12px', background: 'rgba(0,0,0,0.3)', borderRadius: '6px', overflow: 'hidden' }}>
+                <div style={{ height: '12px', border: '1px solid rgba(255,255,255,0.45)', borderRadius: '6px', overflow: 'hidden' }}>
                     <div style={{
                         height: '100%',
                         width: `${hpPercent}%`,
