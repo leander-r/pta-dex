@@ -280,6 +280,34 @@ export const buildContestResultsEmbed = ({ contestType, participants, getTotal }
     };
 };
 
+export const buildTrainerAttackEmbed = (roll, trainerName) => {
+    const hitStr = roll.isCrit ? '⚡ CRITICAL HIT!' : roll.isHit ? 'Hit!' : 'Miss!';
+    let description;
+    if (roll.isHit) {
+        const parts = [`[${roll.rolls.join(', ')}] = ${roll.diceTotal}`];
+        if ((roll.diceBonus ?? 0) > 0) parts.push(`+${roll.diceBonus} (base)`);
+        if (roll.statMod !== 0) parts.push(`${roll.statMod > 0 ? '+' : ''}${roll.statMod} (${roll.statModLabel})`);
+        description = `**${hitStr}** · AC roll: **${roll.accRoll}** vs AC ${roll.weaponAC}\n**${roll.total} damage** · ${parts.join(' ')}`;
+    } else {
+        description = `**Miss!** · AC roll: **${roll.accRoll}** vs AC ${roll.weaponAC}`;
+    }
+
+    const fields = [];
+    if (roll.trainerMaxHP > 0) {
+        fields.push({ name: 'Trainer HP', value: hpFieldValue(roll.trainerCurrentHP, roll.trainerMaxHP), inline: false });
+    }
+    fields.push({ name: 'Weapon', value: `${roll.weapon} (${roll.weaponSource}) · DB${roll.db}: ${roll.dice}`, inline: false });
+
+    return {
+        author: { name: trainerName },
+        title: `⚔ ${roll.trainer} — ${roll.weapon}`,
+        description,
+        color: 0xE53935,
+        fields,
+        timestamp: new Date().toISOString(),
+    };
+};
+
 export const buildCustomEmbed = (roll, trainerName) => {
     const bonusStr = roll.bonus ? ` + ${roll.bonus}` : '';
     return {
@@ -293,8 +321,9 @@ export const buildCustomEmbed = (roll, trainerName) => {
 
 export const buildEmbed = (roll, trainerName) => {
     if (roll.type === 'pokemon')       return buildPokemonEmbed(roll, trainerName);
-    if (roll.type === 'trainer_skill') return buildTrainerSkillEmbed(roll, trainerName);
-    if (roll.type === 'heal')          return buildHealEmbed(roll, trainerName);
+    if (roll.type === 'trainer_skill')  return buildTrainerSkillEmbed(roll, trainerName);
+    if (roll.type === 'trainer_attack') return buildTrainerAttackEmbed(roll, trainerName);
+    if (roll.type === 'heal')           return buildHealEmbed(roll, trainerName);
     if (roll.type === 'custom')        return buildCustomEmbed(roll, trainerName);
     if (roll.type === 'contest')       return buildContestEmbed(roll, trainerName);
     return null;
