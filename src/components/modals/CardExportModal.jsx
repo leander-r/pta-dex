@@ -151,10 +151,8 @@ const SectionHeader = ({ label, rightContent, color }) => (
         {rightContent && (
             <span style={{
                 fontSize: '10px',
-                background: 'rgba(255,255,255,0.15)',
-                padding: '2px 8px',
-                borderRadius: '10px',
                 fontWeight: 600,
+                opacity: 0.8,
                 flexShrink: 0
             }}>
                 {rightContent}
@@ -609,17 +607,6 @@ const TeamCard = ({ trainer, party }) => (
             border: '2px solid rgba(255,255,255,0.1)'
         }}
     >
-        {/* Background gradient overlay */}
-        <div style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            height: '120px',
-            background: 'linear-gradient(180deg, rgba(245, 166, 35, 0.15) 0%, transparent 100%)',
-            pointerEvents: 'none'
-        }} />
-
         {/* Header - Trainer Info */}
         <div style={{
             display: 'flex',
@@ -818,20 +805,14 @@ const TeamPokemonSlot = ({ poke, idx }) => {
 
             {/* Abilities */}
             {abilities.length > 0 && (
-                <div style={{ display: 'flex', gap: '3px', justifyContent: 'center', flexWrap: 'wrap' }}>
-                    {abilities.map((ab, i) => (
-                        <span key={i} style={{
-                            padding: '1px 6px',
-                            borderRadius: '8px',
-                            fontSize: '9px',
-                            fontWeight: 600,
-                            background: 'rgba(255,255,255,0.15)',
-                            border: '1px solid rgba(255,255,255,0.25)',
-                            fontStyle: 'italic'
-                        }}>
-                            {ab}
-                        </span>
-                    ))}
+                <div style={{
+                    fontSize: '9px',
+                    fontStyle: 'italic',
+                    opacity: 0.85,
+                    textAlign: 'center',
+                    lineHeight: '1.4'
+                }}>
+                    {abilities.join(' · ')}
                 </div>
             )}
 
@@ -1183,9 +1164,7 @@ const PokemonCard = ({ poke }) => {
                                             <span style={{
                                                 fontSize: '10px',
                                                 fontWeight: 700,
-                                                background: 'rgba(255,255,255,0.15)',
-                                                padding: '1px 6px',
-                                                borderRadius: '8px',
+                                                opacity: 0.75,
                                                 flexShrink: 0
                                             }}>
                                                 {freqAbbr}
@@ -1203,13 +1182,7 @@ const PokemonCard = ({ poke }) => {
                                         {catIcon && <span style={{ fontSize: '10px' }}>{catIcon}</span>}
                                         <span style={{ fontWeight: 600 }}>{move.category || move.type}</span>
                                         {move.damage && (
-                                            <span style={{
-                                                marginLeft: 'auto',
-                                                fontWeight: 700,
-                                                background: 'rgba(255,255,255,0.1)',
-                                                padding: '0 5px',
-                                                borderRadius: '4px'
-                                            }}>
+                                            <span style={{ marginLeft: 'auto', fontWeight: 700 }}>
                                                 {move.damage}
                                             </span>
                                         )}
