@@ -110,6 +110,55 @@ const DetailSection = ({ children, last }) => (
 
 // ── Expanded panel ────────────────────────────────────────────
 
+// Size chip colour
+const SIZE_COLORS = {
+    Fine: '#9e9e9e', Diminutive: '#9e9e9e', Tiny: '#78909c',
+    Small: '#5c6bc0', Medium: '#43a047', Large: '#f57c00',
+    Huge: '#e53935', Gigantic: '#b71c1c'
+};
+// Weight chip colour
+const WEIGHT_COLORS = {
+    Featherweight: '#80cbc4', Light: '#81c784',
+    Medium: '#ffb74d', Heavy: '#ef9a9a', Superweight: '#ce93d8'
+};
+
+const InfoChip = ({ label, color = 'var(--bg-section)', textColor }) => (
+    <span style={{
+        display: 'inline-block',
+        padding: '2px 9px', borderRadius: '10px', fontSize: '11px', fontWeight: 600,
+        background: color, color: textColor || 'var(--text-primary)',
+        border: '1px solid rgba(0,0,0,0.08)'
+    }}>{label}</span>
+);
+
+const InfoRow = ({ icon, label, children }) => (
+    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '6px' }}>
+        <span style={{ fontSize: '12px', width: '16px', flexShrink: 0, marginTop: '1px' }}>{icon}</span>
+        <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-muted)', flexShrink: 0, minWidth: '64px', marginTop: '2px' }}>{label}</span>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>{children}</div>
+    </div>
+);
+
+const GenderBar = ({ genderRatio }) => {
+    const isGenderless = !genderRatio || (genderRatio.male === 0 && genderRatio.female === 0);
+    const isUnknown    = !genderRatio;
+    if (isUnknown)    return <InfoChip label="⚲ Unknown" color="var(--bg-light)" />;
+    if (isGenderless) return <InfoChip label="⚲ Genderless" color="var(--bg-light)" />;
+    const { male = 0, female = 0 } = genderRatio;
+    return (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', flex: 1, minWidth: '120px' }}>
+            <div style={{ display: 'flex', borderRadius: '6px', overflow: 'hidden', height: '10px', background: 'var(--border-light)' }}>
+                {male   > 0 && <div style={{ width: `${male}%`,   background: '#5b8dde' }} />}
+                {female > 0 && <div style={{ width: `${female}%`, background: '#e86eb0' }} />}
+            </div>
+            <div style={{ display: 'flex', gap: '10px', fontSize: '11px' }}>
+                {male   > 0 && <span style={{ color: '#5b8dde', fontWeight: 600 }}>♂ {male}%</span>}
+                {female > 0 && <span style={{ color: '#e86eb0', fontWeight: 600 }}>♀ {female}%</span>}
+            </div>
+        </div>
+    );
+};
+
 const SpeciesDetail = ({ species }) => {
     const {
         baseStats = {},
@@ -120,7 +169,13 @@ const SpeciesDetail = ({ species }) => {
         tutorMoves,
         evolvedFrom,
         evolutions,
-        types = []
+        types = [],
+        size,
+        weight,
+        genderRatio,
+        eggGroups,
+        diet,
+        habitat
     } = species;
 
     const bst = getBST(species);
@@ -130,15 +185,61 @@ const SpeciesDetail = ({ species }) => {
     const accentColor = types[0] ? getTypeColor(types[0]) : '#f5a623';
     const accentTextColor = getContrastTextColor(accentColor);
 
-    const hasAbilities = abilities.basic?.length > 0 || abilities.adv?.length > 0 || abilities.high?.length > 0;
-    const hasSkills    = skills && Object.keys(skills).length > 0;
-    const hasLvMoves   = levelUpMoves.length > 0;
-    const hasEggMoves  = eggMoves?.length > 0;
-    const hasTutor     = tutorMoves?.length > 0;
-    const hasEvo       = evolvedFrom || evolutions?.length > 0;
+    const hasAbilities  = abilities.basic?.length > 0 || abilities.adv?.length > 0 || abilities.high?.length > 0;
+    const hasSkills     = skills && Object.keys(skills).length > 0;
+    const hasLvMoves    = levelUpMoves.length > 0;
+    const hasEggMoves   = eggMoves?.length > 0;
+    const hasTutor      = tutorMoves?.length > 0;
+    const hasEvo        = evolvedFrom || evolutions?.length > 0;
+    const hasProfileInfo = size || weight || genderRatio !== undefined || eggGroups?.length || diet?.length || habitat?.length;
 
     return (
         <div style={{ background: 'var(--bg-section)', borderTop: `2px solid ${accentColor}` }}>
+
+            {/* Pokédex Profile Info */}
+            {hasProfileInfo && (
+            <DetailSection>
+                <SectionLabel>Pokédex Info</SectionLabel>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '4px 16px' }}>
+
+                    {/* Size + Weight */}
+                    {(size || weight) && (
+                        <InfoRow icon="📏" label="Size">
+                            {size   && <InfoChip label={size}   color={SIZE_COLORS[size]   || '#9e9e9e'} textColor="white" />}
+                            {weight && <InfoChip label={weight} color={WEIGHT_COLORS[weight] || '#bdbdbd'} textColor="white" />}
+                        </InfoRow>
+                    )}
+
+                    {/* Gender Ratio */}
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '6px' }}>
+                        <span style={{ fontSize: '12px', width: '16px', flexShrink: 0, marginTop: '1px' }}>⚥</span>
+                        <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-muted)', flexShrink: 0, minWidth: '64px', marginTop: '2px' }}>Gender</span>
+                        <GenderBar genderRatio={genderRatio} />
+                    </div>
+
+                    {/* Egg Groups */}
+                    {eggGroups?.length > 0 && (
+                        <InfoRow icon="🥚" label="Egg Groups">
+                            {eggGroups.map(g => <InfoChip key={g} label={g} color="rgba(255,193,7,0.15)" />)}
+                        </InfoRow>
+                    )}
+
+                    {/* Diet */}
+                    {diet?.length > 0 && (
+                        <InfoRow icon="🍃" label="Diet">
+                            {diet.map(d => <InfoChip key={d} label={d} color="rgba(76,175,80,0.15)" />)}
+                        </InfoRow>
+                    )}
+
+                    {/* Habitat */}
+                    {habitat?.length > 0 && (
+                        <InfoRow icon="🗺️" label="Habitat">
+                            {habitat.map(h => <InfoChip key={h} label={h} color="rgba(33,150,243,0.15)" />)}
+                        </InfoRow>
+                    )}
+                </div>
+            </DetailSection>
+            )}
 
             {/* Stats */}
             <DetailSection>
@@ -186,9 +287,27 @@ const SpeciesDetail = ({ species }) => {
                 <DetailSection>
                     <SectionLabel>Skills</SectionLabel>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
-                        {Object.entries(skills).map(([name, value]) => (
-                            <Chip key={name} label={`${name.charAt(0).toUpperCase() + name.slice(1)} ${value}`} />
-                        ))}
+                        {Object.entries(skills).map(([name, value]) => {
+                            const label = name.charAt(0).toUpperCase() + name.slice(1);
+                            const isFlag = value === true;
+                            return (
+                                <span key={name} style={{
+                                    display: 'inline-flex', alignItems: 'center', gap: '4px',
+                                    padding: '3px 9px', borderRadius: '10px', fontSize: '11px', fontWeight: 600,
+                                    background: isFlag ? 'rgba(245,166,35,0.15)' : 'var(--poke-gray)',
+                                    border: `1px solid ${isFlag ? 'rgba(245,166,35,0.4)' : 'var(--border-light)'}`,
+                                    color: isFlag ? 'var(--poke-orange-dark, #c47d00)' : 'var(--text-primary)'
+                                }}>
+                                    {label}
+                                    {!isFlag && (
+                                        <span style={{
+                                            fontWeight: 700, fontSize: '12px',
+                                            color: 'var(--poke-orange-dark, #c47d00)'
+                                        }}>{value}</span>
+                                    )}
+                                </span>
+                            );
+                        })}
                     </div>
                 </DetailSection>
             )}
