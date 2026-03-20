@@ -81,7 +81,7 @@ const StatBar = ({ label, value, maxStat, color, indicator }) => {
             <div style={{
                 flex: 1,
                 height: '10px',
-                border: '1px solid rgba(255,255,255,0.45)',
+                background: 'rgba(0,0,0,0.3)',
                 borderRadius: '5px',
                 overflow: 'hidden'
             }}>
@@ -106,16 +106,17 @@ const StatBar = ({ label, value, maxStat, color, indicator }) => {
     );
 };
 
-/** Rounded pill badge for features/skills — outline-only, no fill */
-const PillTag = ({ text, borderColor }) => (
+/** Rounded pill badge for features/skills */
+const PillTag = ({ text, color }) => (
     <span style={{
         display: 'inline-block',
+        background: color || 'rgba(255,255,255,0.15)',
         padding: '3px 10px',
         borderRadius: '20px',
         fontSize: '10px',
         fontWeight: 600,
         margin: '2px 3px',
-        border: `1px solid ${borderColor || 'rgba(255,255,255,0.55)'}`,
+        border: '1px solid rgba(255,255,255,0.2)',
         whiteSpace: 'nowrap'
     }}>
         {text}
@@ -150,8 +151,10 @@ const SectionHeader = ({ label, rightContent, color }) => (
         {rightContent && (
             <span style={{
                 fontSize: '10px',
+                background: 'rgba(255,255,255,0.15)',
+                padding: '2px 8px',
+                borderRadius: '10px',
                 fontWeight: 600,
-                opacity: 0.8,
                 flexShrink: 0
             }}>
                 {rightContent}
@@ -453,18 +456,27 @@ const TrainerCard = ({ trainer, pokemon }) => (
                     </span>
                 </h2>
                 <div style={{
+                    display: 'inline-block',
+                    background: 'rgba(0,0,0,0.25)',
+                    padding: '4px 12px',
+                    borderRadius: '20px',
                     marginTop: '6px',
                     fontSize: '13px',
-                    fontWeight: 600,
-                    opacity: 0.9
+                    fontWeight: 600
                 }}>
                     Level {trainer.level} • {(trainer.classes && trainer.classes.length > 0) ? trainer.classes.slice(0, 2).join(' / ') : 'Trainer'}
                 </div>
             </div>
         </div>
 
-        {/* Stats */}
-        <div style={{ marginBottom: '14px', paddingBottom: '12px', borderBottom: '1px solid rgba(255,255,255,0.25)' }}>
+        {/* Stats - Horizontal bar rows */}
+        <div style={{
+            background: 'rgba(0,0,0,0.2)',
+            borderRadius: '16px',
+            padding: '14px',
+            marginBottom: '14px',
+            border: '1px solid rgba(255,255,255,0.1)'
+        }}>
             <SectionHeader
                 label="Stats"
                 rightContent={`Max HP: ${(trainer.stats.hp * 4) + (trainer.level * 4)}`}
@@ -487,26 +499,38 @@ const TrainerCard = ({ trainer, pokemon }) => (
             ))}
         </div>
 
-        {/* Features */}
+        {/* Features - Pill badges */}
         {trainer.features?.length > 0 && (
-            <div style={{ marginBottom: '12px', paddingBottom: '10px', borderBottom: '1px solid rgba(255,255,255,0.2)' }}>
+            <div style={{ marginBottom: '12px', position: 'relative', zIndex: 1 }}>
                 <SectionHeader label="Features" />
-                <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+                <div style={{
+                    background: 'rgba(0,0,0,0.15)',
+                    padding: '8px 8px 6px',
+                    borderRadius: '10px',
+                    display: 'flex',
+                    flexWrap: 'wrap'
+                }}>
                     {trainer.features.map((f, i) => (
-                        <PillTag key={i} text={typeof f === 'object' ? f.name : f} />
+                        <PillTag key={i} text={typeof f === 'object' ? f.name : f} color="rgba(255,255,255,0.12)" />
                     ))}
                 </div>
             </div>
         )}
 
-        {/* Skills */}
+        {/* Skills - Pill badges */}
         {(Array.isArray(trainer.skills) ? trainer.skills.length > 0 : Object.keys(trainer.skills || {}).length > 0) && (
-            <div style={{ marginBottom: '12px', paddingBottom: '10px', borderBottom: '1px solid rgba(255,255,255,0.2)' }}>
+            <div style={{ marginBottom: '12px', position: 'relative', zIndex: 1 }}>
                 <SectionHeader label="Skills" />
-                <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+                <div style={{
+                    background: 'rgba(0,0,0,0.15)',
+                    padding: '8px 8px 6px',
+                    borderRadius: '10px',
+                    display: 'flex',
+                    flexWrap: 'wrap'
+                }}>
                     {Array.isArray(trainer.skills)
                         ? trainer.skills.map((s, i) => (
-                            <PillTag key={i} text={s} borderColor="rgba(255,215,0,0.7)" />
+                            <PillTag key={i} text={s} color="rgba(255,215,0,0.15)" />
                         ))
                         : Object.entries(trainer.skills || {})
                             .filter(([_, rank]) => rank > 0)
@@ -514,7 +538,7 @@ const TrainerCard = ({ trainer, pokemon }) => (
                                 <PillTag
                                     key={name}
                                     text={rank === 2 ? `${name} ★★` : name}
-                                    borderColor="rgba(255,215,0,0.7)"
+                                    color={rank === 2 ? 'rgba(255,215,0,0.25)' : 'rgba(255,215,0,0.15)'}
                                 />
                             ))
                     }
@@ -522,22 +546,30 @@ const TrainerCard = ({ trainer, pokemon }) => (
             </div>
         )}
 
-        {/* Footer */}
+        {/* Footer - Three mini-cards */}
         <div style={{
             display: 'flex',
-            justifyContent: 'space-around',
+            gap: '10px',
             marginTop: '14px',
-            paddingTop: '10px'
+            position: 'relative',
+            zIndex: 1
         }}>
             {[
                 { icon: '💰', label: 'Money', value: `₽${(trainer.money || 0).toLocaleString()}` },
                 { icon: '🏅', label: 'Badges', value: trainer.badges?.length || 0 },
                 { icon: '⚡', label: 'Pokémon', value: pokemon.length }
             ].map(item => (
-                <div key={item.label} style={{ textAlign: 'center' }}>
-                    <div style={{ fontSize: '14px', marginBottom: '2px' }}>{item.icon}</div>
-                    <div style={{ fontSize: '10px', opacity: 0.75, fontWeight: 600, marginBottom: '1px' }}>{item.label}</div>
-                    <div style={{ fontSize: '13px', fontWeight: 700 }}>{item.value}</div>
+                <div key={item.label} style={{
+                    flex: 1,
+                    background: 'rgba(0,0,0,0.2)',
+                    borderRadius: '12px',
+                    padding: '10px 8px',
+                    textAlign: 'center',
+                    border: '1px solid rgba(255,255,255,0.1)'
+                }}>
+                    <div style={{ fontSize: '16px', marginBottom: '2px' }}>{item.icon}</div>
+                    <div style={{ fontSize: '10px', opacity: 0.8, fontWeight: 600, marginBottom: '2px' }}>{item.label}</div>
+                    <div style={{ fontSize: '14px', fontWeight: 700 }}>{item.value}</div>
                 </div>
             ))}
         </div>
@@ -577,16 +609,29 @@ const TeamCard = ({ trainer, party }) => (
             border: '2px solid rgba(255,255,255,0.1)'
         }}
     >
+        {/* Background gradient overlay */}
+        <div style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: '120px',
+            background: 'linear-gradient(180deg, rgba(245, 166, 35, 0.15) 0%, transparent 100%)',
+            pointerEvents: 'none'
+        }} />
+
         {/* Header - Trainer Info */}
         <div style={{
             display: 'flex',
             alignItems: 'center',
             gap: '16px',
             marginBottom: '18px',
-            paddingBottom: '14px',
-            borderBottom: '1px solid rgba(245, 166, 35, 0.4)',
             position: 'relative',
-            zIndex: 1
+            zIndex: 1,
+            background: 'linear-gradient(135deg, rgba(245, 166, 35, 0.2), rgba(232, 148, 28, 0.1))',
+            borderRadius: '14px',
+            padding: '14px',
+            border: '1px solid rgba(245, 166, 35, 0.3)'
         }}>
             <div style={{
                 width: '64px',
@@ -614,7 +659,13 @@ const TeamCard = ({ trainer, party }) => (
                     Level {trainer.level} • {(trainer.classes && trainer.classes.length > 0) ? trainer.classes.slice(0, 2).join(' / ') : 'Trainer'}
                 </p>
             </div>
-            <div style={{ textAlign: 'right', fontSize: '11px' }}>
+            <div style={{
+                textAlign: 'right',
+                fontSize: '11px',
+                background: 'rgba(0,0,0,0.3)',
+                padding: '8px 12px',
+                borderRadius: '8px'
+            }}>
                 <div style={{ color: '#ffd700', fontWeight: 600 }}>₽{(trainer.money || 0).toLocaleString()}</div>
                 <div style={{ opacity: 0.7, marginTop: '2px' }}>{trainer.badges?.length || 0} Badges</div>
             </div>
@@ -639,7 +690,13 @@ const TeamCard = ({ trainer, party }) => (
                 Active Party
             </span>
             <div style={{ flex: 1, height: '2px', background: 'linear-gradient(90deg, #f5a623, transparent)', borderRadius: '1px' }} />
-            <span style={{ fontSize: '12px', fontWeight: 600, color: '#f5a623' }}>{party.length}/6</span>
+            <span style={{
+                fontSize: '12px',
+                background: 'rgba(245, 166, 35, 0.2)',
+                padding: '4px 10px',
+                borderRadius: '10px',
+                fontWeight: 600
+            }}>{party.length}/6</span>
         </div>
 
         {/* Party Pokemon Grid - 3 columns (2 rows of 3 = full team) */}
@@ -761,14 +818,20 @@ const TeamPokemonSlot = ({ poke, idx }) => {
 
             {/* Abilities */}
             {abilities.length > 0 && (
-                <div style={{
-                    fontSize: '9px',
-                    fontStyle: 'italic',
-                    opacity: 0.85,
-                    textAlign: 'center',
-                    lineHeight: '1.4'
-                }}>
-                    {abilities.join(' · ')}
+                <div style={{ display: 'flex', gap: '3px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                    {abilities.map((ab, i) => (
+                        <span key={i} style={{
+                            padding: '1px 6px',
+                            borderRadius: '8px',
+                            fontSize: '9px',
+                            fontWeight: 600,
+                            background: 'rgba(255,255,255,0.15)',
+                            border: '1px solid rgba(255,255,255,0.25)',
+                            fontStyle: 'italic'
+                        }}>
+                            {ab}
+                        </span>
+                    ))}
                 </div>
             )}
 
@@ -801,7 +864,7 @@ const TeamPokemonSlot = ({ poke, idx }) => {
                     <span>HP</span>
                     <span>{currentHP}/{maxHP}</span>
                 </div>
-                <div style={{ height: '6px', border: '1px solid rgba(255,255,255,0.4)', borderRadius: '3px', overflow: 'hidden' }}>
+                <div style={{ height: '6px', background: 'rgba(0,0,0,0.4)', borderRadius: '3px', overflow: 'hidden' }}>
                     <div style={{
                         height: '100%',
                         width: `${hpPercent}%`,
@@ -951,17 +1014,27 @@ const PokemonCard = ({ poke }) => {
                     {poke.species && poke.species !== poke.name && (
                         <p style={{ margin: '2px 0', opacity: 0.85, fontSize: '13px', fontStyle: 'italic' }}>{poke.species}</p>
                     )}
-                    <div style={{ marginTop: '6px', fontSize: '12px', fontWeight: 600, opacity: 0.9 }}>
+                    <div style={{
+                        display: 'inline-block',
+                        background: 'rgba(0,0,0,0.3)',
+                        padding: '4px 12px',
+                        borderRadius: '20px',
+                        marginTop: '6px',
+                        fontSize: '12px',
+                        fontWeight: 600
+                    }}>
                         Level {poke.level} • {natureDisplay || 'Unknown'}
                     </div>
                     <div style={{ display: 'flex', gap: '6px', marginTop: '8px' }}>
                         {poke.types.map(type => (
                             <span key={type} style={{
-                                padding: '3px 12px',
+                                background: 'rgba(0,0,0,0.35)',
+                                padding: '4px 12px',
                                 borderRadius: '12px',
                                 fontSize: '11px',
                                 fontWeight: 'bold',
-                                border: `2px solid rgba(255,255,255,0.7)`
+                                border: `2px solid ${getTypeColor(type)}`,
+                                textShadow: '0 1px 3px rgba(0,0,0,0.4)'
                             }}>
                                 {type}
                             </span>
@@ -971,7 +1044,14 @@ const PokemonCard = ({ poke }) => {
             </div>
 
             {/* HP Bar */}
-            <div style={{ marginBottom: '14px', paddingBottom: '12px', borderBottom: '1px solid rgba(255,255,255,0.25)' }}>
+            <div style={{
+                background: 'rgba(0,0,0,0.25)',
+                borderRadius: '10px',
+                padding: '10px 14px',
+                marginBottom: '14px',
+                position: 'relative',
+                zIndex: 1
+            }}>
                 <div style={{
                     display: 'flex',
                     justifyContent: 'space-between',
@@ -981,7 +1061,12 @@ const PokemonCard = ({ poke }) => {
                     <span style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '1px' }}>HP</span>
                     <span style={{ fontSize: '14px', fontWeight: 700 }}>{currentHP} / {maxHP}</span>
                 </div>
-                <div style={{ height: '12px', border: '1px solid rgba(255,255,255,0.45)', borderRadius: '6px', overflow: 'hidden' }}>
+                <div style={{
+                    height: '12px',
+                    background: 'rgba(0,0,0,0.4)',
+                    borderRadius: '6px',
+                    overflow: 'hidden'
+                }}>
                     <div style={{
                         height: '100%',
                         width: `${hpPercent}%`,
@@ -990,25 +1075,62 @@ const PokemonCard = ({ poke }) => {
                             : hpPercent > 25
                                 ? 'linear-gradient(90deg, #ff9800, #ffc107)'
                                 : 'linear-gradient(90deg, #f44336, #e91e63)',
-                        borderRadius: '6px'
+                        borderRadius: '6px',
+                        boxShadow: '0 0 10px rgba(255,255,255,0.3)'
                     }} />
                 </div>
             </div>
 
-            {/* Abilities */}
+            {/* Abilities - Prominent glass panel */}
             {((poke.abilities && poke.abilities.length > 0) || poke.ability) && (
-                <div style={{ marginBottom: '12px', paddingBottom: '10px', borderBottom: '1px solid rgba(255,255,255,0.2)' }}>
+                <div style={{
+                    background: 'rgba(0,0,0,0.2)',
+                    borderRadius: '12px',
+                    padding: '12px 14px',
+                    marginBottom: '14px',
+                    position: 'relative',
+                    zIndex: 1,
+                    border: '1px solid rgba(255,255,255,0.1)'
+                }}>
                     <SectionHeader label="Abilities" />
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                        {(poke.abilities && poke.abilities.length > 0 ? poke.abilities : [poke.ability]).map((ability, i) => (
-                            <PillTag key={i} text={ability} />
-                        ))}
-                    </div>
+                    {poke.abilities && poke.abilities.length > 0
+                        ? poke.abilities.map((ability, i) => (
+                            <div key={i} style={{
+                                fontSize: '12px',
+                                fontWeight: 600,
+                                padding: '4px 10px',
+                                background: 'rgba(255,255,255,0.08)',
+                                borderRadius: '8px',
+                                marginBottom: i < poke.abilities.length - 1 ? '4px' : 0
+                            }}>
+                                {ability}
+                            </div>
+                        ))
+                        : (
+                            <div style={{
+                                fontSize: '12px',
+                                fontWeight: 600,
+                                padding: '4px 10px',
+                                background: 'rgba(255,255,255,0.08)',
+                                borderRadius: '8px'
+                            }}>
+                                {poke.ability}
+                            </div>
+                        )
+                    }
                 </div>
             )}
 
-            {/* Stats */}
-            <div style={{ marginBottom: '14px', paddingBottom: '12px', borderBottom: '1px solid rgba(255,255,255,0.2)' }}>
+            {/* Stats - Horizontal bar rows with nature indicators */}
+            <div style={{
+                background: 'rgba(0,0,0,0.2)',
+                borderRadius: '14px',
+                padding: '14px',
+                marginBottom: '14px',
+                position: 'relative',
+                zIndex: 1,
+                border: '1px solid rgba(255,255,255,0.1)'
+            }}>
                 <SectionHeader
                     label="Stats"
                     rightContent={`STAB: +${calculateSTAB(poke.level)}`}
@@ -1032,30 +1154,65 @@ const PokemonCard = ({ poke }) => {
                 ))}
             </div>
 
-            {/* Moves */}
+            {/* Moves - Enhanced 2-column grid */}
             {poke.moves && poke.moves.length > 0 && (
-                <div style={{ marginBottom: '14px', paddingBottom: '10px', borderBottom: '1px solid rgba(255,255,255,0.2)' }}>
+                <div style={{ position: 'relative', zIndex: 1, marginBottom: '14px' }}>
                     <SectionHeader label="Moves" />
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                         {poke.moves.slice(0, 8).map((move, i) => {
                             const freqAbbr = getFrequencyAbbr(move.frequency);
                             const catIcon = CARD_TOKENS.categoryIcons[move.category] || '';
                             return (
                                 <div key={i} style={{
-                                    borderLeft: `3px solid ${getTypeColor(move.type)}`,
-                                    paddingLeft: '8px',
+                                    background: 'rgba(0,0,0,0.25)',
+                                    borderRadius: '8px',
+                                    padding: '8px 10px',
+                                    borderLeft: `4px solid ${getTypeColor(move.type)}`,
                                     display: 'flex',
                                     flexDirection: 'column',
-                                    gap: '2px'
+                                    gap: '4px'
                                 }}>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    {/* Top row: Name + frequency pill */}
+                                    <div style={{
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        alignItems: 'center'
+                                    }}>
                                         <span style={{ fontSize: '12px', fontWeight: 700 }}>{move.name}</span>
-                                        {freqAbbr && <span style={{ fontSize: '10px', fontWeight: 700, opacity: 0.7 }}>{freqAbbr}</span>}
+                                        {freqAbbr && (
+                                            <span style={{
+                                                fontSize: '10px',
+                                                fontWeight: 700,
+                                                background: 'rgba(255,255,255,0.15)',
+                                                padding: '1px 6px',
+                                                borderRadius: '8px',
+                                                flexShrink: 0
+                                            }}>
+                                                {freqAbbr}
+                                            </span>
+                                        )}
                                     </div>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '10px', opacity: 0.8 }}>
-                                        {catIcon && <span>{catIcon}</span>}
+                                    {/* Bottom row: Category + damage */}
+                                    <div style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '4px',
+                                        fontSize: '10px',
+                                        opacity: 0.85
+                                    }}>
+                                        {catIcon && <span style={{ fontSize: '10px' }}>{catIcon}</span>}
                                         <span style={{ fontWeight: 600 }}>{move.category || move.type}</span>
-                                        {move.damage && <span style={{ marginLeft: 'auto', fontWeight: 700 }}>{move.damage}</span>}
+                                        {move.damage && (
+                                            <span style={{
+                                                marginLeft: 'auto',
+                                                fontWeight: 700,
+                                                background: 'rgba(255,255,255,0.1)',
+                                                padding: '0 5px',
+                                                borderRadius: '4px'
+                                            }}>
+                                                {move.damage}
+                                            </span>
+                                        )}
                                     </div>
                                 </div>
                             );
@@ -1066,20 +1223,45 @@ const PokemonCard = ({ poke }) => {
 
             {/* Notes */}
             {poke.notes && (
-                <div style={{ marginBottom: '12px', paddingBottom: '10px', borderBottom: '1px solid rgba(255,255,255,0.2)' }}>
+                <div style={{
+                    background: 'rgba(0,0,0,0.2)',
+                    borderRadius: '10px',
+                    padding: '10px 14px',
+                    marginBottom: '14px',
+                    position: 'relative',
+                    zIndex: 1,
+                    border: '1px solid rgba(255,255,255,0.1)'
+                }}>
                     <SectionHeader label="Notes" />
-                    <p style={{ margin: 0, fontSize: '11px', opacity: 0.85, lineHeight: '1.5', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+                    <p style={{
+                        margin: 0,
+                        fontSize: '11px',
+                        opacity: 0.85,
+                        lineHeight: '1.5',
+                        whiteSpace: 'pre-wrap',
+                        wordBreak: 'break-word'
+                    }}>
                         {poke.notes}
                     </p>
                 </div>
             )}
 
-            {/* Held Item */}
+            {/* Held Item - Gold-themed glass panel */}
             {poke.heldItem && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                    <span style={{ fontSize: '14px' }}>💎</span>
+                <div style={{
+                    background: 'rgba(255,215,0,0.15)',
+                    borderRadius: '10px',
+                    padding: '10px 14px',
+                    border: '1px solid rgba(255,215,0,0.35)',
+                    position: 'relative',
+                    zIndex: 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px'
+                }}>
+                    <span style={{ fontSize: '16px' }}>💎</span>
                     <div>
-                        <div style={{ fontSize: '10px', fontWeight: 600, opacity: 0.75, textTransform: 'uppercase', letterSpacing: '1px' }}>Held Item</div>
+                        <div style={{ fontSize: '10px', fontWeight: 600, opacity: 0.8, textTransform: 'uppercase', letterSpacing: '1px' }}>Held Item</div>
                         <div style={{ fontSize: '13px', fontWeight: 700 }}>{poke.heldItem}</div>
                     </div>
                 </div>
