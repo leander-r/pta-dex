@@ -4,7 +4,7 @@
 // Read-only browser for all species: search, type filter, accordion
 
 import React, { useState, useMemo } from 'react';
-import { useGameData, useTrainerContext } from '../../contexts/index.js';
+import { useGameData } from '../../contexts/index.js';
 import { getTypeColor, getContrastTextColor } from '../../utils/typeUtils.js';
 import { getPokemonDisplayImage } from '../../utils/pokemonSprite.js';
 import { POKEMON_TYPES } from '../../data/typeChart.js';
@@ -297,7 +297,6 @@ const inputStyle = {
 
 const PokedexSection = () => {
     const { pokedex, customSpecies, pokedexLoading } = useGameData();
-    const { trainer, setTrainer } = useTrainerContext();
 
     const [search,       setSearch]       = useState('');
     const [typeFilter,   setTypeFilter]   = useState('');
@@ -356,21 +355,7 @@ const PokedexSection = () => {
         setAbilitySearch(''); setSortKey('id'); setSortDir('asc');
     };
 
-    const handleRowClick = (id) => {
-        setExpandedId(prev => {
-            if (prev !== id) {
-                // Mark as seen when expanding
-                setTrainer(t => {
-                    const seen = t.pokedexSeen || [];
-                    if (!seen.includes(id)) {
-                        return { ...t, pokedexSeen: [...seen, id] };
-                    }
-                    return t;
-                });
-            }
-            return prev === id ? null : id;
-        });
-    };
+    const handleRowClick = (id) => setExpandedId(prev => prev === id ? null : id);
 
     if (pokedexLoading) {
         return (
@@ -380,30 +365,8 @@ const PokedexSection = () => {
         );
     }
 
-    const seenCount = (trainer?.pokedexSeen || []).length;
-    const totalCount = (pokedex?.length || 0) + (customSpecies?.length || 0);
-
     return (
         <div>
-            {/* ── Pokédex seen counter ── */}
-            {seenCount > 0 && (
-                <div style={{
-                    display: 'flex', alignItems: 'center', gap: '10px',
-                    padding: '7px 12px', marginBottom: '8px',
-                    background: 'var(--bg-section)', borderRadius: '8px',
-                    border: '1px solid var(--border-light)',
-                    fontSize: '12px', color: 'var(--text-secondary)'
-                }}>
-                    <span>📖</span>
-                    <span><strong>{seenCount}</strong> / {totalCount} species seen</span>
-                    {seenCount >= 40 && (
-                        <span style={{ marginLeft: 'auto', fontSize: '11px', color: 'var(--poke-orange, #f5a623)', fontWeight: 'bold' }}>
-                            +{Math.floor(seenCount / 40)} level{Math.floor(seenCount / 40) !== 1 ? 's' : ''} (every 40 seen)
-                        </span>
-                    )}
-                </div>
-            )}
-
             {/* ── Filter row ── */}
             <div style={{ display: 'flex', gap: '6px', marginBottom: '6px', flexWrap: 'wrap' }}>
                 {/* Name search */}
@@ -545,7 +508,6 @@ const PokedexSection = () => {
                         const rowId      = s.id ?? s.species;
                         const isExpanded = expandedId === rowId;
                         const isHovered  = hoveredId === rowId && !isExpanded;
-                        const isSeen     = (trainer?.pokedexSeen || []).includes(rowId);
                         const spriteUrl  = getPokemonDisplayImage(s);
                         const bst        = getBST(s);
 
@@ -586,10 +548,6 @@ const PokedexSection = () => {
                                     <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 600, width: '34px', flexShrink: 0, textAlign: 'right' }}>
                                         #{s.id || '?'}
                                     </span>
-                                    {/* Seen indicator */}
-                                    {isSeen && (
-                                        <span title="Seen in Pokédex" style={{ fontSize: '10px', color: 'var(--poke-orange, #f5a623)', flexShrink: 0 }}>👁</span>
-                                    )}
                                     {/* Name */}
                                     <span style={{ fontWeight: 700, fontSize: '14px', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                         {s.species}

@@ -34,8 +34,7 @@ export const DEFAULT_TRAINER = {
     party: [],             // Active party - max 6 Pokemon
     reserve: [],           // Reserve/PC storage - unlimited
     archived: false,       // Soft-delete: archived trainers are hidden but recoverable
-    ribbons: { cool: 0, beauty: 0, cute: 0, smart: 0, tough: 0 },
-    pokedexSeen: []        // Array of species IDs seen in the Pokédex
+    ribbons: { cool: 0, beauty: 0, cute: 0, smart: 0, tough: 0 }
 };
 
 /**
