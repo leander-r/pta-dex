@@ -3,7 +3,7 @@
 // ============================================================
 // Read-only browser for all species: search, type filter, accordion
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback, memo } from 'react';
 import { useGameData } from '../../contexts/index.js';
 import { getTypeColor, getContrastTextColor } from '../../utils/typeUtils.js';
 import { getPokemonDisplayImage } from '../../utils/pokemonSprite.js';
@@ -293,6 +293,65 @@ const inputStyle = {
     boxSizing: 'border-box', width: '100%'
 };
 
+// ── Memoized row ─────────────────────────────────────────────
+// Extracted so only the 2 rows whose isExpanded/isHovered changes actually re-render.
+
+const PokedexRow = memo(({ species, idx, isExpanded, isHovered, onRowClick, onMouseEnter, onMouseLeave }) => {
+    const rowId    = species.id ?? species.species;
+    const spriteUrl = getPokemonDisplayImage(species);
+    const bst      = getBST(species);
+
+    return (
+        <div style={{ borderTop: idx === 0 ? 'none' : '1px solid var(--border-light)' }}>
+            <button
+                onClick={onRowClick}
+                onMouseEnter={onMouseEnter}
+                onMouseLeave={onMouseLeave}
+                style={{
+                    width: '100%', display: 'flex', alignItems: 'center', gap: '10px',
+                    padding: '7px 12px', border: 'none', cursor: 'pointer',
+                    textAlign: 'left', color: 'var(--text-primary)',
+                    transition: 'background 0.12s',
+                    background: isExpanded ? 'var(--bg-section)' : isHovered ? 'var(--hover-bg)' : 'transparent'
+                }}
+            >
+                <div style={{ width: '40px', height: '40px', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    {spriteUrl && (
+                        <img
+                            src={spriteUrl}
+                            alt={species.species}
+                            style={{ width: '40px', height: '40px', imageRendering: 'pixelated' }}
+                            onError={e => { e.target.style.display = 'none'; }}
+                        />
+                    )}
+                </div>
+                <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 600, width: '34px', flexShrink: 0, textAlign: 'right' }}>
+                    #{species.id || '?'}
+                </span>
+                <span style={{ fontWeight: 700, fontSize: '14px', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {species.species}
+                </span>
+                <DualTypeDisplay types={species.types} />
+                <span
+                    className="pokedex-bst"
+                    title="Base Stat Total"
+                    style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 600, flexShrink: 0, minWidth: '44px', textAlign: 'right' }}
+                >
+                    {bst} BST
+                </span>
+                <svg
+                    width="13" height="13" viewBox="0 0 24 24"
+                    fill="none" stroke="currentColor" strokeWidth="2.5"
+                    style={{ flexShrink: 0, color: 'var(--text-muted)', transform: isExpanded ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s' }}
+                >
+                    <polyline points="9 18 15 12 9 6" />
+                </svg>
+            </button>
+            {isExpanded && <SpeciesDetail species={species} />}
+        </div>
+    );
+});
+
 // ── Main component ────────────────────────────────────────────
 
 const PokedexSection = () => {
@@ -355,7 +414,7 @@ const PokedexSection = () => {
         setAbilitySearch(''); setSortKey('id'); setSortDir('asc');
     };
 
-    const handleRowClick = (id) => setExpandedId(prev => prev === id ? null : id);
+    const handleRowClick = useCallback((id) => setExpandedId(prev => prev === id ? null : id), []);
 
     if (pokedexLoading) {
         return (
@@ -505,76 +564,18 @@ const PokedexSection = () => {
                     </div>
                 ) : (
                     filtered.map((s, idx) => {
-                        const rowId      = s.id ?? s.species;
-                        const isExpanded = expandedId === rowId;
-                        const isHovered  = hoveredId === rowId && !isExpanded;
-                        const spriteUrl  = getPokemonDisplayImage(s);
-                        const bst        = getBST(s);
-
+                        const rowId = s.id ?? s.species;
                         return (
-                            <div
+                            <PokedexRow
                                 key={rowId}
-                                style={{ borderTop: idx === 0 ? 'none' : '1px solid var(--border-light)' }}
-                            >
-                                {/* Collapsed row */}
-                                <button
-                                    onClick={() => handleRowClick(rowId)}
-                                    onMouseEnter={() => setHoveredId(rowId)}
-                                    onMouseLeave={() => setHoveredId(null)}
-                                    style={{
-                                        width: '100%', display: 'flex', alignItems: 'center', gap: '10px',
-                                        padding: '7px 12px', border: 'none', cursor: 'pointer',
-                                        textAlign: 'left', color: 'var(--text-primary)',
-                                        transition: 'background 0.12s',
-                                        background: isExpanded
-                                            ? 'var(--bg-section)'
-                                            : isHovered
-                                                ? 'var(--hover-bg)'
-                                                : 'transparent'
-                                    }}
-                                >
-                                    {/* Sprite */}
-                                    <div style={{ width: '40px', height: '40px', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                        {spriteUrl && (
-                                            <img
-                                                src={spriteUrl}
-                                                alt={s.species}
-                                                style={{ width: '40px', height: '40px', imageRendering: 'pixelated' }}
-                                                onError={e => { e.target.style.display = 'none'; }}
-                                            />
-                                        )}
-                                    </div>
-                                    {/* Dex # */}
-                                    <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 600, width: '34px', flexShrink: 0, textAlign: 'right' }}>
-                                        #{s.id || '?'}
-                                    </span>
-                                    {/* Name */}
-                                    <span style={{ fontWeight: 700, fontSize: '14px', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                        {s.species}
-                                    </span>
-                                    {/* Types */}
-                                    <DualTypeDisplay types={s.types} />
-                                    {/* BST */}
-                                    <span
-                                        className="pokedex-bst"
-                                        title="Base Stat Total"
-                                        style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 600, flexShrink: 0, minWidth: '44px', textAlign: 'right' }}
-                                    >
-                                        {bst} BST
-                                    </span>
-                                    {/* Chevron */}
-                                    <svg
-                                        width="13" height="13" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" strokeWidth="2.5"
-                                        style={{ flexShrink: 0, color: 'var(--text-muted)', transform: isExpanded ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s' }}
-                                    >
-                                        <polyline points="9 18 15 12 9 6" />
-                                    </svg>
-                                </button>
-
-                                {/* Expanded panel */}
-                                {isExpanded && <SpeciesDetail species={s} />}
-                            </div>
+                                species={s}
+                                idx={idx}
+                                isExpanded={expandedId === rowId}
+                                isHovered={hoveredId === rowId && expandedId !== rowId}
+                                onRowClick={() => handleRowClick(rowId)}
+                                onMouseEnter={() => setHoveredId(rowId)}
+                                onMouseLeave={() => setHoveredId(null)}
+                            />
                         );
                     })
                 )}
