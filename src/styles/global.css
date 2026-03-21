@@ -5089,6 +5089,10 @@
             transition: background 0.3s ease;
         }
 
+        .inventory-item-card:hover {
+            background: var(--hover-bg);
+        }
+
         .quantity-btn {
             background: var(--input-bg);
             border: 1px solid var(--border-medium);

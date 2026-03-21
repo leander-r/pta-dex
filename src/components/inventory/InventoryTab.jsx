@@ -552,10 +552,10 @@ const InventoryTab = () => {
                                         cursor: 'pointer'
                                     }}
                                 >
-                                    <option value="name">Name (A-Z)</option>
-                                    <option value="price-low">Price (Low → High)</option>
-                                    <option value="price-high">Price (High → Low)</option>
-                                    <option value="type">Type</option>
+                                    <option value="name">↑ Name (A→Z)</option>
+                                    <option value="price-low">↑ Price (Low→High)</option>
+                                    <option value="price-high">↓ Price (High→Low)</option>
+                                    <option value="type">↑ Type (A→Z)</option>
                                 </select>
                             </div>
 
@@ -760,7 +760,7 @@ const InventoryTab = () => {
                                             >ℹ</button>
                                         </div>
                                         {item.effect && (
-                                            <div title={item.effect} style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                            <div title={item.effect} style={{ fontSize: '13px', color: 'var(--text-secondary)', marginTop: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                                 {item.effect}
                                             </div>
                                         )}
@@ -771,15 +771,19 @@ const InventoryTab = () => {
                                         <button
                                             onClick={() => handleRemoveItem(item.name)}
                                             className="quantity-btn"
+                                            aria-label="Decrease quantity"
+                                            title={(item.quantity || 1) <= 1 ? 'Use ✕ to remove the item' : 'Decrease quantity'}
+                                            disabled={(item.quantity || 1) <= 1}
                                             style={{
                                                 width: '28px',
                                                 height: '28px',
                                                 borderRadius: '4px',
-                                                cursor: 'pointer',
+                                                cursor: (item.quantity || 1) <= 1 ? 'not-allowed' : 'pointer',
                                                 fontSize: '16px',
                                                 display: 'flex',
                                                 alignItems: 'center',
-                                                justifyContent: 'center'
+                                                justifyContent: 'center',
+                                                opacity: (item.quantity || 1) <= 1 ? 0.35 : 1
                                             }}
                                         >
                                             −
@@ -808,6 +812,8 @@ const InventoryTab = () => {
                                         <button
                                             onClick={() => handleAddItem(item.name, item, 1)}
                                             className="quantity-btn"
+                                            aria-label="Increase quantity"
+                                            title="Increase quantity"
                                             style={{
                                                 width: '28px',
                                                 height: '28px',
@@ -900,7 +906,7 @@ const InventoryTab = () => {
                                                 })}
                                             </select>
                                             )}
-                                            {(() => {
+                                            {party.length > 0 && (() => {
                                                 const invItem = inventory.find(i => i.name.toLowerCase() === healPanel.itemName.toLowerCase());
                                                 const formula = parseHealFormula(invItem?.effect || '');
                                                 const label = formula.type === 'dice' ? `🎲 ${formula.formula}`

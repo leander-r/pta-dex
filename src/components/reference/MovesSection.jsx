@@ -138,13 +138,13 @@ const MovesSection = () => {
                         onClick={() => setFilter(prev => ({ ...prev, sortDir: prev.sortDir === 'asc' ? 'desc' : 'asc' }))}
                         style={{ padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--input-bg)', cursor: 'pointer', fontSize: '13px', color: 'var(--text-primary)' }}
                     >
-                        {filter.sortDir === 'asc' ? ' A-Z' : ' Z-A'}
+                        {filter.sortDir === 'asc' ? '↑ A-Z' : '↓ Z-A'}
                     </button>
 
                     {(filter.search || filter.type || filter.category || filter.frequency) && (
                         <button
                             onClick={() => setFilter({ search: '', type: '', category: '', frequency: '', sortBy: 'name', sortDir: 'asc' })}
-                            style={{ padding: '8px 12px', borderRadius: '6px', border: 'none', background: '#dc3545', color: 'white', cursor: 'pointer', fontSize: '13px' }}
+                            style={{ padding: '8px 12px', borderRadius: '6px', border: 'none', background: 'var(--danger-btn-start)', color: 'white', cursor: 'pointer', fontSize: '13px' }}
                         >
                             Clear
                         </button>

@@ -52,7 +52,7 @@ const GameRulesSection = () => {
 
                     <h4>HP Formula</h4>
                     <ul>
-                        <li><strong>Pokemon:</strong> Level + (HP Stat x 3)</li>
+                        <li><strong>Pokémon:</strong> Level + (HP Stat x 3)</li>
                         <li><strong>Trainer:</strong> (HP Stat x 4) + (Level x 4)</li>
                     </ul>
 
@@ -156,8 +156,8 @@ const GameRulesSection = () => {
     return (
         <div>
             <h3>Game Rules Quick Reference</h3>
-            <p style={{ marginBottom: '15px', fontSize: '13px', color: '#666' }}>
-                Essential rules for Pokemon Tabletop Adventures gameplay.
+            <p style={{ marginBottom: '15px', fontSize: '13px', color: 'var(--text-muted)' }}>
+                Essential rules for Pokémon Tabletop Adventures gameplay.
             </p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -165,7 +165,7 @@ const GameRulesSection = () => {
                     <div
                         key={section.id}
                         style={{
-                            border: '1px solid #dee2e6',
+                            border: '1px solid var(--border-medium)',
                             borderRadius: '8px',
                             overflow: 'hidden'
                         }}
@@ -175,8 +175,8 @@ const GameRulesSection = () => {
                             style={{
                                 width: '100%',
                                 padding: '12px 15px',
-                                background: expandedSection === section.id ? 'linear-gradient(135deg, #667eea, #764ba2)' : '#f8f9fa',
-                                color: expandedSection === section.id ? 'white' : '#333',
+                                background: expandedSection === section.id ? 'var(--gradient-purple)' : 'var(--bg-light)',
+                                color: expandedSection === section.id ? 'white' : 'var(--text-primary)',
                                 border: 'none',
                                 textAlign: 'left',
                                 fontSize: '14px',
@@ -188,13 +188,13 @@ const GameRulesSection = () => {
                             }}
                         >
                             <span>{section.title}</span>
-                            <span>{expandedSection === section.id ? '' : '+'}</span>
+                            <span>{expandedSection === section.id ? '▲' : '▼'}</span>
                         </button>
 
                         {expandedSection === section.id && (
                             <div style={{
                                 padding: '15px 20px',
-                                background: 'white',
+                                background: 'var(--input-bg)',
                                 fontSize: '13px',
                                 lineHeight: '1.6'
                             }}

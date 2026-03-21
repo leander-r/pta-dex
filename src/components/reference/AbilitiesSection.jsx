@@ -60,13 +60,13 @@ const AbilitiesSection = () => {
                         onClick={() => setFilter(prev => ({ ...prev, sortDir: prev.sortDir === 'asc' ? 'desc' : 'asc' }))}
                         style={{ padding: '10px 15px', borderRadius: '8px', border: '1px solid var(--border-medium)', background: 'var(--input-bg)', cursor: 'pointer', fontSize: '13px', color: 'var(--text-primary)' }}
                     >
-                        {filter.sortDir === 'asc' ? ' A-Z' : ' Z-A'}
+                        {filter.sortDir === 'asc' ? '↑ A-Z' : '↓ Z-A'}
                     </button>
 
                     {filter.search && (
                         <button
                             onClick={() => setFilter({ search: '', sortDir: 'asc' })}
-                            style={{ padding: '10px 15px', borderRadius: '8px', border: 'none', background: '#dc3545', color: 'white', cursor: 'pointer', fontSize: '13px' }}
+                            style={{ padding: '10px 15px', borderRadius: '8px', border: 'none', background: 'var(--danger-btn-start)', color: 'white', cursor: 'pointer', fontSize: '13px' }}
                         >
                             Clear
                         </button>

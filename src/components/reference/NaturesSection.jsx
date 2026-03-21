@@ -105,7 +105,7 @@ const NaturesSection = () => {
                             borderRadius: '6px',
                             border: '1px solid var(--border-medium)',
                             fontSize: '13px',
-                            background: filter.buffStat ? '#4caf50' : 'var(--input-bg)',
+                            background: filter.buffStat ? 'var(--stat-hp)' : 'var(--input-bg)',
                             color: filter.buffStat ? 'white' : 'var(--text-primary)'
                         }}
                     >
@@ -122,7 +122,7 @@ const NaturesSection = () => {
                             borderRadius: '6px',
                             border: '1px solid var(--border-medium)',
                             fontSize: '13px',
-                            background: filter.nerfStat ? '#f44336' : 'var(--input-bg)',
+                            background: filter.nerfStat ? 'var(--danger-btn-start)' : 'var(--input-bg)',
                             color: filter.nerfStat ? 'white' : 'var(--text-primary)'
                         }}
                     >
@@ -145,13 +145,13 @@ const NaturesSection = () => {
                         onClick={() => setFilter(prev => ({ ...prev, sortDir: prev.sortDir === 'asc' ? 'desc' : 'asc' }))}
                         style={{ padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--input-bg)', cursor: 'pointer', fontSize: '13px', color: 'var(--text-primary)' }}
                     >
-                        {filter.sortDir === 'asc' ? ' A-Z' : ' Z-A'}
+                        {filter.sortDir === 'asc' ? '↑ A-Z' : '↓ Z-A'}
                     </button>
 
                     {(filter.search || filter.buffStat || filter.nerfStat) && (
                         <button
                             onClick={() => setFilter({ search: '', buffStat: '', nerfStat: '', sortBy: 'name', sortDir: 'asc' })}
-                            style={{ padding: '8px 12px', borderRadius: '6px', border: 'none', background: '#dc3545', color: 'white', cursor: 'pointer', fontSize: '13px' }}
+                            style={{ padding: '8px 12px', borderRadius: '6px', border: 'none', background: 'var(--danger-btn-start)', color: 'white', cursor: 'pointer', fontSize: '13px' }}
                         >
                             Clear
                         </button>
@@ -168,8 +168,8 @@ const NaturesSection = () => {
                             style={{
                                 padding: '3px 8px',
                                 borderRadius: '4px',
-                                border: filter.buffStat === stat ? '2px solid #4caf50' : '1px solid var(--border-medium)',
-                                background: filter.buffStat === stat ? '#4caf50' : 'var(--input-bg)',
+                                border: filter.buffStat === stat ? '2px solid var(--stat-hp)' : '1px solid var(--border-medium)',
+                                background: filter.buffStat === stat ? 'var(--stat-hp)' : 'var(--input-bg)',
                                 color: filter.buffStat === stat ? 'white' : 'var(--text-secondary)',
                                 cursor: 'pointer',
                                 fontSize: '11px',
@@ -207,10 +207,10 @@ const NaturesSection = () => {
                             {filteredNatures.map(([nature, data], index) => (
                                 <tr key={nature} style={{ background: index % 2 === 0 ? 'var(--bg-light)' : 'var(--input-bg)' }}>
                                     <td style={{ padding: '8px', fontWeight: 'bold', color: 'var(--text-primary)' }}>{nature}</td>
-                                    <td style={{ padding: '8px', textAlign: 'center', color: '#4caf50', fontWeight: 'bold' }}>
+                                    <td style={{ padding: '8px', textAlign: 'center', color: 'var(--stat-hp)', fontWeight: 'bold' }}>
                                         {data.buff ? data.buff.toUpperCase() : '—'}
                                     </td>
-                                    <td style={{ padding: '8px', textAlign: 'center', color: '#f44336', fontWeight: 'bold' }}>
+                                    <td style={{ padding: '8px', textAlign: 'center', color: 'var(--danger-btn-start)', fontWeight: 'bold' }}>
                                         {data.nerf ? data.nerf.toUpperCase() : '—'}
                                     </td>
                                     <td style={{ padding: '8px', textAlign: 'center', color: 'var(--text-secondary)' }}>

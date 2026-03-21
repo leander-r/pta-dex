@@ -180,7 +180,7 @@ const TypeChartSection = () => {
                                 padding: '4px 12px',
                                 borderRadius: '6px',
                                 border: 'none',
-                                background: '#dc3545',
+                                background: 'var(--danger-btn-start)',
                                 color: 'white',
                                 cursor: 'pointer',
                                 fontSize: '11px',
@@ -212,8 +212,8 @@ const TypeChartSection = () => {
                     </h3>
                     <p style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '12px' }}>
                         How attacking types affect {selectedTypes.length === 2
-                            ? `a ${selectedTypes[0]}/${selectedTypes[1]} Pokemon`
-                            : `a ${selectedTypes[0]}-type Pokemon`
+                            ? `a ${selectedTypes[0]}/${selectedTypes[1]} Pokémon`
+                            : `a ${selectedTypes[0]}-type Pokémon`
                         }
                     </p>
 
