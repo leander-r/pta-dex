@@ -725,7 +725,7 @@ const PokemonTab = () => {
                                         </button>
                                         <button
                                             onClick={() => handleDeletePreset(preset.id)}
-                                            style={{ padding: '5px 8px', background: '#f44336', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '11px' }}
+                                            style={{ padding: '5px 8px', background: 'var(--danger-btn-start)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '11px' }}
                                             title="Delete preset"
                                         >
                                             ✕
