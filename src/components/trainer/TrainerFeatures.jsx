@@ -515,7 +515,7 @@ const TrainerFeatures = () => {
                                     marginBottom: '4px',
                                     background: 'var(--input-bg)',
                                     borderRadius: '6px',
-                                    borderLeft: `3px solid ${data.category === 'General (Free)' ? 'var(--poke-orange, #f5a623)' : '#667eea'}`,
+                                    borderLeft: `3px solid ${data.category === 'General (Free)' ? 'var(--poke-orange, #f5a623)' : 'var(--color-purple, #667eea)'}`,
                                     cursor: 'pointer'
                                 }}
                                 onClick={() => showDetail && showDetail('feature', name, data)}

@@ -315,7 +315,7 @@ const TrainerClasses = () => {
                 <div style={{
                     marginBottom: '15px',
                     padding: '15px',
-                    background: 'var(--skill-picker-bg, linear-gradient(135deg, #e8f5e9, #c8e6c9))',
+                    background: 'var(--skill-picker-bg, linear-gradient(135deg, #f3e5f5, #ede7f6))',
                     borderRadius: '8px',
                     border: '2px solid var(--color-purple, #667eea)'
                 }}>

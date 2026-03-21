@@ -187,11 +187,11 @@ const TrainerSkills = () => {
                             <div style={{
                                 fontWeight: 'bold',
                                 fontSize: '12px',
-                                color: stat === 'HP' ? '#e53935' :
-                                       stat === 'ATK' ? '#ff5722' :
-                                       stat === 'DEF' ? '#2196f3' :
-                                       stat === 'SATK' ? '#9c27b0' :
-                                       stat === 'SDEF' ? '#ff9800' : '#00bcd4',
+                                color: stat === 'HP' ? 'var(--stat-hp, #4caf50)' :
+                                       stat === 'ATK' ? 'var(--stat-atk, #f44336)' :
+                                       stat === 'DEF' ? 'var(--stat-def, #2196f3)' :
+                                       stat === 'SATK' ? 'var(--stat-satk, #9c27b0)' :
+                                       stat === 'SDEF' ? 'var(--stat-sdef, #ff9800)' : 'var(--stat-spd, #00bcd4)',
                                 marginBottom: '8px',
                                 borderBottom: '1px solid var(--border-light, #ddd)',
                                 paddingBottom: '4px',
@@ -222,7 +222,7 @@ const TrainerSkills = () => {
                                             marginBottom: '4px',
                                             background: isTrained
                                                 ? rank === 2
-                                                    ? 'linear-gradient(135deg, #ff6b6b, #ee5a24)'
+                                                    ? 'linear-gradient(135deg, var(--poke-orange), var(--poke-orange-dark))'
                                                     : 'linear-gradient(135deg, #667eea, #764ba2)'
                                                 : undefined,
                                             color: isTrained ? 'white' : undefined,
@@ -299,7 +299,7 @@ const TrainerSkills = () => {
                                     style={{
                                         padding: '3px 8px', borderRadius: '10px', fontSize: '11px', fontWeight: 'bold',
                                         background: rank === 2
-                                            ? 'linear-gradient(135deg, #ff6b6b, #ee5a24)'
+                                            ? 'linear-gradient(135deg, var(--poke-orange), var(--poke-orange-dark))'
                                             : 'linear-gradient(135deg, #667eea, #764ba2)',
                                         color: 'white', cursor: 'pointer',
                                         display: 'inline-flex', alignItems: 'center', gap: '3px'

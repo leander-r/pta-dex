@@ -214,13 +214,13 @@ const TrainerProfile = () => {
             {isLevel0 && (
                 <div style={{
                     padding: '10px 12px',
-                    background: 'var(--warning-bg, #fff3e0)',
+                    background: 'var(--warning-bg, #fff3cd)',
                     borderRadius: '8px',
-                    border: '1px solid var(--warning-border, #ffcc80)',
+                    border: '1px solid var(--warning-border, #ffc107)',
                     fontSize: '12px',
                     marginBottom: '12px'
                 }}>
-                    <div style={{ fontWeight: 'bold', marginBottom: '6px', color: 'var(--warning-text, #e65100)' }}>
+                    <div style={{ fontWeight: 'bold', marginBottom: '6px', color: 'var(--warning-text, #856404)' }}>
                         Character Creation — allocate stats, pick a class, then level up!
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px', color: creationPointsRemaining === 0 ? '#2e7d32' : '#c62828' }}>
@@ -236,7 +236,7 @@ const TrainerProfile = () => {
 
             {/* Level Controls */}
             {isLevel0 && !canLevelUp && (
-                <div style={{ fontSize: '12px', color: '#e65100', textAlign: 'center', marginBottom: '6px', fontStyle: 'italic' }}>
+                <div style={{ fontSize: '12px', color: 'var(--warning-text, #856404)', textAlign: 'center', marginBottom: '6px', fontStyle: 'italic' }}>
                     Complete the steps above to level up
                 </div>
             )}
@@ -263,18 +263,18 @@ const TrainerProfile = () => {
             {/* Quick Stats — 3 boxes */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', marginTop: '14px' }}>
                 <div
-                    style={{ textAlign: 'center', padding: '10px 6px', background: 'linear-gradient(180deg, #e5393525 0%, transparent 70%)', borderRadius: '8px', border: '1px solid #e5393955', borderTop: '3px solid #e53935' }}
+                    style={{ textAlign: 'center', padding: '10px 6px', background: 'linear-gradient(180deg, rgba(76,175,80,0.15) 0%, transparent 70%)', borderRadius: '8px', border: '1px solid rgba(76,175,80,0.33)', borderTop: '3px solid var(--stat-hp, #4caf50)' }}
                     title="Max HP = (HP stat × 4) + (Level × 4)"
                 >
-                    <div style={{ fontSize: '12px', color: '#e53935', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Max HP</div>
-                    <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#e53935', lineHeight: 1.2 }}>{calculateMaxHP()}</div>
+                    <div style={{ fontSize: '12px', color: 'var(--stat-hp, #4caf50)', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Max HP</div>
+                    <div style={{ fontSize: '20px', fontWeight: 'bold', color: 'var(--stat-hp, #4caf50)', lineHeight: 1.2 }}>{calculateMaxHP()}</div>
                 </div>
                 <div
-                    style={{ textAlign: 'center', padding: '10px 6px', background: 'linear-gradient(180deg, #f5a62325 0%, transparent 70%)', borderRadius: '8px', border: '1px solid #f5a62355', borderTop: '3px solid #f5a623' }}
+                    style={{ textAlign: 'center', padding: '10px 6px', background: 'linear-gradient(180deg, rgba(245,166,35,0.15) 0%, transparent 70%)', borderRadius: '8px', border: '1px solid rgba(245,166,35,0.33)', borderTop: '3px solid var(--poke-orange, #f5a623)' }}
                     title="Feat points are used to buy features. Gain points from leveling up."
                 >
-                    <div style={{ fontSize: '12px', color: '#e8941c', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Feat Pts</div>
-                    <div style={{ fontSize: '20px', fontWeight: 'bold', color: (trainer.featPoints || 0) > 0 ? '#f5a623' : 'var(--text-muted, #999)', lineHeight: 1.2 }}>{trainer.featPoints || 0}</div>
+                    <div style={{ fontSize: '12px', color: 'var(--poke-orange-dark, #e8941c)', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Feat Pts</div>
+                    <div style={{ fontSize: '20px', fontWeight: 'bold', color: (trainer.featPoints || 0) > 0 ? 'var(--poke-orange, #f5a623)' : 'var(--text-muted, #999)', lineHeight: 1.2 }}>{trainer.featPoints || 0}</div>
                 </div>
                 <div
                     style={{ textAlign: 'center', padding: '10px 6px', background: 'linear-gradient(180deg, #667eea25 0%, transparent 70%)', borderRadius: '8px', border: '1px solid #667eea55', borderTop: '3px solid #667eea', cursor: 'pointer' }}
