@@ -4995,16 +4995,16 @@
         }
 
         .ability-option {
-            background: white;
-            color: #333;
-            border: 1px solid #ddd;
+            background: var(--input-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--border-medium);
             transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
         }
 
         .ability-option.selected {
-            background: #e8f5e9;
-            color: #4caf50;
-            border-color: #4caf50;
+            background: rgba(76,175,80,0.1);
+            color: var(--stat-hp);
+            border-color: var(--stat-hp);
         }
 
         [data-theme="dark"] .ability-option {
@@ -5024,13 +5024,12 @@
             background: #f8f9fa;
             padding: 12px;
             border-radius: 8px;
-            border: 2px solid #667eea;
+            border: 2px solid var(--color-purple);
             transition: background 0.3s ease;
         }
 
         [data-theme="dark"] .add-move-panel {
             background: var(--bg-light) !important;
-            border-color: #7c8cf0 !important;
         }
 
         .move-list-container {

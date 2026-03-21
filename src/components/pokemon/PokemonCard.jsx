@@ -61,7 +61,7 @@ const PokemonCard = ({
     const [moveTypeFilter, setMoveTypeFilter] = useState('all');
     const [moveCategoryFilter, setMoveCategoryFilter] = useState('all');
     const [moveSourceFilter, setMoveSourceFilter] = useState('all'); // 'all'|'levelup'|'tutor'|'egg'
-    const [showMoveDropdown, setShowMoveDropdown] = useState(false);
+    const [showMoveDropdown, setShowMoveDropdown] = useState(true);
     // Held item selection state
     const [heldItemSearch, setHeldItemSearch] = useState('');
     const [showHeldItemDropdown, setShowHeldItemDropdown] = useState(false);
@@ -1325,9 +1325,9 @@ const PokemonCard = ({
                                                 }}
                                                 style={{
                                                     padding: '6px 16px',
-                                                    background: 'var(--danger-btn-start)',
-                                                    color: 'white',
-                                                    border: 'none',
+                                                    background: 'var(--bg-light)',
+                                                    color: 'var(--text-secondary)',
+                                                    border: '1px solid var(--border-medium)',
                                                     borderRadius: '4px',
                                                     fontSize: '12px',
                                                     fontWeight: 'bold',
@@ -2320,16 +2320,34 @@ const PokemonCard = ({
 
                         {((pokemon.moves || []).length < MAX_TOTAL_MOVES || naturalMoveCount > 0 || taughtMoveCount > 0) && (
                             <div className="add-move-panel" style={{ marginTop: '10px', padding: '12px', borderRadius: '8px' }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                                     <span style={{ fontSize: '12px', fontWeight: 'bold', color: 'var(--color-purple)' }}>Add Move</span>
-                                    <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
-                                        Natural: <span style={{ color: naturalMoveCount >= MAX_NATURAL_MOVES ? 'var(--color-danger-text)' : 'var(--stat-hp)', fontWeight: 'bold' }}>{naturalMoveCount}/{MAX_NATURAL_MOVES}</span>
-                                        {' | '}
-                                        Taught: <span style={{ color: taughtMoveCount >= MAX_TAUGHT_MOVES ? 'var(--color-danger-text)' : '#2196f3', fontWeight: 'bold' }}>{taughtMoveCount}/{MAX_TAUGHT_MOVES}</span>
-                                    </span>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                        <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+                                            <span style={{ color: naturalMoveCount >= MAX_NATURAL_MOVES ? 'var(--color-danger-text)' : 'var(--stat-hp)', fontWeight: 'bold' }}>N:{naturalMoveCount}/{MAX_NATURAL_MOVES}</span>
+                                            {' · '}
+                                            <span style={{ color: taughtMoveCount >= MAX_TAUGHT_MOVES ? 'var(--color-danger-text)' : '#2196f3', fontWeight: 'bold' }}>T:{taughtMoveCount}/{MAX_TAUGHT_MOVES}</span>
+                                        </span>
+                                        <button
+                                            onClick={() => setShowMoveDropdown(!showMoveDropdown)}
+                                            style={{
+                                                padding: '3px 10px',
+                                                background: 'var(--color-purple)',
+                                                color: 'white',
+                                                border: 'none',
+                                                borderRadius: '4px',
+                                                fontSize: '11px',
+                                                fontWeight: 'bold',
+                                                cursor: 'pointer',
+                                                opacity: showMoveDropdown ? 0.8 : 1
+                                            }}
+                                        >
+                                            {showMoveDropdown ? '▲ Hide' : '▼ Browse'}
+                                        </button>
+                                    </div>
                                 </div>
-                                <div style={{ fontSize: '11px', color: '#888', marginBottom: '10px', fontStyle: 'italic' }}>
-                                    Search for moves below, then click <span style={{ background: 'var(--stat-hp)', color: 'white', padding: '1px 4px', borderRadius: '3px', fontWeight: 'bold', fontStyle: 'normal' }}>N</span> for Natural or <span style={{ background: '#2196f3', color: 'white', padding: '1px 4px', borderRadius: '3px', fontWeight: 'bold', fontStyle: 'normal' }}>T</span> for Taught to add
+                                <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '8px' }}>
+                                    Click <span style={{ background: 'var(--stat-hp)', color: 'white', padding: '1px 5px', borderRadius: '3px', fontWeight: 'bold' }}>Nat</span> to add as Natural · <span style={{ background: '#2196f3', color: 'white', padding: '1px 5px', borderRadius: '3px', fontWeight: 'bold' }}>Tght</span> to add as Taught
                                 </div>
 
                                 {/* Source Filter Pills */}
@@ -2534,7 +2552,7 @@ const PokemonCard = ({
                                                             }}
                                                             title={(naturalMoveCount >= MAX_NATURAL_MOVES || (pokemon.moves?.length || 0) >= MAX_TOTAL_MOVES) ? "Replace a Natural move" : "Add as Natural move"}
                                                         >
-                                                            N
+                                                            Nat
                                                         </button>
                                                         <button
                                                             onClick={() => addMoveWithSource(name, data, 'taught')}
@@ -2552,7 +2570,7 @@ const PokemonCard = ({
                                                             }}
                                                             title={(taughtMoveCount >= MAX_TAUGHT_MOVES || (pokemon.moves?.length || 0) >= MAX_TOTAL_MOVES) ? "Replace a Taught move" : "Add as Taught move"}
                                                         >
-                                                            T
+                                                            Tght
                                                         </button>
                                                         <button
                                                             onClick={(e) => {
@@ -2588,25 +2606,6 @@ const PokemonCard = ({
                                     </div>
                                 )}
 
-                                {/* Toggle Button */}
-                                <button
-                                    onClick={() => setShowMoveDropdown(!showMoveDropdown)}
-                                    style={{
-                                        width: '100%',
-                                        marginTop: '8px',
-                                        padding: '6px',
-                                        background: 'var(--color-purple)',
-                                        opacity: showMoveDropdown ? 0.8 : 1,
-                                        color: 'white',
-                                        border: 'none',
-                                        borderRadius: '4px',
-                                        fontSize: '12px',
-                                        fontWeight: 'bold',
-                                        cursor: 'pointer'
-                                    }}
-                                >
-                                    {showMoveDropdown ? '▲ Hide Moves' : '▼ Browse Moves'}
-                                </button>
                             </div>
                         )}
                     </div>
@@ -2822,7 +2821,8 @@ const statBtnStyle = {
     height: '30px',
     border: '1px solid var(--border-medium)',
     borderRadius: '4px',
-    background: 'white',
+    background: 'var(--input-bg)',
+    color: 'var(--text-primary)',
     cursor: 'pointer',
     fontSize: '16px'
 };
