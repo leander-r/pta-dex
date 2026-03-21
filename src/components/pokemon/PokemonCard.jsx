@@ -943,12 +943,13 @@ const PokemonCard = ({
                                 setEditing(false);
                             }}
                             style={{
-                                background: 'rgba(0,0,0,0.25)',
-                                border: '1px solid rgba(255,255,255,0.3)',
+                                background: 'rgba(0,0,0,0.2)',
+                                border: '1px solid rgba(255,255,255,0.25)',
                                 borderRadius: '6px',
-                                padding: '8px 12px',
-                                color: 'white',
-                                cursor: 'pointer'
+                                padding: '8px 14px',
+                                color: 'rgba(255,255,255,0.75)',
+                                cursor: 'pointer',
+                                fontSize: '13px'
                             }}
                         >
                             Cancel
@@ -956,12 +957,14 @@ const PokemonCard = ({
                         <button
                             onClick={() => setEditing(false)}
                             style={{
-                                background: 'rgba(255,255,255,0.2)',
+                                background: 'rgba(255,255,255,0.92)',
                                 border: 'none',
                                 borderRadius: '6px',
-                                padding: '8px 12px',
-                                color: 'white',
-                                cursor: 'pointer'
+                                padding: '8px 18px',
+                                color: '#333',
+                                cursor: 'pointer',
+                                fontWeight: 'bold',
+                                fontSize: '13px'
                             }}
                         >
                             Done
@@ -1477,7 +1480,7 @@ const PokemonCard = ({
                                     onChange={(e) => updatePokemon({ level: parseInt(e.target.value) || 1 })}
                                     min="1"
                                     max="100"
-                                    style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid var(--border-medium)' }}
+                                    style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--input-bg)', color: 'var(--text-primary)' }}
                                 />
                             </div>
                             <div>
@@ -1493,7 +1496,7 @@ const PokemonCard = ({
                                         value={pokemon.exp || 0}
                                         onChange={(e) => updatePokemon({ exp: parseInt(e.target.value) || 0 })}
                                         min="0"
-                                        style={{ flex: 1, padding: '10px', borderRadius: '6px', border: '1px solid var(--border-medium)' }}
+                                        style={{ flex: 1, padding: '10px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--input-bg)', color: 'var(--text-primary)' }}
                                     />
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
                                         <button
@@ -1517,16 +1520,16 @@ const PokemonCard = ({
                                             style={{
                                                 padding: '4px 8px',
                                                 borderRadius: '4px',
-                                                border: '1px solid var(--danger-btn-start)',
-                                                background: 'var(--danger-btn-start)',
-                                                color: 'white',
+                                                border: '1px solid var(--border-medium)',
+                                                background: 'var(--bg-light)',
+                                                color: 'var(--text-secondary)',
                                                 cursor: 'pointer',
                                                 fontSize: '12px',
                                                 fontWeight: 'bold'
                                             }}
                                             title="Remove 100 EXP"
                                         >
-                                            -100
+                                            −100
                                         </button>
                                     </div>
                                 </div>
@@ -1536,7 +1539,7 @@ const PokemonCard = ({
                                 <select
                                     value={pokemon.nature || 'Hardy'}
                                     onChange={(e) => updatePokemon({ nature: e.target.value })}
-                                    style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid var(--border-medium)' }}
+                                    style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--input-bg)', color: 'var(--text-primary)' }}
                                 >
                                     {Object.keys(GAME_DATA.natures || {}).map(nature => (
                                         <option key={nature} value={nature}>{nature}</option>
@@ -1551,7 +1554,7 @@ const PokemonCard = ({
                             <select
                                 value={pokemon.gender || ''}
                                 onChange={(e) => updatePokemon({ gender: e.target.value })}
-                                style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid var(--border-medium)' }}
+                                style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--input-bg)', color: 'var(--text-primary)' }}
                             >
                                 <option value="">Unknown</option>
                                 <option value="male">Male ♂</option>
@@ -1573,7 +1576,7 @@ const PokemonCard = ({
                                     }
                                     updatePokemon(updates);
                                 }}
-                                style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid var(--border-medium)' }}
+                                style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--input-bg)', color: 'var(--text-primary)' }}
                             >
                                 <option value="caught">Caught</option>
                                 <option value="hatched">Hatched (Loyalty ≥2)</option>
@@ -1628,6 +1631,8 @@ const PokemonCard = ({
                             );
                         })()}
 
+                        <div style={{ borderTop: '1px solid var(--border-light)', margin: '4px 0 16px' }} />
+
                         {/* Contest Stats */}
                         {(() => {
                             const CONTEST_STATS = [['cool', '😎'], ['beauty', '💎'], ['cute', '🌸'], ['smart', '🔮'], ['tough', '💪']];
@@ -1635,22 +1640,22 @@ const PokemonCard = ({
                             return (
                                 <div style={{ marginBottom: '15px' }}>
                                     <label style={{ fontSize: '12px', fontWeight: 'bold', marginBottom: '6px', display: 'block' }}>Contest Stats</label>
-                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '6px' }}>
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '4px' }}>
                                         {CONTEST_STATS.map(([stat, icon]) => {
                                             const val = contestStats[stat] || 0;
                                             return (
                                                 <div key={stat} style={{ textAlign: 'center' }}>
-                                                    <div style={{ fontSize: '10px', fontWeight: 'bold', color: 'var(--text-muted)', marginBottom: '2px', textTransform: 'capitalize' }}>{icon} {stat}</div>
+                                                    <div style={{ fontSize: '10px', fontWeight: 'bold', color: 'var(--text-muted)', marginBottom: '4px', textTransform: 'capitalize' }}>{icon}<br/>{stat}</div>
                                                     <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                                                         <button
                                                             onClick={() => updatePokemon({ contestStats: { ...contestStats, [stat]: Math.max(0, val - 1) } })}
                                                             disabled={val === 0}
-                                                            style={{ flex: 1, padding: '4px 2px', background: 'var(--bg-light, #e0e0e0)', border: 'none', borderRadius: '4px', cursor: val === 0 ? 'not-allowed' : 'pointer', opacity: val === 0 ? 0.4 : 1, fontSize: '12px' }}
+                                                            style={{ flex: 1, padding: '6px 2px', background: 'var(--bg-light)', border: '1px solid var(--border-light)', borderRadius: '4px', cursor: val === 0 ? 'not-allowed' : 'pointer', opacity: val === 0 ? 0.4 : 1, fontSize: '13px', color: 'var(--text-secondary)' }}
                                                         >−</button>
-                                                        <span style={{ minWidth: '20px', textAlign: 'center', fontWeight: 'bold', fontSize: '13px' }}>{val}</span>
+                                                        <span style={{ minWidth: '18px', textAlign: 'center', fontWeight: 'bold', fontSize: '13px' }}>{val}</span>
                                                         <button
                                                             onClick={() => updatePokemon({ contestStats: { ...contestStats, [stat]: val + 1 } })}
-                                                            style={{ flex: 1, padding: '4px 2px', background: 'var(--bg-light, #e0e0e0)', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px' }}
+                                                            style={{ flex: 1, padding: '6px 2px', background: 'var(--bg-light)', border: '1px solid var(--border-light)', borderRadius: '4px', cursor: 'pointer', fontSize: '13px', color: 'var(--text-secondary)' }}
                                                         >+</button>
                                                     </div>
                                                 </div>
@@ -1672,22 +1677,22 @@ const PokemonCard = ({
                                         <span>Ribbons</span>
                                         {totalRibbons > 0 && <span style={{ fontSize: '11px', fontWeight: 'normal', color: 'var(--text-muted)' }}>{totalRibbons} total</span>}
                                     </label>
-                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '6px' }}>
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '4px' }}>
                                         {RIBBON_TYPES.map(([type, icon]) => {
                                             const count = ribbons[type] || 0;
                                             return (
                                                 <div key={type} style={{ textAlign: 'center' }}>
-                                                    <div style={{ fontSize: '10px', fontWeight: 'bold', color: 'var(--text-muted)', marginBottom: '2px', textTransform: 'capitalize' }}>{icon} {type}</div>
+                                                    <div style={{ fontSize: '10px', fontWeight: 'bold', color: 'var(--text-muted)', marginBottom: '4px', textTransform: 'capitalize' }}>{icon}<br/>{type}</div>
                                                     <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                                                         <button
                                                             onClick={() => updatePokemon({ ribbons: { ...ribbons, [type]: Math.max(0, count - 1) } })}
                                                             disabled={count === 0}
-                                                            style={{ flex: 1, padding: '4px 2px', background: 'var(--bg-light, #e0e0e0)', border: 'none', borderRadius: '4px', cursor: count === 0 ? 'not-allowed' : 'pointer', opacity: count === 0 ? 0.4 : 1, fontSize: '12px' }}
+                                                            style={{ flex: 1, padding: '6px 2px', background: 'var(--bg-light)', border: '1px solid var(--border-light)', borderRadius: '4px', cursor: count === 0 ? 'not-allowed' : 'pointer', opacity: count === 0 ? 0.4 : 1, fontSize: '13px', color: 'var(--text-secondary)' }}
                                                         >−</button>
-                                                        <span style={{ minWidth: '20px', textAlign: 'center', fontWeight: 'bold', fontSize: '13px' }}>{count > 0 ? count : '—'}</span>
+                                                        <span style={{ minWidth: '18px', textAlign: 'center', fontWeight: 'bold', fontSize: '13px' }}>{count > 0 ? count : '—'}</span>
                                                         <button
                                                             onClick={() => updatePokemon({ ribbons: { ...ribbons, [type]: count + 1 } })}
-                                                            style={{ flex: 1, padding: '4px 2px', background: 'var(--bg-light, #e0e0e0)', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px' }}
+                                                            style={{ flex: 1, padding: '6px 2px', background: 'var(--bg-light)', border: '1px solid var(--border-light)', borderRadius: '4px', cursor: 'pointer', fontSize: '13px', color: 'var(--text-secondary)' }}
                                                         >+</button>
                                                     </div>
                                                 </div>
@@ -1697,6 +1702,8 @@ const PokemonCard = ({
                                 </div>
                             );
                         })()}
+
+                        <div style={{ borderTop: '1px solid var(--border-light)', margin: '4px 0 16px' }} />
 
                         {/* Abilities Section - Up to 3 */}
                         <div style={{ marginBottom: '15px' }}>
@@ -1817,11 +1824,12 @@ const PokemonCard = ({
                                                                 background: 'var(--stat-hp)',
                                                                 border: 'none',
                                                                 borderRadius: '50%',
-                                                                width: '16px',
-                                                                height: '16px',
+                                                                width: '22px',
+                                                                height: '22px',
                                                                 color: 'white',
                                                                 cursor: 'pointer',
-                                                                fontSize: '12px',
+                                                                fontSize: '14px',
+                                                                flexShrink: 0,
                                                                 display: 'flex',
                                                                 alignItems: 'center',
                                                                 justifyContent: 'center'
@@ -1843,9 +1851,12 @@ const PokemonCard = ({
                                 </div>
                             ) : (
                                 <div>
+                                    <div className="text-muted" style={{ fontSize: '11px', marginBottom: '6px' }}>
+                                        No species data — type an ability name and press Enter to add ({(pokemon.abilities || []).length}/3 used).
+                                    </div>
                                     <input
                                         type="text"
-                                        placeholder="Enter ability name and press Enter..."
+                                        placeholder="Ability name..."
                                         onKeyDown={(e) => {
                                             if (e.key === 'Enter' && e.target.value.trim()) {
                                                 const newAbilities = [...(pokemon.abilities || [])];
@@ -1856,11 +1867,13 @@ const PokemonCard = ({
                                                 e.target.value = '';
                                             }
                                         }}
-                                        style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid var(--border-medium)' }}
+                                        style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--input-bg)', color: 'var(--text-primary)', boxSizing: 'border-box' }}
                                     />
                                 </div>
                             )}
                         </div>
+
+                        <div style={{ borderTop: '1px solid var(--border-light)', margin: '4px 0 16px' }} />
 
                         {/* Held Item */}
                         <div style={{ marginBottom: '15px' }}>
@@ -1951,10 +1964,10 @@ const PokemonCard = ({
                             </div>
                         </div>
 
-                        {/* Pokemon Image */}
+                        {/* Pokémon Image */}
                         <div style={{ marginBottom: '15px' }}>
                             <label style={{ fontSize: '12px', fontWeight: 'bold', marginBottom: '8px', display: 'block' }}>
-                                Pokemon Image
+                                Pokémon Image
                             </label>
                             <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
                                 {(() => {
@@ -2059,7 +2072,7 @@ const PokemonCard = ({
                         </div>
 
                         {/* Move Buttons */}
-                        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
                             {isInParty ? (
                                 <button
                                     onClick={onMoveToReserve}
@@ -2109,19 +2122,21 @@ const PokemonCard = ({
                                 </svg>
                                 Copy
                             </button>
-                            <button
-                                onClick={() => {
-                                    showConfirm({
-                                        title: 'Delete Pokémon',
-                                        message: `Delete ${pokemon.name || pokemon.species || 'this Pokémon'}? This cannot be undone.`,
-                                        danger: true,
-                                        onConfirm: () => deletePokemon()
-                                    });
-                                }}
-                                style={{ padding: '8px 16px', background: 'var(--danger-btn-start)', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer' }}
-                            >
-                                Delete
-                            </button>
+                            <div style={{ marginLeft: 'auto' }}>
+                                <button
+                                    onClick={() => {
+                                        showConfirm({
+                                            title: 'Delete Pokémon',
+                                            message: `Delete ${pokemon.name || pokemon.species || 'this Pokémon'}? This cannot be undone.`,
+                                            danger: true,
+                                            onConfirm: () => deletePokemon()
+                                        });
+                                    }}
+                                    style={{ padding: '8px 16px', background: 'var(--danger-btn-start)', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer' }}
+                                >
+                                    Delete
+                                </button>
+                            </div>
                         </div>
                     </div>
                 )}
@@ -2140,6 +2155,7 @@ const PokemonCard = ({
 
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
                             {['hp', 'atk', 'def', 'satk', 'sdef', 'spd'].map(stat => {
+                                const statColor = `var(--stat-${stat})`;
                                 const addedVal = pokemon.addedStats?.[stat] || 0;
                                 const pointsLeft = pokemon.statPointsAvailable || 0;
                                 const addBlockReason = pointsLeft > 0 ? getBaseRelationBlockReason(stat, pokemon.baseStats, pokemon.addedStats || {}, 1) : null;
@@ -2150,14 +2166,14 @@ const PokemonCard = ({
                                 const plusDisabled = pointsLeft <= 0 || addViolates;
                                 const canAdd = pointsLeft > 0 && !addViolates;
                                 return (
-                                <div key={stat} className="bg-light" style={{ padding: '10px', borderRadius: '8px', textAlign: 'center', outline: canAdd ? '2px solid var(--stat-hp)' : 'none', boxShadow: canAdd ? '0 0 6px rgba(76,175,80,0.4)' : 'none' }}>
-                                    <div style={{ fontSize: '12px', fontWeight: 'bold', color: 'var(--color-purple)', marginBottom: '4px' }}>
+                                <div key={stat} className="bg-light" style={{ padding: '10px', borderRadius: '8px', textAlign: 'center', outline: canAdd ? `2px solid ${statColor}` : 'none', boxShadow: canAdd ? '0 0 6px rgba(0,0,0,0.15)' : 'none', borderTop: `3px solid ${statColor}` }}>
+                                    <div style={{ fontSize: '12px', fontWeight: 'bold', color: statColor, marginBottom: '4px' }}>
                                         {stat.toUpperCase()}
                                     </div>
                                     <div className="text-light" style={{ fontSize: '11px' }} title="Base stat from the species. Determined by the Pokédex entry.">
                                         Base: {pokemon.baseStats?.[stat] || 10}
                                     </div>
-                                    <div style={{ fontSize: '11px', color: 'var(--stat-hp)' }} title="Points you've added from level-up bonuses.">
+                                    <div style={{ fontSize: '11px', color: statColor }} title="Points you've added from level-up bonuses.">
                                         +{addedVal}
                                     </div>
                                     <div style={{ fontSize: '18px', fontWeight: 'bold' }} title="Total stat = Base + Added. Used for damage calculations and skill checks.">
@@ -2215,11 +2231,11 @@ const PokemonCard = ({
                             </div>
                         )}
 
-                        <div style={{ marginTop: '15px', padding: '10px', background: '#e8f5e9', borderRadius: '8px' }}>
+                        <div style={{ marginTop: '15px', padding: '10px', background: 'var(--bg-light)', borderRadius: '8px', border: '1px solid var(--border-light)' }}>
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', textAlign: 'center', fontSize: '12px' }}>
                                 <div title="Maximum Hit Points = Level + (HP stat × 3)">
                                     <div style={{ color: 'var(--text-muted)' }}>Max HP</div>
-                                    <div style={{ fontWeight: 'bold', color: '#e53935' }}>{maxHP}</div>
+                                    <div style={{ fontWeight: 'bold', color: 'var(--stat-hp)' }}>{maxHP}</div>
                                 </div>
                                 <div title="Same Type Attack Bonus: +0 at Lv.1–4, then +1 per 5 levels (Lv.5=+1, Lv.10=+2, Lv.15=+3 … Lv.100=+20)">
                                     <div style={{ color: 'var(--text-muted)' }}>STAB Bonus</div>
@@ -2374,7 +2390,9 @@ const PokemonCard = ({
                                             paddingRight: moveSearch ? '32px' : '10px',
                                             borderRadius: '6px',
                                             border: '1px solid var(--border-medium)',
-                                            boxSizing: 'border-box'
+                                            boxSizing: 'border-box',
+                                            background: 'var(--input-bg)',
+                                            color: 'var(--text-primary)'
                                         }}
                                     />
                                     {moveSearch && (
@@ -2385,7 +2403,7 @@ const PokemonCard = ({
                                                 right: '8px',
                                                 top: '50%',
                                                 transform: 'translateY(-50%)',
-                                                background: '#999',
+                                                background: 'var(--text-muted)',
                                                 color: 'white',
                                                 border: 'none',
                                                 borderRadius: '50%',
@@ -2416,8 +2434,8 @@ const PokemonCard = ({
                                                 border: '1px solid var(--border-medium)',
                                                 fontSize: '11px',
                                                 cursor: 'pointer',
-                                                background: moveTypeFilter !== 'all' ? getTypeColor(moveTypeFilter) : 'white',
-                                                color: moveTypeFilter !== 'all' ? getContrastTextColor(getTypeColor(moveTypeFilter)) : '#333'
+                                                background: moveTypeFilter !== 'all' ? getTypeColor(moveTypeFilter) : 'var(--input-bg)',
+                                                color: moveTypeFilter !== 'all' ? getContrastTextColor(getTypeColor(moveTypeFilter)) : 'var(--text-primary)'
                                             }}
                                         >
                                             <option value="all">All</option>
@@ -2438,7 +2456,9 @@ const PokemonCard = ({
                                                 borderRadius: '4px',
                                                 border: '1px solid var(--border-medium)',
                                                 fontSize: '11px',
-                                                cursor: 'pointer'
+                                                cursor: 'pointer',
+                                                background: 'var(--input-bg)',
+                                                color: 'var(--text-primary)'
                                             }}
                                         >
                                             <option value="all">All</option>
@@ -2575,7 +2595,8 @@ const PokemonCard = ({
                                         width: '100%',
                                         marginTop: '8px',
                                         padding: '6px',
-                                        background: showMoveDropdown ? 'var(--danger-btn-start)' : 'var(--color-purple)',
+                                        background: 'var(--color-purple)',
+                                        opacity: showMoveDropdown ? 0.8 : 1,
                                         color: 'white',
                                         border: 'none',
                                         borderRadius: '4px',
@@ -2772,7 +2793,7 @@ const quickBtnStyle = {
     height: '28px',
     border: '1px solid var(--border-medium)',
     borderRadius: '4px',
-    background: 'white',
+    background: 'var(--input-bg)',
     cursor: 'pointer',
     fontSize: '12px',
     display: 'flex',
