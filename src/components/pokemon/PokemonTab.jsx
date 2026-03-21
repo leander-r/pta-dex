@@ -563,8 +563,9 @@ const PokemonTab = () => {
                                 if (lastSortBy) handleSort(lastSortBy, newDir);
                             }}
                             style={{ padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--input-bg)', cursor: 'pointer', fontSize: '13px', color: 'var(--text-primary)' }}
+                            title={sortDir === 'asc' ? 'Ascending — click to reverse' : 'Descending — click to reverse'}
                         >
-                            {sortDir === 'asc' ? 'A-Z' : 'Z-A'}
+                            {sortDir === 'asc' ? '↑ Asc' : '↓ Desc'}
                         </button>
                         {(filter.search || filter.type) && (
                             <>

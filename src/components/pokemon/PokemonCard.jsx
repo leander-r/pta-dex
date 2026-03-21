@@ -487,7 +487,7 @@ const PokemonCard = ({
                     ) : (
                         <div
                             title="Drag to reorder"
-                            style={{ flexShrink: 0, cursor: 'grab', fontSize: '18px', color: 'var(--text-muted, #aaa)', userSelect: 'none', width: '20px', textAlign: 'center' }}
+                            style={{ flexShrink: 0, cursor: 'grab', fontSize: '18px', color: 'var(--text-muted)', userSelect: 'none', width: '20px', textAlign: 'center' }}
                         >
                             ⠿
                         </div>
@@ -509,7 +509,7 @@ const PokemonCard = ({
                             const img = getPokemonDisplayImage(pokemon);
                             return img
                                 ? <img src={img} alt={pokemon.name || pokemon.species || 'Pokémon'} style={{ width: '56px', height: '56px', objectFit: 'cover' }} />
-                                : <span style={{ fontSize: '24px' }}>🔴</span>;
+                                : <span style={{ fontSize: '24px', opacity: 0.35 }}>⬤</span>;
                         })()}
                     </div>
 

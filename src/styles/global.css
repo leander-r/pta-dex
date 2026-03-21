@@ -4750,65 +4750,43 @@
         }
 
         .pokemon-action-btn.export {
-            background: #667eea;
+            background: var(--color-purple);
             color: white;
         }
 
         .pokemon-action-btn.export:hover {
-            background: #5a6fd6;
+            background: var(--color-purple-dark);
             transform: translateY(-1px);
         }
 
         .pokemon-action-btn.import {
-            background: #4caf50;
+            background: var(--stat-hp);
             color: white;
         }
 
         .pokemon-action-btn.import:hover {
-            background: #43a047;
+            background: var(--success-header-start);
             transform: translateY(-1px);
-        }
-
-        [data-theme="dark"] .pokemon-action-btn.export {
-            background: #7c8cf0;
-        }
-
-        [data-theme="dark"] .pokemon-action-btn.import {
-            background: #66bb6a;
         }
 
         /* Pokemon import dropdown */
         .pokemon-import-dropdown {
-            background: white;
-            border: 2px solid #e8e3f3;
+            background: var(--input-bg);
+            border: 2px solid var(--border-light);
         }
 
         .pokemon-import-option:hover {
-            background: #f5f5f5;
+            background: var(--hover-bg);
         }
 
         .pokemon-import-footer {
-            color: #888;
-            background: #fafafa;
-        }
-
-        [data-theme="dark"] .pokemon-import-dropdown {
-            background: var(--poke-cream);
-            border-color: var(--border-light);
+            color: var(--text-muted);
+            background: var(--bg-light);
         }
 
         [data-theme="dark"] .pokemon-import-dropdown button,
         [data-theme="dark"] .pokemon-import-option {
             color: var(--text-primary);
-        }
-
-        [data-theme="dark"] .pokemon-import-option:hover {
-            background: #3d3d4d !important;
-        }
-
-        [data-theme="dark"] .pokemon-import-footer {
-            color: var(--text-muted);
-            background: var(--bg-section);
         }
 
         /* System preference dark mode (auto) */
