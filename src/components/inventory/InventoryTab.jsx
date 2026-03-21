@@ -358,7 +358,7 @@ const InventoryTab = () => {
                             aria-pressed={showSearch}
                             title={showSearch ? 'Hide search & filters' : 'Show search & filters'}
                             style={{
-                                background: showSearch ? 'linear-gradient(135deg, #667eea, #764ba2)' : 'none',
+                                background: showSearch ? 'var(--gradient-purple)' : 'none',
                                 border: showSearch ? 'none' : '1px solid var(--border-medium)',
                                 borderRadius: '6px',
                                 color: showSearch ? 'white' : 'inherit',
@@ -367,7 +367,7 @@ const InventoryTab = () => {
                                 fontSize: '12px'
                             }}
                         >
-                            🔍{(searchQuery || filter !== 'all') && <span style={{ marginLeft: '3px', background: '#f44336', color: 'white', borderRadius: '8px', padding: '0 4px', fontSize: '10px' }}>•</span>}
+                            🔍{(searchQuery || filter !== 'all') && <span style={{ marginLeft: '3px', background: 'var(--danger-btn-start)', color: 'white', borderRadius: '8px', padding: '0 4px', fontSize: '10px' }}>•</span>}
                         </button>
                         <button
                             onClick={() => setShowAddItem(s => !s)}
@@ -375,7 +375,7 @@ const InventoryTab = () => {
                             style={{
                                 padding: '2px 8px',
                                 fontSize: '12px',
-                                background: showAddItem ? '#f44336' : 'linear-gradient(135deg, #667eea, #764ba2)',
+                                background: showAddItem ? 'var(--danger-btn-start)' : 'var(--gradient-purple)',
                                 color: 'white',
                                 border: 'none',
                                 borderRadius: '6px',
@@ -433,7 +433,7 @@ const InventoryTab = () => {
                         style={{
                             padding: '8px 12px',
                             borderRadius: '6px',
-                            border: inventorySort ? '2px solid #667eea' : '1px solid var(--border-medium)',
+                            border: inventorySort ? `2px solid var(--color-purple)` : '1px solid var(--border-medium)',
                             background: inventorySort ? 'var(--input-bg-hover, var(--input-bg))' : 'var(--input-bg)',
                             color: 'var(--text-primary)'
                         }}
@@ -475,7 +475,7 @@ const InventoryTab = () => {
                                             right: '8px',
                                             top: '50%',
                                             transform: 'translateY(-50%)',
-                                            background: '#999',
+                                            background: 'var(--text-muted)',
                                             color: 'white',
                                             border: 'none',
                                             borderRadius: '50%',
@@ -614,7 +614,7 @@ const InventoryTab = () => {
                                                     onClick={() => handleAddItem(name, data, addQuantity)}
                                                     style={{
                                                         padding: '6px 14px',
-                                                        background: '#4caf50',
+                                                        background: 'var(--stat-hp)',
                                                         color: 'white',
                                                         border: 'none',
                                                         borderRadius: '6px',
@@ -642,10 +642,10 @@ const InventoryTab = () => {
                                         justifyContent: 'space-between',
                                         alignItems: 'center',
                                         padding: '12px',
-                                        background: '#e8f5e9',
+                                        background: 'var(--bg-light)',
                                         borderRadius: '8px',
                                         marginTop: '8px',
-                                        border: '2px dashed #4caf50'
+                                        border: '2px dashed var(--stat-hp)'
                                     }}
                                 >
                                     <div>
@@ -656,7 +656,7 @@ const InventoryTab = () => {
                                         onClick={() => handleAddItem(itemSearch, { type: 'misc' }, addQuantity)}
                                         style={{
                                             padding: '6px 14px',
-                                            background: '#667eea',
+                                            background: 'var(--color-purple)',
                                             color: 'white',
                                             border: 'none',
                                             borderRadius: '6px',
@@ -785,12 +785,12 @@ const InventoryTab = () => {
                                                 width: '50px',
                                                 textAlign: 'center',
                                                 padding: '4px',
-                                                border: `1px solid ${(item.quantity || 1) <= 1 ? '#f44336' : (item.quantity || 1) <= 2 ? '#ff9800' : 'var(--border-medium)'}`,
+                                                border: `1px solid ${(item.quantity || 1) <= 1 ? 'var(--danger-btn-start)' : (item.quantity || 1) <= 2 ? 'var(--poke-orange)' : 'var(--border-medium)'}`,
                                                 borderRadius: '4px',
                                                 fontSize: '14px',
                                                 fontWeight: 'bold',
                                                 background: 'var(--input-bg)',
-                                                color: (item.quantity || 1) <= 1 ? '#f44336' : (item.quantity || 1) <= 2 ? '#ff9800' : 'var(--text-primary)'
+                                                color: (item.quantity || 1) <= 1 ? 'var(--danger-btn-start)' : (item.quantity || 1) <= 2 ? 'var(--poke-orange)' : 'var(--text-primary)'
                                             }}
                                         />
                                         <button
@@ -813,7 +813,7 @@ const InventoryTab = () => {
                                             onClick={() => handleUseItem(item.name)}
                                             style={{
                                                 padding: '4px 8px',
-                                                background: '#ff9800',
+                                                background: 'var(--poke-orange)',
                                                 color: 'white',
                                                 border: 'none',
                                                 borderRadius: '4px',
@@ -829,7 +829,7 @@ const InventoryTab = () => {
                                             onClick={() => handleDeleteItem(item.name)}
                                             style={{
                                                 padding: '4px 8px',
-                                                background: '#f44336',
+                                                background: 'var(--danger-btn-start)',
                                                 color: 'white',
                                                 border: 'none',
                                                 borderRadius: '4px',
@@ -848,7 +848,7 @@ const InventoryTab = () => {
                                             padding: '10px 12px',
                                             background: 'var(--input-bg)',
                                             borderRadius: '6px',
-                                            border: '1px solid #4caf50',
+                                            border: '1px solid var(--stat-hp)',
                                             display: 'flex',
                                             flexWrap: 'wrap',
                                             gap: '8px',
@@ -911,7 +911,7 @@ const InventoryTab = () => {
                                                 onClick={handleApplyHeal}
                                                 style={{
                                                     padding: '6px 12px',
-                                                    background: '#4caf50',
+                                                    background: 'var(--stat-hp)',
                                                     color: 'white',
                                                     border: 'none',
                                                     borderRadius: '4px',
@@ -926,9 +926,9 @@ const InventoryTab = () => {
                                                 onClick={() => setHealPanel(null)}
                                                 style={{
                                                     padding: '6px 10px',
-                                                    background: '#9e9e9e',
-                                                    color: 'white',
-                                                    border: 'none',
+                                                    background: 'var(--bg-light)',
+                                                    color: 'var(--text-primary)',
+                                                    border: '1px solid var(--border-medium)',
                                                     borderRadius: '4px',
                                                     cursor: 'pointer',
                                                     fontSize: '12px'

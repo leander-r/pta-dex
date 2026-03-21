@@ -5062,64 +5062,38 @@
 
         /* --- Inventory Tab --- */
         .add-item-panel {
-            background: #f8f9fa;
+            background: var(--bg-light);
             padding: 15px;
             border-radius: 8px;
-            border: 2px solid #667eea;
+            border: 2px solid var(--color-purple);
             transition: background 0.3s ease;
-        }
-
-        [data-theme="dark"] .add-item-panel {
-            background: var(--bg-light) !important;
-            border-color: #7c8cf0 !important;
         }
 
         .quantity-input-group {
-            background: white;
+            background: var(--input-bg);
             transition: background 0.3s ease;
-        }
-
-        [data-theme="dark"] .quantity-input-group {
-            background: var(--poke-white) !important;
         }
 
         .item-list-card {
-            background: white;
+            background: var(--input-bg);
             transition: background 0.3s ease;
-        }
-
-        [data-theme="dark"] .item-list-card {
-            background: var(--poke-white) !important;
         }
 
         .item-details-expanded {
-            background: #f0f4ff;
+            background: var(--tint-purple-bg);
             transition: background 0.3s ease;
-        }
-
-        [data-theme="dark"] .item-details-expanded {
-            background: var(--bg-light) !important;
         }
 
         .inventory-item-card {
-            background: white;
+            background: var(--input-bg);
             transition: background 0.3s ease;
         }
 
-        [data-theme="dark"] .inventory-item-card {
-            background: var(--poke-white) !important;
-        }
-
         .quantity-btn {
-            background: white;
-            border: 1px solid #ddd;
+            background: var(--input-bg);
+            border: 1px solid var(--border-medium);
+            color: var(--text-primary);
             transition: background 0.3s ease, border-color 0.3s ease;
-        }
-
-        [data-theme="dark"] .quantity-btn {
-            background: var(--bg-light) !important;
-            border-color: var(--border-light) !important;
-            color: var(--text-primary) !important;
         }
 
         /* --- Battle Tab / Dice Roller --- */
