@@ -199,7 +199,7 @@ const InventoryTab = () => {
                 }];
             }
         });
-        setAddQuantity(1); // Reset quantity after adding
+        // intentionally not resetting addQuantity — user may want to add more at the same qty
     };
 
     const handleRemoveItem = (itemName) => {
@@ -350,8 +350,8 @@ const InventoryTab = () => {
                     <span>🎒</span> Items
                     <span style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <span className="text-muted" style={{ fontSize: '12px', fontWeight: 'normal' }}>
-                            {totalItems} items ({inventory.length} unique)
-                            {totalValue > 0 && <span style={{ marginLeft: '8px' }}>· ₽{totalValue.toLocaleString()}</span>}
+                            {totalItems} total · {inventory.length} unique
+                            {totalValue > 0 && <span style={{ marginLeft: '6px' }}>· ₽{totalValue.toLocaleString()}</span>}
                         </span>
                         <button
                             onClick={() => setShowSearch(s => !s)}
@@ -430,6 +430,7 @@ const InventoryTab = () => {
                     <select
                         value={inventorySort}
                         onChange={(e) => { setInventorySort(e.target.value); sortInventory(e.target.value); }}
+                        title="Sorting permanently reorders the list"
                         style={{
                             padding: '8px 12px',
                             borderRadius: '6px',
@@ -439,10 +440,13 @@ const InventoryTab = () => {
                         }}
                     >
                         <option value="">Sort by...</option>
-                        <option value="name">Name (A→Z) {inventorySort === 'name' ? '✓' : ''}</option>
-                        <option value="type">Type (A→Z) {inventorySort === 'type' ? '✓' : ''}</option>
-                        <option value="quantity">Quantity (High→Low) {inventorySort === 'quantity' ? '✓' : ''}</option>
+                        <option value="name">↑ Name (A→Z)</option>
+                        <option value="type">↑ Type (A→Z)</option>
+                        <option value="quantity">↓ Quantity (High→Low)</option>
                     </select>
+                    {inventorySort && (
+                        <span style={{ fontSize: '11px', color: 'var(--text-muted)', alignSelf: 'center', whiteSpace: 'nowrap' }}>sorted</span>
+                    )}
                 </div>}
 
                 {/* Add Item Panel */}
@@ -556,7 +560,7 @@ const InventoryTab = () => {
                             </div>
 
                             {/* Results count */}
-                            <span className="text-light" style={{ fontSize: '12px', marginLeft: 'auto' }}>
+                            <span style={{ fontSize: '12px', color: 'var(--text-muted)', marginLeft: 'auto' }}>
                                 {availableItems.length} items
                             </span>
                         </div>
@@ -598,7 +602,7 @@ const InventoryTab = () => {
                                                     </span>
                                                 </div>
                                                 {data.effect && (
-                                                    <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginTop: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                    <div title={data.effect} style={{ fontSize: '13px', color: 'var(--text-secondary)', marginTop: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                                         {data.effect}
                                                     </div>
                                                 )}
@@ -650,7 +654,7 @@ const InventoryTab = () => {
                                 >
                                     <div>
                                         <div style={{ fontWeight: 'bold', fontSize: '14px' }}>Add Custom: "{itemSearch}"</div>
-                                        <div className="text-muted" style={{ fontSize: '12px' }}>Not in database - will be added as misc item</div>
+                                        <div className="text-muted" style={{ fontSize: '12px' }}>Not in database — will be added as misc item</div>
                                     </div>
                                     <button
                                         onClick={() => handleAddItem(itemSearch, { type: 'misc' }, addQuantity)}
@@ -745,6 +749,9 @@ const InventoryTab = () => {
                                             }}>
                                                 {itemType}
                                             </span>
+                                            {item.price > 0 && (
+                                                <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 'normal' }}>₽{item.price}</span>
+                                            )}
                                             <button
                                                 onClick={() => setDetailModal({ show: true, type: 'item', name: item.name, data: { type: item.type, price: item.price, effect: item.effect } })}
                                                 title={`View ${item.name} details`}
@@ -752,6 +759,11 @@ const InventoryTab = () => {
                                                 style={{ background: 'none', border: '1px solid var(--border-medium)', borderRadius: '50%', width: '20px', height: '20px', fontSize: '11px', cursor: 'pointer', color: 'var(--text-muted)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: 0, flexShrink: 0 }}
                                             >ℹ</button>
                                         </div>
+                                        {item.effect && (
+                                            <div title={item.effect} style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                {item.effect}
+                                            </div>
+                                        )}
                                     </div>
 
                                     {/* Quantity Controls */}
@@ -809,6 +821,7 @@ const InventoryTab = () => {
                                         >
                                             +
                                         </button>
+                                        {!['held', 'hold item', 'tm', 'hm', 'key', 'evolution'].includes(itemType) && (
                                         <button
                                             onClick={() => handleUseItem(item.name)}
                                             style={{
@@ -825,6 +838,7 @@ const InventoryTab = () => {
                                         >
                                             Use
                                         </button>
+                                        )}
                                         <button
                                             onClick={() => handleDeleteItem(item.name)}
                                             style={{
@@ -907,6 +921,7 @@ const InventoryTab = () => {
                                                     </span>
                                                 );
                                             })()}
+                                            {party.length > 0 && (
                                             <button
                                                 onClick={handleApplyHeal}
                                                 style={{
@@ -922,6 +937,7 @@ const InventoryTab = () => {
                                             >
                                                 Roll & Apply
                                             </button>
+                                            )}
                                             <button
                                                 onClick={() => setHealPanel(null)}
                                                 style={{
