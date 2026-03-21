@@ -184,13 +184,13 @@ const DetailModal = () => {
 // Shared styles for info boxes
 const InfoBox = ({ label, icon, children, variant = 'default' }) => {
     const variants = {
-        default: { bg: 'var(--bg-section)',      border: 'var(--border-light)',        labelColor: 'var(--text-muted)',         textColor: 'var(--text-primary)' },
-        orange:  { bg: 'var(--tint-orange-bg)',  border: 'var(--tint-orange-border)',  labelColor: 'var(--poke-orange-dark)',   textColor: '#bf360c' },
-        purple:  { bg: 'var(--tint-purple-bg)',  border: 'var(--tint-purple-border)',  labelColor: 'var(--color-purple-dark)', textColor: '#4a148c' },
-        blue:    { bg: 'var(--tint-blue-bg)',    border: 'var(--tint-blue-border)',    labelColor: 'var(--info-text)',          textColor: '#0d47a1' },
-        green:   { bg: 'var(--tint-success-bg)', border: 'var(--success-border)',     labelColor: 'var(--success-text)',       textColor: '#1b5e20' },
-        red:     { bg: 'var(--tint-fail-bg)',    border: 'var(--tint-fail-border)',    labelColor: '#c62828',                  textColor: '#b71c1c' },
-        pink:    { bg: 'linear-gradient(135deg, #fce4ec 0%, #f3e5f5 100%)', border: '#f8bbd9', labelColor: '#ad1457', textColor: '#880e4f' },
+        default: { bg: 'var(--bg-section)',       border: 'var(--border-light)',        labelColor: 'var(--text-muted)',        textColor: 'var(--text-primary)' },
+        orange:  { bg: 'var(--tint-orange-bg)',   border: 'var(--tint-orange-border)',  labelColor: 'var(--poke-orange-dark)',  textColor: 'var(--text-primary)' },
+        purple:  { bg: 'var(--tint-purple-bg)',   border: 'var(--tint-purple-border)',  labelColor: 'var(--color-purple)',      textColor: 'var(--text-primary)' },
+        blue:    { bg: 'var(--tint-blue-bg)',     border: 'var(--tint-blue-border)',    labelColor: 'var(--info-text)',         textColor: 'var(--text-primary)' },
+        green:   { bg: 'var(--tint-success-bg)',  border: 'var(--success-border)',      labelColor: 'var(--success-text)',      textColor: 'var(--text-primary)' },
+        red:     { bg: 'var(--tint-fail-bg)',     border: 'var(--tint-fail-border)',    labelColor: 'var(--color-danger-text)', textColor: 'var(--text-primary)' },
+        pink:    { bg: 'var(--tint-pink-bg)',     border: 'var(--tint-pink-border)',    labelColor: 'var(--color-pink)',        textColor: 'var(--text-primary)' },
     };
     const v = variants[variant] || variants.default;
     return (
@@ -339,14 +339,14 @@ const MoveDetails = ({ data, moveName, getContestTypeColor }) => {
                     )}
                     {data.contestDice && (
                         <>
-                            <span style={{ fontSize: '13px', fontWeight: 'bold', color: '#7b1fa2' }}>
+                            <span style={{ fontSize: '13px', fontWeight: 'bold', color: 'var(--color-pink)' }}>
                                 🎲 {data.contestDice}
                             </span>
                             <button
                                 onClick={rollAppeal}
                                 style={{
                                     padding: '4px 12px', borderRadius: '8px', border: 'none',
-                                    background: 'linear-gradient(135deg, #ad1457, #880e4f)',
+                                    background: 'linear-gradient(135deg, var(--color-pink), #880e4f)',
                                     color: 'white', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer'
                                 }}
                             >
@@ -358,20 +358,20 @@ const MoveDetails = ({ data, moveName, getContestTypeColor }) => {
                 {contestRoll && (
                     <div style={{
                         padding: '8px 12px', borderRadius: '8px', marginBottom: '8px',
-                        background: 'rgba(173,20,87,0.1)', border: '1px solid rgba(173,20,87,0.3)',
+                        background: 'var(--tint-pink-bg)', border: '1px solid var(--tint-pink-border)',
                     }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
-                            <span style={{ fontSize: '22px', fontWeight: '800', color: '#ad1457' }}>{contestRoll.total}</span>
-                            <span style={{ fontSize: '12px', color: '#7b1fa2' }}>
+                            <span style={{ fontSize: '22px', fontWeight: '800', color: 'var(--color-pink)' }}>{contestRoll.total}</span>
+                            <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
                                 [{contestRoll.rolls.join(', ')}]{contestRoll.bonus !== 0 ? ` ${contestRoll.bonus > 0 ? '+' : ''}${contestRoll.bonus}` : ''}
                             </span>
-                            <button onClick={rollAppeal} style={{ marginLeft: 'auto', background: 'none', border: '1px solid #ad1457', borderRadius: '6px', padding: '2px 8px', color: '#ad1457', fontSize: '11px', cursor: 'pointer' }}>Reroll</button>
+                            <button onClick={rollAppeal} style={{ marginLeft: 'auto', background: 'none', border: '1px solid var(--tint-pink-border)', borderRadius: '6px', padding: '2px 8px', color: 'var(--color-pink)', fontSize: '11px', cursor: 'pointer' }}>Reroll</button>
                         </div>
                         <div style={{ display: 'flex', gap: '6px' }}>
                             <button
                                 onClick={copyResult}
                                 title="Copy as plain text for the GM"
-                                style={{ flex: 1, padding: '5px 8px', borderRadius: '6px', border: '1px solid #ad145766', background: 'rgba(173,20,87,0.08)', color: '#ad1457', fontSize: '12px', fontWeight: '700', cursor: 'pointer' }}
+                                style={{ flex: 1, padding: '5px 8px', borderRadius: '6px', border: '1px solid var(--tint-pink-border)', background: 'var(--tint-pink-bg)', color: 'var(--color-pink)', fontSize: '12px', fontWeight: '700', cursor: 'pointer' }}
                             >
                                 📋 Copy Result
                             </button>
@@ -405,16 +405,16 @@ const FeatureDetails = ({ data, name }) => {
     if (!data) {
         return (
             <div style={{
-                background: 'linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%)',
+                background: 'var(--bg-section)',
                 padding: '24px',
                 borderRadius: '12px',
-                border: '2px dashed #e0e0e0',
+                border: '2px dashed var(--border-medium)',
                 textAlign: 'center'
             }}>
                 <span style={{ fontSize: '32px', display: 'block', marginBottom: '12px' }}>📋</span>
-                <div style={{ fontSize: '14px', lineHeight: '1.6', color: '#666' }}>
+                <div style={{ fontSize: '14px', lineHeight: '1.6', color: 'var(--text-secondary)' }}>
                     Feature data not found in database.<br />
-                    <span style={{ fontSize: '12px', color: '#999' }}>This feature may be custom or from an external source.</span>
+                    <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>This feature may be custom or from an external source.</span>
                 </div>
             </div>
         );
@@ -510,12 +510,12 @@ const AbilityDetails = ({ data }) => {
                 </InfoBox>
             ) : (
                 <div style={{
-                    background: 'linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%)',
+                    background: 'var(--bg-section)',
                     padding: '20px',
                     borderRadius: '12px',
-                    border: '2px dashed #e0e0e0',
+                    border: '2px dashed var(--border-medium)',
                     textAlign: 'center',
-                    color: '#999'
+                    color: 'var(--text-muted)'
                 }}>
                     <span style={{ fontSize: '24px', display: 'block', marginBottom: '8px' }}>📋</span>
                     No description available for this ability.
@@ -722,21 +722,21 @@ const PokemonSkillDetails = ({ data, name }) => {
             {/* Value display for numeric skills with effect description */}
             {data?.value !== undefined && (
                 <div style={{
-                    background: 'linear-gradient(135deg, #e3f2fd 0%, #e8eaf6 100%)',
+                    background: 'var(--tint-blue-bg)',
                     padding: '14px 16px',
                     borderRadius: '12px',
                     marginBottom: '12px',
-                    border: '2px solid #90caf9',
+                    border: '2px solid var(--tint-blue-border)',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '12px'
                 }}>
                     <span style={{ fontSize: '24px' }}>📏</span>
                     <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: '11px', color: '#1565c0', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                        <div style={{ fontSize: '11px', color: 'var(--info-text)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                             {name} {data.value}
                         </div>
-                        <div style={{ fontSize: '16px', fontWeight: '700', color: '#0d47a1' }}>
+                        <div style={{ fontSize: '16px', fontWeight: '700', color: 'var(--text-primary)' }}>
                             {skillEffect || data.value}
                         </div>
                     </div>
@@ -770,19 +770,19 @@ const ItemDetails = ({ data }) => (
         {/* Price display */}
         {data.price !== undefined && (
             <div style={{
-                background: 'linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%)',
+                background: 'var(--tint-orange-bg)',
                 padding: '14px 16px',
                 borderRadius: '12px',
                 marginBottom: '12px',
-                border: '2px solid #ffd54f',
+                border: '2px solid var(--tint-orange-border)',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '12px'
             }}>
                 <span style={{ fontSize: '24px' }}>💰</span>
                 <div>
-                    <div style={{ fontSize: '11px', color: '#f57f17', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Price</div>
-                    <div style={{ fontSize: '20px', fontWeight: '800', color: '#e65100' }}>₽{data.price?.toLocaleString() || 0}</div>
+                    <div style={{ fontSize: '11px', color: 'var(--poke-orange-dark)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Price</div>
+                    <div style={{ fontSize: '20px', fontWeight: '800', color: 'var(--text-primary)' }}>₽{data.price?.toLocaleString() || 0}</div>
                 </div>
             </div>
         )}

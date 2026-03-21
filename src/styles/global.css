@@ -87,6 +87,9 @@
             --tint-warn-bg: rgba(255,152,0,0.10);
             --tint-warn-border: rgba(255,152,0,0.35);
             --tint-fail-border: rgba(244,67,54,0.40);
+            --tint-pink-bg: rgba(233,30,99,0.07);
+            --tint-pink-border: rgba(233,30,99,0.30);
+            --color-pink: #c2185b;
 
             /* NEW: Consistent component colors */
             --section-bg: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
@@ -310,6 +313,9 @@
             --tint-warn-bg: rgba(255,152,0,0.15);
             --tint-warn-border: rgba(255,152,0,0.40);
             --tint-fail-border: rgba(244,67,54,0.45);
+            --tint-pink-bg: rgba(233,30,99,0.20);
+            --tint-pink-border: rgba(233,30,99,0.50);
+            --color-pink: #f48fb1;
 
             /* Body background - dark theme */
             --body-bg: linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
