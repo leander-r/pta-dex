@@ -229,7 +229,7 @@ const PokemonTab = () => {
                 importPokemon(pokemon, pokemonView === 'party');
                 toast.success(`${pokemon.name || pokemon.species} was added to your ${pokemonView}!`);
             } else {
-                toast.error('Invalid Pokemon data in clipboard. Make sure you copied a valid PTA Pokemon export.');
+                toast.error('Invalid Pokémon data in clipboard. Make sure you copied a valid PTA Pokémon export.');
             }
         } catch (err) {
             toast.error('Could not read from clipboard. Please use the file import option instead.');
@@ -278,7 +278,7 @@ const PokemonTab = () => {
 
     return (
         <div>
-            <h2 className="section-title">Pokemon</h2>
+            <h2 className="section-title">Pokémon</h2>
             <p className="section-description">
                 Party Pokémon travel with you (max {MAX_PARTY_SIZE}). Reserve stores additional Pokémon for later.
             </p>
@@ -335,7 +335,7 @@ const PokemonTab = () => {
                                 fontSize: '12px',
                                 fontWeight: 700
                             }}>
-                                Import Pokemon
+                                Import Pokémon
                             </div>
                             <button
                                 onClick={() => fileInputRef.current?.click()}
@@ -377,7 +377,7 @@ const PokemonTab = () => {
                                     transition: 'background 0.15s'
                                 }}
                             >
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9c27b0" strokeWidth="2">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-purple)" strokeWidth="2">
                                     <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
                                     <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
                                 </svg>
@@ -714,7 +714,7 @@ const PokemonTab = () => {
                                         <div style={{ flex: 1, minWidth: 0 }}>
                                             <div style={{ fontWeight: 'bold', fontSize: '13px' }}>{preset.name}</div>
                                             <div style={{ fontSize: '11px', color: 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                                {members.length ? members.map(p => p.name || p.species).join(', ') : '(pokemon not found)'}
+                                                {members.length ? members.map(p => p.name || p.species).join(', ') : '(Pokémon not found)'}
                                             </div>
                                         </div>
                                         <button
