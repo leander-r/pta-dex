@@ -3,7 +3,6 @@
 // ============================================================
 
 import React, { useState } from 'react';
-import { GAME_DATA } from '../../data/configs.js';
 
 const GameRulesSection = () => {
     const [expandedSection, setExpandedSection] = useState('combat');

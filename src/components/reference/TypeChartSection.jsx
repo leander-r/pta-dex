@@ -222,9 +222,9 @@ const TypeChartSection = () => {
                         label="Super Weak (4x damage)"
                         icon="💀"
                         types={matchup.superWeak}
-                        bgColor="var(--roll-miss-bg, #ffebee)"
-                        borderColor="#e57373"
-                        labelColor="#c62828"
+                        bgColor="rgba(198, 40, 40, 0.08)"
+                        borderColor="rgba(229, 115, 115, 0.5)"
+                        labelColor="var(--stat-atk)"
                     />
 
                     {/* 2x — Weak */}
@@ -232,9 +232,9 @@ const TypeChartSection = () => {
                         label="Weak To (2x damage)"
                         icon="⚠️"
                         types={matchup.weak}
-                        bgColor="var(--roll-miss-bg, #fff3e0)"
-                        borderColor="#ffb74d"
-                        labelColor="#e65100"
+                        bgColor="rgba(230, 81, 0, 0.08)"
+                        borderColor="rgba(255, 183, 77, 0.6)"
+                        labelColor="var(--poke-orange)"
                     />
 
                     {/* 1x — Neutral (toggleable) */}
@@ -285,9 +285,9 @@ const TypeChartSection = () => {
                         label="Resists (0.5x damage)"
                         icon="🛡️"
                         types={matchup.resist}
-                        bgColor="var(--roll-hit-bg, #e8f5e9)"
-                        borderColor="#81c784"
-                        labelColor="#2e7d32"
+                        bgColor="rgba(46, 125, 50, 0.08)"
+                        borderColor="rgba(129, 199, 132, 0.6)"
+                        labelColor="var(--stat-hp)"
                     />
 
                     {/* 0.25x — Super Resists (dual-type only) */}
@@ -295,9 +295,9 @@ const TypeChartSection = () => {
                         label="Super Resists (0.25x damage)"
                         icon="🏰"
                         types={matchup.superResist}
-                        bgColor="#e0f2f1"
-                        borderColor="#4db6ac"
-                        labelColor="#00695c"
+                        bgColor="rgba(0, 105, 92, 0.08)"
+                        borderColor="rgba(77, 182, 172, 0.5)"
+                        labelColor="var(--stat-spd)"
                     />
 
                     {/* 0x — Immune */}
@@ -305,9 +305,9 @@ const TypeChartSection = () => {
                         label="Immune To (0x damage)"
                         icon="✨"
                         types={matchup.immune}
-                        bgColor="#e3f2fd"
-                        borderColor="#64b5f6"
-                        labelColor="#1565c0"
+                        bgColor="rgba(21, 101, 192, 0.08)"
+                        borderColor="rgba(100, 181, 246, 0.5)"
+                        labelColor="var(--stat-def)"
                     />
 
                     {/* Summary bar */}
@@ -324,12 +324,12 @@ const TypeChartSection = () => {
                         justifyContent: 'center'
                     }}>
                         {matchup.superWeak.length > 0 && (
-                            <span style={{ color: '#c62828' }}>
+                            <span style={{ color: 'var(--stat-atk)' }}>
                                 <strong>{matchup.superWeak.length}</strong> super weak
                             </span>
                         )}
                         {matchup.weak.length > 0 && (
-                            <span style={{ color: '#e65100' }}>
+                            <span style={{ color: 'var(--poke-orange)' }}>
                                 <strong>{matchup.weak.length}</strong> weak
                             </span>
                         )}
@@ -339,17 +339,17 @@ const TypeChartSection = () => {
                             </span>
                         )}
                         {matchup.resist.length > 0 && (
-                            <span style={{ color: '#2e7d32' }}>
+                            <span style={{ color: 'var(--stat-hp)' }}>
                                 <strong>{matchup.resist.length}</strong> resist
                             </span>
                         )}
                         {matchup.superResist.length > 0 && (
-                            <span style={{ color: '#00695c' }}>
+                            <span style={{ color: 'var(--stat-spd)' }}>
                                 <strong>{matchup.superResist.length}</strong> super resist
                             </span>
                         )}
                         {matchup.immune.length > 0 && (
-                            <span style={{ color: '#1565c0' }}>
+                            <span style={{ color: 'var(--stat-def)' }}>
                                 <strong>{matchup.immune.length}</strong> immune
                             </span>
                         )}
@@ -403,9 +403,9 @@ const TypeChartSection = () => {
                         <thead>
                             <tr style={{ background: 'var(--bg-light)' }}>
                                 <th style={{ padding: '10px', border: '1px solid var(--border-medium)', color: 'var(--text-primary)', textAlign: 'left', minWidth: '80px' }}>Type</th>
-                                <th style={{ padding: '10px', border: '1px solid var(--border-medium)', color: '#c62828', textAlign: 'left' }}>Weak To (2x)</th>
-                                <th style={{ padding: '10px', border: '1px solid var(--border-medium)', color: '#2e7d32', textAlign: 'left' }}>Resists (0.5x)</th>
-                                <th style={{ padding: '10px', border: '1px solid var(--border-medium)', color: '#1565c0', textAlign: 'left' }}>Immune (0x)</th>
+                                <th style={{ padding: '10px', border: '1px solid var(--border-medium)', color: 'var(--stat-atk)', textAlign: 'left' }}>Weak To (2x)</th>
+                                <th style={{ padding: '10px', border: '1px solid var(--border-medium)', color: 'var(--stat-hp)', textAlign: 'left' }}>Resists (0.5x)</th>
+                                <th style={{ padding: '10px', border: '1px solid var(--border-medium)', color: 'var(--stat-def)', textAlign: 'left' }}>Immune (0x)</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -415,7 +415,7 @@ const TypeChartSection = () => {
                                     <tr
                                         key={type}
                                         style={{
-                                            background: idx % 2 === 0 ? 'var(--input-bg)' : 'var(--bg-primary, white)',
+                                            background: idx % 2 === 0 ? 'var(--input-bg)' : 'var(--bg-light)',
                                             cursor: 'pointer'
                                         }}
                                         onClick={() => {

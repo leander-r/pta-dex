@@ -73,7 +73,7 @@ const NaturesSection = () => {
         <div>
             <h3>Nature Effects ({totalNatures} Natures)</h3>
             <p style={{ marginBottom: '15px', fontSize: '13px', color: 'var(--text-muted)' }}>
-                Natures add <strong>+2</strong> to one Base Stat and subtract <strong>-2</strong> from another. Exception: HP is only ever changed by ±1.
+                Natures add <strong>+2</strong> to one Base Stat and subtract <strong>2</strong> from another. Exception: HP is only ever changed by ±1.
             </p>
 
             {/* Search and Filters */}
@@ -207,10 +207,10 @@ const NaturesSection = () => {
                             {filteredNatures.map(([nature, data], index) => (
                                 <tr key={nature} style={{ background: index % 2 === 0 ? 'var(--bg-light)' : 'var(--input-bg)' }}>
                                     <td style={{ padding: '8px', fontWeight: 'bold', color: 'var(--text-primary)' }}>{nature}</td>
-                                    <td style={{ padding: '8px', textAlign: 'center', color: 'var(--stat-hp)', fontWeight: 'bold' }}>
+                                    <td style={{ padding: '8px', textAlign: 'center', color: data.buff ? 'var(--stat-hp)' : 'var(--text-muted)', fontWeight: 'bold' }}>
                                         {data.buff ? data.buff.toUpperCase() : '—'}
                                     </td>
-                                    <td style={{ padding: '8px', textAlign: 'center', color: 'var(--danger-btn-start)', fontWeight: 'bold' }}>
+                                    <td style={{ padding: '8px', textAlign: 'center', color: data.nerf ? 'var(--danger-btn-start)' : 'var(--text-muted)', fontWeight: 'bold' }}>
                                         {data.nerf ? data.nerf.toUpperCase() : '—'}
                                     </td>
                                     <td style={{ padding: '8px', textAlign: 'center', color: 'var(--text-secondary)' }}>

@@ -34,6 +34,9 @@ const ReferenceTab = () => {
     return (
         <div>
             <h2 className="section-title">Quick Reference</h2>
+            <p className="section-description">
+                Browse the Pokédex, type chart, moves, abilities, natures, and game rules.
+            </p>
 
             {/* Tab Navigation */}
             <div className="tabs" style={{ display: 'flex', overflowX: 'auto', flexWrap: 'nowrap', WebkitOverflowScrolling: 'touch', gap: '4px', marginBottom: '16px' }}>

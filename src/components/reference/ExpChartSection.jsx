@@ -9,16 +9,10 @@ const ExpChartSection = () => {
     const expChart = GAME_DATA.pokemonExpChart || {};
     const levels = Object.keys(expChart).map(Number).sort((a, b) => a - b);
 
-    // Group levels in rows of 10 for better display
-    const levelGroups = [];
-    for (let i = 0; i < levels.length; i += 10) {
-        levelGroups.push(levels.slice(i, i + 10));
-    }
-
     return (
         <div>
             <h3>Pokémon Experience Chart</h3>
-            <p style={{ marginBottom: '15px', fontSize: '13px', color: 'var(--text-muted, #666)' }}>
+            <p style={{ marginBottom: '15px', fontSize: '13px', color: 'var(--text-muted)' }}>
                 Experience points required to reach each level.
             </p>
 
@@ -75,7 +69,7 @@ const ExpChartSection = () => {
 
             {/* Quick Reference */}
             <div style={{ marginTop: '20px', padding: '15px', background: 'var(--tint-purple-bg)', borderRadius: '8px' }}>
-                <h4 style={{ marginBottom: '10px', color: 'var(--text-primary, #303f9f)' }}>Key Milestones</h4>
+                <h4 style={{ marginBottom: '10px', color: 'var(--text-primary)' }}>Key Milestones</h4>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: '10px' }}>
                     {[10, 20, 30, 40, 50, 60, 70, 80, 90, 100].map(level => (
                         <div key={level} style={{ padding: '8px', background: 'var(--input-bg)', borderRadius: '6px', textAlign: 'center' }}>

@@ -12,8 +12,8 @@ import { POKEMON_TYPES } from '../../data/typeChart.js';
 const STAT_LABELS = ['HP', 'ATK', 'DEF', 'SATK', 'SDEF', 'SPD'];
 const STAT_KEYS   = ['hp', 'atk', 'def', 'satk', 'sdef', 'spd'];
 const STAT_COLORS = {
-    hp: '#4caf50', atk: '#f44336', def: '#2196f3',
-    satk: '#9c27b0', sdef: '#ff9800', spd: '#00bcd4'
+    hp: 'var(--stat-hp)', atk: 'var(--stat-atk)', def: 'var(--stat-def)',
+    satk: 'var(--stat-satk)', sdef: 'var(--stat-sdef)', spd: 'var(--stat-spd)'
 };
 
 const SORT_OPTIONS = [
@@ -127,7 +127,7 @@ const InfoChip = ({ label, color = 'var(--bg-section)', textColor }) => (
         display: 'inline-block',
         padding: '2px 9px', borderRadius: '10px', fontSize: '11px', fontWeight: 600,
         background: color, color: textColor || 'var(--text-primary)',
-        border: '1px solid rgba(0,0,0,0.08)'
+        border: '1px solid var(--border-light)'
     }}>{label}</span>
 );
 
@@ -296,13 +296,13 @@ const SpeciesDetail = ({ species }) => {
                                     padding: '3px 9px', borderRadius: '10px', fontSize: '11px', fontWeight: 600,
                                     background: isFlag ? 'rgba(245,166,35,0.15)' : 'var(--poke-gray)',
                                     border: `1px solid ${isFlag ? 'rgba(245,166,35,0.4)' : 'var(--border-light)'}`,
-                                    color: isFlag ? 'var(--poke-orange-dark, #c47d00)' : 'var(--text-primary)'
+                                    color: isFlag ? 'var(--poke-orange-dark)' : 'var(--text-primary)'
                                 }}>
                                     {label}
                                     {!isFlag && (
                                         <span style={{
                                             fontWeight: 700, fontSize: '12px',
-                                            color: 'var(--poke-orange-dark, #c47d00)'
+                                            color: 'var(--poke-orange-dark)'
                                         }}>{value}</span>
                                     )}
                                 </span>
@@ -333,7 +333,7 @@ const SpeciesDetail = ({ species }) => {
                                 {levelUpMoves.map((move, i) => (
                                     <tr key={i} style={{
                                         borderBottom: i < levelUpMoves.length - 1 ? '1px solid var(--border-light)' : 'none',
-                                        background: i % 2 === 0 ? 'transparent' : 'rgba(0,0,0,0.02)'
+                                        background: i % 2 === 0 ? 'transparent' : 'var(--bg-light)'
                                     }}>
                                         <td style={{ padding: '5px 8px', color: 'var(--text-muted)', fontWeight: 600, textAlign: 'right' }}>
                                             {move.level ?? '—'}
@@ -639,9 +639,9 @@ const PokedexSection = () => {
                             title={`Sort by ${opt.label}`}
                             style={{
                                 padding: '4px 9px', borderRadius: '6px', fontSize: '11px', fontWeight: isActive ? 700 : 500,
-                                border: isActive ? '1.5px solid var(--poke-orange, #f5a623)' : '1px solid var(--border-light)',
+                                border: isActive ? '1.5px solid var(--poke-orange)' : '1px solid var(--border-light)',
                                 background: isActive ? 'rgba(245,166,35,0.12)' : 'var(--poke-gray)',
-                                color: isActive ? 'var(--poke-orange-dark, #c47d00)' : 'var(--text-secondary)',
+                                color: isActive ? 'var(--poke-orange-dark)' : 'var(--text-secondary)',
                                 cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '3px',
                                 transition: 'all 0.1s'
                             }}
@@ -670,13 +670,12 @@ const PokedexSection = () => {
                 <button
                     onClick={() => setSortDir(d => d === 'asc' ? 'desc' : 'asc')}
                     title="Toggle sort direction"
-                    style={{ padding: '6px 10px', borderRadius: '8px', border: '1.5px solid var(--poke-orange, #f5a623)', background: 'rgba(245,166,35,0.12)', color: 'var(--poke-orange-dark, #c47d00)', fontWeight: 700, fontSize: '12px', cursor: 'pointer', flexShrink: 0 }}
+                    style={{ padding: '6px 10px', borderRadius: '8px', border: '1.5px solid var(--poke-orange)', background: 'rgba(245,166,35,0.12)', color: 'var(--poke-orange-dark)', fontWeight: 700, fontSize: '12px', cursor: 'pointer', flexShrink: 0 }}
                 >
                     {sortDir === 'asc' ? '▲ Asc' : '▼ Desc'}
                 </button>
             </div>
 
-            {/* ── Count ── */}
             {/* ── Count + pagination info ── */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px', flexWrap: 'wrap', gap: '4px' }}>
                 <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
@@ -701,7 +700,7 @@ const PokedexSection = () => {
                 {filtered.length === 0 ? (
                     <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '14px' }}>
                         No species found.{' '}
-                        <button onClick={resetAll} style={{ background: 'none', border: 'none', color: 'var(--poke-orange, #f5a623)', cursor: 'pointer', fontSize: '14px', fontWeight: 600, padding: 0 }}>
+                        <button onClick={resetAll} style={{ background: 'none', border: 'none', color: 'var(--poke-orange)', cursor: 'pointer', fontSize: '14px', fontWeight: 600, padding: 0 }}>
                             Reset filters
                         </button>
                     </div>
