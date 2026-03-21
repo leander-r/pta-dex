@@ -30,6 +30,7 @@
             --stat-satk: #9c27b0;
             --stat-sdef: #ff9800;
             --stat-spd: #00bcd4;
+            --color-taught: #2196f3;
 
             /* UI colors - improved for readability */
             --border-light: #e0e0e0;
@@ -316,6 +317,7 @@
             --tint-pink-bg: rgba(233,30,99,0.20);
             --tint-pink-border: rgba(233,30,99,0.50);
             --color-pink: #f48fb1;
+            --color-taught: #42a5f5;
 
             /* Body background - dark theme */
             --body-bg: linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
@@ -5065,11 +5067,19 @@
 
         .move-card {
             background: white;
-            transition: background 0.3s ease;
+            transition: background 0.2s ease;
+        }
+
+        .move-card:hover {
+            background: var(--hover-bg);
         }
 
         [data-theme="dark"] .move-card {
             background: var(--poke-white) !important;
+        }
+
+        [data-theme="dark"] .move-card:hover {
+            background: var(--hover-bg) !important;
         }
 
         /* --- Inventory Tab --- */

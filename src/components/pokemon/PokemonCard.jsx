@@ -538,7 +538,7 @@ const PokemonCard = ({
                                     <span style={{
                                         fontSize: '10px', fontWeight: 'bold', padding: '1px 6px',
                                         borderRadius: '8px', background: loyColors[loy],
-                                        color: loy === 2 ? '#333' : 'white'
+                                        color: loy === 2 ? 'rgba(0,0,0,0.75)' : 'white'
                                     }} title={`Loyalty: ${loy} — ${loyLabels[loy]} (GM Guide pp.10–13)`}>
                                         ❤ {loyLabels[loy]}
                                     </span>
@@ -920,7 +920,7 @@ const PokemonCard = ({
                             type="text"
                             value={pokemon.name || ''}
                             onChange={(e) => updatePokemon({ name: e.target.value })}
-                            placeholder="Nickname"
+                            placeholder={pokemon.species || 'Nickname'}
                             className="pokemon-expanded-nickname"
                             style={{
                                 background: 'rgba(255,255,255,0.2)',
@@ -1043,6 +1043,11 @@ const PokemonCard = ({
                                         >✕</button>
                                     )}
                                 </div>
+                                {!showSpeciesDropdown && pokemon.species && (
+                                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '4px' }}>
+                                        Changing species resets types, abilities, and available moves.
+                                    </div>
+                                )}
 
                                 {/* Species Dropdown */}
                                 {showSpeciesDropdown && (
@@ -1596,7 +1601,7 @@ const PokemonCard = ({
                                         <span>Loyalty</span>
                                         <span style={{
                                             padding: '1px 8px', borderRadius: '8px', fontSize: '11px', fontWeight: 'bold',
-                                            background: LOYALTY_COLORS[currentLoyalty], color: currentLoyalty === 2 ? '#333' : 'white'
+                                            background: LOYALTY_COLORS[currentLoyalty], color: currentLoyalty === 2 ? 'rgba(0,0,0,0.75)' : 'white'
                                         }}>
                                             {currentLoyalty} — {LOYALTY_LABELS[currentLoyalty]}
                                         </span>
@@ -1614,7 +1619,7 @@ const PokemonCard = ({
                                                     flex: 1, padding: '8px 4px', borderRadius: '6px', border: '2px solid',
                                                     borderColor: currentLoyalty === rank ? LOYALTY_COLORS[rank] : 'var(--border-medium, #ddd)',
                                                     background: currentLoyalty === rank ? LOYALTY_COLORS[rank] : 'var(--input-bg)',
-                                                    color: currentLoyalty === rank ? (rank === 2 ? '#333' : 'white') : 'var(--text-muted)',
+                                                    color: currentLoyalty === rank ? (rank === 2 ? 'rgba(0,0,0,0.75)' : 'white') : 'var(--text-muted)',
                                                     cursor: 'pointer', fontSize: '13px', fontWeight: 'bold', transition: 'all 0.15s'
                                                 }}
                                             >
@@ -2283,8 +2288,16 @@ const PokemonCard = ({
                                     }
                                 }}
                             >
-                                <div>
-                                    <div style={{ fontWeight: 'bold' }}>{move.name}</div>
+                                <div style={{ flex: 1 }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                        <div style={{ fontWeight: 'bold' }}>{move.name}</div>
+                                        <span style={{
+                                            fontSize: '9px', fontWeight: 'bold', padding: '1px 4px',
+                                            borderRadius: '3px',
+                                            background: move.source === 'taught' ? 'var(--color-taught)' : 'var(--stat-hp)',
+                                            color: 'white'
+                                        }}>{move.source === 'taught' ? 'Tght' : 'Nat'}</span>
+                                    </div>
                                     <div className="text-muted" style={{ fontSize: '12px' }}>
                                         {move.type} | {move.category} | {move.damage || 'Status'}
                                     </div>
@@ -2324,9 +2337,9 @@ const PokemonCard = ({
                                     <span style={{ fontSize: '12px', fontWeight: 'bold', color: 'var(--color-purple)' }}>Add Move</span>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                         <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
-                                            <span style={{ color: naturalMoveCount >= MAX_NATURAL_MOVES ? 'var(--color-danger-text)' : 'var(--stat-hp)', fontWeight: 'bold' }}>N:{naturalMoveCount}/{MAX_NATURAL_MOVES}</span>
+                                            <span style={{ color: naturalMoveCount >= MAX_NATURAL_MOVES ? 'var(--color-danger-text)' : 'var(--stat-hp)', fontWeight: 'bold' }}>Nat:{naturalMoveCount}/{MAX_NATURAL_MOVES}</span>
                                             {' · '}
-                                            <span style={{ color: taughtMoveCount >= MAX_TAUGHT_MOVES ? 'var(--color-danger-text)' : '#2196f3', fontWeight: 'bold' }}>T:{taughtMoveCount}/{MAX_TAUGHT_MOVES}</span>
+                                            <span style={{ color: taughtMoveCount >= MAX_TAUGHT_MOVES ? 'var(--color-danger-text)' : 'var(--color-taught)', fontWeight: 'bold' }}>Tght:{taughtMoveCount}/{MAX_TAUGHT_MOVES}</span>
                                         </span>
                                         <button
                                             onClick={() => setShowMoveDropdown(!showMoveDropdown)}
@@ -2347,8 +2360,13 @@ const PokemonCard = ({
                                     </div>
                                 </div>
                                 <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '8px' }}>
-                                    Click <span style={{ background: 'var(--stat-hp)', color: 'white', padding: '1px 5px', borderRadius: '3px', fontWeight: 'bold' }}>Nat</span> to add as Natural · <span style={{ background: '#2196f3', color: 'white', padding: '1px 5px', borderRadius: '3px', fontWeight: 'bold' }}>Tght</span> to add as Taught
+                                    Click <span style={{ background: 'var(--stat-hp)', color: 'white', padding: '1px 5px', borderRadius: '3px', fontWeight: 'bold' }}>Nat</span> to add as Natural · <span style={{ background: 'var(--color-taught)', color: 'white', padding: '1px 5px', borderRadius: '3px', fontWeight: 'bold' }}>Tght</span> to add as Taught
                                 </div>
+                                {(pokemon.moves?.length || 0) >= MAX_TOTAL_MOVES && (
+                                    <div style={{ padding: '6px 10px', background: 'var(--warning-bg)', border: '1px solid var(--warning-border)', borderRadius: '4px', fontSize: '11px', color: 'var(--warning-text)', marginBottom: '8px' }}>
+                                        ⚠ All {MAX_TOTAL_MOVES} move slots full — adding a new move will replace an existing one.
+                                    </div>
+                                )}
 
                                 {/* Source Filter Pills */}
                                 {(() => {
@@ -2492,7 +2510,7 @@ const PokemonCard = ({
                                 </div>
 
                                 {/* Move List */}
-                                {showMoveDropdown && (
+                                {showMoveDropdown && (filteredMoves.length > 0 || moveSearch || moveTypeFilter !== 'all' || moveCategoryFilter !== 'all' || moveSourceFilter !== 'all') && (
                                     <div className="move-list-container" style={{
                                         maxHeight: '200px',
                                         overflowY: 'auto',
@@ -2559,7 +2577,7 @@ const PokemonCard = ({
                                                             disabled={taughtMoveCount === 0 && (pokemon.moves?.length || 0) >= MAX_TOTAL_MOVES}
                                                             style={{
                                                                 padding: '2px 6px',
-                                                                background: (taughtMoveCount === 0 && (pokemon.moves?.length || 0) >= MAX_TOTAL_MOVES) ? 'var(--border-medium)' : ((taughtMoveCount >= MAX_TAUGHT_MOVES || (pokemon.moves?.length || 0) >= MAX_TOTAL_MOVES) ? 'var(--poke-orange)' : '#2196f3'),
+                                                                background: (taughtMoveCount === 0 && (pokemon.moves?.length || 0) >= MAX_TOTAL_MOVES) ? 'var(--border-medium)' : ((taughtMoveCount >= MAX_TAUGHT_MOVES || (pokemon.moves?.length || 0) >= MAX_TOTAL_MOVES) ? 'var(--poke-orange)' : 'var(--color-taught)'),
                                                                 color: 'white',
                                                                 border: 'none',
                                                                 borderRadius: '4px',
@@ -2614,7 +2632,7 @@ const PokemonCard = ({
                 {editTab === 'skills' && (
                     <div>
                         <div style={{ marginBottom: '10px', fontSize: '12px', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <span>Pokemon Skills (from species data)</span>
+                            <span>Pokémon Skills — click any skill to view details</span>
                             <button
                                 onClick={() => showHelp('pokemon-skills')}
                                 style={HELP_BTN_STYLE}
@@ -2690,7 +2708,7 @@ const PokemonCard = ({
                                 <>
                                     {canEvolve && canEvolve.length > 0 && (
                                         <div style={{ marginBottom: '15px' }}>
-                                            <h4 style={{ marginBottom: '10px' }}>Evolution Options</h4>
+                                            <h4 style={{ marginBottom: '10px', fontSize: '13px', fontWeight: 'bold', color: 'var(--text-secondary)', margin: '0 0 10px' }}>Evolution Options</h4>
                                             {canEvolve.map((evo, idx) => (
                                                 <div
                                                     key={idx}
@@ -2736,7 +2754,7 @@ const PokemonCard = ({
 
                                     {canDevolve && devolvePokemon && (
                                         <div>
-                                            <h4 style={{ marginBottom: '10px' }}>Devolution</h4>
+                                            <h4 style={{ marginBottom: '10px', fontSize: '13px', fontWeight: 'bold', color: 'var(--text-secondary)', margin: '0 0 10px' }}>Devolution</h4>
                                             <div
                                                 className="evolution-option-card devolve"
                                                 style={{
