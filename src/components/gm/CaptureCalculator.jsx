@@ -183,12 +183,12 @@ const CaptureCalculator = () => {
                             </span>
                         </div>
                         {target <= 0 && (
-                            <div style={{ color: '#e53935', fontWeight: 600, fontSize: 13 }}>
+                            <div style={{ color: 'var(--color-danger-text)', fontWeight: 600, fontSize: 13 }}>
                                 Impossible — no roll can succeed (modified rate ≤ 0)
                             </div>
                         )}
                         {target > 100 && (
-                            <div style={{ color: '#00c853', fontWeight: 600, fontSize: 13 }}>
+                            <div style={{ color: 'var(--color-success-text)', fontWeight: 600, fontSize: 13 }}>
                                 Succeeds on any roll 1–99 (rate &gt; 100)
                             </div>
                         )}
@@ -198,7 +198,7 @@ const CaptureCalculator = () => {
                         disabled={target <= 0}
                         style={{
                             padding: '10px 24px',
-                            background: target <= 0 ? 'var(--border-light)' : 'linear-gradient(135deg, #667eea, #764ba2)',
+                            background: target <= 0 ? 'var(--border-light)' : 'var(--gradient-purple)',
                             border: 'none', borderRadius: 8, color: target <= 0 ? 'var(--text-muted)' : 'white',
                             fontSize: 15, fontWeight: 700,
                             cursor: target <= 0 ? 'not-allowed' : 'pointer',
@@ -227,13 +227,13 @@ const CaptureCalculator = () => {
                 {rollResult && (
                     <div style={{
                         marginTop: 14, padding: '12px 16px', borderRadius: 8,
-                        background: rollResult.success ? 'rgba(67,160,71,0.1)' : 'rgba(229,57,53,0.1)',
-                        border: `1px solid ${rollResult.success ? '#43a047' : '#e53935'}`,
+                        background: rollResult.success ? 'var(--tint-success-bg)' : 'var(--tint-fail-bg)',
+                        border: `1px solid ${rollResult.success ? 'var(--color-success-text)' : 'var(--color-danger-text)'}`,
                         display: 'flex', alignItems: 'center', gap: 10
                     }}>
                         <span style={{ fontSize: 22 }}>{rollResult.success ? '✅' : '❌'}</span>
                         <div>
-                            <div style={{ fontWeight: 700, color: rollResult.success ? '#43a047' : '#e53935' }}>
+                            <div style={{ fontWeight: 700, color: rollResult.success ? 'var(--color-success-text)' : 'var(--color-danger-text)' }}>
                                 Rolled {rollResult.value} — {rollResult.success ? 'CAPTURE SUCCESSFUL' : 'CAPTURE FAILED'}
                             </div>
                             <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>

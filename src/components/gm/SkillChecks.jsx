@@ -357,7 +357,7 @@ const SkillChecks = () => {
                             onClick={fn}
                             style={{
                                 padding: '7px 12px', borderRadius: 6,
-                                background: 'linear-gradient(135deg, #667eea, #764ba2)',
+                                background: 'var(--gradient-purple)',
                                 border: 'none', color: 'white', fontSize: 12,
                                 fontWeight: 600, cursor: 'pointer', minWidth: '80px'
                             }}
@@ -373,7 +373,7 @@ const SkillChecks = () => {
                         fontSize: 14, color: 'var(--text-primary)'
                     }}>
                         Rolled <strong>{roll.base}</strong>
-                        {roll.bonus !== 0 && <> {roll.bonus >= 0 ? '+' : ''}{roll.bonus}</>} = <strong style={{ color: '#667eea', fontSize: 18 }}>{roll.total}</strong>
+                        {roll.bonus !== 0 && <> {roll.bonus >= 0 ? '+' : ''}{roll.bonus}</>} = <strong style={{ color: 'var(--color-purple)', fontSize: 18 }}>{roll.total}</strong>
                     </div>
                 )}
             </div>

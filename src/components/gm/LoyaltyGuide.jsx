@@ -190,10 +190,10 @@ const LoyaltyGuide = () => {
                     {defianceRoll && (
                         <div style={{
                             marginBottom: 14, padding: '12px 16px', borderRadius: 8,
-                            background: 'var(--tint-fail-bg)', border: '1px solid #f44336',
+                            background: 'var(--tint-fail-bg)', border: '1px solid var(--color-danger-text)',
                             display: 'flex', gap: 12, alignItems: 'flex-start'
                         }}>
-                            <span style={{ fontSize: 24, fontWeight: 800, color: '#f44336', flexShrink: 0 }}>
+                            <span style={{ fontSize: 24, fontWeight: 800, color: 'var(--color-danger-text)', flexShrink: 0 }}>
                                 {defianceRoll.roll}
                             </span>
                             <div style={{ fontSize: 14, color: 'var(--text-primary)', lineHeight: 1.5 }}>
@@ -207,10 +207,10 @@ const LoyaltyGuide = () => {
                             <div key={i} style={{
                                 display: 'flex', gap: 12, padding: '7px 10px', borderRadius: 6,
                                 background: defianceRoll?.entry === row ? 'var(--tint-fail-bg)' : 'var(--surface-bg)',
-                                border: `1px solid ${defianceRoll?.entry === row ? '#f44336' : 'var(--border-light)'}`,
+                                border: `1px solid ${defianceRoll?.entry === row ? 'var(--color-danger-text)' : 'var(--border-light)'}`,
                                 fontSize: 13
                             }}>
-                                <span style={{ fontWeight: 700, color: '#f44336', flexShrink: 0, width: 54 }}>{row.range}</span>
+                                <span style={{ fontWeight: 700, color: 'var(--color-danger-text)', flexShrink: 0, width: 54 }}>{row.range}</span>
                                 <span style={{ color: 'var(--text-secondary)' }}>{row.result}</span>
                             </div>
                         ))}

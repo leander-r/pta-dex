@@ -123,8 +123,8 @@ const ExpCalculator = () => {
                                         onClick={() => setIsTrainer(t)}
                                         style={{
                                             flex: 1, padding: '8px 6px', borderRadius: 6,
-                                            border: `1px solid ${isTrainer === t ? '#667eea' : 'var(--border-light)'}`,
-                                            background: isTrainer === t ? 'linear-gradient(135deg, #667eea, #764ba2)' : 'var(--surface-bg)',
+                                            border: `1px solid ${isTrainer === t ? 'var(--color-purple)' : 'var(--border-light)'}`,
+                                            background: isTrainer === t ? 'var(--gradient-purple)' : 'var(--surface-bg)',
                                             color: isTrainer === t ? 'white' : 'var(--text-muted)',
                                             cursor: 'pointer', fontSize: 13, fontWeight: isTrainer === t ? 700 : 400
                                         }}
@@ -162,7 +162,7 @@ const ExpCalculator = () => {
                             onClick={() => toast.success(`EXP awarded: ${splitExp.toLocaleString()} per active Pokémon`)}
                             style={{
                                 marginTop: 10, padding: '7px 16px',
-                                background: 'linear-gradient(135deg, #667eea, #764ba2)',
+                                background: 'var(--gradient-purple)',
                                 border: 'none', borderRadius: 6, color: 'white',
                                 fontSize: 13, fontWeight: 700, cursor: 'pointer'
                             }}

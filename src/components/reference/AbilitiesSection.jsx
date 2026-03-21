@@ -2,7 +2,7 @@
 // Abilities Section Component
 // ============================================================
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { GAME_DATA } from '../../data/configs.js';
 import { useModal, useFilter } from '../../contexts/index.js';
 
@@ -13,6 +13,7 @@ import { useModal, useFilter } from '../../contexts/index.js';
 const AbilitiesSection = () => {
     const { showDetail } = useModal();
     const { abilitiesFilter: filter, setAbilitiesFilter: setFilter } = useFilter();
+    const [hoveredAbility, setHoveredAbility] = useState(null);
 
     const filteredAbilities = useMemo(() => {
         return Object.entries(GAME_DATA.abilities || {})
@@ -34,7 +35,10 @@ const AbilitiesSection = () => {
 
     return (
         <div>
-            <h3 style={{ marginBottom: '15px' }}>Abilities Database ({totalAbilities} abilities)</h3>
+            <h3 style={{ marginBottom: '6px' }}>Abilities Database ({totalAbilities} abilities)</h3>
+            <p style={{ marginBottom: '15px', fontSize: '13px', color: 'var(--text-muted)' }}>
+                Browse and search all abilities. Click an ability to see full details.
+            </p>
 
             {/* Search and Filters */}
             <div className="section-card" style={{ marginBottom: '15px' }}>
@@ -114,13 +118,16 @@ const AbilitiesSection = () => {
                             style={{
                                 marginBottom: '8px',
                                 padding: '12px',
-                                background: 'var(--abilities-card-bg)',
+                                background: hoveredAbility === name && showDetail ? 'var(--hover-bg)' : 'var(--abilities-card-bg)',
                                 borderRadius: '8px',
                                 borderLeft: '4px solid var(--abilities-card-border)',
                                 boxShadow: '0 1px 3px var(--abilities-card-shadow)',
-                                cursor: showDetail ? 'pointer' : 'default'
+                                cursor: showDetail ? 'pointer' : 'default',
+                                transition: 'background 0.12s'
                             }}
                             onClick={() => showDetail && showDetail('ability', name, desc)}
+                            onMouseEnter={() => showDetail && setHoveredAbility(name)}
+                            onMouseLeave={() => setHoveredAbility(null)}
                         >
                             <div style={{ fontWeight: 'bold', fontSize: '14px', marginBottom: '4px', color: 'var(--abilities-name-text)' }}>
                                 {name}

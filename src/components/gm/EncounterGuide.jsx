@@ -267,7 +267,7 @@ const EncounterGuide = () => {
                                 <span style={{ color: 'var(--text-primary)' }}>{action.label}</span>
                                 <span style={{
                                     fontWeight: 700, fontSize: 14,
-                                    color: action.value >= 0 ? '#43a047' : '#e53935',
+                                    color: action.value >= 0 ? 'var(--color-success-text)' : 'var(--color-danger-text)',
                                     marginLeft: 8, flexShrink: 0
                                 }}>
                                     {action.value >= 0 ? '+' : ''}{action.value}

@@ -2,7 +2,7 @@
 // Moves Section Component
 // ============================================================
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { GAME_DATA } from '../../data/configs.js';
 import { getTypeColor } from '../../utils/typeUtils.js';
 import { POKEMON_TYPES } from '../../data/typeChart.js';
@@ -15,6 +15,7 @@ import { useModal, useFilter } from '../../contexts/index.js';
 const MovesSection = () => {
     const { showDetail } = useModal();
     const { movesFilter: filter, setMovesFilter: setFilter } = useFilter();
+    const [hoveredMove, setHoveredMove] = useState(null);
 
     const filteredMoves = useMemo(() => {
         return Object.entries(GAME_DATA.moves || {})
@@ -58,7 +59,10 @@ const MovesSection = () => {
 
     return (
         <div>
-            <h3 style={{ marginBottom: '15px' }}>Moves Database ({totalMoves} moves)</h3>
+            <h3 style={{ marginBottom: '6px' }}>Moves Database ({totalMoves} moves)</h3>
+            <p style={{ marginBottom: '15px', fontSize: '13px', color: 'var(--text-muted)' }}>
+                Search and filter all moves. Click a move to see full details.
+            </p>
 
             {/* Search and Filters */}
             <div className="section-card" style={{ marginBottom: '15px' }}>
@@ -193,13 +197,16 @@ const MovesSection = () => {
                             style={{
                                 marginBottom: '10px',
                                 padding: '12px',
-                                background: 'var(--moves-card-bg)',
+                                background: hoveredMove === move ? 'var(--hover-bg)' : 'var(--moves-card-bg)',
                                 borderRadius: '8px',
                                 borderLeft: `4px solid ${getTypeColor(data.type)}`,
                                 boxShadow: '0 1px 3px var(--moves-card-shadow)',
-                                cursor: 'pointer'
+                                cursor: 'pointer',
+                                transition: 'background 0.12s'
                             }}
                             onClick={() => showDetail && showDetail('move', move, data)}
+                            onMouseEnter={() => setHoveredMove(move)}
+                            onMouseLeave={() => setHoveredMove(null)}
                         >
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '8px' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
