@@ -3874,6 +3874,19 @@
                 font-size: 12px;
             }
 
+            /* Level ± buttons in edit header: larger touch target on mobile */
+            .pokemon-expanded-header button[aria-label="Level down"],
+            .pokemon-expanded-header button[aria-label="Level up"] {
+                width: 32px !important;
+                height: 32px !important;
+            }
+
+            /* Party/Reserve move buttons: compact on small screens */
+            .pokemon-info-move-btn {
+                font-size: 11px !important;
+                padding: 5px 10px !important;
+            }
+
             /* Collapsed quick-action buttons: icon only, no text label */
             .quick-action-btn span {
                 display: none;
@@ -4486,6 +4499,10 @@
             flex: 1;
             min-width: 0;
             max-width: 180px;
+        }
+
+        .pokemon-expanded-nickname::placeholder {
+            color: rgba(255, 255, 255, 0.65);
         }
 
 
