@@ -4474,6 +4474,12 @@
             cursor: pointer;
         }
 
+        /* Standardise edit-tab form labels to 13px */
+        .pokemon-card-expanded label[style],
+        .pokemon-card-expanded > div label {
+            font-size: 13px !important;
+        }
+
         .pokemon-card-expanded {
             box-shadow: 0 4px 15px rgba(0,0,0,0.15);
             overflow: hidden;

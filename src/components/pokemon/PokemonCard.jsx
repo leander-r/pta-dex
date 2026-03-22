@@ -7,7 +7,7 @@ import { getTypeColor, getContrastTextColor } from '../../utils/typeUtils.js';
 import { getActualStats, calculatePokemonHP, calculateSTAB, getBaseRelationViolations, applyNature } from '../../utils/dataUtils.js';
 import { exportSinglePokemon, copyPokemonToClipboard } from '../../utils/exportUtils.js';
 import toast from '../../utils/toast.js';
-import { useGameData, useModal, usePokemonContext, useUI } from '../../contexts/index.js';
+import { useGameData, useModal, usePokemonContext, useUI, useData } from '../../contexts/index.js';
 import { buildPokemonSkills } from '../../contexts/PokemonContext.jsx';
 import { MAX_NATURAL_MOVES, MAX_TAUGHT_MOVES, MAX_TOTAL_MOVES } from '../../data/constants.js';
 import { getPokemonDisplayImage, getPokemonSprite } from '../../utils/pokemonSprite.js';
@@ -51,6 +51,7 @@ const PokemonCard = ({
     const { showDetail, setShowCustomSpeciesModal, setEditingCustomSpeciesId, setShowMoveLearnModal, setMoveLearnData, showConfirm } = useModal();
     const { getEvolutionOptions } = usePokemonContext();
     const { showHelp } = useUI();
+    const { inventory } = useData();
     const [editTab, setEditTab] = useState('info');
     const [speciesSearch, setSpeciesSearch] = useState('');
     const [speciesTypeFilter, setSpeciesTypeFilter] = useState('all');
@@ -173,23 +174,17 @@ const PokemonCard = ({
         return results.slice(0, 50); // Increased limit
     }, [pokedex, customSpecies, speciesSearch, speciesTypeFilter, speciesSort]);
 
-    // Filter held items for selection
+    // Filter held items from inventory for selection
     const filteredHeldItems = useMemo(() => {
-        if (!GAME_DATA?.items) return [];
-        let items = Object.entries(GAME_DATA.items);
-        // Prefer items tagged as held/hold; if none, show all
-        const heldItems = items.filter(([_, d]) =>
-            typeof d.type === 'string' && /held|hold/i.test(d.type)
+        const holdable = (inventory || []).filter(item =>
+            typeof item.type === 'string' && /held|hold/i.test(item.type)
         );
-        const sourceItems = heldItems.length > 0 ? heldItems : items;
-        if (heldItemSearch) {
-            const q = heldItemSearch.toLowerCase();
-            return sourceItems.filter(([name, d]) =>
-                name.toLowerCase().includes(q) || (d.effect || '').toLowerCase().includes(q)
-            ).slice(0, 50);
-        }
-        return sourceItems.slice(0, 50);
-    }, [heldItemSearch, GAME_DATA]);
+        if (!heldItemSearch) return holdable;
+        const q = heldItemSearch.toLowerCase();
+        return holdable.filter(item =>
+            item.name.toLowerCase().includes(q) || (item.effect || '').toLowerCase().includes(q)
+        );
+    }, [heldItemSearch, inventory]);
 
     // Filter and sort moves for selection
     const filteredMoves = useMemo(() => {
@@ -1689,10 +1684,10 @@ const PokemonCard = ({
                             );
                         })()}
 
-                        <div style={{ borderTop: '1px solid var(--border-light)', margin: '4px 0 16px' }} />
+                        <div style={{ borderTop: '1px solid var(--border-medium)', margin: '12px 0 15px' }} />
 
                         {/* Contest Stats & Ribbons */}
-                        <div style={{ background: 'var(--card-bg)', border: '1px solid var(--border-light)', borderRadius: '10px', padding: '12px', marginBottom: '15px' }}>
+                        <div style={{ marginBottom: '15px' }}>
                         {(() => {
                             const CONTEST_STATS = [['cool', '😎'], ['beauty', '💎'], ['cute', '🌸'], ['smart', '🔮'], ['tough', '💪']];
                             const contestStats = pokemon.contestStats || {};
@@ -1763,16 +1758,17 @@ const PokemonCard = ({
                         })()}
                         </div>
 
-                        <div style={{ borderTop: '1px solid var(--border-light)', margin: '4px 0 16px' }} />
+                        <div style={{ borderTop: '1px solid var(--border-medium)', margin: '12px 0 15px' }} />
 
                         {/* Abilities Section - Up to 3 */}
                         <div style={{ marginBottom: '15px' }}>
-                            <label style={{ fontSize: '12px', fontWeight: 'bold', marginBottom: '8px', display: 'flex', justifyContent: 'space-between' }}>
-                                <span>Abilities</span>
-                                <span className="text-muted" style={{ fontWeight: 'normal' }}>
-                                    {(pokemon.abilities || []).length}/3 selected
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                                <span style={{ fontSize: '12px', fontWeight: 'bold' }}>Abilities</span>
+                                <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <span style={{ fontSize: '10px', color: 'var(--text-muted)' }}>● Basic · ★ Adv · ◆ High</span>
+                                    <span className="text-muted" style={{ fontSize: '12px', fontWeight: 'normal' }}>{(pokemon.abilities || []).length}/3</span>
                                 </span>
-                            </label>
+                            </div>
 
                             {/* Selected Abilities */}
                             {(pokemon.abilities || []).length > 0 && (
@@ -1933,7 +1929,7 @@ const PokemonCard = ({
                             )}
                         </div>
 
-                        <div style={{ borderTop: '1px solid var(--border-light)', margin: '4px 0 16px' }} />
+                        <div style={{ borderTop: '1px solid var(--border-medium)', margin: '12px 0 15px' }} />
 
                         {/* Held Item */}
                         <div style={{ marginBottom: '15px' }}>
@@ -1945,7 +1941,7 @@ const PokemonCard = ({
                                     <div style={{ position: 'relative', flex: 1 }}>
                                     <input
                                         type="text"
-                                        placeholder="Search or type item name..."
+                                        placeholder="Search inventory or type custom name..."
                                         value={heldItemSearch || pokemon.heldItem || ''}
                                         onChange={(e) => {
                                             setHeldItemSearch(e.target.value);
@@ -1969,7 +1965,7 @@ const PokemonCard = ({
                                     {pokemon.heldItem && (
                                         <button
                                             onClick={() => { updatePokemon({ heldItem: '' }); setHeldItemSearch(''); }}
-                                            style={{ padding: '8px 12px', background: 'var(--danger-btn-start)', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '16px', lineHeight: 1 }}
+                                            style={{ padding: '8px 10px', background: 'var(--danger-btn-start)', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', lineHeight: 1 }}
                                             title="Clear held item"
                                         >
                                             ×
@@ -1981,49 +1977,43 @@ const PokemonCard = ({
                                         🎒 {pokemon.heldItem}
                                     </div>
                                 )}
-                                {showHeldItemDropdown && filteredHeldItems.length > 0 && (
+                                {showHeldItemDropdown && (filteredHeldItems.length > 0 || heldItemSearch) && (
                                     <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 100, background: 'var(--input-bg)', border: '1px solid var(--border-medium)', borderRadius: '8px', boxShadow: '0 4px 20px rgba(0,0,0,0.15)', maxHeight: '200px', overflowY: 'auto', marginTop: '4px' }}>
-                                        {filteredHeldItems.map(([name, data]) => (
+                                        {filteredHeldItems.map(item => (
                                             <div
-                                                key={name}
+                                                key={item.name}
                                                 onMouseDown={() => {
-                                                    updatePokemon({ heldItem: name });
+                                                    updatePokemon({ heldItem: item.name });
                                                     setHeldItemSearch('');
                                                     setShowHeldItemDropdown(false);
                                                 }}
-                                                style={{ padding: '10px 14px', cursor: 'pointer', borderBottom: '1px solid var(--border-light, #eee)', fontSize: '13px' }}
+                                                style={{ padding: '10px 14px', cursor: 'pointer', borderBottom: '1px solid var(--border-light, #eee)', fontSize: '13px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}
                                                 className="pokemon-import-option"
                                             >
-                                                <div style={{ fontWeight: 'bold' }}>{name}</div>
-                                                {data.effect && <div style={{ fontSize: '11px', color: 'var(--text-muted, #888)', marginTop: '2px' }}>{data.effect}</div>}
+                                                <div>
+                                                    <div style={{ fontWeight: 'bold' }}>{item.name}</div>
+                                                    {item.effect && <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>{item.effect}</div>}
+                                                </div>
+                                                <span style={{ fontSize: '11px', color: 'var(--text-muted)', whiteSpace: 'nowrap', marginLeft: '8px', marginTop: '2px' }}>×{item.quantity ?? 1}</span>
                                             </div>
                                         ))}
-                                        {heldItemSearch && !filteredHeldItems.some(([n]) => n.toLowerCase() === heldItemSearch.toLowerCase()) && (
+                                        {filteredHeldItems.length === 0 && !heldItemSearch && (
+                                            <div style={{ padding: '12px 14px', fontSize: '12px', color: 'var(--text-muted)', textAlign: 'center' }}>
+                                                No held items in inventory
+                                            </div>
+                                        )}
+                                        {heldItemSearch && !filteredHeldItems.some(i => i.name.toLowerCase() === heldItemSearch.toLowerCase()) && (
                                             <div
                                                 onMouseDown={() => {
                                                     updatePokemon({ heldItem: heldItemSearch.trim() });
                                                     setHeldItemSearch('');
                                                     setShowHeldItemDropdown(false);
                                                 }}
-                                                style={{ padding: '10px 14px', cursor: 'pointer', fontSize: '13px', color: 'var(--color-purple)', fontWeight: 'bold' }}
+                                                style={{ padding: '10px 14px', cursor: 'pointer', fontSize: '13px', color: 'var(--color-purple)', fontWeight: 'bold', background: 'var(--tint-purple-bg)', borderTop: filteredHeldItems.length > 0 ? '1px solid var(--border-light)' : 'none' }}
                                             >
                                                 + Use "{heldItemSearch.trim()}" as custom item
                                             </div>
                                         )}
-                                    </div>
-                                )}
-                                {showHeldItemDropdown && filteredHeldItems.length === 0 && heldItemSearch && (
-                                    <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 100, background: 'var(--input-bg)', border: '1px solid var(--border-medium)', borderRadius: '8px', boxShadow: '0 4px 20px rgba(0,0,0,0.15)', marginTop: '4px' }}>
-                                        <div
-                                            onMouseDown={() => {
-                                                updatePokemon({ heldItem: heldItemSearch.trim() });
-                                                setHeldItemSearch('');
-                                                setShowHeldItemDropdown(false);
-                                            }}
-                                            style={{ padding: '10px 14px', cursor: 'pointer', fontSize: '13px', color: 'var(--color-purple)', fontWeight: 'bold' }}
-                                        >
-                                            + Use "{heldItemSearch.trim()}" as custom item
-                                        </div>
                                     </div>
                                 )}
                             </div>
@@ -2345,19 +2335,19 @@ const PokemonCard = ({
                             </div>
                         )}
 
-                        <div style={{ marginTop: '15px', padding: '10px', background: 'var(--bg-light)', borderRadius: '8px', border: '1px solid var(--border-light)' }}>
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', textAlign: 'center', fontSize: '12px' }}>
+                        <div style={{ marginTop: '15px', padding: '12px 14px', background: 'var(--bg-light)', borderRadius: '8px', border: '1px solid var(--border-light)', borderTop: '3px solid var(--color-purple)' }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', textAlign: 'center' }}>
                                 <div title="Maximum Hit Points = Level + (HP stat × 3)">
-                                    <div style={{ color: 'var(--text-muted)' }}>Max HP</div>
-                                    <div style={{ fontWeight: 'bold', color: 'var(--stat-hp)' }}>{maxHP}</div>
+                                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '2px' }}>Max HP</div>
+                                    <div style={{ fontSize: '18px', fontWeight: 'bold', color: 'var(--stat-hp)' }}>{maxHP}</div>
                                 </div>
                                 <div title="Same Type Attack Bonus: +0 at Lv.1–4, then +1 per 5 levels (Lv.5=+1, Lv.10=+2, Lv.15=+3 … Lv.100=+20)">
-                                    <div style={{ color: 'var(--text-muted)' }}>STAB Bonus</div>
-                                    <div style={{ fontWeight: 'bold', color: 'var(--color-purple)' }}>+{stabBonus}</div>
+                                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '2px' }}>STAB Bonus</div>
+                                    <div style={{ fontSize: '18px', fontWeight: 'bold', color: 'var(--color-purple)' }}>+{stabBonus}</div>
                                 </div>
                                 <div title="Current HP after damage. When reduced to 0, the Pokémon faints.">
-                                    <div style={{ color: 'var(--text-muted)' }}>Current HP</div>
-                                    <div style={{ fontWeight: 'bold', color: 'var(--stat-hp)' }}>{currentHP}</div>
+                                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '2px' }}>Current HP</div>
+                                    <div style={{ fontSize: '18px', fontWeight: 'bold', color: 'var(--stat-hp)' }}>{currentHP}</div>
                                 </div>
                             </div>
                         </div>
@@ -2379,8 +2369,10 @@ const PokemonCard = ({
                         </div>
 
                         {(pokemon.moves || []).length === 0 && (
-                            <div className="text-muted" style={{ fontSize: '12px', padding: '10px', textAlign: 'center', marginBottom: '10px' }}>
-                                No moves learned yet. Use the Add Moves section below to learn moves.
+                            <div style={{ textAlign: 'center', padding: '18px 16px', marginBottom: '10px', borderRadius: '8px', background: 'var(--bg-light)', border: '1px dashed var(--border-medium)' }}>
+                                <div style={{ fontSize: '22px', marginBottom: '6px' }}>📭</div>
+                                <div style={{ fontSize: '13px', fontWeight: 'bold', color: 'var(--text-secondary)', marginBottom: '4px' }}>No moves learned yet</div>
+                                <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Use the Add Moves section below to learn moves.</div>
                             </div>
                         )}
 
@@ -2453,10 +2445,9 @@ const PokemonCard = ({
                             <>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: '14px 0 8px', paddingTop: '14px', borderTop: '1px solid var(--border-light)' }}>
                                 <span style={{ fontSize: '13px', fontWeight: 'bold', color: 'var(--text-primary)' }}>Add Moves</span>
-                                <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
-                                    <span style={{ color: naturalMoveCount >= MAX_NATURAL_MOVES ? 'var(--color-danger-text)' : 'var(--stat-hp)', fontWeight: 'bold' }}>Nat:{naturalMoveCount}/{MAX_NATURAL_MOVES}</span>
-                                    {' · '}
-                                    <span style={{ color: taughtMoveCount >= MAX_TAUGHT_MOVES ? 'var(--color-danger-text)' : 'var(--color-taught)', fontWeight: 'bold' }}>Tght:{taughtMoveCount}/{MAX_TAUGHT_MOVES}</span>
+                                <span style={{ display: 'flex', gap: '4px' }}>
+                                    <span style={{ fontSize: '11px', fontWeight: 'bold', padding: '1px 6px', borderRadius: '4px', background: naturalMoveCount >= MAX_NATURAL_MOVES ? 'var(--tint-fail-bg)' : 'var(--tint-green-bg, rgba(76,175,80,0.1))', color: naturalMoveCount >= MAX_NATURAL_MOVES ? 'var(--color-danger-text)' : 'var(--stat-hp)' }}>Nat {naturalMoveCount}/{MAX_NATURAL_MOVES}</span>
+                                    <span style={{ fontSize: '11px', fontWeight: 'bold', padding: '1px 6px', borderRadius: '4px', background: taughtMoveCount >= MAX_TAUGHT_MOVES ? 'var(--tint-fail-bg)' : 'var(--tint-purple-bg)', color: taughtMoveCount >= MAX_TAUGHT_MOVES ? 'var(--color-danger-text)' : 'var(--color-taught)' }}>Tght {taughtMoveCount}/{MAX_TAUGHT_MOVES}</span>
                                 </span>
                             </div>
                             <div className="add-move-panel" style={{ padding: '12px', borderRadius: '8px' }}>
@@ -2923,8 +2914,10 @@ const PokemonCard = ({
                                     )}
 
                                     {(!canEvolve || canEvolve.length === 0) && !canDevolve && (
-                                        <div className="text-light" style={{ textAlign: 'center', padding: '20px' }}>
-                                            No evolution options available for {pokemon.species || 'this Pokémon'}
+                                        <div style={{ textAlign: 'center', padding: '24px 16px', borderRadius: '8px', background: 'var(--bg-light)', border: '1px dashed var(--border-medium)' }}>
+                                            <div style={{ fontSize: '22px', marginBottom: '6px' }}>✓</div>
+                                            <div style={{ fontSize: '13px', fontWeight: 'bold', color: 'var(--text-secondary)', marginBottom: '4px' }}>Final Form</div>
+                                            <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{pokemon.species || 'This Pokémon'} has no evolution options.</div>
                                         </div>
                                     )}
                                 </>
