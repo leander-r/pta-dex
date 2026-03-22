@@ -3871,7 +3871,7 @@
             /* Pokemon card tabs: tighter padding so 5 tabs stay on one row */
             .pokemon-card-tabs .tab {
                 padding: 8px 8px;
-                font-size: 11px;
+                font-size: 12px;
             }
 
             /* Collapsed quick-action buttons: icon only, no text label */
@@ -3880,7 +3880,8 @@
             }
 
             .quick-action-btn {
-                min-width: 30px;
+                min-width: 44px;
+                min-height: 44px;
                 justify-content: center;
             }
 
@@ -4511,6 +4512,11 @@
 
         [data-theme="dark"] .pokemon-card-expanded {
             box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+        }
+
+        [data-theme="dark"] .pokemon-card::after {
+            background: linear-gradient(90deg, transparent, var(--border-medium), transparent);
+            opacity: 0.4;
         }
 
         /* Dark mode: Fix muted text colors in inline styles */

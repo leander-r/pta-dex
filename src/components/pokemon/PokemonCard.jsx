@@ -546,15 +546,13 @@ const PokemonCard = ({
                             <span className="text-muted" style={{ fontSize: '13px' }}>Lv.{pokemon.level || 1}</span>
                             {(() => {
                                 const loy = pokemon.loyalty ?? 1;
-                                const loyColors = ['#e53935','#ff7043','#fdd835','#66bb6a','#42a5f5'];
-                                const loyLabels = ['Defiant','Wary','Neutral','Friendly','Loyal'];
                                 return (
                                     <span style={{
                                         fontSize: '10px', fontWeight: 'bold', padding: '1px 6px',
-                                        borderRadius: '8px', background: loyColors[loy],
+                                        borderRadius: '8px', background: LOYALTY_COLORS[loy],
                                         color: loy === 2 ? 'rgba(0,0,0,0.75)' : 'white'
-                                    }} title={`Loyalty: ${loy} — ${loyLabels[loy]} (GM Guide pp.10–13)`}>
-                                        ❤ {loyLabels[loy]}
+                                    }} title={`Loyalty: ${loy} — ${LOYALTY_LABELS[loy]} (GM Guide pp.10–13)`}>
+                                        ❤ {LOYALTY_LABELS[loy]}
                                     </span>
                                 );
                             })()}
@@ -987,7 +985,7 @@ const PokemonCard = ({
                                 border: 'none',
                                 borderRadius: '6px',
                                 padding: '8px 18px',
-                                color: 'var(--text-primary)',
+                                color: '#1a1a2e',
                                 cursor: 'pointer',
                                 fontWeight: 'bold',
                                 fontSize: '13px'
@@ -1053,7 +1051,7 @@ const PokemonCard = ({
                                                 right: '8px',
                                                 top: '50%',
                                                 transform: 'translateY(-50%)',
-                                                background: 'var(--species-muted-text)',
+                                                background: 'rgba(80,80,100,0.7)',
                                                 color: 'white',
                                                 border: 'none',
                                                 borderRadius: '50%',
@@ -1205,7 +1203,7 @@ const PokemonCard = ({
                                                                 <span style={{ fontWeight: 'bold' }}>{sp.species}</span>
                                                                 {sp.isCustom ? (
                                                                     <span style={{
-                                                                        fontSize: '9px',
+                                                                        fontSize: '11px',
                                                                         color: 'white',
                                                                         background: 'var(--color-purple)',
                                                                         padding: '1px 4px',
@@ -1239,12 +1237,12 @@ const PokemonCard = ({
                                                                                 setShowSpeciesDropdown(false);
                                                                             }}
                                                                             style={{
-                                                                                padding: '1px 5px',
+                                                                                padding: '2px 6px',
                                                                                 background: 'var(--color-purple)',
                                                                                 color: 'white',
                                                                                 border: 'none',
                                                                                 borderRadius: '3px',
-                                                                                fontSize: '9px',
+                                                                                fontSize: '11px',
                                                                                 cursor: 'pointer',
                                                                                 marginLeft: '4px'
                                                                             }}
@@ -1261,12 +1259,12 @@ const PokemonCard = ({
                                                                                 });
                                                                             }}
                                                                             style={{
-                                                                                padding: '1px 5px',
+                                                                                padding: '2px 6px',
                                                                                 background: 'var(--danger-btn-start)',
                                                                                 color: 'white',
                                                                                 border: 'none',
                                                                                 borderRadius: '3px',
-                                                                                fontSize: '9px',
+                                                                                fontSize: '11px',
                                                                                 cursor: 'pointer'
                                                                             }}
                                                                             title="Delete custom species"
@@ -1646,8 +1644,6 @@ const PokemonCard = ({
 
                         {/* Loyalty */}
                         {(() => {
-                            const LOYALTY_LABELS = ['Defiant', 'Wary', 'Neutral', 'Friendly', 'Loyal'];
-                            const LOYALTY_COLORS = ['#e53935', '#ff7043', '#fdd835', '#66bb6a', '#42a5f5'];
                             const currentLoyalty = pokemon.loyalty ?? 1;
                             return (
                                 <div style={{ marginBottom: '15px' }}>
@@ -2921,6 +2917,9 @@ const PokemonCard = ({
         </div>
     );
 };
+
+const LOYALTY_COLORS = ['#e53935', '#ff7043', '#fdd835', '#66bb6a', '#42a5f5'];
+const LOYALTY_LABELS = ['Defiant', 'Wary', 'Neutral', 'Friendly', 'Loyal'];
 
 const quickBtnStyle = {
     width: '28px',
