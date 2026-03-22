@@ -76,8 +76,8 @@ test('edit tab navigation: Stats tab shows stat grid, Moves tab shows move summa
 
     // Click the "moves" tab
     await card.locator('.pokemon-card-tabs .tab', { hasText: 'moves' }).click();
-    // "Moves: N/M" summary line is always rendered (even with 0 moves)
-    await expect(card.getByText(/Moves:\s+\d+\/\d+/)).toBeVisible({ timeout: 5_000 });
+    // "Known Moves" section header is always rendered
+    await expect(card.getByText(/Known Moves/)).toBeVisible({ timeout: 5_000 });
 });
 
 test('clicking Done collapses the card', async ({ page }) => {
