@@ -5100,6 +5100,16 @@
             transition: background 0.3s ease, border-color 0.3s ease;
         }
 
+        /* Hide native number-input spinners on inventory qty inputs */
+        .qty-input::-webkit-outer-spin-button,
+        .qty-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .qty-input {
+            -moz-appearance: textfield;
+        }
+
         /* --- Battle Tab / Dice Roller --- */
         .hp-tracker-box {
             background: #f8f9fa;

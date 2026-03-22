@@ -2,7 +2,7 @@
 // Inventory Tab Component
 // ============================================================
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useCallback } from 'react';
 import { GAME_DATA } from '../../data/configs.js';
 import { useData, useModal, useTrainerContext, usePokemonContext } from '../../contexts/index.js';
 import { calculatePokemonHP, parseDice, parseHealFormula } from '../../utils/dataUtils.js';
@@ -46,6 +46,19 @@ const InventoryTab = () => {
     // Heal panel state
     const [healPanel, setHealPanel] = useState(null); // { itemName } or null
     const [healTargetId, setHealTargetId] = useState('');
+
+    // Ref for the add-item panel — used to scroll it into view on open
+    const addPanelRef = useRef(null);
+    // Callback ref: scrolls the heal panel into view whenever it mounts
+    const healPanelRef = useCallback(node => {
+        if (node) setTimeout(() => node.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
+    }, []);
+
+    // Opens the add-item panel and scrolls it into view
+    const openAddPanel = () => {
+        setShowAddItem(true);
+        setTimeout(() => addPanelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+    };
 
     // Get unique item types from GAME_DATA dynamically
     const availableTypes = useMemo(() => {
@@ -349,10 +362,6 @@ const InventoryTab = () => {
                 <h3 className="section-title-purple">
                     <span>🎒</span> Items
                     <span style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span className="text-muted" style={{ fontSize: '12px', fontWeight: 'normal' }}>
-                            {totalItems} total · {inventory.length} unique
-                            {totalValue > 0 && <span style={{ marginLeft: '6px' }}>· ₽{totalValue.toLocaleString()}</span>}
-                        </span>
                         <button
                             onClick={() => setShowSearch(s => !s)}
                             aria-pressed={showSearch}
@@ -363,8 +372,8 @@ const InventoryTab = () => {
                                 borderRadius: '6px',
                                 color: showSearch ? 'white' : 'var(--text-secondary)',
                                 cursor: 'pointer',
-                                padding: '2px 8px',
-                                fontSize: '12px',
+                                padding: '4px 10px',
+                                fontSize: '13px',
                                 display: 'inline-flex',
                                 alignItems: 'center',
                                 gap: '4px'
@@ -373,23 +382,31 @@ const InventoryTab = () => {
                             🔍 Filter{(searchQuery || filter !== 'all') && <span style={{ background: 'var(--poke-orange)', color: 'white', borderRadius: '8px', padding: '0 5px', fontSize: '10px', fontWeight: 700 }}>{[searchQuery, filter !== 'all'].filter(Boolean).length}</span>}
                         </button>
                         <button
-                            onClick={() => setShowAddItem(s => !s)}
-                            title={showAddItem ? 'Close Add Item' : 'Add Item'}
+                            onClick={() => showAddItem ? setShowAddItem(false) : openAddPanel()}
+                            title={showAddItem ? 'Close Add Item' : 'Add Item to inventory'}
                             style={{
-                                padding: '2px 8px',
-                                fontSize: '12px',
+                                padding: '5px 14px',
+                                fontSize: '13px',
                                 background: showAddItem ? 'var(--border-medium)' : 'var(--gradient-purple)',
                                 color: showAddItem ? 'var(--text-primary)' : 'white',
                                 border: 'none',
                                 borderRadius: '6px',
                                 cursor: 'pointer',
-                                fontWeight: 'bold'
+                                fontWeight: 700,
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '4px'
                             }}
                         >
-                            {showAddItem ? '✕' : '+'}
+                            {showAddItem ? '✕ Close' : '+ Add Item'}
                         </button>
                     </span>
                 </h3>
+                {inventory.length > 0 && (
+                    <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '12px', paddingLeft: '2px' }}>
+                        {totalItems} total · {inventory.length} unique{totalValue > 0 ? ` · ₽${totalValue.toLocaleString()}` : ''}
+                    </div>
+                )}
 
                 {/* Search and Filter */}
                 {showSearch && <div style={{ display: 'flex', gap: '10px', marginBottom: '15px', flexWrap: 'wrap', alignItems: 'center' }}>
@@ -454,7 +471,7 @@ const InventoryTab = () => {
 
                 {/* Add Item Panel */}
                 {showAddItem && (
-                    <div className="add-item-panel" style={{ marginBottom: '15px' }}>
+                    <div ref={addPanelRef} className="add-item-panel" style={{ marginBottom: '15px' }}>
                         {/* Search and Quantity Row */}
                         <div style={{ display: 'flex', gap: '10px', marginBottom: '10px', alignItems: 'center' }}>
                             <div style={{ flex: 1, position: 'relative' }}>
@@ -463,6 +480,7 @@ const InventoryTab = () => {
                                     placeholder="Search items by name or effect..."
                                     value={itemSearch}
                                     onChange={(e) => setItemSearch(e.target.value)}
+                                    autoFocus
                                     style={{
                                         width: '100%',
                                         padding: '10px 12px',
@@ -556,8 +574,6 @@ const InventoryTab = () => {
                                     }}
                                 >
                                     <option value="name">↑ Name (A→Z)</option>
-                                    <option value="price-low">↑ Price (Low→High)</option>
-                                    <option value="price-high">↓ Price (High→Low)</option>
                                     <option value="type">↑ Type (A→Z)</option>
                                 </select>
                             </div>
@@ -605,7 +621,7 @@ const InventoryTab = () => {
                                                     </span>
                                                 </div>
                                                 {data.effect && (
-                                                    <div title={data.effect} style={{ fontSize: '13px', color: 'var(--text-secondary)', marginTop: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                    <div title={data.effect} style={{ fontSize: '13px', color: 'var(--text-secondary)', marginTop: '2px', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
                                                         {data.effect}
                                                     </div>
                                                 )}
@@ -633,7 +649,7 @@ const InventoryTab = () => {
                                                         gap: '4px'
                                                     }}
                                                 >
-                                                    <span>+{addQuantity}</span>
+                                                    {addQuantity > 1 ? `Add ×${addQuantity}` : 'Add'}
                                                 </button>
                                             </div>
                                         </div>
@@ -711,7 +727,7 @@ const InventoryTab = () => {
                         {inventory.length === 0 && (
                             <button
                                 className="btn btn-primary"
-                                onClick={() => setShowAddItem(true)}
+                                onClick={openAddPanel}
                                 style={{ marginTop: '16px' }}
                             >
                                 + Add Items
@@ -760,7 +776,7 @@ const InventoryTab = () => {
                                             >ℹ</button>
                                         </div>
                                         {item.effect && (
-                                            <div title={item.effect} style={{ fontSize: '13px', color: 'var(--text-secondary)', marginTop: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                            <div title={item.effect} style={{ fontSize: '13px', color: 'var(--text-secondary)', marginTop: '2px', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
                                                 {item.effect}
                                             </div>
                                         )}
@@ -790,6 +806,7 @@ const InventoryTab = () => {
                                         </button>
                                         <input
                                             type="number"
+                                            className="qty-input"
                                             value={item._editing ? '' : (item.quantity || 1)}
                                             onChange={(e) => handleSetQuantity(item.name, e.target.value)}
                                             onBlur={() => handleQuantityBlur(item.name)}
@@ -876,7 +893,7 @@ const InventoryTab = () => {
 
                                     {/* Heal panel — shown for healing/berry items */}
                                     {showHealPanel && (
-                                        <div style={{
+                                        <div ref={healPanelRef} style={{
                                             padding: '10px 12px',
                                             background: 'var(--input-bg)',
                                             borderRadius: '6px',
@@ -886,6 +903,9 @@ const InventoryTab = () => {
                                             gap: '8px',
                                             alignItems: 'center'
                                         }}>
+                                            <div style={{ width: '100%', fontSize: '12px', fontWeight: 700, color: 'var(--stat-hp)', marginBottom: '2px' }}>
+                                                Use {healPanel.itemName} on:
+                                            </div>
                                             {party.length === 0 ? (
                                                 <span style={{ fontSize: '13px', color: 'var(--text-muted)', flex: 1 }}>
                                                     No Pokémon in your party.
