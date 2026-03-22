@@ -230,16 +230,22 @@ export const DataProvider = ({ children }) => {
                     setTrainers(migratedData.trainers);
                     setActiveTrainerId(validActiveId);
 
-                    // Warn about any pre-existing Base Relation violations in loaded data
-                    const violators = migratedData.trainers.flatMap(t =>
+                    // Warn about any pre-existing Base Relation violations in loaded data.
+                    // Delayed so GAME_DATA (natures) has fully loaded before the check runs —
+                    // the synchronous check would use only the 5 fallback natures and produce
+                    // false positives for any nature not in that fallback set.
+                    const allPokemon = migratedData.trainers.flatMap(t =>
                         [...(t.party || []), ...(t.reserve || [])]
-                    ).filter(p => getBaseRelationViolations(p).length > 0);
-                    if (violators.length > 0) {
-                        const names = violators.map(p => p.name || p.species || 'Unknown').join(', ');
-                        setTimeout(() => toast.warning(
-                            `${violators.length} Pokémon have Base Relation stat violations: ${names}. Open their stats tab to review.`
-                        ), 2000);
-                    }
+                    );
+                    setTimeout(() => {
+                        const violators = allPokemon.filter(p => getBaseRelationViolations(p).length > 0);
+                        if (violators.length > 0) {
+                            const names = violators.map(p => p.name || p.species || 'Unknown').join(', ');
+                            toast.warning(
+                                `${violators.length} Pokémon have Base Relation stat violations: ${names}. Open their stats tab to review.`
+                            );
+                        }
+                    }, 2000);
                 }
                 setInventory(Array.isArray(migratedData.inventory) ? migratedData.inventory : []);
                 setCustomSpecies(Array.isArray(migratedData.customSpecies) ? migratedData.customSpecies : []);
