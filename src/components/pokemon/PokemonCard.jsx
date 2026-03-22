@@ -935,14 +935,16 @@ const PokemonCard = ({
                         <div style={{ display: 'flex', alignItems: 'center', gap: '4px', opacity: 0.9 }}>
                             <button
                                 onClick={() => updatePokemon({ level: Math.max(1, (pokemon.level || 1) - 1) })}
-                                style={{ background: 'rgba(255,255,255,0.2)', border: 'none', borderRadius: '4px', color: 'white', cursor: 'pointer', width: '22px', height: '22px', fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
+                                style={{ background: 'rgba(255,255,255,0.2)', border: '1px solid rgba(255,255,255,0.45)', borderRadius: '4px', color: 'white', cursor: 'pointer', width: '22px', height: '22px', fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
                                 title="Level down"
+                                aria-label="Level down"
                             >−</button>
                             <span style={{ whiteSpace: 'nowrap', minWidth: '46px', textAlign: 'center' }}>Lv.{pokemon.level}</span>
                             <button
                                 onClick={() => updatePokemon({ level: Math.min(100, (pokemon.level || 1) + 1) })}
-                                style={{ background: 'rgba(255,255,255,0.2)', border: 'none', borderRadius: '4px', color: 'white', cursor: 'pointer', width: '22px', height: '22px', fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
+                                style={{ background: 'rgba(255,255,255,0.2)', border: '1px solid rgba(255,255,255,0.45)', borderRadius: '4px', color: 'white', cursor: 'pointer', width: '22px', height: '22px', fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
                                 title="Level up"
+                                aria-label="Level up"
                             >+</button>
                         </div>
                     </div>
@@ -968,10 +970,10 @@ const PokemonCard = ({
                             }}
                             style={{
                                 background: 'rgba(0,0,0,0.2)',
-                                border: '1px solid rgba(255,255,255,0.25)',
+                                border: '1px solid rgba(255,255,255,0.45)',
                                 borderRadius: '6px',
                                 padding: '8px 14px',
-                                color: 'rgba(255,255,255,0.75)',
+                                color: 'rgba(255,255,255,0.85)',
                                 cursor: 'pointer',
                                 fontSize: '13px'
                             }}
@@ -1691,7 +1693,7 @@ const PokemonCard = ({
                         <div style={{ borderTop: '1px solid var(--border-light)', margin: '4px 0 16px' }} />
 
                         {/* Contest Stats & Ribbons */}
-                        <div style={{ background: 'var(--bg-light)', border: '1px solid var(--border-light)', borderRadius: '10px', padding: '12px', marginBottom: '15px' }}>
+                        <div style={{ background: 'var(--card-bg)', border: '1px solid var(--border-light)', borderRadius: '10px', padding: '12px', marginBottom: '15px' }}>
                         {(() => {
                             const CONTEST_STATS = [['cool', '😎'], ['beauty', '💎'], ['cute', '🌸'], ['smart', '🔮'], ['tough', '💪']];
                             const contestStats = pokemon.contestStats || {};
@@ -2269,7 +2271,7 @@ const PokemonCard = ({
                                 const plusDisabled = pointsLeft <= 0 || addViolates;
                                 const canAdd = pointsLeft > 0 && !addViolates;
                                 return (
-                                <div key={stat} className="bg-light" style={{ padding: '10px', borderRadius: '8px', textAlign: 'center', outline: canAdd ? `2px solid ${statColor}` : 'none', boxShadow: canAdd ? '0 0 6px rgba(0,0,0,0.15)' : 'none', borderTop: `3px solid ${statColor}` }}>
+                                <div key={stat} className="bg-light" style={{ padding: '10px', borderRadius: '8px', textAlign: 'center', boxShadow: canAdd ? `0 0 0 2px ${statColor}` : 'none', borderTop: `3px solid ${statColor}` }}>
                                     <div style={{ fontSize: '12px', fontWeight: 'bold', color: statColor, marginBottom: '4px' }}>
                                         {stat.toUpperCase()}
                                     </div>
@@ -2662,7 +2664,7 @@ const PokemonCard = ({
                                                         }}>{data.type}</span>
                                                         <span style={{
                                                             padding: '2px 6px',
-                                                            background: data.category === 'Physical' ? '#e65100' : data.category === 'Special' ? '#1565c0' : '#616161',
+                                                            background: data.category === 'Physical' ? 'var(--move-cat-physical)' : data.category === 'Special' ? 'var(--move-cat-special)' : 'var(--move-cat-status)',
                                                             color: 'white',
                                                             borderRadius: '8px',
                                                             fontSize: '9px',

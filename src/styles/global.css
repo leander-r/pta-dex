@@ -182,6 +182,9 @@
             --species-muted-text: #999;
 
             /* Moves database colors */
+            --move-cat-physical: #e65100;
+            --move-cat-special: #1565c0;
+            --move-cat-status: #546e7a;
             --moves-card-bg: #fff;
             --moves-card-shadow: rgba(0, 0, 0, 0.1);
             --moves-category-physical-bg: #ffebee;
@@ -289,6 +292,11 @@
             /* Skill display colors - dark mode */
             --skill-value-color: #ce93d8;
             --skill-no-value-color: #81c784;
+
+            /* Move category badge colors - dark mode (slightly lighter for dark backgrounds) */
+            --move-cat-physical: #ef6c00;
+            --move-cat-special: #1976d2;
+            --move-cat-status: #607d8b;
 
             /* Move replacement modal colors - dark mode */
             --move-replace-hover-bg: rgba(244,67,54,0.2);

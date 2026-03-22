@@ -436,8 +436,8 @@ const PokemonTab = () => {
                     {/* Add Pokémon — right half of the split button */}
                     <button
                         onClick={handleAddPokemon}
-                        className="btn btn-purple"
-                        style={{ padding: '10px 16px', borderRadius: '0 6px 6px 0', borderLeft: '1px solid rgba(255,255,255,0.3)', marginLeft: '0' }}
+                        className="pokemon-action-btn import"
+                        style={{ padding: '10px 14px', borderRadius: '0 6px 6px 0', borderLeft: '1px solid rgba(255,255,255,0.35)', marginLeft: '0' }}
                         title="Add a new Pokémon"
                     >
                         + Add
@@ -496,7 +496,7 @@ const PokemonTab = () => {
                 >
                     🔍 Search
                     {(filter.search || filter.type) && (
-                        <span style={{ background: activePanel === 'search' ? 'rgba(255,255,255,0.35)' : 'var(--poke-orange)', color: 'white', borderRadius: '8px', padding: '0 5px', fontSize: '11px', fontWeight: 'bold' }}>
+                        <span style={{ background: activePanel === 'search' ? 'rgba(0,0,0,0.25)' : 'var(--poke-orange)', color: activePanel === 'search' ? 'rgba(255,255,255,0.95)' : 'white', borderRadius: '8px', padding: '0 5px', fontSize: '11px', fontWeight: 'bold' }}>
                             {[filter.search && '✓', filter.type && filter.type].filter(Boolean).join(' ')}
                         </span>
                     )}
@@ -534,7 +534,7 @@ const PokemonTab = () => {
                     >
                         ⭐ Presets
                         {partyPresets.length > 0 && (
-                            <span style={{ background: activePanel === 'presets' ? 'rgba(255,255,255,0.3)' : 'var(--border-medium)', borderRadius: '8px', padding: '0 5px', fontSize: '11px' }}>
+                            <span style={{ background: activePanel === 'presets' ? 'rgba(0,0,0,0.25)' : 'var(--bg-secondary)', color: activePanel === 'presets' ? 'rgba(255,255,255,0.95)' : 'var(--text-muted)', borderRadius: '8px', padding: '0 5px', fontSize: '11px', fontWeight: 'bold' }}>
                                 {partyPresets.length}
                             </span>
                         )}
