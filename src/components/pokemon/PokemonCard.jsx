@@ -4,7 +4,7 @@
 
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { getTypeColor, getContrastTextColor } from '../../utils/typeUtils.js';
-import { getActualStats, calculatePokemonHP, calculateSTAB, getBaseRelationViolations } from '../../utils/dataUtils.js';
+import { getActualStats, calculatePokemonHP, calculateSTAB, getBaseRelationViolations, applyNature } from '../../utils/dataUtils.js';
 import { exportSinglePokemon, copyPokemonToClipboard } from '../../utils/exportUtils.js';
 import toast from '../../utils/toast.js';
 import { useGameData, useModal, usePokemonContext, useUI } from '../../contexts/index.js';
@@ -2201,12 +2201,14 @@ const PokemonCard = ({
                         </div>
 
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
-                            {['hp', 'atk', 'def', 'satk', 'sdef', 'spd'].map(stat => {
+                            {(() => {
+                                const natureModifiedBase = applyNature(pokemon.baseStats || { hp: 10, atk: 10, def: 10, satk: 10, sdef: 10, spd: 10 }, pokemon.nature);
+                                return ['hp', 'atk', 'def', 'satk', 'sdef', 'spd'].map(stat => {
                                 const statColor = `var(--stat-${stat})`;
                                 const addedVal = pokemon.addedStats?.[stat] || 0;
                                 const pointsLeft = pokemon.statPointsAvailable || 0;
-                                const addBlockReason = pointsLeft > 0 ? getBaseRelationBlockReason(stat, pokemon.baseStats, pokemon.addedStats || {}, 1) : null;
-                                const removeBlockReason = addedVal > 0 ? getBaseRelationBlockReason(stat, pokemon.baseStats, pokemon.addedStats || {}, -1) : null;
+                                const addBlockReason = pointsLeft > 0 ? getBaseRelationBlockReason(stat, natureModifiedBase, pokemon.addedStats || {}, 1) : null;
+                                const removeBlockReason = addedVal > 0 ? getBaseRelationBlockReason(stat, natureModifiedBase, pokemon.addedStats || {}, -1) : null;
                                 const addViolates = !!addBlockReason;
                                 const removeViolates = !!removeBlockReason;
                                 const minusDisabled = addedVal <= 0 || removeViolates;
@@ -2217,8 +2219,8 @@ const PokemonCard = ({
                                     <div style={{ fontSize: '12px', fontWeight: 'bold', color: statColor, marginBottom: '4px' }}>
                                         {stat.toUpperCase()}
                                     </div>
-                                    <div className="text-light" style={{ fontSize: '11px' }} title="Base stat from the species. Determined by the Pokédex entry.">
-                                        Base: {pokemon.baseStats?.[stat] || 10}
+                                    <div className="text-light" style={{ fontSize: '11px' }} title="Nature-modified base stat. Raw species base ± nature bonus (PH2 p.257).">
+                                        Base: {natureModifiedBase[stat] || 10}
                                     </div>
                                     <div style={{ fontSize: '11px', color: statColor }} title="Points you've added from level-up bonuses.">
                                         +{addedVal}
@@ -2265,14 +2267,18 @@ const PokemonCard = ({
                                     </div>
                                 </div>
                                 );
-                            })}
+                            });
+                            })()}
                         </div>
 
                         {/* Base Relation rule hint — shown when any stat is blocked */}
-                        {(['hp', 'atk', 'def', 'satk', 'sdef', 'spd'].some(s =>
-                            wouldViolateBaseRelation(s, pokemon.baseStats, pokemon.addedStats || {}, 1) ||
-                            wouldViolateBaseRelation(s, pokemon.baseStats, pokemon.addedStats || {}, -1)
-                        )) && (
+                        {(() => {
+                            const natureModifiedBase = applyNature(pokemon.baseStats || { hp: 10, atk: 10, def: 10, satk: 10, sdef: 10, spd: 10 }, pokemon.nature);
+                            return ['hp', 'atk', 'def', 'satk', 'sdef', 'spd'].some(s =>
+                                wouldViolateBaseRelation(s, natureModifiedBase, pokemon.addedStats || {}, 1) ||
+                                wouldViolateBaseRelation(s, natureModifiedBase, pokemon.addedStats || {}, -1)
+                            );
+                        })() && (
                             <div style={{ marginTop: '8px', padding: '6px 10px', borderRadius: '6px', background: 'var(--tint-purple-bg)', border: '1px solid var(--tint-purple-border)', fontSize: '11px', color: 'var(--text-muted)', lineHeight: 1.5 }}>
                                 <strong style={{ color: 'var(--color-purple)' }}>Base Relation</strong> — a stat with a higher species base value must always have a higher total than one with a lower base value (PH2 p.257). Hover blocked buttons for details.
                             </div>

@@ -216,7 +216,7 @@ const STATS = ['hp', 'atk', 'def', 'satk', 'sdef', 'spd'];
  * Base Relation rule (PH2 p.257): if base(A) > base(B), total(A) must be > total(B).
  */
 export const getBaseRelationViolations = (pokemon) => {
-    const base = pokemon?.baseStats || {};
+    const base = applyNature(pokemon?.baseStats || {}, pokemon?.nature);
     const added = pokemon?.addedStats || {};
     const totals = {};
     for (const s of STATS) totals[s] = (base[s] || 0) + (added[s] || 0);
