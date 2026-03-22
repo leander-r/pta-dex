@@ -4,7 +4,7 @@
 
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { getTypeColor, getContrastTextColor } from '../../utils/typeUtils.js';
-import { getActualStats, calculatePokemonHP, calculateSTAB } from '../../utils/dataUtils.js';
+import { getActualStats, calculatePokemonHP, calculateSTAB, getBaseRelationViolations } from '../../utils/dataUtils.js';
 import { exportSinglePokemon, copyPokemonToClipboard } from '../../utils/exportUtils.js';
 import toast from '../../utils/toast.js';
 import { useGameData, useModal, usePokemonContext, useUI } from '../../contexts/index.js';
@@ -2148,6 +2148,48 @@ const PokemonCard = ({
 
                 {editTab === 'stats' && (
                     <div>
+                        {/* Pre-existing Base Relation violation — offers reset as escape hatch */}
+                        {(() => {
+                            const violations = getBaseRelationViolations(pokemon);
+                            if (!violations.length) return null;
+                            return (
+                                <div style={{
+                                    marginBottom: '12px', padding: '10px 12px', borderRadius: '8px',
+                                    background: 'var(--tint-fail-bg)', border: '1px solid var(--color-danger-text)'
+                                }}>
+                                    <div style={{ fontWeight: 700, fontSize: '13px', color: 'var(--color-danger-text)', marginBottom: '4px' }}>
+                                        ⚠️ Base Relation Violated — stat allocation is stuck
+                                    </div>
+                                    <ul style={{ margin: '0 0 8px 0', paddingLeft: '18px', fontSize: '12px', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+                                        {violations.map(v => <li key={v}>{v}</li>)}
+                                    </ul>
+                                    <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '8px' }}>
+                                        These violations prevent any +/− moves from being allowed. Reset the allocation to start fresh — all spent points are returned.
+                                    </div>
+                                    <button
+                                        onClick={() => showConfirm({
+                                            title: 'Reset Stat Allocation',
+                                            message: `Clear all added stats for ${pokemon.name || pokemon.species}? All spent points will be returned.`,
+                                            confirmLabel: 'Reset',
+                                            danger: true,
+                                            onConfirm: () => updatePokemon({
+                                                addedStats: {},
+                                                statPointsAvailable: Math.max(0, (pokemon.highestLevelReached || pokemon.level || 1) - 1),
+                                                statAllocationHistory: []
+                                            })
+                                        })}
+                                        style={{
+                                            padding: '5px 14px', borderRadius: '6px', border: 'none',
+                                            background: 'var(--color-danger-text)', color: 'white',
+                                            fontSize: '12px', fontWeight: 700, cursor: 'pointer'
+                                        }}
+                                    >
+                                        Reset Stat Allocation
+                                    </button>
+                                </div>
+                            );
+                        })()}
+
                         <div className="text-muted" style={{ marginBottom: '10px', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                             <span>Stat Points Available: <strong title="Spend these to increase stats. Pokémon gain stat points when leveling up.">{pokemon.statPointsAvailable || 0}</strong></span>
                             <button
