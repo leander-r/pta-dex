@@ -68,27 +68,27 @@ const InventoryTab = () => {
         });
     }, [inventory]);
 
-    // Get type color — hex values kept for template-literal usage (gradients, opacity suffixes).
-    // Values mirror existing CSS vars where available.
+    // Get type color. Returns CSS vars where a matching var exists so dark-mode overrides apply.
+    // Remaining values are kept as hex (no matching CSS var defined).
     const getTypeColor = (type) => {
         const t = (type || '').toLowerCase();
         const colors = {
-            'healing':   '#4caf50', // --stat-hp / --poke-green
-            'medicine':  '#4caf50',
-            'ball':      '#f44336', // --stat-atk / --poke-red
+            'healing':   'var(--stat-hp)',
+            'medicine':  'var(--stat-hp)',
+            'ball':      '#f44336',
             'pokeball':  '#f44336',
-            'battle':    '#ff9800', // --stat-sdef
+            'battle':    'var(--poke-orange)',
             'berry':     '#e91e63',
-            'held':      '#00bcd4', // --stat-spd
-            'hold item': '#00bcd4',
-            'evolution': '#9c27b0', // --stat-satk
+            'held':      'var(--stat-spd)',
+            'hold item': 'var(--stat-spd)',
+            'evolution': '#9c27b0',
             'key':       '#ffd700',
             'tm':        '#3f51b5',
             'hm':        '#3f51b5',
             'food':      '#8bc34a',
-            'misc':      '#667eea', // --color-purple
+            'misc':      'var(--color-purple)',
         };
-        return colors[t] || '#667eea';
+        return colors[t] || 'var(--color-purple)';
     };
 
     // Filtered inventory (sorting is done via sortInventory action, not here)
@@ -356,18 +356,21 @@ const InventoryTab = () => {
                         <button
                             onClick={() => setShowSearch(s => !s)}
                             aria-pressed={showSearch}
-                            title={showSearch ? 'Hide search & filters' : 'Show search & filters'}
+                            title={showSearch ? 'Hide search & filters' : 'Search & filter inventory'}
                             style={{
                                 background: showSearch ? 'var(--gradient-purple)' : 'none',
                                 border: showSearch ? 'none' : '1px solid var(--border-medium)',
                                 borderRadius: '6px',
-                                color: showSearch ? 'white' : 'inherit',
+                                color: showSearch ? 'white' : 'var(--text-secondary)',
                                 cursor: 'pointer',
                                 padding: '2px 8px',
-                                fontSize: '12px'
+                                fontSize: '12px',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '4px'
                             }}
                         >
-                            🔍{(searchQuery || filter !== 'all') && <span style={{ marginLeft: '3px', background: 'var(--danger-btn-start)', color: 'white', borderRadius: '8px', padding: '0 4px', fontSize: '10px' }}>•</span>}
+                            🔍 Filter{(searchQuery || filter !== 'all') && <span style={{ background: 'var(--poke-orange)', color: 'white', borderRadius: '8px', padding: '0 5px', fontSize: '10px', fontWeight: 700 }}>{[searchQuery, filter !== 'all'].filter(Boolean).length}</span>}
                         </button>
                         <button
                             onClick={() => setShowAddItem(s => !s)}
@@ -375,8 +378,8 @@ const InventoryTab = () => {
                             style={{
                                 padding: '2px 8px',
                                 fontSize: '12px',
-                                background: showAddItem ? 'var(--danger-btn-start)' : 'var(--gradient-purple)',
-                                color: 'white',
+                                background: showAddItem ? 'var(--border-medium)' : 'var(--gradient-purple)',
+                                color: showAddItem ? 'var(--text-primary)' : 'white',
                                 border: 'none',
                                 borderRadius: '6px',
                                 cursor: 'pointer',
@@ -595,7 +598,7 @@ const InventoryTab = () => {
                                                         background: getTypeColor(data.type),
                                                         color: 'white',
                                                         borderRadius: '10px',
-                                                        fontSize: '10px',
+                                                        fontSize: '11px',
                                                         textTransform: 'capitalize'
                                                     }}>
                                                         {data.type || 'misc'}
@@ -612,7 +615,7 @@ const InventoryTab = () => {
                                                     onClick={() => setDetailModal({ show: true, type: 'item', name, data })}
                                                     title={`View ${name} details`}
                                                     aria-label={`View details for ${name}`}
-                                                    style={{ background: 'none', border: '1px solid var(--border-medium)', borderRadius: '50%', width: '30px', height: '30px', fontSize: '13px', cursor: 'pointer', color: 'var(--text-muted)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}
+                                                    style={{ background: 'none', border: '1px solid var(--border-medium)', borderRadius: '50%', width: '28px', height: '28px', fontSize: '13px', cursor: 'pointer', color: 'var(--text-muted)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}
                                                 >ℹ</button>
                                                 <button
                                                     onClick={() => handleAddItem(name, data, addQuantity)}
@@ -744,19 +747,16 @@ const InventoryTab = () => {
                                                 background: getTypeColor(itemType),
                                                 color: 'white',
                                                 borderRadius: '10px',
-                                                fontSize: '10px',
+                                                fontSize: '11px',
                                                 textTransform: 'capitalize'
                                             }}>
                                                 {itemType}
                                             </span>
-                                            {item.price > 0 && (
-                                                <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 'normal' }}>₽{item.price}</span>
-                                            )}
                                             <button
                                                 onClick={() => setDetailModal({ show: true, type: 'item', name: item.name, data: { type: item.type, price: item.price, effect: item.effect } })}
                                                 title={`View ${item.name} details`}
                                                 aria-label={`View details for ${item.name}`}
-                                                style={{ background: 'none', border: '1px solid var(--border-medium)', borderRadius: '50%', width: '20px', height: '20px', fontSize: '11px', cursor: 'pointer', color: 'var(--text-muted)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: 0, flexShrink: 0 }}
+                                                style={{ background: 'none', border: '1px solid var(--border-medium)', borderRadius: '50%', width: '28px', height: '28px', fontSize: '13px', cursor: 'pointer', color: 'var(--text-muted)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: 0, flexShrink: 0 }}
                                             >ℹ</button>
                                         </div>
                                         {item.effect && (
@@ -767,23 +767,23 @@ const InventoryTab = () => {
                                     </div>
 
                                     {/* Quantity Controls */}
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                                        {/* −/qty/+ group */}
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                                         <button
                                             onClick={() => handleRemoveItem(item.name)}
                                             className="quantity-btn"
-                                            aria-label="Decrease quantity"
-                                            title={(item.quantity || 1) <= 1 ? 'Use ✕ to remove the item' : 'Decrease quantity'}
-                                            disabled={(item.quantity || 1) <= 1}
+                                            aria-label={(item.quantity || 1) <= 1 ? 'Remove item' : 'Decrease quantity'}
+                                            title={(item.quantity || 1) <= 1 ? 'Remove item' : 'Decrease quantity'}
                                             style={{
                                                 width: '28px',
                                                 height: '28px',
                                                 borderRadius: '4px',
-                                                cursor: (item.quantity || 1) <= 1 ? 'not-allowed' : 'pointer',
+                                                cursor: 'pointer',
                                                 fontSize: '16px',
                                                 display: 'flex',
                                                 alignItems: 'center',
                                                 justifyContent: 'center',
-                                                opacity: (item.quantity || 1) <= 1 ? 0.35 : 1
                                             }}
                                         >
                                             −
@@ -801,12 +801,12 @@ const InventoryTab = () => {
                                                 width: '50px',
                                                 textAlign: 'center',
                                                 padding: '4px',
-                                                border: `1px solid ${(item.quantity || 1) <= 1 ? 'var(--danger-btn-start)' : (item.quantity || 1) <= 2 ? 'var(--poke-orange)' : 'var(--border-medium)'}`,
+                                                border: `1px solid ${(item.quantity || 1) <= 1 ? 'var(--color-danger-text)' : (item.quantity || 1) <= 2 ? 'var(--poke-orange)' : 'var(--border-medium)'}`,
                                                 borderRadius: '4px',
                                                 fontSize: '14px',
                                                 fontWeight: 'bold',
                                                 background: 'var(--input-bg)',
-                                                color: (item.quantity || 1) <= 1 ? 'var(--danger-btn-start)' : (item.quantity || 1) <= 2 ? 'var(--poke-orange)' : 'var(--text-primary)'
+                                                color: (item.quantity || 1) <= 1 ? 'var(--color-danger-text)' : (item.quantity || 1) <= 2 ? 'var(--poke-orange)' : 'var(--text-primary)'
                                             }}
                                         />
                                         <button
@@ -827,6 +827,9 @@ const InventoryTab = () => {
                                         >
                                             +
                                         </button>
+                                        </div>
+                                        {/* Use/delete group */}
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                                         {!['held', 'hold item', 'tm', 'hm', 'key', 'evolution'].includes(itemType) && (
                                         <button
                                             onClick={() => handleUseItem(item.name)}
@@ -847,18 +850,27 @@ const InventoryTab = () => {
                                         )}
                                         <button
                                             onClick={() => handleDeleteItem(item.name)}
+                                            title={`Delete all ${item.name}`}
+                                            aria-label={`Delete all ${item.name}`}
                                             style={{
-                                                padding: '4px 8px',
-                                                background: 'var(--danger-btn-start)',
-                                                color: 'white',
-                                                border: 'none',
+                                                width: '28px',
+                                                height: '28px',
+                                                background: 'none',
+                                                color: 'var(--color-danger-text)',
+                                                border: '1px solid var(--color-danger-text)',
                                                 borderRadius: '4px',
                                                 cursor: 'pointer',
-                                                fontSize: '13px'
+                                                fontSize: '13px',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                padding: 0,
+                                                flexShrink: 0
                                             }}
                                         >
                                             ✕
                                         </button>
+                                        </div>
                                     </div>
                                     </div>{/* end main row */}
 
