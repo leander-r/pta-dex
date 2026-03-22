@@ -3881,12 +3881,6 @@
                 height: 32px !important;
             }
 
-            /* Party/Reserve move buttons: compact on small screens */
-            .pokemon-info-move-btn {
-                font-size: 11px !important;
-                padding: 5px 10px !important;
-            }
-
             /* Collapsed quick-action buttons: icon only, no text label */
             .quick-action-btn span {
                 display: none;

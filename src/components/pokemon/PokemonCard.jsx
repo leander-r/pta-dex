@@ -1494,36 +1494,6 @@ const PokemonCard = ({
                             </div>
                         </div>
 
-                        {/* Party/Reserve quick-move buttons (above level controls for easy access) */}
-                        <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
-                            {isInParty ? (
-                                <button
-                                    onClick={onMoveToReserve}
-                                    className="pokemon-info-move-btn"
-                                    style={{ padding: '6px 14px', background: 'var(--poke-orange)', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}
-                                >
-                                    → Move to Reserve
-                                </button>
-                            ) : (
-                                <button
-                                    onClick={canMoveToParty ? onMoveToParty : undefined}
-                                    disabled={!canMoveToParty}
-                                    title={canMoveToParty ? 'Move to Party' : 'Party is full (6/6)'}
-                                    className="pokemon-info-move-btn"
-                                    style={{
-                                        padding: '6px 14px',
-                                        background: canMoveToParty ? 'var(--stat-hp)' : 'var(--border-medium)',
-                                        color: 'white', border: 'none', borderRadius: '6px',
-                                        cursor: canMoveToParty ? 'pointer' : 'not-allowed',
-                                        opacity: canMoveToParty ? 1 : 0.6,
-                                        fontSize: '12px', fontWeight: 'bold'
-                                    }}
-                                >
-                                    ← Move to Party
-                                </button>
-                            )}
-                        </div>
-
                         {/* Level, EXP & Nature */}
                         <div className="pokemon-info-grid">
                             <div>
@@ -2126,33 +2096,8 @@ const PokemonCard = ({
                             </div>
                         </div>
 
-                        {/* Move Buttons */}
+                        {/* Action Buttons */}
                         <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
-                            {isInParty ? (
-                                <button
-                                    onClick={onMoveToReserve}
-                                    style={{ padding: '8px 16px', background: 'var(--poke-orange)', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer' }}
-                                >
-                                    Move to Reserve
-                                </button>
-                            ) : (
-                                <button
-                                    onClick={canMoveToParty ? onMoveToParty : undefined}
-                                    disabled={!canMoveToParty}
-                                    title={canMoveToParty ? 'Move to Party' : 'Party is full (6/6)'}
-                                    style={{
-                                        padding: '8px 16px',
-                                        background: canMoveToParty ? 'var(--stat-hp)' : 'var(--border-medium)',
-                                        color: 'white',
-                                        border: 'none',
-                                        borderRadius: '6px',
-                                        cursor: canMoveToParty ? 'pointer' : 'not-allowed',
-                                        opacity: canMoveToParty ? 1 : 0.6
-                                    }}
-                                >
-                                    Move to Party
-                                </button>
-                            )}
                             <button
                                 onClick={() => exportSinglePokemon(pokemon)}
                                 className="pokemon-action-btn export"
