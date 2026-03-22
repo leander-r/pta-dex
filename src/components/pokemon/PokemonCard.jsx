@@ -1323,24 +1323,6 @@ const PokemonCard = ({
                                             gap: '8px',
                                             justifyContent: 'center'
                                         }}>
-                                            {setShowCustomSpeciesModal && (
-                                                <button
-                                                    onClick={() => {
-                                                        setShowSpeciesDropdown(false);
-                                                        setShowCustomSpeciesModal(true);
-                                                    }}
-                                                    style={{
-                                                        padding: '6px 12px',
-                                                        background: 'var(--color-purple)',
-                                                        color: 'white',
-                                                        border: 'none',
-                                                        borderRadius: '4px',
-                                                        fontSize: '11px',
-                                                        fontWeight: 'bold',
-                                                        cursor: 'pointer'
-                                                    }}
-                                                >+ Custom Species</button>
-                                            )}
                                             <button
                                                 onClick={() => {
                                                     setShowSpeciesDropdown(false);

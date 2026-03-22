@@ -540,6 +540,25 @@ const PokemonTab = () => {
                         )}
                     </button>
                 )}
+
+                <button
+                    onClick={() => { setEditingCustomSpeciesId(null); setShowCustomSpeciesModal(true); }}
+                    style={{
+                        padding: '6px 13px', borderRadius: '20px', cursor: 'pointer',
+                        border: '1.5px solid var(--border-medium)',
+                        background: 'var(--input-bg)',
+                        color: 'var(--text-primary)',
+                        fontSize: '12px', fontWeight: 'bold',
+                        display: 'flex', alignItems: 'center', gap: '5px'
+                    }}
+                >
+                    ✨ Custom Species
+                    {customSpecies.length > 0 && (
+                        <span style={{ background: 'var(--bg-secondary)', color: 'var(--text-muted)', borderRadius: '8px', padding: '0 5px', fontSize: '11px', fontWeight: 'bold' }}>
+                            {customSpecies.length}
+                        </span>
+                    )}
+                </button>
             </div>
 
             {/* Search panel */}
