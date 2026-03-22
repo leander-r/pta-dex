@@ -5,7 +5,7 @@
 
 import React, { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react';
 import { safeLocalStorageGet, safeLocalStorageSet } from '../utils/storageUtils.js';
-import { getActualStats, calculatePokemonHP } from '../utils/dataUtils.js';
+import { getActualStats, calculatePokemonHP, getBaseRelationViolations } from '../utils/dataUtils.js';
 import { buildEmbed } from '../utils/discordEmbeds.js';
 import toast from '../utils/toast.js';
 import { useUI } from './UIContext.jsx';
@@ -229,6 +229,17 @@ export const DataProvider = ({ children }) => {
                         : migratedData.trainers[0].id;
                     setTrainers(migratedData.trainers);
                     setActiveTrainerId(validActiveId);
+
+                    // Warn about any pre-existing Base Relation violations in loaded data
+                    const violators = migratedData.trainers.flatMap(t =>
+                        [...(t.party || []), ...(t.reserve || [])]
+                    ).filter(p => getBaseRelationViolations(p).length > 0);
+                    if (violators.length > 0) {
+                        const names = violators.map(p => p.name || p.species || 'Unknown').join(', ');
+                        setTimeout(() => toast.warning(
+                            `${violators.length} Pokémon have Base Relation stat violations: ${names}. Open their stats tab to review.`
+                        ), 2000);
+                    }
                 }
                 setInventory(Array.isArray(migratedData.inventory) ? migratedData.inventory : []);
                 setCustomSpecies(Array.isArray(migratedData.customSpecies) ? migratedData.customSpecies : []);

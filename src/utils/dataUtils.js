@@ -206,3 +206,34 @@ export const parseHealFormula = (effectStr = '') => {
     if (fracMatch) return { type: 'fraction', num: parseInt(fracMatch[1]), denom: parseInt(fracMatch[2]) };
     return { type: 'none' };
 };
+
+const STAT_LABELS = { hp: 'HP', atk: 'ATK', def: 'DEF', satk: 'SATK', sdef: 'SDEF', spd: 'SPD' };
+const STATS = ['hp', 'atk', 'def', 'satk', 'sdef', 'spd'];
+
+/**
+ * Returns an array of human-readable violation strings for a Pokémon's current
+ * stat allocation (addedStats vs baseStats). Empty array = no violations.
+ * Base Relation rule (PH2 p.257): if base(A) > base(B), total(A) must be > total(B).
+ */
+export const getBaseRelationViolations = (pokemon) => {
+    const base = pokemon?.baseStats || {};
+    const added = pokemon?.addedStats || {};
+    const totals = {};
+    for (const s of STATS) totals[s] = (base[s] || 0) + (added[s] || 0);
+    const seen = new Set();
+    for (const sA of STATS) {
+        for (const sB of STATS) {
+            if (sA === sB) continue;
+            if ((base[sA] || 0) > (base[sB] || 0) && totals[sA] <= totals[sB]) {
+                const key = `${sA}>${sB}`;
+                if (!seen.has(key)) {
+                    seen.add(key);
+                }
+            }
+        }
+    }
+    return [...seen].map(key => {
+        const [sA, sB] = key.split('>');
+        return `${STAT_LABELS[sA]} (base ${base[sA] || 0}) must exceed ${STAT_LABELS[sB]} (base ${base[sB] || 0})`;
+    });
+};

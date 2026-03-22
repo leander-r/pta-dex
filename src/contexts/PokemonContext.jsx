@@ -7,7 +7,7 @@ import React, { createContext, useContext, useCallback, useEffect, useRef } from
 import { GAME_DATA } from '../data/configs.js';
 import { MAX_PARTY_SIZE, MAX_NATURAL_MOVES, POKEMON_HP_MULTIPLIER, MAX_POKEMON_LEVEL } from '../data/constants.js';
 import { EVOLUTION_CHAINS } from '../data/evolutionChains.js';
-import { getActualStats, calculatePokemonHP, calculateSTAB as calcSTAB } from '../utils/dataUtils.js';
+import { getActualStats, calculatePokemonHP, calculateSTAB as calcSTAB, getBaseRelationViolations } from '../utils/dataUtils.js';
 import toast from '../utils/toast.js';
 import { useGameData } from './GameDataContext.jsx';
 import { useUI } from './UIContext.jsx';
@@ -506,6 +506,12 @@ export const PokemonProvider = ({ children }) => {
 
     // Import Pokemon
     const importPokemon = useCallback((pokemonData, toParty = false) => {
+        const violations = getBaseRelationViolations(pokemonData);
+        if (violations.length > 0) {
+            const name = pokemonData.name || pokemonData.species || 'This Pokémon';
+            toast.warning(`${name} has Base Relation stat violations: ${violations.join('; ')}. Edit their stats to fix.`);
+        }
+
         const importedPokemon = {
             ...pokemonData,
             id: Date.now()
