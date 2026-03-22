@@ -5582,6 +5582,31 @@
         }
 
         /* ============================================================
+           POKEMON CARD — NEW POKEMON HIGHLIGHT ANIMATION
+           ============================================================ */
+
+        @keyframes pokemonCardHighlight {
+            0%   { box-shadow: 0 0 0 3px var(--color-purple), 0 4px 15px rgba(0,0,0,0.15); }
+            50%  { box-shadow: 0 0 0 5px var(--color-purple), 0 6px 20px rgba(0,0,0,0.2); }
+            100% { box-shadow: 0 0 0 0px transparent, 0 4px 15px rgba(0,0,0,0.15); }
+        }
+
+        .pokemon-card-just-added > .pokemon-card {
+            animation: pokemonCardHighlight 1.5s ease-out forwards;
+        }
+
+        /* ============================================================
+           POKEMON STATS TAB — RESPONSIVE GRID (item 10)
+           ============================================================ */
+
+        /* The stats grid uses repeat(3, 1fr) inline; override here for small screens */
+        @media (max-width: 480px) {
+            .pokemon-card-expanded div[style*="repeat(3, 1fr)"] {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+        }
+
+        /* ============================================================
            REDUCED MOTION - Accessibility
            ============================================================ */
 

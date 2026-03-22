@@ -134,7 +134,41 @@ const PokemonTab = () => {
         reader.readAsText(file);
     };
 
-    const handleDragStart = useCallback((id) => setDragId(id), []);
+    // Current pokemon list based on view (declared early so hooks below can reference it)
+    const currentList = pokemonView === 'party' ? party : reserve;
+
+    const cardListRef = useRef(null);
+    const prevListLengthRef = useRef(null);
+    const [justAddedId, setJustAddedId] = useState(null);
+    const [hasDragged, setHasDragged] = useState(() => !!safeLocalStorageGet('pta-has-dragged', ''));
+    const [expandedWeakType, setExpandedWeakType] = useState(null);
+
+    // Scroll to newly added Pokémon
+    useEffect(() => {
+        const len = currentList.length;
+        if (prevListLengthRef.current !== null && len > prevListLengthRef.current) {
+            const newPokemon = currentList[len - 1];
+            if (newPokemon) {
+                setJustAddedId(newPokemon.id);
+                setTimeout(() => {
+                    if (cardListRef.current) {
+                        const lastCard = cardListRef.current.lastElementChild;
+                        lastCard?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }
+                }, 80);
+                setTimeout(() => setJustAddedId(null), 2000);
+            }
+        }
+        prevListLengthRef.current = len;
+    }, [currentList.length]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    const handleDragStart = useCallback((id) => {
+        setDragId(id);
+        if (!hasDragged) {
+            setHasDragged(true);
+            safeLocalStorageSet('pta-has-dragged', '1');
+        }
+    }, [hasDragged]);
     const handleDragOver = useCallback((id) => { if (id !== dragId) setDragOverId(id); }, [dragId]);
     const handleDrop = useCallback((id) => {
         if (dragId && id !== dragId) reorderPokemon(dragId, id, pokemonView === 'party');
@@ -237,9 +271,6 @@ const PokemonTab = () => {
         setShowImportOptions(false);
     };
 
-    // Current pokemon list based on view
-    const currentList = pokemonView === 'party' ? party : reserve;
-
     // Filtered list (sorting is done via sortPokemonList action, not here)
     const filteredList = useMemo(() => {
         let result = [...currentList];
@@ -300,12 +331,13 @@ const PokemonTab = () => {
                     </button>
                 </div>
 
-                {/* Import Pokemon Button */}
-                <div ref={importDropdownRef} style={{ position: 'relative' }}>
+                {/* Import / Add split-button group */}
+                <div ref={importDropdownRef} style={{ position: 'relative', display: 'flex' }}>
                     <button
                         onClick={() => setShowImportOptions(!showImportOptions)}
                         className="pokemon-action-btn import"
                         title="Import a Pokemon from another trainer (trade/gift)"
+                        style={{ borderRadius: '6px 0 0 6px', borderRight: '1px solid rgba(255,255,255,0.3)' }}
                     >
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -401,6 +433,15 @@ const PokemonTab = () => {
                         onChange={handleFileImport}
                         style={{ display: 'none' }}
                     />
+                    {/* Add Pokémon — right half of the split button */}
+                    <button
+                        onClick={handleAddPokemon}
+                        className="btn btn-purple"
+                        style={{ padding: '10px 16px', borderRadius: '0 6px 6px 0', borderLeft: '1px solid rgba(255,255,255,0.3)', marginLeft: '0' }}
+                        title="Add a new Pokémon"
+                    >
+                        + Add
+                    </button>
                 </div>
 
                 <button
@@ -436,14 +477,6 @@ const PokemonTab = () => {
                     title="Award EXP to multiple party Pokemon"
                 >
                     Award EXP
-                </button>
-
-                <button
-                    onClick={handleAddPokemon}
-                    className="btn btn-purple"
-                    style={{ padding: '10px 20px' }}
-                >
-                    + Add Pokémon
                 </button>
             </div>
 
@@ -601,19 +634,38 @@ const PokemonTab = () => {
                             );
                             return (
                                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                                    {sorted.map(t => (
-                                        <span key={t} style={{
-                                            padding: '3px 8px', borderRadius: '10px',
-                                            background: getTypeColor(t), color: 'white',
-                                            fontSize: '11px', fontWeight: 'bold',
-                                            display: 'flex', alignItems: 'center', gap: '4px'
-                                        }}>
-                                            {t}
-                                            <span style={{ background: 'rgba(0,0,0,0.3)', borderRadius: '8px', padding: '0 4px', fontSize: '10px' }}>
-                                                ×{teamCoverage.weakCount[t]}
-                                            </span>
-                                        </span>
-                                    ))}
+                                    {sorted.map(t => {
+                                        const weakPokemon = party.filter(p => {
+                                            const eff = getCombinedTypeEffectiveness(p.types || []);
+                                            return [...eff.weak, ...eff.superWeak].includes(t);
+                                        });
+                                        const isExpanded = expandedWeakType === t;
+                                        return (
+                                            <div key={t} style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                                                <button
+                                                    onClick={() => setExpandedWeakType(isExpanded ? null : t)}
+                                                    style={{
+                                                        padding: '3px 8px', borderRadius: '10px',
+                                                        background: getTypeColor(t), color: 'white',
+                                                        fontSize: '11px', fontWeight: 'bold', border: 'none', cursor: 'pointer',
+                                                        display: 'flex', alignItems: 'center', gap: '4px',
+                                                        outline: isExpanded ? '2px solid white' : 'none'
+                                                    }}
+                                                    title="Click to see which Pokémon are weak"
+                                                >
+                                                    {t}
+                                                    <span style={{ background: 'rgba(0,0,0,0.3)', borderRadius: '8px', padding: '0 4px', fontSize: '10px' }}>
+                                                        ×{teamCoverage.weakCount[t]}
+                                                    </span>
+                                                </button>
+                                                {isExpanded && (
+                                                    <div style={{ fontSize: '10px', color: 'var(--text-muted)', paddingLeft: '4px', lineHeight: 1.5 }}>
+                                                        {weakPokemon.map(p => p.name || p.species).join(', ')}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
                                 </div>
                             );
                         })()}
@@ -816,13 +868,22 @@ const PokemonTab = () => {
                     )}
                 </div>
             ) : (
-                <div style={{ display: 'grid', gap: '15px' }}>
+                <>
+                {!hasDragged && !compareMode && currentList.length > 1 && (
+                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', textAlign: 'center', marginBottom: '8px', opacity: 0.7 }}>
+                        ⠿ Drag the grip handle on any card to reorder
+                    </div>
+                )}
+                <div ref={cardListRef} style={{ display: 'grid', gap: '15px' }}>
                     {filteredList.map((pokemon) => {
                         // Use actual position in unfiltered list for move up/down
                         const actualIndex = currentList.findIndex(p => p.id === pokemon.id);
                         return (
-                            <PokemonCard
+                            <div
                                 key={pokemon.id}
+                                className={justAddedId === pokemon.id ? 'pokemon-card-just-added' : undefined}
+                            >
+                            <PokemonCard
                                 pokemon={pokemon}
                                 isEditing={editingPokemonId === pokemon.id}
                                 setEditing={(editing) => setEditingPokemonId(editing ? pokemon.id : null)}
@@ -849,9 +910,11 @@ const PokemonTab = () => {
                                 isCompareSelected={compareSelected.includes(pokemon.id)}
                                 onToggleCompare={toggleCompareSelect}
                             />
+                            </div>
                         );
                     })}
                 </div>
+                </>
             )}
         </div>
     );

@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeAll } from 'vitest';
 import {
     calcModifier,
     formatNumber,
@@ -7,9 +7,12 @@ import {
     getExpToNextLevel,
     applyCombatStage,
     applyNature,
+    getActualStats,
     calculatePokemonHP,
     calculateSTAB,
+    getBaseRelationViolations,
 } from '../dataUtils.js';
+import { GAME_DATA } from '../../data/configs.js';
 
 describe('calcModifier', () => {
     it('returns 0 for stat 10', () => {
@@ -137,5 +140,78 @@ describe('calculateSTAB', () => {
 
     it('returns 20 at level 100', () => {
         expect(calculateSTAB(100)).toBe(20);
+    });
+});
+
+// ── Mudbray, Calm nature, level 1 ────────────────────────────────────────────
+// Mudbray base stats (from pokedex.min.json):
+//   hp:7  atk:10  def:7  satk:5  sdef:6  spd:5
+//
+// Calm nature: +2 SDEF, -2 ATK  →  nature-modified bases:
+//   hp:7  atk:8  def:7  satk:5  sdef:8  spd:5
+//
+// At level 1, no added stats → totals = nature-modified bases
+// Max HP = level + (hp_stat × 3) = 1 + (7 × 3) = 22
+// ─────────────────────────────────────────────────────────────────────────────
+describe('Stats tab — Mudbray, Calm nature, level 1', () => {
+    const mudbrayBase = { hp: 7, atk: 10, def: 7, satk: 5, sdef: 6, spd: 5 };
+    const mudbray = {
+        level: 1,
+        baseStats: mudbrayBase,
+        addedStats: {},
+        nature: 'Calm',
+    };
+
+    beforeAll(() => {
+        // Calm is not in the 5-nature fallback; inject it so applyNature resolves correctly.
+        GAME_DATA.natures['Calm'] = { buff: 'sdef', nerf: 'atk' };
+    });
+
+    it('applyNature applies +2 SDEF and -2 ATK to raw base stats', () => {
+        const natBase = applyNature(mudbrayBase, 'Calm');
+        expect(natBase.hp).toBe(7);
+        expect(natBase.atk).toBe(8);   // 10 - 2
+        expect(natBase.def).toBe(7);
+        expect(natBase.satk).toBe(5);
+        expect(natBase.sdef).toBe(8);  // 6 + 2
+        expect(natBase.spd).toBe(5);
+    });
+
+    it('Stats tab "Base:" row shows nature-modified values', () => {
+        // The Stats tab displays applyNature(baseStats, nature) as the "Base:" label.
+        const displayed = applyNature(mudbray.baseStats, mudbray.nature);
+        expect(displayed).toMatchObject({ hp: 7, atk: 8, def: 7, satk: 5, sdef: 8, spd: 5 });
+    });
+
+    it('getActualStats returns nature-modified totals when no points are added', () => {
+        const actual = getActualStats(mudbray);
+        expect(actual.hp).toBe(7);
+        expect(actual.atk).toBe(8);
+        expect(actual.def).toBe(7);
+        expect(actual.satk).toBe(5);
+        expect(actual.sdef).toBe(8);
+        expect(actual.spd).toBe(5);
+    });
+
+    it('Max HP = 1 + (7 × 3) = 22', () => {
+        expect(calculatePokemonHP(mudbray)).toBe(22);
+    });
+
+    it('no Base Relation violations with no added stats', () => {
+        expect(getBaseRelationViolations(mudbray)).toHaveLength(0);
+    });
+
+    it('Base Relation ordering uses nature-modified bases (ATK 8 = SDEF 8 > HP 7 = DEF 7 > SATK 5 = SPD 5)', () => {
+        // ATK base(8) equals SDEF base(8) → no ordering constraint between them
+        // Both must exceed HP(7) and DEF(7), which in turn must exceed SATK(5) and SPD(5).
+        // Violation: if SATK total reaches ATK total (8) while no points added to ATK → violation
+        const withSatkOverAtk = { ...mudbray, addedStats: { satk: 4 } }; // satk total = 9 > atk total = 8
+        expect(getBaseRelationViolations(withSatkOverAtk).length).toBeGreaterThan(0);
+    });
+
+    it('adding points to SDEF equal to ATK added keeps no violation (equal bases, no constraint)', () => {
+        // ATK base == SDEF base (both 8) → no ordering constraint between them
+        const withEqualTotals = { ...mudbray, addedStats: { atk: 2, sdef: 2 } };
+        expect(getBaseRelationViolations(withEqualTotals)).toHaveLength(0);
     });
 });
