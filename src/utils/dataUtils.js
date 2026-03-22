@@ -150,12 +150,12 @@ export const getActualStats = (pokemon) => {
     const added = pokemon.addedStats || { hp: 0, atk: 0, def: 0, satk: 0, sdef: 0, spd: 0 };
     
     const combinedStats = {
-        hp: base.hp + added.hp,
-        atk: base.atk + added.atk,
-        def: base.def + added.def,
-        satk: base.satk + added.satk,
-        sdef: base.sdef + added.sdef,
-        spd: base.spd + added.spd
+        hp:   (base.hp   || 0) + (added.hp   || 0),
+        atk:  (base.atk  || 0) + (added.atk  || 0),
+        def:  (base.def  || 0) + (added.def  || 0),
+        satk: (base.satk || 0) + (added.satk || 0),
+        sdef: (base.sdef || 0) + (added.sdef || 0),
+        spd:  (base.spd  || 0) + (added.spd  || 0),
     };
     
     // Apply nature modifications
