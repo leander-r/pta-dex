@@ -154,7 +154,7 @@ const VoltageBar = ({ voltage, color }) => (
             <div key={i} style={{
                 width: 12, height: 12, borderRadius: 2,
                 background: i < voltage ? color : 'var(--border-light)',
-                border: `1px solid ${i < voltage ? color : 'var(--border-medium, #ccc)'}`,
+                border: `1px solid ${i < voltage ? color : 'var(--border-medium)'}`,
                 transition: 'background 0.2s',
                 boxShadow: i < voltage ? `0 0 4px ${color}66` : 'none',
             }} />
@@ -183,16 +183,16 @@ const JudgeCard = ({ judge, color, selected, onSelect, disabled, holdThought, ex
             Judge {judge.id}
         </div>
         <VoltageBar voltage={judge.voltage} color={color} />
-        {judge.voltage === 6 && <div style={{ fontSize: 10, color: '#ff9800', fontWeight: 700, marginTop: 2 }}>MAX ⚡</div>}
-        {holdThought && <div style={{ fontSize: 10, color: '#ff9800', fontWeight: 700, marginTop: 2 }}>🔒 Locked</div>}
-        {excitement && <div style={{ fontSize: 10, color: '#4caf50', fontWeight: 700, marginTop: 2 }}>🛡 Protected</div>}
+        {judge.voltage === 6 && <div style={{ fontSize: 10, color: 'var(--poke-orange)', fontWeight: 700, marginTop: 2 }}>MAX ⚡</div>}
+        {holdThought && <div style={{ fontSize: 10, color: 'var(--poke-orange)', fontWeight: 700, marginTop: 2 }}>🔒 Locked</div>}
+        {excitement && <div style={{ fontSize: 10, color: 'var(--stat-hp)', fontWeight: 700, marginTop: 2 }}>🛡 Protected</div>}
     </button>
 );
 
 const StepLabel = ({ n, label }) => (
     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
         <span style={{
-            width: 20, height: 20, borderRadius: '50%', background: '#667eea', color: 'white',
+            width: 20, height: 20, borderRadius: '50%', background: 'var(--color-purple)', color: 'white',
             fontSize: 11, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
         }}>{n}</span>
         <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>{label}</span>
@@ -707,10 +707,10 @@ const ContestRunner = () => {
         if (keyword === 'Unsettling')
             logParts.push('· All judges ⚡▼');
 
-        const logColor = maxVoltageBonusRolls.length ? '#ff9800'
-            : keyword === 'Big Show' ? '#f44336'
-            : voltageChange > 0 ? '#4caf50'
-            : voltageChange < 0 ? '#f44336'
+        const logColor = maxVoltageBonusRolls.length ? 'var(--poke-orange)'
+            : keyword === 'Big Show' ? 'var(--color-danger-text)'
+            : voltageChange > 0 ? 'var(--stat-hp)'
+            : voltageChange < 0 ? 'var(--color-danger-text)'
             : 'var(--text-secondary)';
 
         setLog(prev => [...prev, { text: logParts.join(' '), color: logColor }]);
@@ -895,7 +895,7 @@ const ContestRunner = () => {
                         </h3>
                         <button
                             onClick={() => setShowImport(v => !v)}
-                            style={{ margin: '0 16px 0 0', padding: '4px 12px', borderRadius: 6, border: '1px solid var(--border-light)', background: showImport ? '#667eea' : 'var(--surface-bg)', color: showImport ? 'white' : 'var(--text-secondary)', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
+                            style={{ margin: '0 16px 0 0', padding: '4px 12px', borderRadius: 6, border: '1px solid var(--border-light)', background: showImport ? 'var(--color-purple)' : 'var(--surface-bg)', color: showImport ? 'white' : 'var(--text-secondary)', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
                         >
                             📋 Paste list
                         </button>
@@ -916,7 +916,7 @@ const ContestRunner = () => {
                             <button
                                 onClick={handleImport}
                                 disabled={!importText.trim()}
-                                style={{ marginTop: 6, padding: '7px 16px', borderRadius: 6, border: 'none', background: importText.trim() ? '#667eea' : 'var(--border-light)', color: importText.trim() ? 'white' : 'var(--text-muted)', fontWeight: 700, fontSize: 13, cursor: importText.trim() ? 'pointer' : 'not-allowed' }}
+                                style={{ marginTop: 6, padding: '7px 16px', borderRadius: 6, border: 'none', background: importText.trim() ? 'var(--color-purple)' : 'var(--border-light)', color: importText.trim() ? 'white' : 'var(--text-muted)', fontWeight: 700, fontSize: 13, cursor: importText.trim() ? 'pointer' : 'not-allowed' }}
                             >
                                 + Add All
                             </button>
@@ -935,7 +935,7 @@ const ContestRunner = () => {
                             />
                             <button
                                 onClick={handleAddParticipant}
-                                style={{ padding: '8px 16px', borderRadius: 6, border: 'none', background: '#667eea', color: 'white', fontWeight: 700, fontSize: 13, cursor: 'pointer' }}
+                                style={{ padding: '8px 16px', borderRadius: 6, border: 'none', background: 'var(--color-purple)', color: 'white', fontWeight: 700, fontSize: 13, cursor: 'pointer' }}
                             >
                                 + Add
                             </button>
@@ -957,7 +957,7 @@ const ContestRunner = () => {
                                         <span style={{ fontWeight: 600, flex: 1, fontSize: 14 }}>{p.name}</span>
                                         <button
                                             onClick={() => handleRemoveParticipant(p.id)}
-                                            style={{ background: 'none', border: 'none', color: '#f44336', cursor: 'pointer', fontSize: 16, padding: '0 2px', lineHeight: 1 }}
+                                            style={{ background: 'none', border: 'none', color: 'var(--color-danger-text)', cursor: 'pointer', fontSize: 16, padding: '0 2px', lineHeight: 1 }}
                                             aria-label={`Remove ${p.name}`}
                                         >×</button>
                                     </div>
@@ -1039,7 +1039,7 @@ const ContestRunner = () => {
                                     <div style={{ fontSize: 12, color: 'var(--text-muted)', display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 2 }}>
                                         {p.rounds.map((r, i) => (
                                             <span key={i}>
-                                                R{i + 1}: <strong style={{ color: r.isSameMove ? '#f44336' : r.maxVoltageBonusRolls?.length ? '#ff9800' : 'var(--text-primary)' }}>
+                                                R{i + 1}: <strong style={{ color: r.isSameMove ? 'var(--color-danger-text)' : r.maxVoltageBonusRolls?.length ? 'var(--poke-orange)' : 'var(--text-primary)' }}>
                                                     {r.appeal}
                                                 </strong>
                                                 {r.moveName && r.moveName !== '—' && (

@@ -130,10 +130,10 @@ const BiomeEncounters = () => {
                                     padding: '6px 12px',
                                     borderRadius: 20,
                                     border: selectedBiome === b.id
-                                        ? '2px solid var(--color-orange, #f5a623)'
+                                        ? '2px solid var(--poke-orange)'
                                         : '1px solid var(--border-light)',
                                     background: selectedBiome === b.id
-                                        ? 'linear-gradient(135deg, #f5a623, #e8941c)'
+                                        ? 'linear-gradient(135deg, var(--poke-orange), var(--poke-orange-dark))'
                                         : 'var(--surface-bg)',
                                     color: selectedBiome === b.id ? 'white' : 'var(--text-secondary)',
                                     fontWeight: selectedBiome === b.id ? 700 : 500,

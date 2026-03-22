@@ -53,9 +53,6 @@ const GMTab = () => {
                 className="tabs"
                 style={{
                     display: 'flex',
-                    overflowX: 'auto',
-                    flexWrap: 'nowrap',
-                    WebkitOverflowScrolling: 'touch',
                     gap: '4px',
                     marginBottom: '20px',
                     padding: '4px',
@@ -84,8 +81,6 @@ const GMTab = () => {
                             fontSize: '13px',
                             cursor: 'pointer',
                             transition: 'all 0.15s ease',
-                            whiteSpace: 'nowrap',
-                            flexShrink: 0,
                         }}
                         aria-current={activeSection === id ? 'true' : undefined}
                     >
