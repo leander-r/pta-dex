@@ -40,6 +40,21 @@ This tool replaces spreadsheets and manual note-taking with a clean, interactive
 - **Item Database** — Browse and search the full PTA item database
 - **Category Filters** — Filter by item type (Healing, Poké Balls, Held Items, etc.)
 
+### Campaign Notes
+- **Campaign Notes** — Long-form text area for tracking adventure notes, NPCs, and storylines, with word and character counters
+- **Session Notes** — Quick-note area for the current session with a one-click clear button
+- **Quest Log** — Track quests with Active / Completed / Abandoned statuses, per-quest notes, and a count badge
+
+### GM Tools
+- **Biome Encounters** — Look up wild Pokémon by habitat (beach, cave, forest, etc.) for quick encounter generation
+- **Encounter Guide** — Wild encounter composition reference with stat formulas and ally affinity calculator
+- **Capture Calculator** — Calculate capture success chance from base rate, HP condition, status effects, and Pokémon level
+- **Loyalty Guide** — Pokémon loyalty rank system (0–4) with raise/lower actions and a disobedience table
+- **Skill Checks** — DC reference charts for trainer skill checks, organised by stat
+- **Death Saves** — Death saving throw rules and simulator for trainers and Pokémon reduced to 0 HP
+- **Reward Tables** — EXP award calculator using the PTA formula (EXP Drop × Level × multiplier)
+- **Contest Runner** — Full contest simulation with judges, voltage bonuses, type relations, move repetition penalties, and 23 effect keywords
+
 ### Quick Reference
 - **Pokédex Browser** — Look up any species' base stats, abilities, skills, level-up / egg / tutor moves, and evolution chain; search by name or filter by type
 - **Type Chart** — Interactive type effectiveness chart
@@ -105,10 +120,13 @@ npm run dev        # dev server at http://localhost:5173
 ```
 
 ```bash
-npm run build      # production build
-npm run preview    # preview the production build
-npm run test:run   # unit tests (Vitest)
-npm run test:e2e   # end-to-end tests (Playwright)
+npm run build           # production build
+npm run preview         # preview the production build
+npm run test:run        # unit tests (Vitest)
+npm run test:coverage   # unit tests with coverage report
+npm run test:e2e        # end-to-end tests (Playwright, headless)
+npm run test:e2e:headed # end-to-end tests (visible browser)
+npm run test:e2e:ui     # end-to-end tests with Playwright UI debugger
 ```
 
 ---
@@ -165,9 +183,10 @@ pta-dex/
 │   ├── components/
 │   │   ├── battle/        # Dice roller & combat tools
 │   │   ├── common/        # Header, navigation, modals container
+│   │   ├── gm/            # GM tools (encounters, capture, contests…)
 │   │   ├── inventory/     # Item management
 │   │   ├── modals/        # All modal dialogs
-│   │   ├── notes/         # Campaign notes
+│   │   ├── notes/         # Campaign notes & quest log
 │   │   ├── pokemon/       # Pokémon cards & management
 │   │   ├── reference/     # Pokédex browser, type chart, moves, etc.
 │   │   └── trainer/       # Trainer profile & stats
