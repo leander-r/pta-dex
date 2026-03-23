@@ -3160,6 +3160,11 @@
             border-color: #a07800 !important;
         }
 
+        /* Age input — hide spinner arrows */
+        .trainer-age-input::-webkit-inner-spin-button,
+        .trainer-age-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        .trainer-age-input { -moz-appearance: textfield; }
+
         /* Trainer respec button — subtle danger style with hover */
         .trainer-respec-btn {
             padding: 4px 10px;

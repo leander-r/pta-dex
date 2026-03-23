@@ -243,7 +243,7 @@ const TrainerClasses = () => {
     };
 
     return (
-        <div className="section-card-purple" style={{ marginBottom: '20px' }}>
+        <div id="trainer-classes-section" className="section-card-purple" style={{ marginBottom: '20px' }}>
             <h3 className="section-title-purple" onClick={() => setCollapsed(c => !c)} style={{ cursor: 'pointer', userSelect: 'none' }}>
                 <span>🎓</span> Classes
                 <button

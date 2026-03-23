@@ -118,8 +118,14 @@ const TrainerProfile = () => {
                         }
                     </div>
                     <span style={{
-                        position: 'absolute', bottom: '0px', right: '-2px',
-                        fontSize: '10px', lineHeight: 1
+                        position: 'absolute', bottom: '-2px', right: '-4px',
+                        fontSize: '13px', lineHeight: 1,
+                        background: 'var(--bg-card, #fff)',
+                        borderRadius: '50%',
+                        width: '18px', height: '18px',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        boxShadow: '0 1px 3px rgba(0,0,0,0.25)',
+                        border: '1px solid var(--border-light)'
                     }}>📷</span>
                     <input
                         type="file"
@@ -154,8 +160,8 @@ const TrainerProfile = () => {
             {/* Gender + Age */}
             <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '8px' }}>
                 <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-                    {[['male', '♂', '#1976d2'], ['female', '♀', '#c2185b']].map(([val, sym, col]) => (
-                        <label key={val} style={{ display: 'flex', alignItems: 'center', gap: '3px', cursor: 'pointer', fontSize: '15px', color: col }}>
+                    {[['male', '♂', 'M', '#1976d2'], ['female', '♀', 'F', '#c2185b']].map(([val, sym, abbr, col]) => (
+                        <label key={val} style={{ display: 'flex', alignItems: 'center', gap: '3px', cursor: 'pointer', fontSize: '14px', color: col }}>
                             <input
                                 type="radio"
                                 name="trainerGender"
@@ -163,7 +169,7 @@ const TrainerProfile = () => {
                                 onChange={() => setTrainer(prev => ({ ...prev, gender: val }))}
                                 style={{ accentColor: col }}
                             />
-                            {sym}
+                            <span title={val.charAt(0).toUpperCase() + val.slice(1)}>{sym} <span style={{ fontSize: '11px', fontWeight: 'bold' }}>{abbr}</span></span>
                         </label>
                     ))}
                 </div>
@@ -177,6 +183,7 @@ const TrainerProfile = () => {
                         min="1"
                         max="999"
                         aria-label="Trainer age"
+                        className="trainer-age-input"
                         style={{
                             width: '46px',
                             padding: '2px 4px',
@@ -192,18 +199,24 @@ const TrainerProfile = () => {
                 </div>
             </div>
 
-            {/* Class pills */}
+            {/* Class pills — display only; click scrolls to Classes section */}
             {(trainer.classes || []).length > 0 && (
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', marginBottom: '12px' }}>
                     {(trainer.classes || []).map((cls, i) => (
-                        <span key={i} style={{
-                            padding: '2px 8px',
-                            borderRadius: '8px',
-                            fontSize: '11px',
-                            fontWeight: '700',
-                            background: 'linear-gradient(135deg, #667eea, #764ba2)',
-                            color: 'white'
-                        }}>
+                        <span
+                            key={i}
+                            onClick={() => document.getElementById('trainer-classes-section')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })}
+                            title="Manage classes in the Classes section below"
+                            style={{
+                                padding: '2px 8px',
+                                borderRadius: '8px',
+                                fontSize: '11px',
+                                fontWeight: '700',
+                                background: 'linear-gradient(135deg, #667eea, #764ba2)',
+                                color: 'white',
+                                cursor: 'pointer'
+                            }}
+                        >
                             {cls}
                         </span>
                     ))}
@@ -223,11 +236,11 @@ const TrainerProfile = () => {
                     <div style={{ fontWeight: 'bold', marginBottom: '6px', color: 'var(--warning-text, #856404)' }}>
                         Character Creation — allocate stats, pick a class, then level up!
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px', color: creationPointsRemaining === 0 ? '#2e7d32' : '#c62828' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px', color: creationPointsRemaining === 0 ? 'var(--color-success-text, #2e7d32)' : 'var(--color-danger-text, #c62828)' }}>
                         <span>{creationPointsRemaining === 0 ? '✓' : '○'}</span>
                         <span>Spend all {CREATION_STAT_POINTS} Creation points ({CREATION_STAT_POINTS - creationPointsRemaining}/{CREATION_STAT_POINTS})</span>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: hasClass ? '#2e7d32' : '#c62828' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: hasClass ? 'var(--color-success-text, #2e7d32)' : 'var(--color-danger-text, #c62828)' }}>
                         <span>{hasClass ? '✓' : '○'}</span>
                         <span>Pick your first class</span>
                     </div>
@@ -301,7 +314,8 @@ const TrainerProfile = () => {
                 <input
                     type="number"
                     value={trainer.money || 0}
-                    onChange={(e) => setTrainer(prev => ({ ...prev, money: parseInt(e.target.value) || 0 }))}
+                    onChange={(e) => setTrainer(prev => ({ ...prev, money: Math.max(0, parseInt(e.target.value) || 0) }))}
+                    min="0"
                     aria-label="Money (₽)"
                     style={{
                         flex: 1,
@@ -384,14 +398,14 @@ const TrainerProfile = () => {
                 ) : (
                     <div style={{
                         textAlign: 'center',
-                        padding: '8px',
+                        padding: '10px 8px',
                         color: 'var(--text-muted, #999)',
                         fontSize: '12px',
-                        fontStyle: 'italic',
                         background: 'var(--bg-light, #f5f5f5)',
                         borderRadius: '6px'
                     }}>
-                        No badges earned yet
+                        <div style={{ fontStyle: 'italic', marginBottom: '4px' }}>No badges earned yet</div>
+                        <div style={{ fontSize: '11px', opacity: 0.75 }}>Press <strong>+ Add</strong> above to record your first badge</div>
                     </div>
                 )}
             </div>
@@ -425,7 +439,7 @@ const TrainerProfile = () => {
                                 🏆 Contest Ribbons {totalRibbons > 0 && `(${totalRibbons})`}
                             </span>
                         </div>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '6px' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(72px, 1fr))', gap: '6px' }}>
                             {RIBBON_TYPES.map(({ key, icon, label }) => {
                                 const count = ribbons[key] || 0;
                                 return (
@@ -437,14 +451,14 @@ const TrainerProfile = () => {
                                             <button
                                                 onClick={() => updateRibbon(key, -1)}
                                                 disabled={count === 0}
-                                                style={{ flex: 1, padding: '4px 2px', background: 'var(--bg-light, #e0e0e0)', border: 'none', borderRadius: '4px', cursor: count === 0 ? 'not-allowed' : 'pointer', opacity: count === 0 ? 0.4 : 1, fontSize: '12px' }}
+                                                style={{ flex: 1, padding: '4px 2px', background: 'var(--bg-light, #e0e0e0)', color: 'var(--text-primary)', border: '1px solid var(--border-light)', borderRadius: '4px', cursor: count === 0 ? 'not-allowed' : 'pointer', opacity: count === 0 ? 0.4 : 1, fontSize: '12px' }}
                                             >−</button>
                                             <span style={{ minWidth: '20px', textAlign: 'center', fontWeight: 'bold', fontSize: '13px' }}>
                                                 {count > 0 ? count : '—'}
                                             </span>
                                             <button
                                                 onClick={() => updateRibbon(key, 1)}
-                                                style={{ flex: 1, padding: '4px 2px', background: 'var(--bg-light, #e0e0e0)', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px' }}
+                                                style={{ flex: 1, padding: '4px 2px', background: 'var(--bg-light, #e0e0e0)', color: 'var(--text-primary)', border: '1px solid var(--border-light)', borderRadius: '4px', cursor: 'pointer', fontSize: '12px' }}
                                             >+</button>
                                         </div>
                                     </div>

@@ -164,7 +164,7 @@ const TrainerSkills = () => {
                         transition: 'background var(--transition-normal), color var(--transition-normal)'
                     }}
                 >
-                    {showTrainedOnly ? '★ Trained only' : '☆ Show all'}
+                    {showTrainedOnly ? '★ Trained only' : 'All Skills'}
                 </button>
             </div>
 
