@@ -160,7 +160,6 @@ const NotesTab = () => {
                     )}
 
                     <textarea
-                        key={noteTab}
                         className="notes-textarea"
                         value={activeText}
                         onChange={isCampaign ? handleCampaignChange : handleSessionChange}

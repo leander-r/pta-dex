@@ -459,6 +459,15 @@ const BattleTab = () => {
 
                     {mode === 'pokemon' && (
                         <div>
+                            {/* Empty party hint */}
+                            {party.length === 0 && (
+                                <div style={{ padding: '16px', borderRadius: '8px', textAlign: 'center', background: 'var(--surface-bg)', border: '1px dashed var(--border-medium)', marginBottom: '10px' }}>
+                                    <div style={{ fontSize: '24px', marginBottom: '6px' }}>🐾</div>
+                                    <div style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '4px' }}>No Pokémon in your party.</div>
+                                    <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Go to the <strong>Pokémon</strong> tab to add your team.</div>
+                                </div>
+                            )}
+
                             {/* Pokémon Selector — shared by both sub-modes */}
                             <div style={{ marginBottom: '10px' }}>
                                 <label style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '4px', display: 'block' }}>Select Pokémon</label>

@@ -59,6 +59,9 @@ const GMTab = () => {
                     background: 'var(--surface-bg)',
                     borderRadius: '10px',
                     border: '1px solid var(--border-light)',
+                    overflowX: 'auto',
+                    WebkitOverflowScrolling: 'touch',
+                    flexShrink: 0,
                 }}
             >
                 {SECTIONS.map(({ id, icon, label }) => (
@@ -81,6 +84,8 @@ const GMTab = () => {
                             fontSize: '13px',
                             cursor: 'pointer',
                             transition: 'all 0.15s ease',
+                            flexShrink: 0,
+                            whiteSpace: 'nowrap',
                         }}
                         aria-current={activeSection === id ? 'true' : undefined}
                     >

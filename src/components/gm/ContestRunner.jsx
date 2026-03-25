@@ -843,7 +843,7 @@ const ContestRunner = () => {
                             <ol style={{ margin: 0, paddingLeft: 18 }}>
                                 <li><strong>Setup:</strong> Choose contest type, add all participants (Trainer + Pokémon name).</li>
                                 <li><strong>Each turn:</strong> The active participant rolls in the Dice Roller tab, then copies with "Copy for GM".</li>
-                                <li><strong>Paste:</strong> Paste their result here, select which Judge they declared, and hit Confirm.</li>
+                                <li><strong>Paste:</strong> Paste their result here (format: <code>Name|Move|ContestType|Score</code> or <code>Name|Move|ContestType|Score|Effect</code>), select which Judge they declared, and hit Confirm.</li>
                                 <li><strong>NPC turns:</strong> Use the NPC section to pick a move and roll directly.</li>
                                 <li><strong>Round end:</strong> After all appeals, click Next Round. Repeat for all rounds.</li>
                                 <li><strong>Results:</strong> Final standings shown after the last round.</li>
@@ -1204,8 +1204,14 @@ const ContestRunner = () => {
 
                     {/* ── Player result paste ── */}
                     <div style={{ marginBottom: 12 }}>
-                        <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-muted)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.4px' }}>
-                            Player result
+                        <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 6 }}>
+                            <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.4px' }}>
+                                Player result
+                            </div>
+                            <div style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'monospace' }}>
+                                format: <span style={{ color: 'var(--text-secondary)' }}>Name|Move|Type|Score</span>
+                                <span style={{ color: 'var(--text-muted)' }}>[|Effect]</span>
+                            </div>
                         </div>
                         <div style={{ display: 'flex', gap: 8 }}>
                             <input
