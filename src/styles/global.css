@@ -3165,6 +3165,11 @@
         .trainer-age-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         .trainer-age-input { -moz-appearance: textfield; }
 
+        /* Notes textarea — reduce min-height on mobile */
+        @media (max-width: 480px) {
+            .notes-textarea { min-height: 260px !important; }
+        }
+
         /* Trainer respec button — subtle danger style with hover */
         .trainer-respec-btn {
             padding: 4px 10px;

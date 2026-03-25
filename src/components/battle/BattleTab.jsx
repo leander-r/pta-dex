@@ -174,6 +174,11 @@ const BattleTab = () => {
         }
     }, [rollHistory]);
 
+    // Clear roll history when the active trainer changes
+    useEffect(() => {
+        setRollHistory([]);
+    }, [trainer.id]);
+
     useEffect(() => {
         setMegaEvolved(false);
         setCurrentMegaForm(null);
@@ -825,7 +830,7 @@ const BattleTab = () => {
                                 <button
                                     onClick={rollTrainerAttack}
                                     disabled={!selectedWeapon}
-                                    style={{ width: '100%', padding: '15px', background: selectedWeapon ? 'linear-gradient(135deg, #e53935, #c62828)' : 'var(--collapsed-btn-bg)', color: selectedWeapon ? 'white' : 'var(--collapsed-btn-text)', border: 'none', borderRadius: '8px', cursor: selectedWeapon ? 'pointer' : 'not-allowed', fontSize: '16px', fontWeight: 'bold' }}
+                                    style={{ width: '100%', padding: '15px', background: selectedWeapon ? 'linear-gradient(135deg, var(--stat-atk, #e53935), #c62828)' : 'var(--collapsed-btn-bg)', color: selectedWeapon ? 'white' : 'var(--collapsed-btn-text)', border: 'none', borderRadius: '8px', cursor: selectedWeapon ? 'pointer' : 'not-allowed', fontSize: '16px', fontWeight: 'bold' }}
                                 >
                                     {selectedWeapon ? `Roll Attack (${selectedWeapon})!` : 'Select a weapon'}
                                 </button>

@@ -3,14 +3,20 @@ import { COMBAT_STAGE_POSITIVE_MULTIPLIER, COMBAT_STAGE_NEGATIVE_MULTIPLIER } fr
 import { HELP_BTN_STYLE } from '../common/helpBtnStyle.js';
 
 const STATS = [
-    { key: 'atk',  label: 'ATK',  color: '#f44336', desc: 'Attack - affects Physical move damage' },
-    { key: 'def',  label: 'DEF',  color: '#2196f3', desc: 'Defense - reduces Physical damage taken' },
-    { key: 'satk', label: 'SATK', color: '#9c27b0', desc: 'Special Attack - affects Special move damage' },
-    { key: 'sdef', label: 'SDEF', color: '#ff9800', desc: 'Special Defense - reduces Special damage taken' },
-    { key: 'spd',  label: 'SPD',  color: '#00bcd4', desc: 'Speed - determines turn order in battle' },
-    { key: 'acc',  label: 'ACC',  color: '#4caf50', desc: 'Accuracy - adds/subtracts from hit roll (1d20)' },
-    { key: 'eva',  label: 'EVA',  color: '#607d8b', desc: 'Evasion - subtracts from opponent hit rolls' },
+    { key: 'atk',  label: 'ATK',  color: 'var(--stat-atk, #f44336)',  desc: 'Attack - affects Physical move damage' },
+    { key: 'def',  label: 'DEF',  color: 'var(--stat-def, #2196f3)',  desc: 'Defense - reduces Physical damage taken' },
+    { key: 'satk', label: 'SATK', color: 'var(--stat-satk, #9c27b0)', desc: 'Special Attack - affects Special move damage' },
+    { key: 'sdef', label: 'SDEF', color: 'var(--stat-sdef, #ff9800)', desc: 'Special Defense - reduces Special damage taken' },
+    { key: 'spd',  label: 'SPD',  color: 'var(--stat-spd, #00bcd4)',  desc: 'Speed - determines turn order in battle' },
+    { key: 'acc',  label: 'ACC',  color: 'var(--stat-hp, #4caf50)',   desc: 'Accuracy - adds/subtracts from hit roll (1d20)' },
+    { key: 'eva',  label: 'EVA',  color: '#607d8b',                   desc: 'Evasion - subtracts from opponent hit rolls' },
 ];
+
+// Raw hex values used for alpha-transparency compositing (CSS vars can't be used with string concat)
+const STAT_HEX = {
+    atk: '#f44336', def: '#2196f3', satk: '#9c27b0',
+    sdef: '#ff9800', spd: '#00bcd4', acc: '#4caf50', eva: '#607d8b',
+};
 
 const getModifiedStat = (baseStat, stages) => {
     if (stages > 0) return Math.floor(baseStat * (1 + stages * COMBAT_STAGE_POSITIVE_MULTIPLIER));
@@ -59,12 +65,13 @@ const CombatStagesPanel = ({ selectedPokemon, combatStages, getStatsWithMega, up
                             <span style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
                                 {nonZero.map(s => {
                                     const val = combatStages[s.key];
+                                    const hex = STAT_HEX[s.key];
                                     return (
                                         <span key={s.key} style={{
                                             fontSize: '11px',
-                                            background: `${s.color}22`,
+                                            background: `${hex}22`,
                                             color: s.color,
-                                            border: `1px solid ${s.color}66`,
+                                            border: `1px solid ${hex}66`,
                                             padding: '1px 6px',
                                             borderRadius: '8px',
                                             fontWeight: 'bold',
@@ -107,7 +114,7 @@ const CombatStagesPanel = ({ selectedPokemon, combatStages, getStatsWithMega, up
                                 <div key={stat.key} className="combat-stat-box" style={{ textAlign: 'center', padding: '6px', borderRadius: '4px' }} title={stat.desc}>
                                     <div style={{ fontSize: '12px', fontWeight: 'bold', color: stat.color }}>{stat.label}</div>
                                     <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
-                                        {isModOnly ? '±' : baseStat} → <strong style={{ color: stages !== 0 ? (stages > 0 ? '#4caf50' : '#f44336') : 'var(--text-primary)' }}>
+                                        {isModOnly ? '±' : baseStat} → <strong style={{ color: stages !== 0 ? (stages > 0 ? 'var(--color-success-text, #4caf50)' : 'var(--color-danger-text, #f44336)') : 'var(--text-primary)' }}>
                                             {isModOnly ? (stages >= 0 ? '+' : '') + stages : modifiedStat}
                                         </strong>
                                     </div>
@@ -116,7 +123,7 @@ const CombatStagesPanel = ({ selectedPokemon, combatStages, getStatsWithMega, up
                                             title={burnOverlay
                                                 ? 'Burn: DEF treated as −2 combat stages for damage calculations (PH2 p.403). This is a separate damage penalty — do NOT adjust the stage counter.'
                                                 : 'Poison: SDEF treated as −2 combat stages for damage calculations (PH2 p.403). This is a separate damage penalty — do NOT adjust the stage counter.'}
-                                            style={{ fontSize: '10px', color: burnOverlay ? '#f44336' : '#9c27b0', fontWeight: 'bold', marginTop: '2px', cursor: 'help' }}
+                                            style={{ fontSize: '10px', color: burnOverlay ? 'var(--stat-atk, #f44336)' : 'var(--stat-satk, #9c27b0)', fontWeight: 'bold', marginTop: '2px', cursor: 'help' }}
                                         >
                                             {burnOverlay ? '🔥' : '☠️'} −2 eff.
                                         </div>
@@ -126,18 +133,18 @@ const CombatStagesPanel = ({ selectedPokemon, combatStages, getStatsWithMega, up
                                             onClick={() => updateCombatStage(stat.key, -1)}
                                             disabled={stages <= -6}
                                             className="combat-stage-btn combat-stage-btn-minus"
-                                            style={{ width: '24px', height: '24px', border: 'none', borderRadius: '4px', fontSize: '14px', opacity: stages <= -6 ? 0.35 : 1, cursor: stages <= -6 ? 'not-allowed' : 'pointer' }}
-                                            aria-label={`Decrease ${stat.label}`}
+                                            style={{ width: '28px', height: '28px', border: 'none', borderRadius: '4px', fontSize: '14px', opacity: stages <= -6 ? 0.35 : 1, cursor: stages <= -6 ? 'not-allowed' : 'pointer' }}
+                                            aria-label={`Decrease ${stat.label} stage`}
                                         >−</button>
-                                        <span style={{ fontSize: '12px', fontWeight: 'bold', color: stages > 0 ? '#4caf50' : stages < 0 ? '#f44336' : '#999', minWidth: '20px' }}>
+                                        <span style={{ fontSize: '12px', fontWeight: 'bold', color: stages > 0 ? 'var(--color-success-text, #4caf50)' : stages < 0 ? 'var(--color-danger-text, #f44336)' : 'var(--text-muted)', minWidth: '20px' }}>
                                             {stages > 0 ? '+' : ''}{stages}
                                         </span>
                                         <button
                                             onClick={() => updateCombatStage(stat.key, 1)}
                                             disabled={stages >= 6}
                                             className="combat-stage-btn combat-stage-btn-plus"
-                                            style={{ width: '24px', height: '24px', border: 'none', borderRadius: '4px', fontSize: '14px', opacity: stages >= 6 ? 0.35 : 1, cursor: stages >= 6 ? 'not-allowed' : 'pointer' }}
-                                            aria-label={`Increase ${stat.label}`}
+                                            style={{ width: '28px', height: '28px', border: 'none', borderRadius: '4px', fontSize: '14px', opacity: stages >= 6 ? 0.35 : 1, cursor: stages >= 6 ? 'not-allowed' : 'pointer' }}
+                                            aria-label={`Increase ${stat.label} stage`}
                                         >+</button>
                                     </div>
                                 </div>
@@ -146,7 +153,7 @@ const CombatStagesPanel = ({ selectedPokemon, combatStages, getStatsWithMega, up
                     </div>
                     <button
                         onClick={resetCombatStages}
-                        style={{ marginTop: '8px', width: '100%', padding: '6px', background: '#9e9e9e', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}
+                        style={{ marginTop: '8px', width: '100%', padding: '6px', background: 'var(--bg-secondary)', color: 'var(--text-primary)', border: '1px solid var(--border-medium)', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}
                     >
                         Reset All Stages
                     </button>
@@ -165,22 +172,22 @@ const CombatStagesPanel = ({ selectedPokemon, combatStages, getStatsWithMega, up
                             <div style={{ padding: '0 10px 8px' }}>
                                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px', textAlign: 'center' }}>
                                     <div title="Physical Evasion = DEF stat ÷ 5, max 6 (PH2 p.255)">
-                                        <div style={{ fontSize: '10px', color: '#2196f3' }}>Phys Eva</div>
-                                        <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#2196f3' }}>
+                                        <div style={{ fontSize: '10px', color: 'var(--stat-def, #2196f3)' }}>Phys Eva</div>
+                                        <div style={{ fontSize: '14px', fontWeight: 'bold', color: 'var(--stat-def, #2196f3)' }}>
                                             +{Math.min(6, Math.floor((actualStats.def || 0) / 5))}
                                         </div>
                                         <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>DEF÷5</div>
                                     </div>
                                     <div title="Special Evasion = SDEF stat ÷ 5, max 6 (PH2 p.255)">
-                                        <div style={{ fontSize: '10px', color: '#ff9800' }}>Spec Eva</div>
-                                        <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#ff9800' }}>
+                                        <div style={{ fontSize: '10px', color: 'var(--stat-sdef, #ff9800)' }}>Spec Eva</div>
+                                        <div style={{ fontSize: '14px', fontWeight: 'bold', color: 'var(--stat-sdef, #ff9800)' }}>
                                             +{Math.min(6, Math.floor((actualStats.sdef || 0) / 5))}
                                         </div>
                                         <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>SDEF÷5</div>
                                     </div>
                                     <div title="Speed Evasion = SPD stat ÷ 10, max 6 (PH2 p.255)">
-                                        <div style={{ fontSize: '10px', color: '#00bcd4' }}>Spd Eva</div>
-                                        <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#00bcd4' }}>
+                                        <div style={{ fontSize: '10px', color: 'var(--stat-spd, #00bcd4)' }}>Spd Eva</div>
+                                        <div style={{ fontSize: '14px', fontWeight: 'bold', color: 'var(--stat-spd, #00bcd4)' }}>
                                             +{Math.min(6, Math.floor((actualStats.spd || 0) / 10))}
                                         </div>
                                         <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>SPD÷10</div>

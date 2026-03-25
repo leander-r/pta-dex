@@ -5,10 +5,11 @@
 
 import React, { useState, useCallback, useRef } from 'react';
 import { useTrainerContext, useModal } from '../../contexts/index.js';
+import toast from '../../utils/toast.js';
 
 const QUEST_STATUSES = [
-    { key: 'active',     label: 'Active',     color: '#4caf50' },
-    { key: 'completed',  label: 'Completed',  color: '#667eea' },
+    { key: 'active',     label: 'Active',     color: 'var(--color-success-text, #4caf50)' },
+    { key: 'completed',  label: 'Completed',  color: 'var(--color-purple, #667eea)' },
     { key: 'abandoned',  label: 'Abandoned',  color: 'var(--text-secondary)' },
 ];
 
@@ -33,7 +34,7 @@ const NotesTab = () => {
     const handleExpandQuest = (id) => {
         const next = expandedQuestId === id ? null : id;
         setExpandedQuestId(next);
-        try { localStorage.setItem('pta-expanded-quest-id', JSON.stringify(next)); } catch { /* quota */ }
+        try { localStorage.setItem('pta-expanded-quest-id', JSON.stringify(next)); } catch { toast.error('Storage full — could not save quest state.'); }
     };
     const quests = trainer.quests || [];
 
@@ -141,8 +142,8 @@ const NotesTab = () => {
                                 onClick={handleClearSession}
                                 style={{
                                     marginLeft: 'auto', padding: '4px 10px',
-                                    background: '#f44336', color: 'white',
-                                    border: 'none', borderRadius: '4px',
+                                    background: 'var(--tint-fail-bg)', color: 'var(--color-danger-text)',
+                                    border: '1px solid var(--tint-fail-border)', borderRadius: '4px',
                                     cursor: 'pointer', fontSize: '11px', fontWeight: 'bold'
                                 }}
                                 title="Clear session notes (campaign notes unaffected)"
@@ -160,6 +161,7 @@ const NotesTab = () => {
 
                     <textarea
                         key={noteTab}
+                        className="notes-textarea"
                         value={activeText}
                         onChange={isCampaign ? handleCampaignChange : handleSessionChange}
                         onFocus={() => setIsFocused(true)}
@@ -200,8 +202,8 @@ Examples:
                             <span><strong>{activeText.length}</strong> characters</span>
                             <span><strong>{wordCount}</strong> words</span>
                         </div>
-                        <span style={{ display: 'flex', alignItems: 'center', gap: '6px', color: lastSaved ? '#4caf50' : 'var(--text-muted)' }}>
-                            <span style={{ width: '6px', height: '6px', background: lastSaved ? '#4caf50' : 'var(--border-medium)', borderRadius: '50%', display: 'inline-block' }}></span>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '6px', color: lastSaved ? 'var(--color-success-text, #4caf50)' : 'var(--text-muted)' }}>
+                            <span style={{ width: '6px', height: '6px', background: lastSaved ? 'var(--color-success-text, #4caf50)' : 'var(--border-medium)', borderRadius: '50%', display: 'inline-block' }}></span>
                             {lastSaved
                                 ? `Saved at ${lastSaved.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
                                 : 'Changes auto-save'}
@@ -239,7 +241,8 @@ Examples:
                             onClick={handleAddQuest}
                             disabled={!newQuestTitle.trim()}
                             style={{
-                                padding: '8px 14px', background: newQuestTitle.trim() ? '#667eea' : '#ccc',
+                                padding: '8px 14px',
+                                background: newQuestTitle.trim() ? 'var(--color-purple, #667eea)' : 'var(--border-medium)',
                                 color: 'white', border: 'none', borderRadius: '6px',
                                 cursor: newQuestTitle.trim() ? 'pointer' : 'not-allowed',
                                 fontSize: '12px', fontWeight: 'bold', whiteSpace: 'nowrap'
@@ -312,7 +315,7 @@ Examples:
                                                     </select>
                                                     <button
                                                         onClick={() => handleDeleteQuest(quest.id)}
-                                                        style={{ padding: '3px 7px', background: '#f44336', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '11px' }}
+                                                        style={{ padding: '3px 7px', background: 'var(--tint-fail-bg)', color: 'var(--color-danger-text)', border: '1px solid var(--tint-fail-border)', borderRadius: '4px', cursor: 'pointer', fontSize: '11px' }}
                                                         title="Delete quest"
                                                         aria-label={`Delete quest: ${quest.title}`}
                                                     >

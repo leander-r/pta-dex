@@ -119,7 +119,7 @@ const DeathSaves = () => {
                                 value={trainerLevel}
                                 onChange={e => setTrainerLevel(Math.max(1, Math.min(50, Number(e.target.value))))}
                                 style={{
-                                    width: 80, padding: '7px 10px', borderRadius: 6,
+                                    width: '100%', maxWidth: 80, padding: '7px 10px', borderRadius: 6,
                                     border: '1px solid var(--border-light)',
                                     background: 'var(--surface-bg)', color: 'var(--text-primary)',
                                     fontSize: 16, textAlign: 'center'
@@ -189,7 +189,7 @@ const DeathSaves = () => {
                                 value={pokeLevel}
                                 onChange={e => setPokeLevel(Math.max(1, Math.min(100, Number(e.target.value))))}
                                 style={{
-                                    width: 80, padding: '7px 10px', borderRadius: 6,
+                                    width: '100%', maxWidth: 80, padding: '7px 10px', borderRadius: 6,
                                     border: '1px solid var(--border-light)',
                                     background: 'var(--surface-bg)', color: 'var(--text-primary)',
                                     fontSize: 16, textAlign: 'center'

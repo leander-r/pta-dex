@@ -124,7 +124,7 @@ const EncounterGuide = () => {
                                 value={customHpBase}
                                 onChange={e => setCustomHpBase(Number(e.target.value))}
                                 style={{
-                                    width: 70, padding: '6px 8px', borderRadius: 6,
+                                    width: '100%', maxWidth: 70, padding: '6px 8px', borderRadius: 6,
                                     border: '1px solid var(--border-light)',
                                     background: 'var(--surface-bg)', color: 'var(--text-primary)',
                                     fontSize: 15, textAlign: 'center'
@@ -140,7 +140,7 @@ const EncounterGuide = () => {
                                 value={customLevel}
                                 onChange={e => setCustomLevel(Number(e.target.value))}
                                 style={{
-                                    width: 70, padding: '6px 8px', borderRadius: 6,
+                                    width: '100%', maxWidth: 70, padding: '6px 8px', borderRadius: 6,
                                     border: '1px solid var(--border-light)',
                                     background: 'var(--surface-bg)', color: 'var(--text-primary)',
                                     fontSize: 15, textAlign: 'center'
