@@ -206,7 +206,9 @@ const KeywordPill = ({ keyword }) => {
     return (
         <span title={KEYWORD_DESC[kw]} style={{
             padding: '1px 6px', borderRadius: 8, fontSize: 10, fontWeight: 700,
-            background: `${c}22`, border: `1px solid ${c}55`, color: c, cursor: 'help', whiteSpace: 'nowrap',
+            background: `${c}22`, border: `1px solid ${c}55`, color: c,
+            cursor: 'help', whiteSpace: 'nowrap',
+            textDecoration: 'underline dotted', textUnderlineOffset: '2px',
         }}>
             {kw}
         </span>
@@ -378,7 +380,12 @@ const ContestRunner = () => {
 
     const handlePasteChange = (text) => {
         setPastedText(text);
-        setParsedPaste(parsePasteInput(text));
+        const parsed = parsePasteInput(text);
+        setParsedPaste(parsed);
+        // Warn if input looks like a paste attempt (has pipes) but can't be parsed
+        if (text.includes('|') && !parsed) {
+            toast.error('Could not parse — expected: Name|Move|ContestType|Score or Name|Move|ContestType|Score|Effect');
+        }
     };
 
     // Core roll: takes move data + optional pre-determined score (player paste)
@@ -1286,7 +1293,7 @@ const ContestRunner = () => {
                     <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                             <div style={{ flex: 1, height: 1, background: 'var(--border-light)' }} />
-                            <span style={{ fontSize: 11, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>or roll for NPC</span>
+                            <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.4px', whiteSpace: 'nowrap' }}>NPC Appeal</span>
                             <div style={{ flex: 1, height: 1, background: 'var(--border-light)' }} />
                         </div>
                         <div style={{ display: 'flex', gap: 8 }}>

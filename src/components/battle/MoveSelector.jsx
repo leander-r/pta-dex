@@ -42,7 +42,15 @@ const MoveSelector = ({ selectedPokemon, selectedMove, onSelectMove, showDetail,
                                 border: 'none', cursor: 'pointer', textAlign: 'left'
                             }}
                         >
-                            <div style={{ fontWeight: 'bold' }}>{move.name}</div>
+                            <div style={{ fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                {move.name}
+                                {(() => {
+                                    const gd = gameData?.moves?.[move.name];
+                                    return (gd?.contestType || gd?.contestDice) ? (
+                                        <span title={`Contest move (${gd.contestType || 'Unknown type'}${gd.contestDice ? ` · ${gd.contestDice}` : ''})`} style={{ fontSize: '11px', lineHeight: 1 }}>🎭</span>
+                                    ) : null;
+                                })()}
+                            </div>
                             <div style={{ fontSize: '12px', opacity: 0.8, color: 'inherit', display: 'flex', alignItems: 'center', gap: '5px', flexWrap: 'wrap' }}>
                                 <span
                                     className={`type-pill-single type-${(move.type || 'normal').toLowerCase()}`}

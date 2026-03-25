@@ -523,6 +523,11 @@ const TrainerFeatures = () => {
                                 <div style={{ flex: 1, marginRight: '10px' }}>
                                     <div style={{ fontWeight: 'bold', fontSize: '13px' }}>
                                                 {name}
+                                                {REPEATABLE_FEATURES.has(name) && (
+                                                    <span style={{ marginLeft: '6px', fontSize: '11px', color: 'var(--color-purple)', fontWeight: 'normal' }} title="Can be taken multiple times — once per different weapon type">
+                                                        ↻ repeatable
+                                                    </span>
+                                                )}
                                                 {STAT_MODIFYING_FEATURES[name] && (() => {
                                                     const statMod = STAT_MODIFYING_FEATURES[name];
                                                     let displayValue = statMod.value;
@@ -610,6 +615,7 @@ const TrainerFeatures = () => {
                             const name = typeof f === 'object' ? f.name : f;
                             const featureData = GAME_DATA.features[name];
                             const isBase = featureData?.isBase;
+                            const isFree = featureData?.category === 'General (Free)';
                             return (
                                 <span
                                     key={i}
@@ -617,7 +623,11 @@ const TrainerFeatures = () => {
                                     title={`View ${name} details`}
                                     style={{
                                         padding: '3px 8px', borderRadius: '10px', fontSize: '12px', fontWeight: 'bold',
-                                        background: isBase ? 'linear-gradient(135deg, var(--poke-orange, #f5a623), var(--poke-orange-dark, #e8941c))' : 'linear-gradient(135deg, #667eea, #764ba2)',
+                                        background: isBase
+                                            ? 'linear-gradient(135deg, var(--poke-orange, #f5a623), var(--poke-orange-dark, #e8941c))'
+                                            : isFree
+                                            ? 'linear-gradient(135deg, #388e3c, #2e7d32)'
+                                            : 'linear-gradient(135deg, #667eea, #764ba2)',
                                         color: 'white',
                                         cursor: 'pointer'
                                     }}

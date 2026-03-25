@@ -832,8 +832,8 @@ const InventoryTab = () => {
                                             aria-label="Increase quantity"
                                             title="Increase quantity"
                                             style={{
-                                                width: '28px',
-                                                height: '28px',
+                                                width: '32px',
+                                                height: '32px',
                                                 borderRadius: '4px',
                                                 cursor: 'pointer',
                                                 fontSize: '16px',

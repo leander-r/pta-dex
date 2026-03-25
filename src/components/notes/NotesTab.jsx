@@ -71,6 +71,7 @@ const NotesTab = () => {
         const quest = { id: Date.now(), title, status: 'active', notes: '' };
         setTrainer(prev => ({ ...prev, quests: [...(prev.quests || []), quest] }));
         setNewQuestTitle('');
+        toast.success(`Quest "${title}" added.`);
     };
 
     const handleQuestStatus = (id, status) => {

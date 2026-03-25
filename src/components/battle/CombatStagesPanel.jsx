@@ -133,6 +133,7 @@ const CombatStagesPanel = ({ selectedPokemon, combatStages, getStatsWithMega, up
                                             onClick={() => updateCombatStage(stat.key, -1)}
                                             disabled={stages <= -6}
                                             className="combat-stage-btn combat-stage-btn-minus"
+                                            title={stages <= -6 ? 'Minimum stage reached (−6)' : undefined}
                                             style={{ width: '28px', height: '28px', border: 'none', borderRadius: '4px', fontSize: '14px', opacity: stages <= -6 ? 0.35 : 1, cursor: stages <= -6 ? 'not-allowed' : 'pointer' }}
                                             aria-label={`Decrease ${stat.label} stage`}
                                         >−</button>
@@ -143,6 +144,7 @@ const CombatStagesPanel = ({ selectedPokemon, combatStages, getStatsWithMega, up
                                             onClick={() => updateCombatStage(stat.key, 1)}
                                             disabled={stages >= 6}
                                             className="combat-stage-btn combat-stage-btn-plus"
+                                            title={stages >= 6 ? 'Maximum stage reached (+6)' : undefined}
                                             style={{ width: '28px', height: '28px', border: 'none', borderRadius: '4px', fontSize: '14px', opacity: stages >= 6 ? 0.35 : 1, cursor: stages >= 6 ? 'not-allowed' : 'pointer' }}
                                             aria-label={`Increase ${stat.label} stage`}
                                         >+</button>

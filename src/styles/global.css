@@ -3862,6 +3862,13 @@
                 font-size: 16px !important;
             }
 
+            /* Inventory quantity +/- buttons: larger touch targets on small screens */
+            .quantity-btn {
+                width: 44px !important;
+                height: 44px !important;
+                font-size: 18px !important;
+            }
+
             /* Pokémon card expanded header: stack input above Cancel/Done */
             .pokemon-expanded-header {
                 flex-direction: column;

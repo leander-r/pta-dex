@@ -139,6 +139,7 @@ const TrainerProfile = () => {
                     type="text"
                     value={trainer.name}
                     onChange={(e) => setTrainer(prev => ({ ...prev, name: e.target.value }))}
+                    onKeyDown={(e) => e.key === 'Enter' && e.target.blur()}
                     placeholder="Trainer Name..."
                     aria-label="Trainer name"
                     style={{

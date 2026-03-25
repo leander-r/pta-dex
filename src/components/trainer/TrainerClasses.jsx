@@ -350,7 +350,7 @@ const TrainerClasses = () => {
                                     onClick={() => !isMaxed && handleToggleSkillSelection(skillName)}
                                     disabled={isMaxed}
                                     style={{
-                                        padding: '6px 12px',
+                                        padding: '8px 14px',
                                         background: isSelected ? 'var(--poke-orange, #f5a623)' : isMaxed ? 'var(--skill-btn-disabled-bg, #e0e0e0)' : alreadyHas ? 'var(--skill-btn-has-bg, #fff3e0)' : 'var(--skill-btn-bg, white)',
                                         color: isSelected ? 'white' : isMaxed ? 'var(--skill-btn-disabled-text, #999)' : 'var(--skill-btn-text, #333)',
                                         border: `2px solid ${isSelected ? 'var(--poke-orange-dark, #e8941c)' : isMaxed ? 'var(--skill-btn-disabled-border, #bdbdbd)' : alreadyHas ? 'var(--stat-sdef)' : 'var(--skill-btn-border, #e0d0f0)'}`,

@@ -48,13 +48,13 @@ const GMTab = () => {
                 🎮 GM Tools
             </h2>
 
-            {/* Sub-tab navigation */}
+            {/* Sub-tab navigation — wraps in a gradient-masked scroll container on mobile */}
+            <div style={{ position: 'relative', marginBottom: '20px' }}>
             <div
                 className="tabs"
                 style={{
                     display: 'flex',
                     gap: '4px',
-                    marginBottom: '20px',
                     padding: '4px',
                     background: 'var(--surface-bg)',
                     borderRadius: '10px',
@@ -62,6 +62,8 @@ const GMTab = () => {
                     overflowX: 'auto',
                     WebkitOverflowScrolling: 'touch',
                     flexShrink: 0,
+                    scrollbarWidth: 'none',
+                    msOverflowStyle: 'none',
                 }}
             >
                 {SECTIONS.map(({ id, icon, label }) => (
@@ -93,6 +95,9 @@ const GMTab = () => {
                         <span>{label}</span>
                     </button>
                 ))}
+            </div>
+            {/* Right-edge fade hint — only visible when content overflows (mobile) */}
+            <div style={{ pointerEvents: 'none', position: 'absolute', top: 0, right: 0, bottom: 0, width: '32px', borderRadius: '0 10px 10px 0', background: 'linear-gradient(to right, transparent, var(--surface-bg))' }} aria-hidden="true" />
             </div>
 
             {/* Active section content */}
