@@ -3874,6 +3874,17 @@
                 grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)) !important;
             }
 
+            /* Party sprite strip: wrap to 2×3 grid on narrow portrait screens */
+            .party-strip {
+                flex-wrap: wrap !important;
+                overflow-x: visible !important;
+            }
+            .party-strip-btn {
+                flex: 0 0 calc((100% - 12px) / 3) !important;
+                min-width: unset !important;
+                max-width: unset !important;
+            }
+
             /* Inventory item rows: stack info above quantity controls */
             .inventory-main-row {
                 flex-wrap: wrap;

@@ -17,6 +17,7 @@ import CombatStagesPanel from './CombatStagesPanel.jsx';
 import MoveSelector from './MoveSelector.jsx';
 import CustomDicePanel from './CustomDicePanel.jsx';
 import HealModePanel from './HealModePanel.jsx';
+import PartyStrip from './PartyStrip.jsx';
 import RollHistory from './RollHistory.jsx';
 import DiscordWebhookConfig from './DiscordWebhookConfig.jsx';
 import ContestPanel from './ContestPanel.jsx';
@@ -470,50 +471,11 @@ const BattleTab = () => {
                             )}
 
                             {/* Pokémon Party Strip — shared by both sub-modes */}
-                            {party.length > 0 && (
-                                <div
-                                    role="group"
-                                    aria-label="Select Pokémon"
-                                    style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '4px', marginBottom: '10px', scrollbarWidth: 'none' }}
-                                >
-                                    {party.map(poke => {
-                                        const hp = getPokemonHP(poke);
-                                        const hpPct = hp.max > 0 ? Math.max(0, Math.min(1, hp.current / hp.max)) : 0;
-                                        const hpColor = hpPct > 0.5 ? 'var(--stat-hp)' : hpPct > 0.25 ? '#ff9800' : '#f44336';
-                                        const isSelected = selectedPokemonId === poke.id;
-                                        const sprite = getPokemonDisplayImage(poke);
-                                        return (
-                                            <button
-                                                key={poke.id}
-                                                onClick={() => { setSelectedPokemonId(poke.id); setSelectedMove(null); resetCombatStages(); }}
-                                                aria-label={`${poke.name || poke.species} Lv.${poke.level} — HP ${hp.current}/${hp.max}`}
-                                                aria-pressed={isSelected}
-                                                style={{
-                                                    display: 'flex', flexDirection: 'column', alignItems: 'center',
-                                                    padding: '6px 6px 4px', borderRadius: '8px', flexShrink: 0,
-                                                    border: `2px solid ${isSelected ? 'var(--poke-orange)' : 'var(--border-light)'}`,
-                                                    background: isSelected ? 'var(--tint-orange-bg, rgba(245,166,35,0.1))' : 'var(--surface-bg)',
-                                                    cursor: 'pointer', minWidth: '60px', maxWidth: '70px',
-                                                    transition: 'border-color 0.15s ease, background 0.15s ease',
-                                                    boxShadow: isSelected ? '0 0 0 1px var(--poke-orange)' : 'none',
-                                                }}
-                                            >
-                                                {sprite
-                                                    ? <img src={sprite} alt="" aria-hidden="true" style={{ width: '48px', height: '48px', objectFit: 'contain', imageRendering: !poke.avatar ? 'pixelated' : 'auto' }} />
-                                                    : <div aria-hidden="true" style={{ width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px' }}>🐾</div>
-                                                }
-                                                <div style={{ fontSize: '10px', fontWeight: 600, color: isSelected ? 'var(--poke-orange)' : 'var(--text-primary)', marginTop: '2px', width: '100%', textAlign: 'center', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                                    {poke.name || poke.species}
-                                                </div>
-                                                <div style={{ width: '100%', height: '3px', background: 'var(--border-light)', borderRadius: '2px', marginTop: '3px' }}>
-                                                    <div style={{ height: '100%', borderRadius: '2px', width: `${hpPct * 100}%`, background: hpColor, transition: 'width 0.2s ease' }} />
-                                                </div>
-                                                <div style={{ fontSize: '9px', color: 'var(--text-muted)', marginTop: '2px' }}>{hp.current}/{hp.max}</div>
-                                            </button>
-                                        );
-                                    })}
-                                </div>
-                            )}
+                            <PartyStrip
+                                party={party}
+                                selectedPokemonId={selectedPokemonId}
+                                onSelect={(id) => { setSelectedPokemonId(id); setSelectedMove(null); resetCombatStages(); }}
+                            />
 
                             {/* Pokémon Sprite — shared by both sub-modes */}
                             {selectedPokemon && (() => {
