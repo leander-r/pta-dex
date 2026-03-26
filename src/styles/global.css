@@ -3869,6 +3869,20 @@
                 font-size: 18px !important;
             }
 
+            /* Combat stages grid: narrower columns so 7 stats don't overflow narrow phones */
+            .combat-stages-grid {
+                grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)) !important;
+            }
+
+            /* Inventory item rows: stack info above quantity controls */
+            .inventory-main-row {
+                flex-wrap: wrap;
+            }
+            .inventory-main-row > div:last-child {
+                width: 100%;
+                justify-content: flex-start !important;
+            }
+
             /* Pokémon card expanded header: stack input above Cancel/Done */
             .pokemon-expanded-header {
                 flex-direction: column;

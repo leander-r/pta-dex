@@ -19,7 +19,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { parseDice } from '../../utils/dataUtils.js';
-import { useGameData, useData } from '../../contexts/index.js';
+import { useGameData, useData, useModal } from '../../contexts/index.js';
 import { buildContestTurnEmbed, buildContestResultsEmbed } from '../../utils/discordEmbeds.js';
 import toast from '../../utils/toast.js';
 
@@ -220,6 +220,7 @@ const KeywordPill = ({ keyword }) => {
 const ContestRunner = () => {
     const { GAME_DATA } = useGameData();
     const { sendToDiscord, discordWebhook } = useData();
+    const { showConfirm } = useModal();
     const webhookActive = discordWebhook?.enabled && !!discordWebhook?.url?.trim();
     const [discordEnabled, setDiscordEnabled] = useState(true);
 
@@ -1147,7 +1148,7 @@ const ContestRunner = () => {
                         </label>
                     )}
                     <button
-                        onClick={handleReset}
+                        onClick={() => showConfirm({ title: 'Abandon Contest?', message: 'This will reset all scores, judges, and turn history. Are you sure?', onConfirm: handleReset })}
                         title="Abandon this contest and return to setup"
                         style={{ padding: '5px 12px', borderRadius: 6, border: '1px solid var(--border-light)', background: 'var(--surface-bg)', color: 'var(--text-muted)', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
                     >

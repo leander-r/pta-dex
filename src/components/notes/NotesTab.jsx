@@ -68,7 +68,7 @@ const NotesTab = () => {
     const handleAddQuest = () => {
         const title = newQuestTitle.trim();
         if (!title) return;
-        const quest = { id: Date.now(), title, status: 'active', notes: '' };
+        const quest = { id: Date.now(), title, status: QUEST_STATUSES[0].key, notes: '' };
         setTrainer(prev => ({ ...prev, quests: [...(prev.quests || []), quest] }));
         setNewQuestTitle('');
         toast.success(`Quest "${title}" added.`);
@@ -107,7 +107,7 @@ const NotesTab = () => {
     const isQuests = noteTab === 'quests';
     const activeText = isCampaign ? (trainer.notes || '') : (trainer.sessionNotes || '');
     const wordCount = activeText.trim().split(/\s+/).filter(Boolean).length;
-    const activeCount = quests.filter(q => q.status === 'active').length;
+    const activeCount = quests.filter(q => q.status === QUEST_STATUSES[0].key).length;
 
     return (
         <div>
@@ -218,7 +218,7 @@ Examples:
                     <h3 className="section-title-purple" style={{ marginBottom: '14px' }}>
                         <span>📋</span> Quest Log
                         <span style={{ marginLeft: 'auto', fontSize: '12px', fontWeight: 'normal', color: 'var(--text-muted)' }}>
-                            {activeCount} active · {quests.filter(q => q.status === 'completed').length} done
+                            {activeCount} active · {quests.filter(q => q.status === QUEST_STATUSES[1].key).length} done
                         </span>
                     </h3>
 

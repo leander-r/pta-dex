@@ -579,6 +579,20 @@ export const generatePrintSheetHTML = (trainer, party) => {
 
     const badgeCount = trainer.badges?.length || 0;
 
+    const notesSummary = (() => {
+        const parts = [];
+        if (trainer.notes?.trim()) parts.push(`<h2>Campaign Notes</h2><p style="white-space:pre-wrap;font-size:12px;">${trainer.notes.trim()}</p>`);
+        if (trainer.sessionNotes?.trim()) parts.push(`<h2>Session Notes</h2><p style="white-space:pre-wrap;font-size:12px;">${trainer.sessionNotes.trim()}</p>`);
+        const activeQuests = (trainer.quests || []).filter(q => q.status !== 'abandoned');
+        if (activeQuests.length > 0) {
+            const rows = activeQuests.map(q =>
+                `<tr><td>${q.title}</td><td style="text-transform:capitalize;">${q.status}</td><td style="font-size:11px;white-space:pre-wrap;">${q.notes || ''}</td></tr>`
+            ).join('');
+            parts.push(`<h2>Quest Log</h2><table class="move-table"><thead><tr><th>Quest</th><th>Status</th><th>Notes</th></tr></thead><tbody>${rows}</tbody></table>`);
+        }
+        return parts.join('');
+    })();
+
     const partyCards = (party || []).map(poke => {
         const sp = poke.species && poke.species !== poke.name ? ` (${poke.species})` : '';
         const types = (poke.types || []).join(' / ') || '—';
@@ -587,6 +601,13 @@ export const generatePrintSheetHTML = (trainer, party) => {
         const movesRows = (poke.moves || []).map(m =>
             `<tr><td>${m.name || '?'}</td><td>${m.type || '?'}</td><td>${m.category || '?'}</td><td>${m.damage || '—'}</td><td>${m.frequency || '—'}</td></tr>`
         ).join('') || '<tr><td colspan="5" style="color:#999;">No moves</td></tr>';
+        const skillsStr = (() => {
+            if (!poke.skills) return '—';
+            return Object.entries(poke.skills)
+                .filter(([, v]) => v > 0)
+                .map(([k, v]) => `${k} ${v}`)
+                .join(' · ') || '—';
+        })();
 
         return `
         <div class="poke-card">
@@ -596,6 +617,7 @@ export const generatePrintSheetHTML = (trainer, party) => {
             </div>
             <p style="margin:4px 0;font-size:12px;"><strong>Nature:</strong> ${poke.nature || 'Hardy'} &nbsp; <strong>Abilities:</strong> ${abilities}</p>
             ${statTable(poke.baseStats)}
+            <p style="margin:4px 0 6px;font-size:11px;color:#555;"><strong>Skills:</strong> ${skillsStr}</p>
             <table class="move-table">
                 <thead><tr><th>Move</th><th>Type</th><th>Cat.</th><th>Damage</th><th>Frequency</th></tr></thead>
                 <tbody>${movesRows}</tbody>
@@ -700,6 +722,8 @@ export const generatePrintSheetHTML = (trainer, party) => {
 
     <h2>Skills</h2>
     <p>${skillsList}</p>
+
+    ${notesSummary}
 
     <h2>Party (${(party || []).length}/6)</h2>
     ${partyCards || '<p style="color:#999;">No Pokémon in party.</p>'}

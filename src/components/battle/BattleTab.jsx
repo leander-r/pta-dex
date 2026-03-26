@@ -118,9 +118,7 @@ const BattleTab = () => {
     const [selectedMove, setSelectedMove] = useState(null);
     const [selectedSkill, setSelectedSkill] = useState('');
     const [customDice, setCustomDice] = useState('');
-    const [rollHistory, setRollHistory] = useState(() => {
-        try { return JSON.parse(localStorage.getItem('pta-roll-history') || '[]'); } catch (e) { console.warn('Roll history corrupted, resetting:', e); return []; }
-    });
+    const [rollHistory, setRollHistory] = useState([]);
     const [combatStages, setCombatStages] = useState({ atk: 0, satk: 0, def: 0, sdef: 0, spd: 0, acc: 0, eva: 0 });
     const [applyStab, setApplyStab] = useState(true);
     const [selectedPokemonId, setSelectedPokemonId] = useState(null);
@@ -164,20 +162,23 @@ const BattleTab = () => {
         return parseHealFormula(item.effect || '').type !== 'none';
     }), [inventory]);
 
+    // Load roll history from per-trainer localStorage key on trainer switch
     useEffect(() => {
+        const key = `pta-roll-history-${trainer.id || 'default'}`;
+        try { setRollHistory(JSON.parse(localStorage.getItem(key) || '[]')); } catch { setRollHistory([]); }
+    }, [trainer.id]);
+
+    // Save roll history to per-trainer key on every change
+    useEffect(() => {
+        const key = `pta-roll-history-${trainer.id || 'default'}`;
         try {
-            localStorage.setItem('pta-roll-history', JSON.stringify(rollHistory));
+            localStorage.setItem(key, JSON.stringify(rollHistory));
         } catch (e) {
             if (e instanceof DOMException && (e.name === 'QuotaExceededError' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED')) {
                 toast.warning('Storage full — roll history could not be saved.');
             }
         }
-    }, [rollHistory]);
-
-    // Clear roll history when the active trainer changes
-    useEffect(() => {
-        setRollHistory([]);
-    }, [trainer.id]);
+    }, [rollHistory, trainer.id]);
 
     useEffect(() => {
         setMegaEvolved(false);
@@ -468,29 +469,51 @@ const BattleTab = () => {
                                 </div>
                             )}
 
-                            {/* Pokémon Selector — shared by both sub-modes */}
-                            <div style={{ marginBottom: '10px' }}>
-                                <label style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '4px', display: 'block' }}>Select Pokémon</label>
-                                <select
-                                    value={selectedPokemonId || ''}
-                                    onChange={(e) => {
-                                        setSelectedPokemonId(parseInt(e.target.value) || null);
-                                        setSelectedMove(null);
-                                        resetCombatStages();
-                                    }}
-                                    style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--input-bg)', color: 'var(--text-primary)' }}
+                            {/* Pokémon Party Strip — shared by both sub-modes */}
+                            {party.length > 0 && (
+                                <div
+                                    role="group"
+                                    aria-label="Select Pokémon"
+                                    style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '4px', marginBottom: '10px', scrollbarWidth: 'none' }}
                                 >
-                                    <option value="">Choose a Pokémon...</option>
                                     {party.map(poke => {
                                         const hp = getPokemonHP(poke);
+                                        const hpPct = hp.max > 0 ? Math.max(0, Math.min(1, hp.current / hp.max)) : 0;
+                                        const hpColor = hpPct > 0.5 ? 'var(--stat-hp)' : hpPct > 0.25 ? '#ff9800' : '#f44336';
+                                        const isSelected = selectedPokemonId === poke.id;
+                                        const sprite = getPokemonDisplayImage(poke);
                                         return (
-                                            <option key={poke.id} value={poke.id}>
-                                                {poke.name || poke.species} (Lv.{poke.level}) — HP: {hp.current}/{hp.max}
-                                            </option>
+                                            <button
+                                                key={poke.id}
+                                                onClick={() => { setSelectedPokemonId(poke.id); setSelectedMove(null); resetCombatStages(); }}
+                                                aria-label={`${poke.name || poke.species} Lv.${poke.level} — HP ${hp.current}/${hp.max}`}
+                                                aria-pressed={isSelected}
+                                                style={{
+                                                    display: 'flex', flexDirection: 'column', alignItems: 'center',
+                                                    padding: '6px 6px 4px', borderRadius: '8px', flexShrink: 0,
+                                                    border: `2px solid ${isSelected ? 'var(--poke-orange)' : 'var(--border-light)'}`,
+                                                    background: isSelected ? 'var(--tint-orange-bg, rgba(245,166,35,0.1))' : 'var(--surface-bg)',
+                                                    cursor: 'pointer', minWidth: '60px', maxWidth: '70px',
+                                                    transition: 'border-color 0.15s ease, background 0.15s ease',
+                                                    boxShadow: isSelected ? '0 0 0 1px var(--poke-orange)' : 'none',
+                                                }}
+                                            >
+                                                {sprite
+                                                    ? <img src={sprite} alt="" aria-hidden="true" style={{ width: '48px', height: '48px', objectFit: 'contain', imageRendering: !poke.avatar ? 'pixelated' : 'auto' }} />
+                                                    : <div aria-hidden="true" style={{ width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px' }}>🐾</div>
+                                                }
+                                                <div style={{ fontSize: '10px', fontWeight: 600, color: isSelected ? 'var(--poke-orange)' : 'var(--text-primary)', marginTop: '2px', width: '100%', textAlign: 'center', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                    {poke.name || poke.species}
+                                                </div>
+                                                <div style={{ width: '100%', height: '3px', background: 'var(--border-light)', borderRadius: '2px', marginTop: '3px' }}>
+                                                    <div style={{ height: '100%', borderRadius: '2px', width: `${hpPct * 100}%`, background: hpColor, transition: 'width 0.2s ease' }} />
+                                                </div>
+                                                <div style={{ fontSize: '9px', color: 'var(--text-muted)', marginTop: '2px' }}>{hp.current}/{hp.max}</div>
+                                            </button>
                                         );
                                     })}
-                                </select>
-                            </div>
+                                </div>
+                            )}
 
                             {/* Pokémon Sprite — shared by both sub-modes */}
                             {selectedPokemon && (() => {

@@ -88,21 +88,14 @@ const CombatStagesPanel = ({ selectedPokemon, combatStages, getStatsWithMega, up
                     })()}
                     {show && <span className="text-muted" style={{ fontSize: '12px', marginLeft: '2px' }}>Buffs &amp; debuffs from moves</span>}
                 </div>
-                <svg
-                    width="14" height="14" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"
-                    style={{ color: 'var(--text-secondary)', transition: 'transform 0.2s ease', transform: show ? 'rotate(180deg)' : 'rotate(0deg)', flexShrink: 0 }}
-                    aria-hidden="true"
-                >
-                    <polyline points="6 9 12 15 18 9"/>
-                </svg>
+                <span aria-hidden="true" style={{ color: 'var(--text-secondary)', fontSize: '12px', flexShrink: 0 }}>{show ? '▲' : '▼'}</span>
             </div>
             {show && (
                 <div className="combat-stages-content" style={{ padding: '10px', borderRadius: '6px' }}>
                     <div className="text-muted" style={{ fontSize: '12px', marginBottom: '8px', textAlign: 'center' }}>
                         +1 stage = +25% stat | −1 stage = −10% stat | At ±6: 250% / 40% | Range: −6 to +6
                     </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(90px, 1fr))', gap: '8px' }}>
+                    <div className="combat-stages-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(90px, 1fr))', gap: '8px' }}>
                         {STATS.map(stat => {
                             const baseStat = actualStats[stat.key] || 0;
                             const stages = combatStages[stat.key] || 0;
@@ -134,7 +127,7 @@ const CombatStagesPanel = ({ selectedPokemon, combatStages, getStatsWithMega, up
                                             disabled={stages <= -6}
                                             className="combat-stage-btn combat-stage-btn-minus"
                                             title={stages <= -6 ? 'Minimum stage reached (−6)' : undefined}
-                                            style={{ width: '28px', height: '28px', border: 'none', borderRadius: '4px', fontSize: '14px', opacity: stages <= -6 ? 0.35 : 1, cursor: stages <= -6 ? 'not-allowed' : 'pointer' }}
+                                            style={{ width: '28px', height: '28px', border: 'none', borderRadius: '4px', fontSize: '14px', opacity: stages <= -6 ? 0.5 : 1, cursor: stages <= -6 ? 'not-allowed' : 'pointer' }}
                                             aria-label={`Decrease ${stat.label} stage`}
                                         >−</button>
                                         <span style={{ fontSize: '12px', fontWeight: 'bold', color: stages > 0 ? 'var(--color-success-text, #4caf50)' : stages < 0 ? 'var(--color-danger-text, #f44336)' : 'var(--text-muted)', minWidth: '20px' }}>
@@ -145,7 +138,7 @@ const CombatStagesPanel = ({ selectedPokemon, combatStages, getStatsWithMega, up
                                             disabled={stages >= 6}
                                             className="combat-stage-btn combat-stage-btn-plus"
                                             title={stages >= 6 ? 'Maximum stage reached (+6)' : undefined}
-                                            style={{ width: '28px', height: '28px', border: 'none', borderRadius: '4px', fontSize: '14px', opacity: stages >= 6 ? 0.35 : 1, cursor: stages >= 6 ? 'not-allowed' : 'pointer' }}
+                                            style={{ width: '28px', height: '28px', border: 'none', borderRadius: '4px', fontSize: '14px', opacity: stages >= 6 ? 0.5 : 1, cursor: stages >= 6 ? 'not-allowed' : 'pointer' }}
                                             aria-label={`Increase ${stat.label} stage`}
                                         >+</button>
                                     </div>

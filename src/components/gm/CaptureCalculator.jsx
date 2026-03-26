@@ -196,6 +196,7 @@ const CaptureCalculator = () => {
                     <button
                         onClick={roll}
                         disabled={target <= 0}
+                        title={target <= 0 ? 'Capture rate is 0 or lower — adjust the modifiers above' : undefined}
                         style={{
                             padding: '10px 24px',
                             background: target <= 0 ? 'var(--border-light)' : 'var(--gradient-purple)',

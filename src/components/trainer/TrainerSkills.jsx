@@ -316,7 +316,7 @@ const TrainerSkills = () => {
                     </div>
                 ) : (
                     <p style={{ margin: 0, fontSize: '12px', color: 'var(--text-muted)', fontStyle: 'italic' }}>
-                        No trained skills yet
+                        No trained skills yet — add a class in the <strong>Classes</strong> section above to unlock skill training.
                     </p>
                 )
             )}
