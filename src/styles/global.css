@@ -5195,6 +5195,21 @@
             background: var(--bg-light) !important;
         }
 
+        .hp-btn {
+            transition: filter 0.1s ease, opacity 0.15s ease, transform 0.1s ease;
+        }
+        .hp-btn:hover:not(:disabled) {
+            filter: brightness(1.12);
+        }
+        .hp-btn:active:not(:disabled) {
+            filter: brightness(0.88);
+            transform: scale(0.96);
+        }
+        .hp-btn:focus-visible {
+            outline: 2px solid var(--poke-orange);
+            outline-offset: 2px;
+        }
+
         .combat-stages-header {
             background: #e8eaf6;
             transition: background 0.3s ease;
