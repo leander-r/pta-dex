@@ -54,7 +54,7 @@ const HPTracker = ({ label, currentHP, maxHP, onDamage, onHeal, onFull, level, i
     return (
         <div
             className="hp-tracker-box"
-            style={{ marginBottom: '12px', padding: '10px 12px', borderRadius: '8px', borderLeft: `4px solid ${accentColor}`, transition: 'border-color 0.3s ease' }}
+            style={{ marginBottom: '12px', padding: '10px 12px', borderRadius: '8px', borderLeft: `4px solid ${accentColor}`, transition: 'background 0.3s ease, border-color 0.3s ease' }}
         >
             {/* Header: label + HP number */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
@@ -121,6 +121,7 @@ const HPTracker = ({ label, currentHP, maxHP, onDamage, onHeal, onFull, level, i
 
                 {/* Full restore button */}
                 <div style={{ alignSelf: 'end' }}>
+                    <div style={{ ...groupLabelStyle, visibility: 'hidden' }}>Full</div>
                     <button
                         onClick={onFull}
                         aria-label={`Restore ${label} to full HP`}
