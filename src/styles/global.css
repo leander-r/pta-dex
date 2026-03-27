@@ -5299,14 +5299,14 @@
         }
 
         .move-select-btn {
-            background: white;
-            color: #333;
-            transition: background 0.3s ease, color 0.3s ease;
+            transition: background 0.15s ease;
         }
-
-        [data-theme="dark"] .move-select-btn {
-            background: var(--poke-white) !important;
-            color: var(--text-primary) !important;
+        .move-select-btn:hover {
+            background: var(--bg-secondary) !important;
+        }
+        .move-select-btn:focus-visible {
+            outline: 2px solid var(--poke-orange);
+            outline-offset: -2px;
         }
 
         .skill-select-btn {
