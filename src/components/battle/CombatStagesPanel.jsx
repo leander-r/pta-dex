@@ -127,7 +127,7 @@ const CombatStagesPanel = ({ selectedPokemon, combatStages, getStatsWithMega, up
                                             disabled={stages <= -6}
                                             className="combat-stage-btn combat-stage-btn-minus"
                                             title={stages <= -6 ? 'Minimum stage reached (−6)' : undefined}
-                                            style={{ width: '28px', height: '28px', border: 'none', borderRadius: '4px', fontSize: '14px', opacity: stages <= -6 ? 0.5 : 1, cursor: stages <= -6 ? 'not-allowed' : 'pointer' }}
+                                            style={{ width: '32px', height: '32px', border: 'none', borderRadius: '4px', fontSize: '14px', opacity: stages <= -6 ? 0.5 : 1, cursor: stages <= -6 ? 'not-allowed' : 'pointer' }}
                                             aria-label={`Decrease ${stat.label} stage`}
                                         >−</button>
                                         <span style={{ fontSize: '12px', fontWeight: 'bold', color: stages > 0 ? 'var(--color-success-text, #4caf50)' : stages < 0 ? 'var(--color-danger-text, #f44336)' : 'var(--text-muted)', minWidth: '20px' }}>

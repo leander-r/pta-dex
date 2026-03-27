@@ -617,8 +617,8 @@ const BattleTab = () => {
 
                                     {/* AC Override */}
                                     {selectedPokemon && (
-                                        <div style={{ marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }} title="Override the move's Accuracy Class (higher = harder to hit)">
-                                            <label style={{ fontSize: '13px', fontWeight: 'bold', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>AC Override:</label>
+                                        <div style={{ marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }} title="Override the move's Accuracy Class (higher = harder to hit)">
+                                            <label style={{ fontSize: '13px', fontWeight: 'bold', color: 'var(--text-secondary)' }}>AC Override:</label>
                                             <input
                                                 type="number"
                                                 min="1"

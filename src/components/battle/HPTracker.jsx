@@ -188,7 +188,7 @@ const HPTracker = ({ label, currentHP, maxHP, onDamage, onHeal, onFull, level, i
             </div>
 
             {/* Custom amount row */}
-            <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+            <div className="hp-custom-row" style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
                 <input
                     ref={inputRef}
                     type="number"

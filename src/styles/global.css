@@ -3760,8 +3760,13 @@
             .info-tooltip .tooltip-text {
                 display: none;
             }
+
+            /* Combat stages grid: prevent overflow at tablet widths */
+            .combat-stages-grid {
+                grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)) !important;
+            }
         }
-        
+
         /* Small mobile breakpoint */
         @media (max-width: 480px) {
             body {
@@ -3857,9 +3862,20 @@
 
             /* Combat stage +/- buttons: larger touch targets on small screens */
             .combat-stage-btn {
-                width: 32px !important;
-                height: 32px !important;
+                width: 36px !important;
+                height: 36px !important;
                 font-size: 16px !important;
+            }
+
+            /* HP tracker custom amount row: stack input above buttons */
+            .hp-custom-row {
+                flex-wrap: wrap;
+            }
+            .hp-custom-row input {
+                flex: 1 1 100%;
+            }
+            .hp-custom-row .hp-btn {
+                flex: 1;
             }
 
             /* Inventory quantity +/- buttons: larger touch targets on small screens */
