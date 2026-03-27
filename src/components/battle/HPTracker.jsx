@@ -13,6 +13,8 @@ const HPTracker = ({ label, currentHP, maxHP, onDamage, onHeal, onFull, level, i
     const displayHP = Math.max(currentHP, -maxHP); // clamp display at -maxHP
     const hpPercent = maxHP > 0 ? Math.max(0, Math.min(100, (currentHP / maxHP) * 100)) : 0;
 
+    const accentColor = isDeathThreshold ? '#b71c1c' : isFainted ? '#757575' : 'var(--stat-hp)';
+
     const barColor = isDeathThreshold ? '#b71c1c'
         : isFainted ? '#757575'
         : hpPercent > 50 ? '#4caf50'
@@ -34,10 +36,29 @@ const HPTracker = ({ label, currentHP, maxHP, onDamage, onHeal, onFull, level, i
         ? 'Trainers below level 20 cannot deal lethal damage.'
         : 'Pokémon below level 30 cannot deal lethal damage (HP floors at −90% max).';
 
+    const dmgBtnStyle = {
+        flex: 1, padding: '8px 4px', background: 'var(--stat-atk, #f44336)', color: 'white',
+        border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '13px',
+        fontWeight: 'bold', minHeight: '44px',
+    };
+    const healBtnStyle = {
+        flex: 1, padding: '8px 4px', background: 'var(--stat-hp, #4caf50)', color: 'white',
+        border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '13px',
+        fontWeight: 'bold', minHeight: '44px',
+    };
+    const groupLabelStyle = {
+        fontSize: '11px', color: 'var(--text-muted)', marginBottom: '4px',
+        textAlign: 'center', textTransform: 'uppercase', letterSpacing: '0.5px',
+    };
+
     return (
-        <div className="hp-tracker-box" style={{ marginBottom: '12px', padding: '10px', borderRadius: '8px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                <span style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '12px', fontWeight: 'bold' }}>
+        <div
+            className="hp-tracker-box"
+            style={{ marginBottom: '12px', padding: '10px 12px', borderRadius: '8px', borderLeft: `4px solid ${accentColor}`, transition: 'border-color 0.3s ease' }}
+        >
+            {/* Header: label + HP number */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '13px', color: 'var(--text-muted)' }}>
                     {label}
                     <button
                         onClick={() => showHelp('hp-tracking')}
@@ -46,25 +67,31 @@ const HPTracker = ({ label, currentHP, maxHP, onDamage, onHeal, onFull, level, i
                         title="About HP tracking"
                     >?</button>
                 </span>
-                <span style={{ fontSize: '14px', fontWeight: 'bold', color: hpColor }}>
-                    {displayHP} / {maxHP}
+                <span style={{ lineHeight: 1 }}>
+                    <span style={{ fontSize: '22px', fontWeight: '800', color: hpColor }}>{displayHP}</span>
+                    <span style={{ fontSize: '14px', color: 'var(--text-muted)', fontWeight: 'normal' }}> / {maxHP}</span>
                 </span>
+            </div>
+
+            {/* HP Bar */}
+            <div style={{ background: 'var(--collapsed-hp-track)', borderRadius: '6px', height: '16px', overflow: 'hidden', marginBottom: '8px' }}>
+                <div style={{ width: `${hpPercent}%`, height: '100%', background: barColor, borderRadius: '6px', transition: 'width 0.3s ease' }} />
             </div>
 
             {/* Fainted banner */}
             {isFainted && !isDeathThreshold && (
                 <div className="hp-fainted-banner" style={{
-                    marginBottom: '6px', padding: '5px 10px', borderRadius: '5px',
+                    marginBottom: '8px', padding: '5px 10px', borderRadius: '5px',
                     fontSize: '12px', fontWeight: 'bold', textAlign: 'center'
                 }}>
-                    ✖ Fainted — 0 HP
+                    ✖ Fainted
                 </div>
             )}
 
             {/* Death Saving Throw banner */}
             {isDeathThreshold && (
                 <div className="hp-death-banner" style={{
-                    marginBottom: '6px', padding: '8px 10px', borderRadius: '6px',
+                    marginBottom: '8px', padding: '8px 10px', borderRadius: '6px',
                     fontSize: '12px',
                 }}>
                     <div style={{ fontWeight: 'bold', marginBottom: '3px' }}>☠ Death Saving Throw Required!</div>
@@ -73,54 +100,63 @@ const HPTracker = ({ label, currentHP, maxHP, onDamage, onHeal, onFull, level, i
                 </div>
             )}
 
-            <div style={{ background: 'var(--collapsed-hp-track)', borderRadius: '4px', height: '12px', overflow: 'hidden', marginBottom: '8px' }}>
-                <div style={{
-                    width: `${hpPercent}%`,
-                    height: '100%',
-                    background: barColor,
-                    transition: 'width 0.3s ease'
-                }} />
-            </div>
-            <div style={{ display: 'flex', gap: '4px', justifyContent: 'center', flexWrap: 'wrap' }}>
-                <span className="text-muted" style={{ fontSize: '12px', width: '100%', textAlign: 'center', marginBottom: '4px' }}>
-                    Damage ← → Heal
-                </span>
-                {[10, 5, 1].map(val => (
+            {/* Quick buttons: Damage | Full | Heal */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', gap: '8px', alignItems: 'end', marginBottom: '8px' }}>
+                {/* Damage group */}
+                <div>
+                    <div style={groupLabelStyle}>Damage</div>
+                    <div style={{ display: 'flex', gap: '4px' }}>
+                        {[10, 5, 1].map(val => (
+                            <button
+                                key={`dmg-${val}`}
+                                onClick={() => onDamage(val)}
+                                aria-label={`Deal ${val} damage to ${label}`}
+                                style={dmgBtnStyle}
+                            >
+                                −{val}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Full restore button */}
+                <div style={{ alignSelf: 'end' }}>
                     <button
-                        key={`dmg-${val}`}
-                        onClick={() => onDamage(val)}
-                        aria-label={`Deal ${val} damage to ${label}`}
-                        style={{ padding: '4px 8px', minHeight: '44px', minWidth: '44px', background: 'var(--stat-atk, #f44336)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}
+                        onClick={onFull}
+                        aria-label={`Restore ${label} to full HP`}
+                        style={{ padding: '8px 10px', background: 'var(--stat-hp, #4caf50)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '13px', fontWeight: 'bold', minHeight: '44px', whiteSpace: 'nowrap' }}
                     >
-                        −{val}
+                        ↺ Full
                     </button>
-                ))}
-                <button
-                    onClick={onFull}
-                    aria-label={`Restore ${label} to full HP`}
-                    style={{ padding: '4px 8px', minHeight: '44px', minWidth: '44px', background: 'var(--stat-def, #2196f3)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}
-                >
-                    Full
-                </button>
-                {[1, 5, 10].map(val => (
-                    <button
-                        key={`heal-${val}`}
-                        onClick={() => onHeal(val)}
-                        aria-label={`Heal ${val} HP for ${label}`}
-                        style={{ padding: '4px 8px', minHeight: '44px', minWidth: '44px', background: '#4caf50', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}
-                    >
-                        +{val}
-                    </button>
-                ))}
+                </div>
+
+                {/* Heal group */}
+                <div>
+                    <div style={groupLabelStyle}>Heal</div>
+                    <div style={{ display: 'flex', gap: '4px' }}>
+                        {[1, 5, 10].map(val => (
+                            <button
+                                key={`heal-${val}`}
+                                onClick={() => onHeal(val)}
+                                aria-label={`Heal ${val} HP for ${label}`}
+                                style={healBtnStyle}
+                            >
+                                +{val}
+                            </button>
+                        ))}
+                    </div>
+                </div>
             </div>
-            <div style={{ display: 'flex', gap: '4px', alignItems: 'center', marginTop: '6px', justifyContent: 'center' }}>
+
+            {/* Custom amount row */}
+            <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
                 <input
                     ref={inputRef}
                     type="number"
                     min="1"
                     aria-label={`Custom HP amount for ${label}`}
-                    placeholder="Amt"
-                    style={{ width: '70px', padding: '4px 6px', borderRadius: '4px', border: '1px solid var(--border-medium)', fontSize: '13px', textAlign: 'center' }}
+                    placeholder="Custom amount"
+                    style={{ flex: 1, padding: '8px', borderRadius: '4px', border: '1px solid var(--border-medium)', fontSize: '13px', textAlign: 'center', background: 'var(--input-bg)', color: 'var(--text-primary)' }}
                 />
                 <button
                     onClick={() => {
@@ -129,7 +165,7 @@ const HPTracker = ({ label, currentHP, maxHP, onDamage, onHeal, onFull, level, i
                         else { toast.warning('Enter a positive number.'); if (inputRef.current) inputRef.current.value = ''; }
                     }}
                     aria-label={`Deal custom damage to ${label}`}
-                    style={{ padding: '4px 8px', background: 'var(--stat-atk, #f44336)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}
+                    style={{ padding: '8px 12px', background: 'var(--stat-atk, #f44336)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '13px', fontWeight: 'bold', minHeight: '44px' }}
                 >
                     Dmg
                 </button>
@@ -140,7 +176,7 @@ const HPTracker = ({ label, currentHP, maxHP, onDamage, onHeal, onFull, level, i
                         else { toast.warning('Enter a positive number.'); if (inputRef.current) inputRef.current.value = ''; }
                     }}
                     aria-label={`Heal custom HP for ${label}`}
-                    style={{ padding: '4px 8px', background: 'var(--stat-hp, #4caf50)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}
+                    style={{ padding: '8px 12px', background: 'var(--stat-hp, #4caf50)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '13px', fontWeight: 'bold', minHeight: '44px' }}
                 >
                     Heal
                 </button>
