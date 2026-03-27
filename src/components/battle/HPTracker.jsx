@@ -86,9 +86,14 @@ const HPTracker = ({ label, currentHP, maxHP, onDamage, onHeal, onFull, level, i
                 </span>
             </div>
 
-            {/* HP Bar */}
-            <div style={{ background: 'var(--collapsed-hp-track)', borderRadius: '6px', height: '16px', overflow: 'hidden', marginBottom: '8px' }}>
-                <div style={{ width: `${hpPercent}%`, height: '100%', background: barColor, borderRadius: '6px', transition: 'width 0.3s ease' }} />
+            {/* HP Bar + percentage */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                <div style={{ flex: 1, background: 'var(--collapsed-hp-track)', borderRadius: '6px', height: '16px', overflow: 'hidden' }}>
+                    <div style={{ width: `${hpPercent}%`, height: '100%', background: barColor, borderRadius: '6px', transition: 'width 0.3s ease' }} />
+                </div>
+                <span style={{ fontSize: '11px', color: 'var(--text-muted)', width: '30px', textAlign: 'right', flexShrink: 0 }}>
+                    {Math.round(hpPercent)}%
+                </span>
             </div>
 
             {/* Fainted banner */}
@@ -173,6 +178,13 @@ const HPTracker = ({ label, currentHP, maxHP, onDamage, onHeal, onFull, level, i
                         ))}
                     </div>
                 </div>
+            </div>
+
+            {/* Custom amount divider */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', margin: '4px 0 8px' }}>
+                <div style={{ flex: 1, height: '1px', background: 'var(--border-light)' }} />
+                <span style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Custom Amount</span>
+                <div style={{ flex: 1, height: '1px', background: 'var(--border-light)' }} />
             </div>
 
             {/* Custom amount row */}

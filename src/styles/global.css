@@ -5210,6 +5210,16 @@
             outline-offset: 2px;
         }
 
+        /* Hide spinner arrows on the HP tracker custom amount input */
+        .hp-tracker-box input[type="number"]::-webkit-inner-spin-button,
+        .hp-tracker-box input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .hp-tracker-box input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
         .combat-stages-header {
             background: #e8eaf6;
             transition: background 0.3s ease;
