@@ -62,8 +62,6 @@ const MoveSelector = ({ selectedPokemon, selectedMove, onSelectMove, showDetail,
                 const freqStyle = freqLabel ? (FREQ_STYLE[freqLabel] || {}) : {};
                 const catIcon = CATEGORY_ICON[category] || '';
                 const catColor = CATEGORY_COLOR[category] || 'var(--text-muted)';
-                const isContest = !!(gd.contestType || gd.contestDice);
-
                 return (
                     <div
                         key={idx}
@@ -94,12 +92,6 @@ const MoveSelector = ({ selectedPokemon, selectedMove, onSelectMove, showDetail,
                             <div style={{ fontWeight: 700, fontSize: '13px', display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '4px' }}>
                                 {isSelected && <span aria-hidden="true" style={{ color: typeColor, fontSize: '10px', flexShrink: 0 }}>▶</span>}
                                 {move.name}
-                                {isContest && (
-                                    <span
-                                        title={`Contest move (${gd.contestType || 'Unknown'}${gd.contestDice ? ` · ${gd.contestDice}` : ''})`}
-                                        style={{ fontSize: '11px', lineHeight: 1 }}
-                                    >🎭</span>
-                                )}
                             </div>
 
                             {/* Metadata row */}
