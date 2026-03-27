@@ -5622,6 +5622,15 @@
         }
 
         /* ========== COMPACT / DENSE UI MODE ========== */
+        /* Compact: tighten the main content area chrome */
+        [data-compact="true"] .content-area {
+            padding: 16px;
+        }
+        [data-compact="true"] .header {
+            padding: 10px 18px;
+            margin-bottom: 12px;
+        }
+
         [data-compact="true"] .section-card,
         [data-compact="true"] .card-section,
         [data-compact="true"] .section-card-purple,
@@ -5652,6 +5661,102 @@
         [data-compact="true"] .grid-responsive-2,
         [data-compact="true"] .grid-responsive-3 {
             gap: 10px;
+        }
+
+        /* Compact: section sub-headers inside cards */
+        [data-compact="true"] .section-title-purple,
+        [data-compact="true"] .section-title-orange {
+            font-size: 14px;
+            margin-bottom: 8px;
+            padding-bottom: 6px;
+        }
+
+        /* Compact: GM card-orange panels and their headers */
+        [data-compact="true"] .card-orange {
+            padding: 12px;
+            margin-bottom: 8px;
+        }
+        [data-compact="true"] .card-header {
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        /* Compact: Pokémon card tab strip + content */
+        [data-compact="true"] .pokemon-card-tabs .tab {
+            padding: 6px 10px;
+            font-size: 12px;
+        }
+        [data-compact="true"] .pokemon-card-tabs {
+            padding: 0 10px !important;
+        }
+
+        /* Compact: known moves list items */
+        [data-compact="true"] .move-card {
+            padding: 7px 8px !important;
+            margin-bottom: 4px !important;
+        }
+
+        /* Compact: learnset browser — move list items */
+        [data-compact="true"] .move-list-item {
+            padding: 6px 10px !important;
+        }
+
+        /* Compact: add-move panel */
+        [data-compact="true"] .add-move-panel {
+            padding: 8px;
+        }
+
+        /* Compact: add-item panel (Inventory) */
+        [data-compact="true"] .add-item-panel {
+            padding: 10px;
+        }
+
+        /* Compact: ability option buttons */
+        [data-compact="true"] .ability-option {
+            padding: 5px 8px !important;
+            font-size: 12px;
+        }
+
+        /* Compact: skill list items (trainer skills) */
+        [data-compact="true"] .skill-list-item {
+            padding: 4px 8px !important;
+            font-size: 12px;
+        }
+
+        /* Compact: skill stat groups (bg-light boxes) */
+        [data-compact="true"] .bg-light {
+            padding: 8px !important;
+        }
+
+        /* Compact: mini stat boxes in battle tab */
+        [data-compact="true"] .trainer-stat-mini-box {
+            padding: 3px !important;
+        }
+        [data-compact="true"] .skill-info-box {
+            padding: 8px !important;
+            margin-bottom: 8px !important;
+        }
+
+        /* Compact: battle tab — section card padding already covered,
+           but tighten inner roll button and history */
+        [data-compact="true"] .combat-stages-content {
+            padding: 8px !important;
+        }
+
+        /* Compact: Pokémon skills tab items */
+        [data-compact="true"] .skill-display-item {
+            padding: 7px 10px !important;
+        }
+
+        /* Compact: evolution option cards */
+        [data-compact="true"] .evolution-option-card {
+            padding: 8px !important;
+            margin-bottom: 4px !important;
+        }
+
+        /* Compact: form groups */
+        [data-compact="true"] .form-group {
+            margin-bottom: 8px;
         }
 
         /* ============================================================
