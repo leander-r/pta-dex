@@ -298,6 +298,10 @@ export const EVOLUTION_CHAINS = {
     'Roselia': { evolvesFrom: { species: 'Budew', method: 'happiness', requirement: 'High Happiness (Day)' }, evolvesTo: [{ species: 'Roserade', method: 'stone', requirement: 'Shiny Stone' }] },
     'Roserade': { evolvesFrom: { species: 'Roselia', method: 'stone', requirement: 'Shiny Stone' } },
 
+    // Swablu line
+    'Swablu': { evolvesTo: [{ species: 'Altaria', method: 'level', requirement: 35 }] },
+    'Altaria': { evolvesFrom: { species: 'Swablu', method: 'level', requirement: 35 } },
+
     // Feebas line
     'Feebas': { evolvesTo: [{ species: 'Milotic', method: 'other', requirement: 'High Beauty / Prism Scale' }] },
     'Milotic': { evolvesFrom: { species: 'Feebas', method: 'other', requirement: 'High Beauty / Prism Scale' } },
