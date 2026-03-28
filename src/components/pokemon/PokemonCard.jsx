@@ -2887,7 +2887,7 @@ const PokemonCard = ({
                                         <div style={{ marginBottom: '16px' }}>
                                             <h4 style={{ margin: '0 0 10px', fontSize: '13px', fontWeight: 'bold', color: 'var(--text-secondary)' }}>Evolution Options</h4>
                                             {canEvolve.map((evo, idx) => {
-                                                const targetData = pokedex?.find(p => p.name?.toLowerCase() === evo.species?.toLowerCase());
+                                                const targetData = pokedex?.find(p => p.species?.toLowerCase() === evo.species?.toLowerCase());
                                                 return (
                                                     <div key={idx} style={{ marginBottom: '10px', padding: '12px', borderRadius: '10px', border: '1px solid var(--border-light)', background: 'var(--surface-bg, var(--bg-primary))' }}>
                                                         {/* Sprite comparison */}
@@ -2946,7 +2946,7 @@ const PokemonCard = ({
                                                     })}
                                                     <div style={{ flexShrink: 0, fontSize: '20px', color: 'var(--color-danger-text, #ef5350)' }}>→</div>
                                                     {(() => {
-                                                        const prevData = pokedex?.find(p => p.name?.toLowerCase() === canDevolve.species?.toLowerCase());
+                                                        const prevData = pokedex?.find(p => p.species?.toLowerCase() === canDevolve.species?.toLowerCase());
                                                         return renderSpeciesCard({
                                                             species: canDevolve.species,
                                                             label: 'Reverts to',
