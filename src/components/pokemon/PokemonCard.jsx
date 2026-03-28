@@ -2831,8 +2831,10 @@ const PokemonCard = ({
                         {getEvolutionOptions && (() => {
                             const { canEvolve, canDevolve } = getEvolutionOptions(pokemon);
                             const STAT_ORDER = ['hp', 'atk', 'def', 'satk', 'sdef', 'spd'];
+                            const natureData = GAME_DATA?.natures?.[pokemon.nature];
 
-                            // Mini species card: sprite + types + base stats grid
+                            // Mini species card: sprite + types + raw base stats grid
+                            // nature is displayed as a badge; stats are NOT nature-modified (raw species values)
                             const renderSpeciesCard = ({ species, regionalForm, label, types, baseStats, variant = 'neutral' }) => {
                                 const spriteUrl = getPokemonSprite({ species, regionalForm });
                                 const styles = {
@@ -2867,14 +2869,44 @@ const PokemonCard = ({
                                                 ))}
                                             </div>
                                         )}
+                                        {/* Nature badge — same nature applies to all forms */}
+                                        {pokemon.nature && (
+                                            <div style={{ margin: '5px 0 2px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '4px', flexWrap: 'wrap' }}>
+                                                <span style={{ fontSize: '9px', padding: '1px 5px', borderRadius: '8px', background: 'var(--tint-purple-bg)', color: 'var(--color-purple)', fontWeight: 'bold', border: '1px solid var(--tint-purple-border)' }}>
+                                                    {pokemon.nature}
+                                                </span>
+                                                {natureData?.buff && (
+                                                    <span style={{ fontSize: '9px', fontWeight: 'bold', color: 'var(--color-success-text, #4caf50)' }}>
+                                                        +{natureData.buff.toUpperCase()}
+                                                    </span>
+                                                )}
+                                                {natureData?.nerf && (
+                                                    <span style={{ fontSize: '9px', fontWeight: 'bold', color: 'var(--color-danger-text, #ef5350)' }}>
+                                                        −{natureData.nerf.toUpperCase()}
+                                                    </span>
+                                                )}
+                                                {!natureData?.buff && !natureData?.nerf && (
+                                                    <span style={{ fontSize: '9px', color: 'var(--text-muted)' }}>neutral</span>
+                                                )}
+                                            </div>
+                                        )}
                                         {baseStats && (
-                                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '2px', marginTop: '6px' }}>
-                                                {STAT_ORDER.map(s => (
-                                                    <div key={s} style={{ padding: '2px 0' }}>
-                                                        <div style={{ color: `var(--stat-${s})`, fontWeight: 'bold', fontSize: '8px' }}>{s.toUpperCase()}</div>
-                                                        <div style={{ fontWeight: 'bold', fontSize: '12px', color: 'var(--text-primary)' }}>{baseStats[s] ?? 10}</div>
-                                                    </div>
-                                                ))}
+                                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '2px', marginTop: '4px' }}>
+                                                {STAT_ORDER.map(s => {
+                                                    const isBuff = natureData?.buff === s;
+                                                    const isNerf = natureData?.nerf === s;
+                                                    return (
+                                                        <div key={s} style={{ padding: '2px 0' }}>
+                                                            <div style={{ color: `var(--stat-${s})`, fontWeight: 'bold', fontSize: '8px' }}>{s.toUpperCase()}</div>
+                                                            <div style={{
+                                                                fontWeight: 'bold', fontSize: '12px',
+                                                                color: isBuff ? 'var(--color-success-text, #4caf50)' : isNerf ? 'var(--color-danger-text, #ef5350)' : 'var(--text-primary)'
+                                                            }}>
+                                                                {baseStats[s] ?? 10}{isBuff ? ' ▲' : isNerf ? ' ▼' : ''}
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })}
                                             </div>
                                         )}
                                     </div>
