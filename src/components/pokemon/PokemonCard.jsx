@@ -2830,128 +2830,158 @@ const PokemonCard = ({
                     <div>
                         {getEvolutionOptions && (() => {
                             const { canEvolve, canDevolve } = getEvolutionOptions(pokemon);
+                            const STAT_ORDER = ['hp', 'atk', 'def', 'satk', 'sdef', 'spd'];
+
+                            // Mini species card: sprite + types + base stats grid
+                            const renderSpeciesCard = ({ species, regionalForm, label, types, baseStats, variant = 'neutral' }) => {
+                                const spriteUrl = getPokemonSprite({ species, regionalForm });
+                                const styles = {
+                                    current:  { bg: 'var(--bg-light)',               border: 'var(--border-medium)',               label: 'var(--text-muted)' },
+                                    evolve:   { bg: 'rgba(76,175,80,0.07)',           border: 'var(--stat-hp, #4caf50)',            label: 'var(--stat-hp, #4caf50)' },
+                                    locked:   { bg: 'rgba(255,152,0,0.07)',           border: 'var(--poke-orange, #ff9800)',        label: 'var(--poke-orange, #ff9800)' },
+                                    devolve:  { bg: 'rgba(239,83,80,0.07)',           border: 'var(--color-danger-text, #ef5350)', label: 'var(--color-danger-text, #ef5350)' },
+                                }[variant] || { bg: 'var(--bg-light)', border: 'var(--border-medium)', label: 'var(--text-muted)' };
+
+                                return (
+                                    <div style={{ flex: 1, textAlign: 'center', padding: '10px 6px', borderRadius: '8px', background: styles.bg, border: `1px solid ${styles.border}` }}>
+                                        {label && (
+                                            <div style={{ fontSize: '9px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.5px', color: styles.label, marginBottom: '6px' }}>{label}</div>
+                                        )}
+                                        {spriteUrl ? (
+                                            <img
+                                                src={spriteUrl}
+                                                alt={species}
+                                                style={{ width: '64px', height: '64px', imageRendering: 'pixelated', objectFit: 'contain', display: 'block', margin: '0 auto' }}
+                                                onError={e => { e.target.style.visibility = 'hidden'; }}
+                                            />
+                                        ) : (
+                                            <div style={{ width: '64px', height: '64px', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '28px' }}>❓</div>
+                                        )}
+                                        <div style={{ fontWeight: 'bold', fontSize: '12px', marginTop: '4px', lineHeight: 1.3 }}>
+                                            {regionalForm ? `${regionalForm} ` : ''}{species}
+                                        </div>
+                                        {types?.length > 0 && (
+                                            <div style={{ display: 'flex', justifyContent: 'center', gap: '3px', margin: '4px 0' }}>
+                                                {types.map(t => (
+                                                    <span key={t} style={{ padding: '1px 5px', borderRadius: '8px', fontSize: '9px', fontWeight: 'bold', background: getTypeColor(t), color: getContrastTextColor(getTypeColor(t)) }}>{t}</span>
+                                                ))}
+                                            </div>
+                                        )}
+                                        {baseStats && (
+                                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '2px', marginTop: '6px' }}>
+                                                {STAT_ORDER.map(s => (
+                                                    <div key={s} style={{ padding: '2px 0' }}>
+                                                        <div style={{ color: `var(--stat-${s})`, fontWeight: 'bold', fontSize: '8px' }}>{s.toUpperCase()}</div>
+                                                        <div style={{ fontWeight: 'bold', fontSize: '12px', color: 'var(--text-primary)' }}>{baseStats[s] ?? 10}</div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            };
+
                             return (
                                 <>
                                     {canEvolve && canEvolve.length > 0 && (
-                                        <div style={{ marginBottom: '15px' }}>
-                                            <h4 style={{ marginBottom: '10px', fontSize: '13px', fontWeight: 'bold', color: 'var(--text-secondary)', margin: '0 0 10px' }}>Evolution Options</h4>
-                                            {canEvolve.map((evo, idx) => (
-                                                <div
-                                                    key={idx}
-                                                    className={`evolution-option-card ${evo.canEvolveNow ? 'can-evolve' : 'cannot-evolve'}`}
-                                                    style={{
-                                                        display: 'flex',
-                                                        justifyContent: 'space-between',
-                                                        alignItems: 'center',
-                                                        padding: '10px',
-                                                        marginBottom: '6px',
-                                                        borderRadius: '6px'
-                                                    }}
-                                                >
-                                                    <div>
-                                                        <div style={{ fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '5px', flexWrap: 'wrap' }}>
-                                                            {evo.regionalForm ? `${evo.regionalForm} ${evo.species}` : evo.species}
-                                                            {(() => {
-                                                                const targetData = pokedex?.find(p => p.name?.toLowerCase() === evo.species?.toLowerCase());
-                                                                if (!targetData?.types?.length) return null;
-                                                                return targetData.types.map(t => (
-                                                                    <span key={t} style={{ padding: '1px 6px', borderRadius: '8px', fontSize: '10px', fontWeight: 'bold', background: getTypeColor(t), color: getContrastTextColor(getTypeColor(t)) }}>{t}</span>
-                                                                ));
-                                                            })()}
+                                        <div style={{ marginBottom: '16px' }}>
+                                            <h4 style={{ margin: '0 0 10px', fontSize: '13px', fontWeight: 'bold', color: 'var(--text-secondary)' }}>Evolution Options</h4>
+                                            {canEvolve.map((evo, idx) => {
+                                                const targetData = pokedex?.find(p => p.name?.toLowerCase() === evo.species?.toLowerCase());
+                                                return (
+                                                    <div key={idx} style={{ marginBottom: '10px', padding: '12px', borderRadius: '10px', border: '1px solid var(--border-light)', background: 'var(--surface-bg, var(--bg-primary))' }}>
+                                                        {/* Sprite comparison */}
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+                                                            {renderSpeciesCard({
+                                                                species: pokemon.species, regionalForm: pokemon.regionalForm,
+                                                                label: 'Current', types: pokemon.types, baseStats: pokemon.baseStats, variant: 'current'
+                                                            })}
+                                                            <div style={{ flexShrink: 0, fontSize: '20px', color: evo.canEvolveNow ? 'var(--stat-hp, #4caf50)' : 'var(--border-medium)' }}>→</div>
+                                                            {renderSpeciesCard({
+                                                                species: evo.species, regionalForm: evo.regionalForm,
+                                                                label: evo.canEvolveNow ? 'Evolves into' : 'Locked 🔒',
+                                                                types: targetData?.types, baseStats: targetData?.baseStats,
+                                                                variant: evo.canEvolveNow ? 'evolve' : 'locked'
+                                                            })}
                                                         </div>
-                                                        <div className="text-muted" style={{ fontSize: '11px' }}>
-                                                            {evo.reason || evo.requirement}
-                                                            {evo.note && ` (${evo.note})`}
+                                                        {/* Requirement + action */}
+                                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+                                                            <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+                                                                {evo.reason || evo.requirement}
+                                                                {evo.note && ` (${evo.note})`}
+                                                            </div>
+                                                            {evo.canEvolveNow && evolvePokemon ? (
+                                                                <button
+                                                                    onClick={() => showConfirm({
+                                                                        title: `Evolve into ${evo.species}?`,
+                                                                        message: `Evolve ${pokemon.name || pokemon.species} into ${evo.regionalForm ? `${evo.regionalForm} ` : ''}${evo.species}? Stat allocation will be reset — you'll reallocate all points against ${evo.species}'s base relation.`,
+                                                                        confirmLabel: 'Evolve',
+                                                                        onConfirm: () => evolvePokemon(pokemon.id, evo.species, evo.regionalForm, evo.needsItem)
+                                                                    })}
+                                                                    style={{ padding: '6px 16px', background: 'var(--gradient-purple)', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: 'bold', whiteSpace: 'nowrap', flexShrink: 0 }}
+                                                                >
+                                                                    Evolve{evo.needsItem ? ` (${evo.needsItem})` : ''}
+                                                                </button>
+                                                            ) : (
+                                                                <span style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0, fontSize: '11px', color: 'var(--text-muted)', padding: '4px 8px', borderRadius: '6px', background: 'var(--border-light)', whiteSpace: 'nowrap' }}>
+                                                                    🔒 Not yet
+                                                                </span>
+                                                            )}
                                                         </div>
                                                     </div>
-                                                    {evo.canEvolveNow && evolvePokemon ? (
-                                                        <button
-                                                            onClick={() => showConfirm({
-                                                                title: `Evolve into ${evo.species}?`,
-                                                                message: `Evolve ${pokemon.name || pokemon.species} into ${evo.regionalForm ? `${evo.regionalForm} ` : ''}${evo.species}? Stat allocation will be reset — you'll reallocate all points against ${evo.species}'s base relation.`,
-                                                                confirmLabel: 'Evolve',
-                                                                onConfirm: () => evolvePokemon(pokemon.id, evo.species, evo.regionalForm, evo.needsItem)
-                                                            })}
-                                                            style={{
-                                                                padding: '6px 12px',
-                                                                background: 'var(--gradient-purple)',
-                                                                color: 'white',
-                                                                border: 'none',
-                                                                borderRadius: '6px',
-                                                                cursor: 'pointer',
-                                                                fontSize: '12px',
-                                                                textAlign: 'center',
-                                                                lineHeight: 1.4
-                                                            }}
-                                                        >
-                                                            Evolve
-                                                            {evo.needsItem && (
-                                                                <div style={{ fontSize: '10px', opacity: 0.85, marginTop: '2px' }}>uses {evo.needsItem}</div>
-                                                            )}
-                                                        </button>
-                                                    ) : !evo.canEvolveNow && (
-                                                        <span style={{
-                                                            display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0,
-                                                            fontSize: '11px', color: 'var(--text-muted)',
-                                                            padding: '4px 8px', borderRadius: '6px',
-                                                            background: 'var(--border-light)'
-                                                        }}>
-                                                            🔒 Not yet
-                                                        </span>
-                                                    )}
-                                                </div>
-                                            ))}
+                                                );
+                                            })}
                                         </div>
                                     )}
 
                                     {canDevolve && devolvePokemon && (
                                         <div>
-                                            <h4 style={{ marginBottom: '10px', fontSize: '13px', fontWeight: 'bold', color: 'var(--text-secondary)', margin: '0 0 10px' }}>Devolution</h4>
-                                            <div
-                                                className="evolution-option-card devolve"
-                                                style={{
-                                                    display: 'flex',
-                                                    justifyContent: 'space-between',
-                                                    alignItems: 'center',
-                                                    padding: '10px',
-                                                    borderRadius: '6px'
-                                                }}
-                                            >
-                                                <div>
-                                                    <div style={{ fontWeight: 'bold' }}>{canDevolve.species}</div>
-                                                    <div className="text-muted" style={{ fontSize: '11px' }}>
-                                                        Revert to previous form
-                                                    </div>
-                                                </div>
-                                                <button
-                                                    onClick={() => showConfirm({
-                                                        title: 'Devolve Pokémon?',
-                                                        message: `Revert ${pokemon.name || pokemon.species} to ${canDevolve.species}? This will update the species and base stats, and reset stat allocation — you'll need to reallocate all points.`,
-                                                        confirmLabel: 'Devolve',
-                                                        danger: true,
-                                                        onConfirm: () => devolvePokemon(pokemon.id, canDevolve.species)
+                                            <h4 style={{ margin: '0 0 10px', fontSize: '13px', fontWeight: 'bold', color: 'var(--text-secondary)' }}>Devolution</h4>
+                                            <div style={{ padding: '12px', borderRadius: '10px', border: '1px solid var(--border-light)', background: 'var(--surface-bg, var(--bg-primary))' }}>
+                                                {/* Sprite comparison */}
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+                                                    {renderSpeciesCard({
+                                                        species: pokemon.species, regionalForm: pokemon.regionalForm,
+                                                        label: 'Current', types: pokemon.types, baseStats: pokemon.baseStats, variant: 'current'
                                                     })}
-                                                    style={{
-                                                        padding: '6px 12px',
-                                                        background: 'var(--danger-btn-start)',
-                                                        color: 'white',
-                                                        border: 'none',
-                                                        borderRadius: '6px',
-                                                        cursor: 'pointer',
-                                                        fontSize: '12px'
-                                                    }}
-                                                >
-                                                    Devolve
-                                                </button>
+                                                    <div style={{ flexShrink: 0, fontSize: '20px', color: 'var(--color-danger-text, #ef5350)' }}>→</div>
+                                                    {(() => {
+                                                        const prevData = pokedex?.find(p => p.name?.toLowerCase() === canDevolve.species?.toLowerCase());
+                                                        return renderSpeciesCard({
+                                                            species: canDevolve.species,
+                                                            label: 'Reverts to',
+                                                            types: prevData?.types, baseStats: prevData?.baseStats,
+                                                            variant: 'devolve'
+                                                        });
+                                                    })()}
+                                                </div>
+                                                {/* Action */}
+                                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+                                                    <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Revert to previous form</div>
+                                                    <button
+                                                        onClick={() => showConfirm({
+                                                            title: 'Devolve Pokémon?',
+                                                            message: `Revert ${pokemon.name || pokemon.species} to ${canDevolve.species}? This will update the species and base stats, and reset stat allocation — you'll need to reallocate all points.`,
+                                                            confirmLabel: 'Devolve',
+                                                            danger: true,
+                                                            onConfirm: () => devolvePokemon(pokemon.id, canDevolve.species)
+                                                        })}
+                                                        style={{ padding: '6px 16px', background: 'var(--danger-btn-start)', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: 'bold', flexShrink: 0 }}
+                                                    >
+                                                        Devolve
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     )}
 
                                     {(!canEvolve || canEvolve.length === 0) && !canDevolve && (
-                                        <div style={{ textAlign: 'center', padding: '24px 16px', borderRadius: '8px', background: 'var(--bg-light)', border: '1px dashed var(--border-medium)' }}>
-                                            <div style={{ fontSize: '22px', marginBottom: '6px' }}>✅</div>
-                                            <div style={{ fontSize: '13px', fontWeight: 'bold', color: 'var(--text-secondary)', marginBottom: '4px' }}>Final Form</div>
-                                            <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{pokemon.species || 'This Pokémon'} has no evolution options.</div>
+                                        <div style={{ padding: '20px 16px', borderRadius: '10px', border: '1px dashed var(--border-medium)', background: 'var(--bg-light)', textAlign: 'center' }}>
+                                            {renderSpeciesCard({
+                                                species: pokemon.species, regionalForm: pokemon.regionalForm,
+                                                label: '✅ Final Form', types: pokemon.types, baseStats: pokemon.baseStats, variant: 'current'
+                                            })}
+                                            <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '8px' }}>{pokemon.species || 'This Pokémon'} has no evolution options.</div>
                                         </div>
                                     )}
                                 </>
