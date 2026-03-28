@@ -2833,10 +2833,11 @@ const PokemonCard = ({
                             const STAT_ORDER = ['hp', 'atk', 'def', 'satk', 'sdef', 'spd'];
                             const natureData = GAME_DATA?.natures?.[pokemon.nature];
 
-                            // Mini species card: sprite + types + raw base stats grid
-                            // nature is displayed as a badge; stats are NOT nature-modified (raw species values)
+                            // Mini species card: sprite + types + nature-modified base stats grid
                             const renderSpeciesCard = ({ species, regionalForm, label, types, baseStats, variant = 'neutral' }) => {
                                 const spriteUrl = getPokemonSprite({ species, regionalForm });
+                                // Apply the same nature to all forms — nature carries over on evolution
+                                const displayStats = baseStats ? applyNature(baseStats, pokemon.nature) : null;
                                 const styles = {
                                     current:  { bg: 'var(--bg-light)',               border: 'var(--border-medium)',               label: 'var(--text-muted)' },
                                     evolve:   { bg: 'rgba(76,175,80,0.07)',           border: 'var(--stat-hp, #4caf50)',            label: 'var(--stat-hp, #4caf50)' },
@@ -2869,7 +2870,7 @@ const PokemonCard = ({
                                                 ))}
                                             </div>
                                         )}
-                                        {/* Nature badge — same nature applies to all forms */}
+                                        {/* Nature badge — same nature applies to all forms since it carries over */}
                                         {pokemon.nature && (
                                             <div style={{ margin: '5px 0 2px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '4px', flexWrap: 'wrap' }}>
                                                 <span style={{ fontSize: '9px', padding: '1px 5px', borderRadius: '8px', background: 'var(--tint-purple-bg)', color: 'var(--color-purple)', fontWeight: 'bold', border: '1px solid var(--tint-purple-border)' }}>
@@ -2890,7 +2891,7 @@ const PokemonCard = ({
                                                 )}
                                             </div>
                                         )}
-                                        {baseStats && (
+                                        {displayStats && (
                                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '2px', marginTop: '4px' }}>
                                                 {STAT_ORDER.map(s => {
                                                     const isBuff = natureData?.buff === s;
@@ -2902,7 +2903,7 @@ const PokemonCard = ({
                                                                 fontWeight: 'bold', fontSize: '12px',
                                                                 color: isBuff ? 'var(--color-success-text, #4caf50)' : isNerf ? 'var(--color-danger-text, #ef5350)' : 'var(--text-primary)'
                                                             }}>
-                                                                {baseStats[s] ?? 10}{isBuff ? ' ▲' : isNerf ? ' ▼' : ''}
+                                                                {displayStats[s] ?? 10}{isBuff ? ' ▲' : isNerf ? ' ▼' : ''}
                                                             </div>
                                                         </div>
                                                     );
