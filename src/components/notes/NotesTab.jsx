@@ -277,14 +277,11 @@ Examples:
                                             }}>
                                                 {/* Quest header row */}
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 12px' }}>
-                                                    <div
-                                                        role="button"
-                                                        tabIndex={0}
+                                                    <button
                                                         aria-expanded={expandedQuestId === quest.id}
                                                         aria-label={`${quest.title} — click to ${expandedQuestId === quest.id ? 'collapse' : 'expand'} notes`}
-                                                        style={{ flex: 1, fontWeight: 'bold', fontSize: '13px', cursor: 'pointer', textDecoration: key === 'abandoned' ? 'line-through' : 'none', color: key === 'abandoned' ? 'var(--text-muted)' : 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '6px' }}
+                                                        style={{ flex: 1, fontWeight: 'bold', fontSize: '13px', cursor: 'pointer', textDecoration: key === 'abandoned' ? 'line-through' : 'none', color: key === 'abandoned' ? 'var(--text-muted)' : 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '6px', background: 'none', border: 'none', padding: 0, textAlign: 'left' }}
                                                         onClick={() => handleExpandQuest(quest.id)}
-                                                        onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && handleExpandQuest(quest.id)}
                                                     >
                                                         <svg
                                                             width="11" height="11" viewBox="0 0 24 24" fill="none"
@@ -296,7 +293,7 @@ Examples:
                                                         </svg>
                                                         {quest.title}
                                                         {quest.notes && <span style={{ fontSize: '10px', color: 'var(--text-muted)', marginLeft: '2px' }}>📝</span>}
-                                                    </div>
+                                                    </button>
                                                     {/* Status cycle */}
                                                     <button
                                                         onClick={(e) => {

@@ -15,14 +15,14 @@ import ContestRunner from './ContestRunner.jsx';
 
 // Sections drawn directly from the PTA GM Guide (final).pdf
 const SECTIONS = [
-    { id: 'capture',   icon: '🎯', label: 'Capture Rates'    },
-    { id: 'encounter', icon: '🌿', label: 'Wild Encounters'   },
-    { id: 'biome',     icon: '🗺️', label: 'Habitats'         },
-    { id: 'rewards',   icon: '⭐', label: 'EXP Calculator'   },
-    { id: 'gym',       icon: '❤️', label: 'Loyalty Guide'    },
-    { id: 'npc',       icon: '📋', label: 'Skill Checks'     },
-    { id: 'death',     icon: '💀', label: 'Death Saves'      },
-    { id: 'contest',   icon: '🎭', label: 'Contests'         },
+    { id: 'capture',   icon: '🎯', label: 'Capture Rates',  desc: 'Calculate catch rate and roll against a target number' },
+    { id: 'encounter', icon: '🌿', label: 'Wild Encounters', desc: 'Look up encounter tables by area and time of day' },
+    { id: 'biome',     icon: '🗺️', label: 'Habitats',       desc: 'Browse Pokémon by habitat and terrain type' },
+    { id: 'rewards',   icon: '⭐', label: 'EXP Calculator',  desc: 'Calculate EXP and money rewards after a battle' },
+    { id: 'gym',       icon: '❤️', label: 'Loyalty Guide',  desc: 'Track Pokémon loyalty and happiness mechanics' },
+    { id: 'npc',       icon: '📋', label: 'Skill Checks',   desc: 'Reference DCs and skill check rules for NPCs' },
+    { id: 'death',     icon: '💀', label: 'Death Saves',    desc: 'Manage death saving throws and stabilization' },
+    { id: 'contest',   icon: '🎭', label: 'Contests',       desc: 'Run Pokémon Contests with appeals and judging' },
 ];
 
 const SECTION_COMPONENTS = {
@@ -40,6 +40,7 @@ const GMTab = () => {
     const [activeSection, setActiveSection] = useState('capture');
 
     const ActiveComponent = SECTION_COMPONENTS[activeSection];
+    const activeDesc = SECTIONS.find(s => s.id === activeSection)?.desc;
 
     return (
         <div>
@@ -99,6 +100,13 @@ const GMTab = () => {
             {/* Right-edge fade hint — only visible when content overflows (mobile) */}
             <div style={{ pointerEvents: 'none', position: 'absolute', top: 0, right: 0, bottom: 0, width: '32px', borderRadius: '0 10px 10px 0', background: 'linear-gradient(to right, transparent, var(--surface-bg))' }} aria-hidden="true" />
             </div>
+
+            {/* Active section description */}
+            {activeDesc && (
+                <p className="section-description" style={{ marginBottom: '12px', marginTop: '-8px' }}>
+                    {activeDesc}
+                </p>
+            )}
 
             {/* Active section content */}
             <ActiveComponent />

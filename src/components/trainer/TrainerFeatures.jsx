@@ -384,7 +384,7 @@ const TrainerFeatures = () => {
                     <p style={{ margin: '0 0 12px 0', fontSize: '13px', color: 'var(--text-secondary)' }}>
                         {pendingStatFeature.data.label || 'Choose which stat to boost:'}
                     </p>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px', marginBottom: '10px' }}>
+                    <div className="stat-choice-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px', marginBottom: '10px' }}>
                         {pendingStatFeature.data.choices.map(stat => (
                             <button
                                 key={stat}

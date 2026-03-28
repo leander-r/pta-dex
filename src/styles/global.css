@@ -444,6 +444,7 @@
 
         button:disabled {
             cursor: not-allowed;
+            opacity: 0.5;
         }
 
         /* Global input baseline — consistent border/bg for inputs not wrapped
@@ -3865,6 +3866,11 @@
                 width: 36px !important;
                 height: 36px !important;
                 font-size: 16px !important;
+            }
+
+            /* TrainerFeatures stat choice grid: single column so labels don't wrap */
+            .stat-choice-grid {
+                grid-template-columns: 1fr !important;
             }
 
             /* HP tracker custom amount row: stack input above buttons */
