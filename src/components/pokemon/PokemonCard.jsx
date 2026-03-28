@@ -2209,6 +2209,29 @@ const PokemonCard = ({
                             );
                         })()}
 
+                        {/* Nature display */}
+                        {(() => {
+                            const nd = GAME_DATA?.natures?.[pokemon.nature];
+                            if (!pokemon.nature) return null;
+                            return (
+                                <div style={{ marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', padding: '6px 10px', borderRadius: '6px', background: 'var(--tint-purple-bg)', border: '1px solid var(--tint-purple-border)' }}>
+                                    <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Nature:</span>
+                                    <span style={{ fontSize: '12px', fontWeight: 'bold', color: 'var(--color-purple)' }}>{pokemon.nature}</span>
+                                    {nd?.buff && nd?.nerf ? (
+                                        <>
+                                            <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>·</span>
+                                            <span style={{ fontSize: '11px', fontWeight: 'bold', color: 'var(--color-success-text, #4caf50)' }}>+2 {nd.buff.toUpperCase()}</span>
+                                            <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>/</span>
+                                            <span style={{ fontSize: '11px', fontWeight: 'bold', color: 'var(--color-danger-text, #ef5350)' }}>−2 {nd.nerf.toUpperCase()}</span>
+                                            <span style={{ fontSize: '11px', color: 'var(--text-muted)', marginLeft: '2px' }}>(HP modifier is ±1)</span>
+                                        </>
+                                    ) : (
+                                        <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>· no stat changes</span>
+                                    )}
+                                </div>
+                            );
+                        })()}
+
                         <div style={{ marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Stat Points Available:</span>
                             <span style={{ fontSize: '14px', fontWeight: 'bold', color: (pokemon.statPointsAvailable || 0) > 0 ? 'var(--color-success-text)' : 'var(--text-muted)', background: 'var(--tint-purple-bg)', padding: '2px 8px', borderRadius: '6px' }} title="Spend these to increase stats. Pokémon gain stat points when leveling up.">{pokemon.statPointsAvailable || 0}</span>
