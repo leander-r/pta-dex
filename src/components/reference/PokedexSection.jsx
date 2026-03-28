@@ -6,7 +6,7 @@
 import React, { useState, useMemo, useCallback, memo } from 'react';
 import { useGameData } from '../../contexts/index.js';
 import { getTypeColor, getContrastTextColor } from '../../utils/typeUtils.js';
-import { getPokemonDisplayImage } from '../../utils/pokemonSprite.js';
+import { getPokemonDisplayImage, getMegaSprite, getPokemonSprite } from '../../utils/pokemonSprite.js';
 import { POKEMON_TYPES } from '../../data/typeChart.js';
 
 const STAT_LABELS = ['HP', 'ATK', 'DEF', 'SATK', 'SDEF', 'SPD'];
@@ -175,7 +175,9 @@ const SpeciesDetail = ({ species }) => {
         genderRatio,
         eggGroups,
         diet,
-        habitat
+        habitat,
+        megaForms,
+        regionalForms,
     } = species;
 
     const bst = getBST(species);
@@ -254,6 +256,66 @@ const SpeciesDetail = ({ species }) => {
                     <StatBar key={key} label={STAT_LABELS[i]} statKey={key} value={baseStats[key] || 0} />
                 ))}
             </DetailSection>
+
+            {/* Mega Forms */}
+            {megaForms?.length > 0 && (
+                <DetailSection>
+                    <SectionLabel>✨ Mega Forms</SectionLabel>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                        {megaForms.map((form, i) => {
+                            const megaBst = STAT_KEYS.reduce((sum, k) => sum + ((baseStats[k] || 0) + (form.statBoosts?.[k] || 0)), 0);
+                            const megaSprite = getMegaSprite(species, form);
+                            const megaAccent = form.types?.[0] ? getTypeColor(form.types[0]) : accentColor;
+                            return (
+                                <div key={i} style={{ borderRadius: '8px', border: `1px solid var(--border-light)`, borderTop: `3px solid ${megaAccent}`, padding: '10px', background: 'var(--bg-light)' }}>
+                                    {/* Header row */}
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+                                        {megaSprite && (
+                                            <img src={megaSprite} alt={`${species.species} ${form.name}`}
+                                                style={{ width: '48px', height: '48px', imageRendering: 'pixelated', objectFit: 'contain', flexShrink: 0 }}
+                                                onError={e => { e.target.style.display = 'none'; }}
+                                            />
+                                        )}
+                                        <div style={{ flex: 1, minWidth: 0 }}>
+                                            <div style={{ fontWeight: 700, fontSize: '13px', marginBottom: '4px' }}>
+                                                {species.species} {form.name}
+                                            </div>
+                                            <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', alignItems: 'center' }}>
+                                                {form.types?.map(t => <TypeChip key={t} type={t} />)}
+                                                {form.ability && (
+                                                    <span style={{ fontSize: '11px', color: 'var(--text-muted)', marginLeft: '4px' }}>· {form.ability}</span>
+                                                )}
+                                                <span style={{ fontSize: '10px', fontWeight: 700, color: getContrastTextColor(megaAccent), background: megaAccent, padding: '1px 6px', borderRadius: '8px', marginLeft: 'auto' }}>BST {megaBst}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {/* Stat boosts */}
+                                    {form.statBoosts && (
+                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '4px', marginTop: '4px' }}>
+                                            {STAT_KEYS.map((k, ki) => {
+                                                const base = baseStats[k] || 0;
+                                                const boost = form.statBoosts[k] || 0;
+                                                const total = base + boost;
+                                                return (
+                                                    <div key={k} style={{ textAlign: 'center' }}>
+                                                        <div style={{ fontSize: '8px', fontWeight: 700, color: STAT_COLORS[k] }}>{STAT_LABELS[ki]}</div>
+                                                        <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-primary)' }}>{total}</div>
+                                                        {boost !== 0 && (
+                                                            <div style={{ fontSize: '9px', fontWeight: 700, color: boost > 0 ? 'var(--color-success-text, #4caf50)' : 'var(--color-danger-text, #ef5350)' }}>
+                                                                {boost > 0 ? `+${boost}` : boost}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}
+                    </div>
+                </DetailSection>
+            )}
 
             {/* Abilities */}
             {hasAbilities && (
@@ -376,7 +438,7 @@ const SpeciesDetail = ({ species }) => {
 
             {/* Evolution */}
             {hasEvo && (
-                <DetailSection last>
+                <DetailSection last={!regionalForms?.length}>
                     <SectionLabel>Evolution</SectionLabel>
                     <div style={{ fontSize: '13px', lineHeight: '1.7', color: 'var(--text-primary)' }}>
                         {evolvedFrom && (
@@ -395,6 +457,98 @@ const SpeciesDetail = ({ species }) => {
                                 {evo.condition && <span style={{ color: 'var(--text-muted)' }}>{` — ${evo.condition}`}</span>}
                             </div>
                         ))}
+                    </div>
+                </DetailSection>
+            )}
+            {/* Regional Forms */}
+            {regionalForms?.length > 0 && (
+                <DetailSection last>
+                    <SectionLabel>🗺️ Regional Forms</SectionLabel>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        {regionalForms.map((form, i) => {
+                            const formBst = STAT_KEYS.reduce((sum, k) => sum + (form.baseStats?.[k] || 0), 0);
+                            const formSprite = getPokemonSprite({ species: species.species, regionalForm: form.name });
+                            const formAccent = form.types?.[0] ? getTypeColor(form.types[0]) : accentColor;
+                            const hasFormAbilities = form.abilities?.basic?.length > 0 || form.abilities?.adv?.length > 0 || form.abilities?.high?.length > 0;
+                            const formMoves = form.levelUpMoves || [];
+                            const hasFormEgg = form.eggMoves?.length > 0;
+                            const hasFormTutor = form.tutorMoves?.length > 0;
+                            return (
+                                <div key={i} style={{ borderRadius: '8px', border: `1px solid var(--border-light)`, borderTop: `3px solid ${formAccent}`, padding: '10px', background: 'var(--bg-light)' }}>
+                                    {/* Header */}
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+                                        {formSprite && (
+                                            <img src={formSprite} alt={`${form.name} ${species.species}`}
+                                                style={{ width: '48px', height: '48px', imageRendering: 'pixelated', objectFit: 'contain', flexShrink: 0 }}
+                                                onError={e => { e.target.style.display = 'none'; }}
+                                            />
+                                        )}
+                                        <div style={{ flex: 1 }}>
+                                            <div style={{ fontWeight: 700, fontSize: '13px', marginBottom: '4px' }}>{form.name} {species.species}</div>
+                                            <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', alignItems: 'center' }}>
+                                                {form.types?.map(t => <TypeChip key={t} type={t} />)}
+                                                <span style={{ fontSize: '10px', fontWeight: 700, color: getContrastTextColor(formAccent), background: formAccent, padding: '1px 6px', borderRadius: '8px', marginLeft: 'auto' }}>BST {formBst}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {/* Base Stats */}
+                                    {form.baseStats && STAT_KEYS.map((k, ki) => (
+                                        <StatBar key={k} label={STAT_LABELS[ki]} statKey={k} value={form.baseStats[k] || 0} />
+                                    ))}
+                                    {/* Abilities */}
+                                    {hasFormAbilities && (
+                                        <div style={{ marginTop: '8px', fontSize: '12px' }}>
+                                            <span style={{ color: 'var(--text-muted)', fontWeight: 700, fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.6px' }}>Abilities </span>
+                                            {[
+                                                form.abilities?.basic?.length > 0 && <span key="b"><span style={{ color: 'var(--text-muted)', fontSize: '10px' }}>Basic </span>{form.abilities.basic.join(', ')}</span>,
+                                                form.abilities?.adv?.length > 0   && <span key="a"><span style={{ color: 'var(--text-muted)', fontSize: '10px' }}> Adv </span>{form.abilities.adv.join(', ')}</span>,
+                                                form.abilities?.high?.length > 0  && <span key="h"><span style={{ color: 'var(--text-muted)', fontSize: '10px' }}> Hidden </span>{form.abilities.high.join(', ')}</span>,
+                                            ].filter(Boolean)}
+                                        </div>
+                                    )}
+                                    {/* Level-up moves */}
+                                    {formMoves.length > 0 && (
+                                        <div style={{ marginTop: '8px' }}>
+                                            <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '5px' }}>Level-up Moves</div>
+                                            <div style={{ maxHeight: '150px', overflowY: 'auto', border: '1px solid var(--border-light)', borderRadius: '6px', background: 'var(--poke-white)' }}>
+                                                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px' }}>
+                                                    <tbody>
+                                                        {formMoves.map((move, mi) => (
+                                                            <tr key={mi} style={{ borderBottom: mi < formMoves.length - 1 ? '1px solid var(--border-light)' : 'none', background: mi % 2 === 0 ? 'transparent' : 'var(--bg-light)' }}>
+                                                                <td style={{ padding: '4px 8px', color: 'var(--text-muted)', fontWeight: 600, textAlign: 'right', width: '32px' }}>{move.level ?? '—'}</td>
+                                                                <td style={{ padding: '4px 8px', color: 'var(--text-primary)' }}>{move.name || move.move || String(move)}</td>
+                                                                <td style={{ padding: '4px 8px' }}>{move.type && <TypeChip type={move.type} />}</td>
+                                                            </tr>
+                                                        ))}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    )}
+                                    {/* Egg & Tutor moves */}
+                                    {(hasFormEgg || hasFormTutor) && (
+                                        <div style={{ marginTop: '8px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                            {hasFormEgg && (
+                                                <div>
+                                                    <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '4px' }}>Egg Moves</div>
+                                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                                                        {form.eggMoves.map((m, mi) => <Chip key={mi} label={typeof m === 'string' ? m : m?.name || String(m)} />)}
+                                                    </div>
+                                                </div>
+                                            )}
+                                            {hasFormTutor && (
+                                                <div>
+                                                    <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '4px' }}>Tutor Moves</div>
+                                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                                                        {form.tutorMoves.map((m, mi) => <Chip key={mi} label={typeof m === 'string' ? m : m?.name || String(m)} />)}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}
                     </div>
                 </DetailSection>
             )}
@@ -451,6 +605,14 @@ const PokedexRow = memo(({ species, idx, isExpanded, isHovered, onRowClick, onMo
                     {species.species}
                 </span>
                 <DualTypeDisplay types={species.types} />
+                <div style={{ display: 'flex', gap: '3px', flexShrink: 0 }}>
+                    {species.megaForms?.length > 0 && (
+                        <span title={`${species.megaForms.length} Mega Form${species.megaForms.length > 1 ? 's' : ''}`} style={{ fontSize: '9px', fontWeight: 700, padding: '1px 4px', borderRadius: '4px', background: 'rgba(102,126,234,0.15)', color: 'var(--color-purple)', border: '1px solid rgba(102,126,234,0.3)' }}>M</span>
+                    )}
+                    {species.regionalForms?.length > 0 && (
+                        <span title={`${species.regionalForms.length} Regional Form${species.regionalForms.length > 1 ? 's' : ''}`} style={{ fontSize: '9px', fontWeight: 700, padding: '1px 4px', borderRadius: '4px', background: 'rgba(255,152,0,0.15)', color: 'var(--poke-orange-dark, #e65100)', border: '1px solid rgba(255,152,0,0.3)' }}>R</span>
+                    )}
+                </div>
                 <span
                     className="pokedex-bst"
                     title="Base Stat Total"
