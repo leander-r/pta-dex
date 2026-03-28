@@ -1695,7 +1695,7 @@ const PokemonCard = ({
                                                             disabled={count === 0}
                                                             style={{ flex: 1, padding: '6px 2px', background: 'var(--bg-light)', border: '1px solid var(--border-light)', borderRadius: '4px', cursor: count === 0 ? 'not-allowed' : 'pointer', opacity: count === 0 ? 0.4 : 1, fontSize: '13px', color: 'var(--text-secondary)' }}
                                                         >−</button>
-                                                        <span style={{ minWidth: '18px', textAlign: 'center', fontWeight: 'bold', fontSize: '13px' }}>{count > 0 ? count : '—'}</span>
+                                                        <span style={{ minWidth: '18px', textAlign: 'center', fontWeight: 'bold', fontSize: '13px' }}>{count}</span>
                                                         <button
                                                             onClick={() => updatePokemon({ ribbons: { ...ribbons, [type]: count + 1 } })}
                                                             style={{ flex: 1, padding: '6px 2px', background: 'var(--bg-light)', border: '1px solid var(--border-light)', borderRadius: '4px', cursor: 'pointer', fontSize: '13px', color: 'var(--text-secondary)' }}
@@ -1800,6 +1800,7 @@ const PokemonCard = ({
                                                 <div
                                                     key={idx}
                                                     className={`ability-option ${isSelected ? 'selected' : ''}`}
+                                                    title={abilityData?.effect || abilityData?.description || ab.name}
                                                     style={{
                                                         display: 'flex',
                                                         alignItems: 'center',
@@ -2331,9 +2332,12 @@ const PokemonCard = ({
                                         <span style={{
                                             fontSize: '9px', fontWeight: 'bold', padding: '1px 4px',
                                             borderRadius: '3px',
-                                            background: move.source === 'taught' ? 'var(--color-taught)' : 'var(--stat-hp)',
+                                            background: move.source === 'taught' ? 'var(--color-taught, #ff9800)'
+                                                : move.source === 'egg' ? 'var(--stat-satk, #9c27b0)'
+                                                : move.source === 'custom' ? 'var(--stat-spd, #00bcd4)'
+                                                : 'var(--stat-hp, #4caf50)',
                                             color: 'white'
-                                        }}>{move.source === 'taught' ? 'Tght' : 'Nat'}</span>
+                                        }}>{move.source === 'taught' ? 'Tght' : move.source === 'egg' ? 'Egg' : move.source === 'custom' ? 'TM' : 'Nat'}</span>
                                     </div>
                                     <div className="text-muted" style={{ fontSize: '12px' }}>
                                         {move.type} | {move.category} | {move.damage || 'Status'}

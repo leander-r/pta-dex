@@ -72,9 +72,9 @@ const StatusConditionUI = ({ selectedPokemon, updatePokemon }) => {
                         })}
                     </div>
                     {activeConditions.length > 0 && (
-                        <div style={{ marginTop: '7px', display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                        <div style={{ marginTop: '7px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
                             {activeConditions.map(cond => (
-                                <div key={cond.key} style={{ fontSize: '11px', color: 'var(--text-muted)', lineHeight: 1.5 }}>
+                                <div key={cond.key} style={{ fontSize: '11px', color: 'var(--text-secondary)', lineHeight: 1.5, borderLeft: `3px solid ${cond.color}`, paddingLeft: '8px' }}>
                                     <span style={{ color: cond.color, fontWeight: 'bold' }}>{cond.icon} {cond.label}:</span>{' '}
                                     {cond.mechanic}
                                 </div>

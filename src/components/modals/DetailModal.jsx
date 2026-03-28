@@ -124,13 +124,15 @@ const DetailModal = () => {
                             cursor: 'pointer',
                             color: 'white',
                             borderRadius: '50%',
-                            width: '36px',
-                            height: '36px',
+                            width: '40px',
+                            height: '40px',
+                            minWidth: '40px',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
                             transition: 'all 0.2s ease',
-                            fontWeight: 'bold'
+                            fontWeight: 'bold',
+                            flexShrink: 0
                         }}
                         onMouseEnter={(e) => {
                             e.target.style.background = 'rgba(255,255,255,0.35)';

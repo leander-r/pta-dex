@@ -298,21 +298,23 @@ Examples:
                                                         {quest.notes && <span style={{ fontSize: '10px', color: 'var(--text-muted)', marginLeft: '2px' }}>📝</span>}
                                                     </div>
                                                     {/* Status cycle */}
-                                                    <select
-                                                        value={quest.status}
-                                                        onChange={(e) => handleQuestStatus(quest.id, e.target.value)}
-                                                        onClick={(e) => e.stopPropagation()}
-                                                        aria-label={`Status for quest: ${quest.title}`}
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            const idx = QUEST_STATUSES.findIndex(s => s.key === quest.status);
+                                                            handleQuestStatus(quest.id, QUEST_STATUSES[(idx + 1) % QUEST_STATUSES.length].key);
+                                                        }}
+                                                        aria-label={`Cycle status for quest: ${quest.title}`}
+                                                        title="Click to cycle: Active → Completed → Abandoned"
                                                         style={{
-                                                            padding: '3px 6px', borderRadius: '4px',
+                                                            padding: '3px 8px', borderRadius: '4px',
                                                             border: `1px solid ${color}`, background: color,
-                                                            color: 'white', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer'
+                                                            color: 'white', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer',
+                                                            whiteSpace: 'nowrap', flexShrink: 0
                                                         }}
                                                     >
-                                                        {QUEST_STATUSES.map(s => (
-                                                            <option key={s.key} value={s.key}>{s.label}</option>
-                                                        ))}
-                                                    </select>
+                                                        {label}
+                                                    </button>
                                                     <button
                                                         onClick={() => handleDeleteQuest(quest.id)}
                                                         style={{ padding: '3px 7px', background: 'var(--tint-fail-bg)', color: 'var(--color-danger-text)', border: '1px solid var(--tint-fail-border)', borderRadius: '4px', cursor: 'pointer', fontSize: '11px' }}

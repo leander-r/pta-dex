@@ -273,6 +273,14 @@ const TrainerSkills = () => {
                                                 {isHPStat ? 'Passive' : (bonus >= 0 ? `+${bonus}` : bonus)}
                                             </span>
                                         )}
+                                        {!isTrained && !isHPStat && (() => {
+                                            const r1 = calculateSkillBonus(1, statValue);
+                                            return (
+                                                <span style={{ fontSize: '11px', color: 'var(--text-muted)', marginLeft: 'auto', opacity: 0.6 }}>
+                                                    {r1 >= 0 ? `+${r1}` : r1}
+                                                </span>
+                                            );
+                                        })()}
                                     </div>
                                 );
                             })}

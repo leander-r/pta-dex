@@ -78,11 +78,13 @@ const PokemonTab = () => {
     const teamCoverage = useMemo(() => {
         if (!party.length) return null;
         const weakCount = {};
+        const superWeakSet = new Set();
         const resistCount = {};
         const immuneCount = {};
         party.forEach(p => {
             const eff = getCombinedTypeEffectiveness(p.types || []);
-            [...eff.weak, ...eff.superWeak].forEach(t => { weakCount[t] = (weakCount[t] || 0) + 1; });
+            eff.superWeak.forEach(t => { superWeakSet.add(t); weakCount[t] = (weakCount[t] || 0) + 1; });
+            eff.weak.forEach(t => { weakCount[t] = (weakCount[t] || 0) + 1; });
             [...eff.resist, ...eff.superResist].forEach(t => { resistCount[t] = (resistCount[t] || 0) + 1; });
             eff.immune.forEach(t => { immuneCount[t] = (immuneCount[t] || 0) + 1; });
         });
@@ -91,7 +93,7 @@ const PokemonTab = () => {
             (p.types || []).forEach(t => offenseTypes.add(t));
             (p.moves || []).forEach(m => { if (m.type) offenseTypes.add(m.type); });
         });
-        return { weakCount, resistCount, immuneCount, offenseTypes };
+        return { weakCount, superWeakSet, resistCount, immuneCount, offenseTypes };
     }, [party]);
 
     // Custom species export/import handlers
@@ -668,10 +670,11 @@ const PokemonTab = () => {
                                                         background: getTypeColor(t), color: 'white',
                                                         fontSize: '11px', fontWeight: 'bold', border: 'none', cursor: 'pointer',
                                                         display: 'flex', alignItems: 'center', gap: '4px',
-                                                        outline: isExpanded ? '2px solid white' : 'none'
+                                                        outline: isExpanded ? '2px solid white' : teamCoverage.superWeakSet.has(t) ? '2px solid #ff5722' : 'none'
                                                     }}
-                                                    title="Click to see which Pokémon are weak"
+                                                    title={teamCoverage.superWeakSet.has(t) ? '×4 weakness! At least one Pokémon takes quadruple damage' : 'Click to see which Pokémon are weak'}
                                                 >
+                                                    {teamCoverage.superWeakSet.has(t) && <span style={{ fontSize: '9px' }}>⚠</span>}
                                                     {t}
                                                     <span style={{ background: 'rgba(0,0,0,0.3)', borderRadius: '8px', padding: '0 4px', fontSize: '10px' }}>
                                                         ×{teamCoverage.weakCount[t]}

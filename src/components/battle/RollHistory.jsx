@@ -6,7 +6,13 @@ import toast from '../../utils/toast.js';
 const RollHistory = ({ rollHistory, setRollHistory, mode, subMode }) => {
     const { showConfirm } = useModal();
     const [showExportOptions, setShowExportOptions] = useState(false);
+    const [pokemonFilter, setPokemonFilter] = useState('all');
     const exportDropdownRef = useRef(null);
+
+    const pokemonNames = [...new Set(rollHistory.filter(r => r.pokemon).map(r => r.pokemon))].sort();
+    const filteredHistory = pokemonFilter === 'all'
+        ? rollHistory
+        : rollHistory.filter(r => r.pokemon === pokemonFilter);
 
     const formatRollLog = () => {
         const date = new Date().toLocaleDateString();
@@ -82,7 +88,18 @@ const RollHistory = ({ rollHistory, setRollHistory, mode, subMode }) => {
             <h3 className="section-title-purple">
                 <span>📜</span> Roll History
                 {rollHistory.length > 0 && (
-                    <div style={{ marginLeft: 'auto', display: 'flex', gap: '6px', alignItems: 'center' }}>
+                    <div style={{ marginLeft: 'auto', display: 'flex', gap: '6px', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                        {pokemonNames.length > 1 && (
+                            <select
+                                value={pokemonFilter}
+                                onChange={e => setPokemonFilter(e.target.value)}
+                                aria-label="Filter by Pokémon"
+                                style={{ padding: '4px 6px', borderRadius: '4px', border: '1px solid var(--border-medium)', background: 'var(--input-bg)', color: 'var(--text-primary)', fontSize: '12px', cursor: 'pointer' }}
+                            >
+                                <option value="all">All</option>
+                                {pokemonNames.map(n => <option key={n} value={n}>{n}</option>)}
+                            </select>
+                        )}
                         <div ref={exportDropdownRef} style={{ position: 'relative' }}>
                             <button
                                 onClick={() => setShowExportOptions(v => !v)}
@@ -130,8 +147,12 @@ const RollHistory = ({ rollHistory, setRollHistory, mode, subMode }) => {
                                 : 'Select a Pokémon and move, then click "Roll Attack!"'}
                         </p>
                     </div>
+                ) : filteredHistory.length === 0 ? (
+                    <div style={{ textAlign: 'center', padding: '20px', color: 'var(--text-muted)', fontSize: '13px' }}>
+                        No rolls for {pokemonFilter}.
+                    </div>
                 ) : (
-                    rollHistory.map((roll, idx) => (
+                    filteredHistory.map((roll, idx) => (
                         <div
                             key={idx}
                             className={`roll-history-item ${roll.isCrit ? 'crit' : ''}`}
