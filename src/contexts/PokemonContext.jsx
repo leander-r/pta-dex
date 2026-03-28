@@ -779,9 +779,14 @@ export const PokemonProvider = ({ children }) => {
         if (!currentPoke) return;
 
         const { formData, updates } = buildSpeciesUpdateFields(speciesData, regionalForm);
+        // Reset stat allocation so points are re-spent against the new form's base relation (PHB2 evolution rules)
+        const totalPoints = Math.max(0, (currentPoke.highestLevelReached || currentPoke.level || 1) - 1);
         Object.assign(updates, {
             evolvedFrom: previousSpecies || currentPoke.species,
             evolutionStoneUsed: consumedItem || null,
+            addedStats: {},
+            statPointsAvailable: totalPoints,
+            statAllocationHistory: [],
             ...resolveAbilityUpdates(currentPoke, formData?.abilities || speciesData.abilities),
         });
 
@@ -819,9 +824,14 @@ export const PokemonProvider = ({ children }) => {
         if (!currentPoke) return;
 
         const { formData, updates } = buildSpeciesUpdateFields(speciesData, regionalForm);
+        // Reset stat allocation so points are re-spent against the devolved form's base relation
+        const totalPoints = Math.max(0, (currentPoke.highestLevelReached || currentPoke.level || 1) - 1);
         Object.assign(updates, {
             evolvedFrom: null,
             evolutionStoneUsed: null,
+            addedStats: {},
+            statPointsAvailable: totalPoints,
+            statAllocationHistory: [],
             ...resolveAbilityUpdates(currentPoke, formData?.abilities || speciesData.abilities),
         });
 
@@ -872,6 +882,7 @@ export const PokemonProvider = ({ children }) => {
             message: `evolved into ${formName ? formName + ' ' : ''}${targetSpecies}!`,
             type: 'evolution'
         });
+        toast.info(`Stat points reset — reallocate them in the Stats tab against ${targetSpecies}'s base relation.`);
     }, [party, reserve, pokedex, customSpecies, hasItemInInventory, removeItemFromInventory, applyEvolutionToPokemon, showLevelUpNotification]);
 
     // Handle Pokemon devolution
@@ -929,6 +940,7 @@ export const PokemonProvider = ({ children }) => {
                     message: notificationMsg,
                     type: 'devolution'
                 });
+                toast.info(`Stat points reset — reallocate them in the Stats tab against ${targetSpecies}'s base relation.`);
             }
         });
     }, [party, reserve, pokedex, customSpecies, addItemToInventory, applyDevolutionToPokemon, showLevelUpNotification, showConfirm]);
