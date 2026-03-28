@@ -2944,6 +2944,9 @@ const PokemonCard = ({
                                             <h4 style={{ margin: '0 0 10px', fontSize: '13px', fontWeight: 'bold', color: 'var(--text-secondary)' }}>Evolution Options</h4>
                                             {canEvolve.map((evo, idx) => {
                                                 const targetData = pokedex?.find(p => p.species?.toLowerCase() === evo.species?.toLowerCase());
+                                                // Regional forms may have different types than the base species in the pokedex;
+                                                // use types stored on the evo entry if present, otherwise fall back to pokedex
+                                                const targetTypes = evo.types || targetData?.types;
                                                 return (
                                                     <div key={idx} style={{ marginBottom: '10px', padding: '12px', borderRadius: '10px', border: '1px solid var(--border-light)', background: 'var(--surface-bg, var(--bg-primary))' }}>
                                                         {/* Sprite comparison */}
@@ -2956,7 +2959,7 @@ const PokemonCard = ({
                                                             {renderSpeciesCard({
                                                                 species: evo.species, regionalForm: evo.regionalForm,
                                                                 label: evo.canEvolveNow ? 'Evolves into' : 'Locked 🔒',
-                                                                types: targetData?.types, baseStats: targetData?.baseStats,
+                                                                types: targetTypes, baseStats: targetData?.baseStats,
                                                                 variant: evo.canEvolveNow ? 'evolve' : 'locked'
                                                             })}
                                                         </div>

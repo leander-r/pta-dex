@@ -22,7 +22,7 @@ export const EVOLUTION_CHAINS = {
     'Pichu': { evolvesTo: [{ species: 'Pikachu', method: 'happiness', requirement: 'High Happiness' }] },
     'Pikachu': { evolvesFrom: { species: 'Pichu', method: 'happiness', requirement: 'High Happiness' }, evolvesTo: [
         { species: 'Raichu', method: 'stone', requirement: 'Thunder Stone' },
-        { species: 'Raichu', method: 'stone', requirement: 'Thunder Stone', regionalForm: 'Alolan', note: 'In Alola' }
+        { species: 'Raichu', method: 'stone', requirement: 'Thunder Stone', regionalForm: 'Alolan', note: 'In Alola', types: ['Electric', 'Psychic'] }
     ]},
     'Raichu': { evolvesFrom: { species: 'Pikachu', method: 'stone', requirement: 'Thunder Stone' } },
 
@@ -33,7 +33,7 @@ export const EVOLUTION_CHAINS = {
     // Vulpix line (with Alolan)
     'Vulpix': { evolvesTo: [
         { species: 'Ninetales', method: 'stone', requirement: 'Fire Stone' },
-        { species: 'Ninetales', method: 'stone', requirement: 'Ice Stone', regionalForm: 'Alolan', note: 'Alolan Vulpix' }
+        { species: 'Ninetales', method: 'stone', requirement: 'Ice Stone', regionalForm: 'Alolan', note: 'Alolan Vulpix', types: ['Ice', 'Fairy'] }
     ]},
     'Ninetales': { evolvesFrom: { species: 'Vulpix', method: 'stone', requirement: 'Fire Stone' } },
 
@@ -121,14 +121,14 @@ export const EVOLUTION_CHAINS = {
     // Exeggcute line (with Alolan)
     'Exeggcute': { evolvesTo: [
         { species: 'Exeggutor', method: 'stone', requirement: 'Leaf Stone' },
-        { species: 'Exeggutor', method: 'stone', requirement: 'Leaf Stone', regionalForm: 'Alolan', note: 'In Alola' }
+        { species: 'Exeggutor', method: 'stone', requirement: 'Leaf Stone', regionalForm: 'Alolan', note: 'In Alola', types: ['Grass', 'Dragon'] }
     ]},
     'Exeggutor': { evolvesFrom: { species: 'Exeggcute', method: 'stone', requirement: 'Leaf Stone' } },
 
     // Cubone line (with Alolan Marowak)
     'Cubone': { evolvesTo: [
         { species: 'Marowak', method: 'level', requirement: 28 },
-        { species: 'Marowak', method: 'level', requirement: 28, regionalForm: 'Alolan', note: 'In Alola at night' }
+        { species: 'Marowak', method: 'level', requirement: 28, regionalForm: 'Alolan', note: 'In Alola at night', types: ['Fire', 'Ghost'] }
     ]},
     'Marowak': { evolvesFrom: { species: 'Cubone', method: 'level', requirement: 28 } },
 
