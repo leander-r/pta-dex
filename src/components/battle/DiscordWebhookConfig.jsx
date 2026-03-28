@@ -69,6 +69,8 @@ const DiscordWebhookConfig = () => {
                             const url = e.target.value.trim();
                             if (url && !/^https:\/\/discord\.com\/api\/webhooks\/\d+\/[\w-]+/.test(url)) {
                                 toast.warning('That doesn\'t look like a valid Discord webhook URL.');
+                            } else if (url) {
+                                toast.success('Webhook URL saved.');
                             }
                         }}
                         style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid var(--border-medium)', fontSize: '13px', background: 'var(--input-bg)', color: 'var(--text-primary)', marginBottom: '10px' }}

@@ -177,7 +177,7 @@ const PokemonCard = ({
     // Filter held items from inventory for selection
     const filteredHeldItems = useMemo(() => {
         const holdable = (inventory || []).filter(item =>
-            typeof item.type === 'string' && /held|hold/i.test(item.type)
+            typeof item.type === 'string' && /held|hold/i.test(item.type) && (item.quantity ?? 1) > 0
         );
         if (!heldItemSearch) return holdable;
         const q = heldItemSearch.toLowerCase();
@@ -2556,7 +2556,9 @@ const PokemonCard = ({
                                         borderRadius: '6px'
                                     }}>
                                         {filteredMoves.length > 0 ? (
-                                            filteredMoves.map(([name, data, moveLevel]) => (
+                                            filteredMoves.map(([name, data, moveLevel]) => {
+                                            const isKnown = (pokemon.moves || []).some(m => m.name?.toLowerCase() === name.toLowerCase());
+                                            return (
                                                 <div
                                                     key={name}
                                                     className="move-list-item"
@@ -2569,6 +2571,7 @@ const PokemonCard = ({
                                                 >
                                                     <div style={{ flex: 1 }}>
                                                         <span style={{ fontWeight: 'bold', fontSize: '13px' }}>{name}</span>
+                                                        {isKnown && <span style={{ fontSize: '10px', color: 'var(--stat-hp)', fontWeight: 600, marginLeft: '5px' }}>✓</span>}
                                                         {moveLevel != null && (
                                                             <span style={{ fontSize: '10px', color: 'var(--text-muted)', marginLeft: '5px' }}>Lv.{moveLevel === 0 ? 'E' : moveLevel}</span>
                                                         )}
@@ -2652,7 +2655,7 @@ const PokemonCard = ({
                                                         </button>
                                                     </div>
                                                 </div>
-                                            ))
+                                            ); })
                                         ) : (
                                             <div className="text-light" style={{ padding: '20px', textAlign: 'center' }}>
                                                 {moveSearch || moveTypeFilter !== 'all' || moveCategoryFilter !== 'all' || moveSourceFilter !== 'all'

@@ -234,6 +234,7 @@ const CardExportModal = () => {
         setIsExporting(true);
         try {
             await downloadCardAsImage(cardId, filename);
+            toast.success('Card saved!');
         } catch (err) {
             const cardText = err.cardText || '';
             showConfirm({
