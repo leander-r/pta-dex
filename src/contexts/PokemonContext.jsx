@@ -598,6 +598,7 @@ export const PokemonProvider = ({ children }) => {
                     method: evo.method,
                     requirement: evo.requirement,
                     regionalForm: evo.regionalForm || null,
+                    types: evo.types || null,
                     note: evo.note || null,
                     canEvolveNow,
                     reason,
