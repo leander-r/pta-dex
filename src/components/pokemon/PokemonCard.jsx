@@ -1025,7 +1025,7 @@ const PokemonCard = ({
                         <span aria-hidden="true">{icon}</span> {label}
                         {badge != null && (
                             <span style={{
-                                position: 'absolute', top: '2px', right: '2px',
+                                position: 'absolute', top: '4px', right: '4px',
                                 minWidth: '16px', height: '16px', lineHeight: '16px',
                                 borderRadius: '8px', fontSize: '10px', fontWeight: 'bold',
                                 background: id === 'stats' ? 'var(--color-success-text, #4caf50)' : 'var(--text-muted)',
@@ -1042,9 +1042,16 @@ const PokemonCard = ({
                     <div>
                         {/* Species Selection */}
                         <div style={{ marginBottom: '15px' }}>
-                            <label style={{ fontSize: '12px', fontWeight: 'bold', marginBottom: '4px', display: 'block' }}>
-                                Species
-                            </label>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+                                <label style={{ fontSize: '12px', fontWeight: 'bold', display: 'block' }}>
+                                    Species
+                                </label>
+                                {pokemon.species && speciesSearch && (
+                                    <span style={{ fontSize: '11px', color: 'var(--text-muted)', background: 'var(--tint-purple-bg)', padding: '1px 6px', borderRadius: '4px', border: '1px solid var(--tint-purple-border)' }}>
+                                        Current: {pokemon.regionalForm ? `${pokemon.regionalForm} ` : ''}{pokemon.species}
+                                    </span>
+                                )}
+                            </div>
                             <div style={{ position: 'relative' }}>
                                 {/* P3: Search input — shows current species as placeholder, doesn't blank on focus */}
                                 <div style={{ position: 'relative' }}>
@@ -1721,7 +1728,7 @@ const PokemonCard = ({
                                             const val = contestStats[stat] || 0;
                                             return (
                                                 <div key={stat} style={{ textAlign: 'center' }}>
-                                                    <div style={{ fontSize: '10px', fontWeight: 'bold', color: 'var(--text-muted)', marginBottom: '4px', textTransform: 'capitalize' }}>{icon}<br/>{stat}</div>
+                                                    <div style={{ fontSize: '11px', fontWeight: 'bold', color: 'var(--text-muted)', marginBottom: '4px', textTransform: 'capitalize' }}>{icon}<br/>{stat}</div>
                                                     <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                                                         <button
                                                             onClick={() => updatePokemon({ contestStats: { ...contestStats, [stat]: Math.max(0, val - 1) } })}
@@ -1860,7 +1867,7 @@ const PokemonCard = ({
                             {derivedAbilities.length > 0 ? (
                                 <div className="abilities-available-box" style={{ padding: '10px', borderRadius: '8px' }}>
                                     <div className="text-muted" style={{ fontSize: '12px', marginBottom: '8px' }}>
-                                        Tap to add (tap name for details):
+                                        Select to add · click name for details:
                                     </div>
                                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
                                         {derivedAbilities.map((ab, idx) => {
@@ -2256,7 +2263,7 @@ const PokemonCard = ({
 
                         <div style={{ marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Stat Points Available:</span>
-                            <span style={{ fontSize: '14px', fontWeight: 'bold', color: (pokemon.statPointsAvailable || 0) > 0 ? 'var(--color-success-text)' : 'var(--text-muted)', background: 'var(--tint-purple-bg)', padding: '2px 8px', borderRadius: '6px' }} title="Spend these to increase stats. Pokémon gain stat points when leveling up.">{pokemon.statPointsAvailable || 0}</span>
+                            <span style={{ fontSize: '14px', fontWeight: 'bold', color: (pokemon.statPointsAvailable || 0) > 0 ? 'var(--color-success-text)' : 'var(--text-muted)', background: (pokemon.statPointsAvailable || 0) > 0 ? 'var(--tint-green-bg, rgba(76,175,80,0.1))' : 'var(--tint-purple-bg)', border: `1px solid ${(pokemon.statPointsAvailable || 0) > 0 ? 'var(--stat-hp)' : 'transparent'}`, padding: '2px 8px', borderRadius: '6px' }} title="Spend these to increase stats. Pokémon gain stat points when leveling up.">{pokemon.statPointsAvailable || 0}</span>
                             <button
                                 onClick={() => showHelp('pokemon-stats')}
                                 style={HELP_BTN_STYLE}
@@ -2309,7 +2316,7 @@ const PokemonCard = ({
                                     </div>
                                     {/* P9: ▲ point indicator bumped to 10px with background badge */}
                                     {canAdd && (
-                                        <div style={{ fontSize: '10px', color: 'var(--color-success-text)', fontWeight: 'bold', marginBottom: '3px', background: 'rgba(76,175,80,0.12)', borderRadius: '4px', padding: '1px 4px', display: 'inline-block' }}>▲ point</div>
+                                        <div style={{ fontSize: '11px', color: 'var(--color-success-text)', fontWeight: 'bold', marginBottom: '3px', background: 'rgba(76,175,80,0.12)', borderRadius: '4px', padding: '1px 4px', display: 'inline-block' }}>▲ point</div>
                                     )}
                                     <div className="text-light" style={{ fontSize: '11px', marginBottom: '1px' }} title="Nature-modified base stat. Raw species base ± nature bonus (PH2 p.257).">
                                         Base {natureModifiedBase[stat] || 10}
@@ -2537,7 +2544,7 @@ const PokemonCard = ({
                                         </div>
                                     );
                                     return (
-                                        <div style={{ display: 'flex', gap: '4px', marginBottom: '10px', overflowX: 'auto', flexShrink: 0, paddingBottom: '2px' }}>
+                                        <div role="group" aria-label="Filter moves by source" style={{ display: 'flex', gap: '4px', marginBottom: '10px', overflowX: 'auto', flexShrink: 0, paddingBottom: '2px' }}>
                                             {sources.map(({ key, label, count }) => {
                                                 const active = moveSourceFilter === key;
                                                 return (
@@ -2683,7 +2690,7 @@ const PokemonCard = ({
                                                         padding: '8px 10px',
                                                         display: 'flex',
                                                         justifyContent: 'space-between',
-                                                        alignItems: 'center'
+                                                        alignItems: 'flex-start'
                                                     }}
                                                 >
                                                     <div style={{ flex: 1 }}>
@@ -2706,13 +2713,13 @@ const PokemonCard = ({
                                                             fontWeight: 'bold'
                                                         }}>{data.type}</span>
                                                         <span style={{
-                                                            padding: '2px 6px',
+                                                            padding: '2px 5px',
                                                             background: data.category === 'Physical' ? 'var(--move-cat-physical)' : data.category === 'Special' ? 'var(--move-cat-special)' : 'var(--move-cat-status)',
                                                             color: 'white',
                                                             borderRadius: '8px',
                                                             fontSize: '9px',
                                                             fontWeight: 'bold'
-                                                        }}>{data.category?.charAt(0) || '?'}</span>
+                                                        }}>{data.category || 'Status'}</span>
                                                         <button
                                                             onClick={() => addMoveWithSource(name, data, 'natural')}
                                                             disabled={naturalMoveCount === 0 && (pokemon.moves?.length || 0) >= MAX_TOTAL_MOVES}
@@ -2851,7 +2858,14 @@ const PokemonCard = ({
                                                 }
                                                 const desc = skillData?.description;
                                                 if (!desc) return null;
-                                                return <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>{desc.length > 80 ? desc.slice(0, 80) + '…' : desc}</div>;
+                                                return (
+                                                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>
+                                                        {desc.length > 80 ? desc.slice(0, 80) + '…' : desc}
+                                                        {desc.length > 80 && showDetail && (
+                                                            <span style={{ color: 'var(--color-purple)', marginLeft: '4px', fontSize: '10px' }}>click for full</span>
+                                                        )}
+                                                    </div>
+                                                );
                                             })()}
                                         </div>
                                         {skill.value !== undefined && (
@@ -2895,7 +2909,7 @@ const PokemonCard = ({
                                 return (
                                     <div style={{ flex: '1 1 100px', minWidth: '90px', textAlign: 'center', padding: '10px 6px', borderRadius: '8px', background: styles.bg, border: `1px solid ${styles.border}` }}>
                                         {label && (
-                                            <div style={{ fontSize: '9px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.5px', color: styles.label, marginBottom: '6px' }}>{label}</div>
+                                            <div style={{ fontSize: '10px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.5px', color: styles.label, marginBottom: '6px' }}>{label}</div>
                                         )}
                                         {spriteUrl ? (
                                             <img
@@ -2913,40 +2927,40 @@ const PokemonCard = ({
                                         {types?.length > 0 && (
                                             <div style={{ display: 'flex', justifyContent: 'center', gap: '3px', margin: '4px 0' }}>
                                                 {types.map(t => (
-                                                    <span key={t} style={{ padding: '1px 5px', borderRadius: '8px', fontSize: '9px', fontWeight: 'bold', background: getTypeColor(t), color: getContrastTextColor(getTypeColor(t)) }}>{t}</span>
+                                                    <span key={t} style={{ padding: '1px 5px', borderRadius: '8px', fontSize: '10px', fontWeight: 'bold', background: getTypeColor(t), color: getContrastTextColor(getTypeColor(t)) }}>{t}</span>
                                                 ))}
                                             </div>
                                         )}
                                         {/* Nature badge — same nature applies to all forms since it carries over */}
                                         {pokemon.nature && (
                                             <div style={{ margin: '5px 0 2px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '4px', flexWrap: 'wrap' }}>
-                                                <span style={{ fontSize: '9px', padding: '1px 5px', borderRadius: '8px', background: 'var(--tint-purple-bg)', color: 'var(--color-purple)', fontWeight: 'bold', border: '1px solid var(--tint-purple-border)' }}>
+                                                <span style={{ fontSize: '10px', padding: '1px 5px', borderRadius: '8px', background: 'var(--tint-purple-bg)', color: 'var(--color-purple)', fontWeight: 'bold', border: '1px solid var(--tint-purple-border)' }}>
                                                     {pokemon.nature}
                                                 </span>
                                                 {natureData?.buff && (
-                                                    <span style={{ fontSize: '9px', fontWeight: 'bold', color: 'var(--color-success-text, #4caf50)' }}>
+                                                    <span style={{ fontSize: '10px', fontWeight: 'bold', color: 'var(--color-success-text, #4caf50)' }}>
                                                         +{natureData.buff.toUpperCase()}
                                                     </span>
                                                 )}
                                                 {natureData?.nerf && (
-                                                    <span style={{ fontSize: '9px', fontWeight: 'bold', color: 'var(--color-danger-text, #ef5350)' }}>
+                                                    <span style={{ fontSize: '10px', fontWeight: 'bold', color: 'var(--color-danger-text, #ef5350)' }}>
                                                         −{natureData.nerf.toUpperCase()}
                                                     </span>
                                                 )}
                                                 {!natureData?.buff && !natureData?.nerf && (
-                                                    <span style={{ fontSize: '9px', color: 'var(--text-muted)' }}>neutral</span>
+                                                    <span style={{ fontSize: '10px', color: 'var(--text-muted)' }}>neutral</span>
                                                 )}
                                             </div>
                                         )}
                                         {displayStats && (
                                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '2px', marginTop: '4px' }}>
-                                            <div style={{ gridColumn: '1 / -1', fontSize: '8px', color: 'var(--text-muted)', textAlign: 'center', marginBottom: '2px', opacity: 0.7 }}>nature-modified</div>
+                                            <div style={{ gridColumn: '1 / -1', fontSize: '10px', color: 'var(--text-muted)', textAlign: 'center', marginBottom: '2px', opacity: 0.7 }}>nature-modified</div>
                                                 {STAT_ORDER.map(s => {
                                                     const isBuff = natureData?.buff === s;
                                                     const isNerf = natureData?.nerf === s;
                                                     return (
                                                         <div key={s} style={{ padding: '2px 0' }}>
-                                                            <div style={{ color: `var(--stat-${s})`, fontWeight: 'bold', fontSize: '8px' }}>{s.toUpperCase()}</div>
+                                                            <div style={{ color: `var(--stat-${s})`, fontWeight: 'bold', fontSize: '10px' }}>{s.toUpperCase()}</div>
                                                             <div style={{
                                                                 fontWeight: 'bold', fontSize: '12px',
                                                                 color: isBuff ? 'var(--color-success-text, #4caf50)' : isNerf ? 'var(--color-danger-text, #ef5350)' : 'var(--text-primary)'
@@ -3040,7 +3054,7 @@ const PokemonCard = ({
                                                         return renderSpeciesCard({
                                                             species: canDevolve.species,
                                                             regionalForm: devoRegionalForm,
-                                                            label: 'Reverts to',
+                                                            label: '⬇ Reverts to',
                                                             types: devoTypes, baseStats: devoBaseStats,
                                                             variant: 'devolve'
                                                         });
