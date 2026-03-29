@@ -27,7 +27,10 @@ export const EVOLUTION_CHAINS = {
     'Raichu': { evolvesFrom: { species: 'Pikachu', method: 'stone', requirement: 'Thunder Stone' } },
 
     // Sandshrew line (with Alolan)
-    'Sandshrew': { evolvesTo: [{ species: 'Sandslash', method: 'level', requirement: 22 }] },
+    'Sandshrew': { evolvesTo: [
+        { species: 'Sandslash', method: 'level', requirement: 22 },
+        { species: 'Sandslash', method: 'stone', requirement: 'Ice Stone', regionalForm: 'Alolan', types: ['Ice', 'Steel'] }
+    ]},
     'Sandslash': { evolvesFrom: { species: 'Sandshrew', method: 'level', requirement: 22 } },
 
     // Vulpix line (with Alolan)
@@ -80,8 +83,14 @@ export const EVOLUTION_CHAINS = {
     'Machamp': { evolvesFrom: { species: 'Machoke', method: 'trade', requirement: 'Trade' } },
 
     // Geodude line (with Alolan)
-    'Geodude': { evolvesTo: [{ species: 'Graveler', method: 'level', requirement: 25 }] },
-    'Graveler': { evolvesFrom: { species: 'Geodude', method: 'level', requirement: 25 }, evolvesTo: [{ species: 'Golem', method: 'trade', requirement: 'Trade' }] },
+    'Geodude': { evolvesTo: [
+        { species: 'Graveler', method: 'level', requirement: 25 },
+        { species: 'Graveler', method: 'level', requirement: 25, regionalForm: 'Alolan', types: ['Rock', 'Electric'] }
+    ]},
+    'Graveler': { evolvesFrom: { species: 'Geodude', method: 'level', requirement: 25 }, evolvesTo: [
+        { species: 'Golem', method: 'trade', requirement: 'Trade' },
+        { species: 'Golem', method: 'trade', requirement: 'Trade', regionalForm: 'Alolan', types: ['Rock', 'Electric'] }
+    ]},
     'Golem': { evolvesFrom: { species: 'Graveler', method: 'trade', requirement: 'Trade' } },
 
     // Ponyta line
@@ -102,7 +111,10 @@ export const EVOLUTION_CHAINS = {
     'Magnezone': { evolvesFrom: { species: 'Magneton', method: 'other', requirement: 'Magnetic Field' } },
 
     // Grimer line (with Alolan)
-    'Grimer': { evolvesTo: [{ species: 'Muk', method: 'level', requirement: 38 }] },
+    'Grimer': { evolvesTo: [
+        { species: 'Muk', method: 'level', requirement: 38 },
+        { species: 'Muk', method: 'level', requirement: 38, regionalForm: 'Alolan', types: ['Poison', 'Dark'] }
+    ]},
     'Muk': { evolvesFrom: { species: 'Grimer', method: 'level', requirement: 38 } },
 
     // Shellder line
@@ -409,15 +421,24 @@ export const EVOLUTION_CHAINS = {
     'Goodra': { evolvesFrom: { species: 'Sliggoo', method: 'level', requirement: 50 } },
 
     // Rattata line (with Alolan)
-    'Rattata': { evolvesTo: [{ species: 'Raticate', method: 'level', requirement: 20 }] },
+    'Rattata': { evolvesTo: [
+        { species: 'Raticate', method: 'level', requirement: 20 },
+        { species: 'Raticate', method: 'level', requirement: 20, regionalForm: 'Alolan', types: ['Dark', 'Normal'] }
+    ]},
     'Raticate': { evolvesFrom: { species: 'Rattata', method: 'level', requirement: 20 } },
 
     // Meowth line (with Alolan)
-    'Meowth': { evolvesTo: [{ species: 'Persian', method: 'level', requirement: 28 }] },
+    'Meowth': { evolvesTo: [
+        { species: 'Persian', method: 'level', requirement: 28 },
+        { species: 'Persian', method: 'level', requirement: 28, regionalForm: 'Alolan', types: ['Dark'] }
+    ]},
     'Persian': { evolvesFrom: { species: 'Meowth', method: 'level', requirement: 28 } },
 
     // Diglett line (with Alolan)
-    'Diglett': { evolvesTo: [{ species: 'Dugtrio', method: 'level', requirement: 26 }] },
+    'Diglett': { evolvesTo: [
+        { species: 'Dugtrio', method: 'level', requirement: 26 },
+        { species: 'Dugtrio', method: 'level', requirement: 26, regionalForm: 'Alolan', types: ['Ground', 'Steel'] }
+    ]},
     'Dugtrio': { evolvesFrom: { species: 'Diglett', method: 'level', requirement: 26 } },
 
     // Rockruff line (with form choices)
@@ -429,7 +450,11 @@ export const EVOLUTION_CHAINS = {
     'Lycanroc': { evolvesFrom: { species: 'Rockruff', method: 'level', requirement: 25 } },
 
     // Pumpkaboo line (size form preserved on evolution)
-    'Pumpkaboo': { evolvesTo: [{ species: 'Gourgeist', method: 'level', requirement: 25 }] },
+    'Pumpkaboo': { evolvesTo: [
+        { species: 'Gourgeist', method: 'level', requirement: 25 },
+        { species: 'Gourgeist', method: 'level', requirement: 25, regionalForm: 'Small' },
+        { species: 'Gourgeist', method: 'level', requirement: 25, regionalForm: 'Large' }
+    ]},
     'Gourgeist': { evolvesFrom: { species: 'Pumpkaboo', method: 'level', requirement: 25 } },
 
     // Gen 7 Starters
