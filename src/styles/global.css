@@ -4739,10 +4739,28 @@
         .pokemon-card-tabs {
             background: #f8f9fa;
             transition: background 0.3s ease;
+            position: relative;
+        }
+
+        /* Scroll-right fade hint when tabs overflow */
+        .pokemon-card-tabs::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 28px;
+            background: linear-gradient(to right, transparent, #f8f9fa);
+            pointer-events: none;
+            z-index: 1;
         }
 
         [data-theme="dark"] .pokemon-card-tabs {
             background: var(--bg-section) !important;
+        }
+
+        [data-theme="dark"] .pokemon-card-tabs::after {
+            background: linear-gradient(to right, transparent, var(--bg-section)) !important;
         }
 
         /* Species/Move dropdowns in Pokemon card */
@@ -5073,7 +5091,18 @@
             background: var(--input-bg);
             color: var(--text-primary);
             border: 1px solid var(--border-medium);
-            transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+            transition: background 0.15s ease, color 0.3s ease, border-color 0.3s ease;
+            cursor: default;
+        }
+
+        .ability-option:hover {
+            background: var(--hover-bg);
+            border-color: var(--color-purple);
+        }
+
+        [data-theme="dark"] .ability-option:hover {
+            background: var(--bg-light) !important;
+            border-color: var(--color-purple) !important;
         }
 
         .ability-option.selected {
