@@ -612,7 +612,12 @@ export const PokemonProvider = ({ children }) => {
             canDevolve = {
                 species: devo.species,
                 method: devo.method,
-                requirement: devo.requirement
+                requirement: devo.requirement,
+                // Inherit the current pokemon's regional form if evolvesFrom doesn't specify one.
+                // e.g. Alolan Ninetales → Alolan Vulpix: evolvesFrom has no regionalForm set,
+                // so we carry the pokemon's own form forward.
+                regionalForm: devo.regionalForm || regionalForm || null,
+                types: devo.types || null
             };
         }
 

@@ -3015,10 +3015,17 @@ const PokemonCard = ({
                                                     <div style={{ flexShrink: 0, fontSize: '20px', color: 'var(--color-danger-text, #ef5350)', alignSelf: 'center' }}>→</div>
                                                     {(() => {
                                                         const prevData = pokedex?.find(p => p.species?.toLowerCase() === canDevolve.species?.toLowerCase());
+                                                        const devoRegionalForm = canDevolve.regionalForm || null;
+                                                        const regionalFormData = devoRegionalForm
+                                                            ? prevData?.regionalForms?.find(f => f.name === devoRegionalForm)
+                                                            : null;
+                                                        const devoTypes = canDevolve.types || regionalFormData?.types || prevData?.types;
+                                                        const devoBaseStats = regionalFormData?.baseStats || prevData?.baseStats;
                                                         return renderSpeciesCard({
                                                             species: canDevolve.species,
+                                                            regionalForm: devoRegionalForm,
                                                             label: 'Reverts to',
-                                                            types: prevData?.types, baseStats: prevData?.baseStats,
+                                                            types: devoTypes, baseStats: devoBaseStats,
                                                             variant: 'devolve'
                                                         });
                                                     })()}
