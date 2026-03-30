@@ -182,6 +182,7 @@ const SpeciesDetail = ({ species }) => {
 
     const bst = getBST(species);
     const moveName = (m) => (typeof m === 'string' ? m : m?.name || '');
+    const headerSprite = getPokemonDisplayImage(species);
 
     // Accent color from primary type
     const accentColor = types[0] ? getTypeColor(types[0]) : '#f5a623';
@@ -199,28 +200,26 @@ const SpeciesDetail = ({ species }) => {
         <div style={{ background: 'var(--bg-section)', borderTop: `2px solid ${accentColor}` }}>
 
             {/* Species header — anchors name/type when scrolled */}
-            {(() => {
-                const headerSprite = getPokemonDisplayImage(species);
-                return (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderBottom: '1px solid var(--border-light)', background: 'var(--bg-light)' }}>
-                        <div style={{ width: '88px', height: '88px', flexShrink: 0, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <div style={{ position: 'absolute', inset: 0, borderRadius: '10px', background: 'var(--border-light)', opacity: 0.5 }} />
-                            {headerSprite && (
-                                <img
-                                    src={headerSprite}
-                                    alt={species.species}
-                                    style={{ width: '88px', height: '88px', imageRendering: 'pixelated', objectFit: 'contain', position: 'relative', zIndex: 1 }}
-                                    onError={e => { e.target.style.display = 'none'; }}
-                                />
-                            )}
-                        </div>
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ fontWeight: 700, fontSize: '16px', color: 'var(--text-primary)', marginBottom: '6px' }}>{species.species}</div>
-                            <DualTypeDisplay types={types} />
-                        </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderBottom: '1px solid var(--border-light)', background: 'var(--bg-light)' }}>
+                <div style={{ width: '88px', height: '88px', flexShrink: 0, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <div style={{ position: 'absolute', inset: 0, borderRadius: '10px', background: 'var(--border-light)', opacity: 0.5 }} />
+                    {headerSprite && (
+                        <img
+                            src={headerSprite}
+                            alt={species.species}
+                            style={{ width: '88px', height: '88px', imageRendering: 'pixelated', objectFit: 'contain', position: 'relative', zIndex: 1 }}
+                            onError={e => { e.target.style.display = 'none'; }}
+                        />
+                    )}
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '6px' }}>
+                        <span style={{ fontWeight: 700, fontSize: '16px', color: 'var(--text-primary)' }}>{species.species}</span>
+                        {species.id && <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: 600 }}>#{species.id}</span>}
                     </div>
-                );
-            })()}
+                    <DualTypeDisplay types={types} />
+                </div>
+            </div>
 
             {/* Pokédex Profile Info */}
             {hasProfileInfo && (
@@ -228,11 +227,17 @@ const SpeciesDetail = ({ species }) => {
                 <SectionLabel>Pokédex Info</SectionLabel>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '4px 16px' }}>
 
-                    {/* Size + Weight */}
-                    {(size || weight) && (
+                    {/* Size */}
+                    {size && (
                         <InfoRow icon="📏" label="Size">
-                            {size   && <InfoChip label={size}   color={SIZE_COLORS[size]   || '#9e9e9e'} textColor="white" />}
-                            {weight && <InfoChip label={weight} color={WEIGHT_COLORS[weight] || '#bdbdbd'} textColor="white" />}
+                            <InfoChip label={size} color={SIZE_COLORS[size] || '#9e9e9e'} textColor="white" />
+                        </InfoRow>
+                    )}
+
+                    {/* Weight */}
+                    {weight && (
+                        <InfoRow icon="⚖️" label="Weight">
+                            <InfoChip label={weight} color={WEIGHT_COLORS[weight] || '#bdbdbd'} textColor="white" />
                         </InfoRow>
                     )}
 
@@ -306,9 +311,7 @@ const SpeciesDetail = ({ species }) => {
                                             </div>
                                             <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', alignItems: 'center' }}>
                                                 {form.types?.map(t => <TypeChip key={t} type={t} />)}
-                                                {form.ability && (
-                                                    <span style={{ fontSize: '12px', color: 'var(--text-muted)', marginLeft: '4px' }}>· {form.ability}</span>
-                                                )}
+                                                {form.ability && <Chip label={form.ability} />}
                                                 <span style={{ fontSize: '11px', fontWeight: 700, color: getContrastTextColor(megaAccent), background: megaAccent, padding: '1px 6px', borderRadius: '8px', marginLeft: 'auto' }}>BST {megaBst}</span>
                                             </div>
                                         </div>
@@ -469,23 +472,22 @@ const SpeciesDetail = ({ species }) => {
             {hasEvo && (
                 <DetailSection last={!regionalForms?.length}>
                     <SectionLabel>Evolution</SectionLabel>
-                    <div style={{ fontSize: '13px', lineHeight: '1.7', color: 'var(--text-primary)' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                         {evolvedFrom && (
-                            <div style={{ color: 'var(--text-muted)', marginBottom: '2px' }}>
-                                ← Evolves from{' '}
-                                <strong style={{ color: 'var(--text-primary)' }}>
-                                    {typeof evolvedFrom === 'string' ? evolvedFrom : (evolvedFrom.species || evolvedFrom.name || String(evolvedFrom))}
-                                </strong>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                                <span style={{ fontSize: '13px', color: accentColor, fontWeight: 700 }}>←</span>
+                                <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: 600 }}>from</span>
+                                <Chip label={typeof evolvedFrom === 'string' ? evolvedFrom : (evolvedFrom.species || evolvedFrom.name || String(evolvedFrom))} />
                             </div>
                         )}
                         {evolutions?.length > 0 && evolutions.map((evo, i) => {
                             const intoName = typeof evo.into === 'string' ? evo.into : (evo.into?.species || evo.into?.name) || evo.species || evo.name || '?';
                             return (
-                                <div key={i}>
-                                    {'→ '}
-                                    <strong>{intoName}</strong>
-                                    {evo.level && <span style={{ color: 'var(--text-muted)' }}>{` (Lv. ${evo.level})`}</span>}
-                                    {evo.condition && <span style={{ color: 'var(--text-muted)' }}>{` — ${evo.condition}`}</span>}
+                                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                                    <span style={{ fontSize: '13px', color: accentColor, fontWeight: 700 }}>→</span>
+                                    <Chip label={intoName} />
+                                    {evo.level && <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Lv. {evo.level}</span>}
+                                    {evo.condition && <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>— {evo.condition}</span>}
                                 </div>
                             );
                         })}
@@ -563,10 +565,17 @@ const SpeciesDetail = ({ species }) => {
                                             <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '5px' }}>Level-up Moves</div>
                                             <div style={{ border: '1px solid var(--border-light)', borderRadius: '6px', background: 'var(--poke-white)' }}>
                                                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px' }}>
+                                                    <thead>
+                                                        <tr style={{ background: 'var(--bg-section)' }}>
+                                                            <th style={{ padding: '4px 8px', textAlign: 'right', color: 'var(--text-muted)', fontWeight: 700, borderBottom: '1px solid var(--border-light)', width: '32px' }}>Lv</th>
+                                                            <th style={{ padding: '4px 8px', textAlign: 'left', color: 'var(--text-muted)', fontWeight: 700, borderBottom: '1px solid var(--border-light)' }}>Move</th>
+                                                            <th className="lv-moves-type-col" style={{ padding: '4px 8px', textAlign: 'left', color: 'var(--text-muted)', fontWeight: 700, borderBottom: '1px solid var(--border-light)' }}>Type</th>
+                                                        </tr>
+                                                    </thead>
                                                     <tbody>
                                                         {formMoves.map((move, mi) => (
                                                             <tr key={mi} style={{ borderBottom: mi < formMoves.length - 1 ? '1px solid var(--border-light)' : 'none', background: mi % 2 === 0 ? 'transparent' : 'var(--bg-light)' }}>
-                                                                <td style={{ padding: '4px 8px', color: 'var(--text-muted)', fontWeight: 600, textAlign: 'right', width: '32px' }}>{move.level ?? '—'}</td>
+                                                                <td style={{ padding: '4px 8px', color: 'var(--text-muted)', fontWeight: 600, textAlign: 'right' }}>{move.level ?? '—'}</td>
                                                                 <td style={{ padding: '4px 8px', color: 'var(--text-primary)' }}>{move.name || move.move || String(move)}</td>
                                                                 <td className="lv-moves-type-col" style={{ padding: '4px 8px' }}>{move.type && <TypeChip type={move.type} />}</td>
                                                             </tr>
