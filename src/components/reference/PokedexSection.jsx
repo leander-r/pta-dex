@@ -296,7 +296,7 @@ const SpeciesDetail = ({ species }) => {
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
                                         {megaSprite && (
                                             <img src={megaSprite} alt={`${species.species} ${form.name}`}
-                                                style={{ width: '48px', height: '48px', imageRendering: 'pixelated', objectFit: 'contain', flexShrink: 0 }}
+                                                style={{ width: '88px', height: '88px', imageRendering: 'pixelated', objectFit: 'contain', flexShrink: 0 }}
                                                 onError={e => { e.target.style.display = 'none'; }}
                                             />
                                         )}
@@ -511,7 +511,7 @@ const SpeciesDetail = ({ species }) => {
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
                                         {formSprite && (
                                             <img src={formSprite} alt={`${form.name} ${species.species}`}
-                                                style={{ width: '48px', height: '48px', imageRendering: 'pixelated', objectFit: 'contain', flexShrink: 0 }}
+                                                style={{ width: '88px', height: '88px', imageRendering: 'pixelated', objectFit: 'contain', flexShrink: 0 }}
                                                 onError={e => { e.target.style.display = 'none'; }}
                                             />
                                         )}
