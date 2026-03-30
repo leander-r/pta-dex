@@ -3,7 +3,7 @@
 // ============================================================
 // Read-only browser for all species: search, type filter, accordion
 
-import React, { useState, useMemo, useCallback, memo } from 'react';
+import React, { useState, useMemo, useCallback, memo, useRef } from 'react';
 import { useGameData } from '../../contexts/index.js';
 import { getTypeColor, getContrastTextColor } from '../../utils/typeUtils.js';
 import { getPokemonDisplayImage, getMegaSprite, getPokemonSprite } from '../../utils/pokemonSprite.js';
@@ -198,6 +198,12 @@ const SpeciesDetail = ({ species }) => {
     return (
         <div style={{ background: 'var(--bg-section)', borderTop: `2px solid ${accentColor}` }}>
 
+            {/* Species header — anchors name/type when scrolled */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 16px', borderBottom: '1px solid var(--border-light)', background: 'var(--bg-light)' }}>
+                <span style={{ fontWeight: 700, fontSize: '15px', color: 'var(--text-primary)', flex: 1, minWidth: 0 }}>{species.species}</span>
+                <DualTypeDisplay types={types} />
+            </div>
+
             {/* Pokédex Profile Info */}
             {hasProfileInfo && (
             <DetailSection>
@@ -248,7 +254,7 @@ const SpeciesDetail = ({ species }) => {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                     <SectionLabel>Base Stats</SectionLabel>
                     <span style={{
-                        fontSize: '11px', fontWeight: 700, color: accentTextColor,
+                        fontSize: '12px', fontWeight: 700, color: accentTextColor,
                         background: accentColor, padding: '2px 8px', borderRadius: '8px'
                     }}>BST {bst}</span>
                 </div>
@@ -291,14 +297,14 @@ const SpeciesDetail = ({ species }) => {
                                     </div>
                                     {/* Stat boosts */}
                                     {form.statBoosts && (
-                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '4px', marginTop: '4px' }}>
+                                        <div className="mega-stat-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '4px', marginTop: '4px' }}>
                                             {STAT_KEYS.map((k, ki) => {
                                                 const base = baseStats[k] || 0;
                                                 const boost = form.statBoosts[k] || 0;
                                                 const total = base + boost;
                                                 return (
                                                     <div key={k} style={{ textAlign: 'center' }}>
-                                                        <div style={{ fontSize: '10px', fontWeight: 700, color: STAT_COLORS[k] }}>{STAT_LABELS[ki]}</div>
+                                                        <div style={{ fontSize: '11px', fontWeight: 700, color: STAT_COLORS[k] }}>{STAT_LABELS[ki]}</div>
                                                         <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-primary)' }}>{total}</div>
                                                         {boost !== 0 && (
                                                             <div style={{ fontSize: '11px', fontWeight: 700, color: boost > 0 ? 'var(--color-success-text, #4caf50)' : 'var(--color-danger-text, #ef5350)' }}>
@@ -321,23 +327,29 @@ const SpeciesDetail = ({ species }) => {
             {hasAbilities && (
                 <DetailSection>
                     <SectionLabel>Abilities</SectionLabel>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '13px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                         {abilities.basic?.length > 0 && (
-                            <div>
-                                <span style={{ color: 'var(--text-muted)', fontWeight: 600, fontSize: '12px' }}>Basic </span>
-                                {abilities.basic.join(', ')}
+                            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '6px', flexWrap: 'wrap' }}>
+                                <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '3px', minWidth: '52px', flexShrink: 0 }}>Basic</span>
+                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                                    {abilities.basic.map(a => <Chip key={a} label={a} />)}
+                                </div>
                             </div>
                         )}
                         {abilities.adv?.length > 0 && (
-                            <div>
-                                <span style={{ color: 'var(--text-muted)', fontWeight: 600, fontSize: '12px' }}>Advanced </span>
-                                {abilities.adv.join(', ')}
+                            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '6px', flexWrap: 'wrap' }}>
+                                <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '3px', minWidth: '52px', flexShrink: 0 }}>Adv</span>
+                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                                    {abilities.adv.map(a => <Chip key={a} label={a} />)}
+                                </div>
                             </div>
                         )}
                         {abilities.high?.length > 0 && (
-                            <div>
-                                <span style={{ color: 'var(--text-muted)', fontWeight: 600, fontSize: '12px' }}>Hidden </span>
-                                {abilities.high.join(', ')}
+                            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '6px', flexWrap: 'wrap' }}>
+                                <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '3px', minWidth: '52px', flexShrink: 0 }}>Hidden</span>
+                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                                    {abilities.high.map(a => <Chip key={a} accent label={a} />)}
+                                </div>
                             </div>
                         )}
                     </div>
@@ -379,7 +391,6 @@ const SpeciesDetail = ({ species }) => {
                 <DetailSection>
                     <SectionLabel>Level-up Moves</SectionLabel>
                     <div style={{
-                        maxHeight: '200px', overflowY: 'auto',
                         border: '1px solid var(--border-light)', borderRadius: '6px',
                         background: 'var(--poke-white)'
                     }}>
@@ -449,14 +460,17 @@ const SpeciesDetail = ({ species }) => {
                                 </strong>
                             </div>
                         )}
-                        {evolutions?.length > 0 && evolutions.map((evo, i) => (
-                            <div key={i}>
-                                {'→ '}
-                                <strong>{evo.into || evo.species || evo.name || String(evo)}</strong>
-                                {evo.level && <span style={{ color: 'var(--text-muted)' }}>{` (Lv. ${evo.level})`}</span>}
-                                {evo.condition && <span style={{ color: 'var(--text-muted)' }}>{` — ${evo.condition}`}</span>}
-                            </div>
-                        ))}
+                        {evolutions?.length > 0 && evolutions.map((evo, i) => {
+                            const intoName = typeof evo.into === 'string' ? evo.into : (evo.into?.species || evo.into?.name) || evo.species || evo.name || '?';
+                            return (
+                                <div key={i}>
+                                    {'→ '}
+                                    <strong>{intoName}</strong>
+                                    {evo.level && <span style={{ color: 'var(--text-muted)' }}>{` (Lv. ${evo.level})`}</span>}
+                                    {evo.condition && <span style={{ color: 'var(--text-muted)' }}>{` — ${evo.condition}`}</span>}
+                                </div>
+                            );
+                        })}
                     </div>
                 </DetailSection>
             )}
@@ -497,27 +511,46 @@ const SpeciesDetail = ({ species }) => {
                                     ))}
                                     {/* Abilities */}
                                     {hasFormAbilities && (
-                                        <div style={{ marginTop: '8px', fontSize: '12px' }}>
-                                            <span style={{ color: 'var(--text-muted)', fontWeight: 700, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.6px' }}>Abilities </span>
-                                            {[
-                                                form.abilities?.basic?.length > 0 && <span key="b"><span style={{ color: 'var(--text-muted)', fontSize: '11px' }}>Basic </span>{form.abilities.basic.join(', ')}</span>,
-                                                form.abilities?.adv?.length > 0   && <span key="a"><span style={{ color: 'var(--text-muted)', fontSize: '11px' }}> Adv </span>{form.abilities.adv.join(', ')}</span>,
-                                                form.abilities?.high?.length > 0  && <span key="h"><span style={{ color: 'var(--text-muted)', fontSize: '11px' }}> Hidden </span>{form.abilities.high.join(', ')}</span>,
-                                            ].filter(Boolean)}
+                                        <div style={{ marginTop: '10px', display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                                            <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '2px' }}>Abilities</div>
+                                            {form.abilities?.basic?.length > 0 && (
+                                                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '6px', flexWrap: 'wrap' }}>
+                                                    <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '3px', minWidth: '52px', flexShrink: 0 }}>Basic</span>
+                                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                                                        {form.abilities.basic.map(a => <Chip key={a} label={a} />)}
+                                                    </div>
+                                                </div>
+                                            )}
+                                            {form.abilities?.adv?.length > 0 && (
+                                                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '6px', flexWrap: 'wrap' }}>
+                                                    <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '3px', minWidth: '52px', flexShrink: 0 }}>Adv</span>
+                                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                                                        {form.abilities.adv.map(a => <Chip key={a} label={a} />)}
+                                                    </div>
+                                                </div>
+                                            )}
+                                            {form.abilities?.high?.length > 0 && (
+                                                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '6px', flexWrap: 'wrap' }}>
+                                                    <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '3px', minWidth: '52px', flexShrink: 0 }}>Hidden</span>
+                                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                                                        {form.abilities.high.map(a => <Chip key={a} accent label={a} />)}
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
                                     )}
                                     {/* Level-up moves */}
                                     {formMoves.length > 0 && (
                                         <div style={{ marginTop: '8px' }}>
                                             <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '5px' }}>Level-up Moves</div>
-                                            <div style={{ maxHeight: '150px', overflowY: 'auto', border: '1px solid var(--border-light)', borderRadius: '6px', background: 'var(--poke-white)' }}>
+                                            <div style={{ border: '1px solid var(--border-light)', borderRadius: '6px', background: 'var(--poke-white)' }}>
                                                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px' }}>
                                                     <tbody>
                                                         {formMoves.map((move, mi) => (
                                                             <tr key={mi} style={{ borderBottom: mi < formMoves.length - 1 ? '1px solid var(--border-light)' : 'none', background: mi % 2 === 0 ? 'transparent' : 'var(--bg-light)' }}>
                                                                 <td style={{ padding: '4px 8px', color: 'var(--text-muted)', fontWeight: 600, textAlign: 'right', width: '32px' }}>{move.level ?? '—'}</td>
                                                                 <td style={{ padding: '4px 8px', color: 'var(--text-primary)' }}>{move.name || move.move || String(move)}</td>
-                                                                <td style={{ padding: '4px 8px' }}>{move.type && <TypeChip type={move.type} />}</td>
+                                                                <td className="lv-moves-type-col" style={{ padding: '4px 8px' }}>{move.type && <TypeChip type={move.type} />}</td>
                                                             </tr>
                                                         ))}
                                                     </tbody>
@@ -580,6 +613,8 @@ const PokedexRow = memo(({ species, idx, isExpanded, isHovered, onRowClick, onMo
                 onClick={onRowClick}
                 onMouseEnter={onMouseEnter}
                 onMouseLeave={onMouseLeave}
+                aria-label={`${species.species} — click to ${isExpanded ? 'collapse' : 'expand'}`}
+                aria-expanded={isExpanded}
                 style={{
                     width: '100%', display: 'flex', alignItems: 'center', gap: '10px',
                     padding: '7px 12px', border: 'none', cursor: 'pointer',
@@ -588,12 +623,13 @@ const PokedexRow = memo(({ species, idx, isExpanded, isHovered, onRowClick, onMo
                     background: isExpanded ? 'var(--bg-section)' : isHovered ? 'var(--hover-bg)' : 'transparent'
                 }}
             >
-                <div style={{ width: '40px', height: '40px', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ width: '40px', height: '40px', flexShrink: 0, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <div style={{ position: 'absolute', inset: 0, borderRadius: '8px', background: 'var(--border-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', color: 'var(--text-muted)', opacity: 0.4 }}>◌</div>
                     {spriteUrl && (
                         <img
                             src={spriteUrl}
                             alt={species.species}
-                            style={{ width: '40px', height: '40px', imageRendering: 'pixelated' }}
+                            style={{ width: '40px', height: '40px', imageRendering: 'pixelated', objectFit: 'contain', position: 'relative', zIndex: 1 }}
                             onError={e => { e.target.style.display = 'none'; }}
                         />
                     )}
@@ -647,6 +683,7 @@ const PokedexSection = () => {
     const [expandedId,   setExpandedId]   = useState(null);
     const [hoveredId,    setHoveredId]    = useState(null);
     const [page,         setPage]         = useState(0);
+    const listRef = useRef(null);
 
     const PAGE_SIZE = 50;
 
@@ -724,7 +761,7 @@ const PokedexSection = () => {
     return (
         <div>
             {/* ── Filter row ── */}
-            <div style={{ display: 'flex', gap: '6px', marginBottom: '6px', flexWrap: 'wrap' }}>
+            <div className="pokedex-filter-row" style={{ display: 'flex', gap: '6px', marginBottom: '6px', flexWrap: 'wrap' }}>
                 {/* Name search */}
                 <div style={{ flex: '2 1 160px', position: 'relative', minWidth: '140px' }}>
                     <input
@@ -745,7 +782,17 @@ const PokedexSection = () => {
 
                 {/* Type 1 */}
                 <div style={{ flex: '1 1 110px', minWidth: '100px' }}>
-                    <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)} style={inputStyle}>
+                    <select
+                        value={typeFilter}
+                        onChange={e => setTypeFilter(e.target.value)}
+                        style={{
+                            ...inputStyle,
+                            background: typeFilter ? getTypeColor(typeFilter) : 'var(--input-bg)',
+                            color: typeFilter ? getContrastTextColor(getTypeColor(typeFilter)) : 'var(--text-primary)',
+                            fontWeight: typeFilter ? 700 : undefined,
+                            border: typeFilter ? `1px solid ${getTypeColor(typeFilter)}` : '1px solid var(--input-border)',
+                        }}
+                    >
                         <option value="">All Types</option>
                         {POKEMON_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
                     </select>
@@ -753,8 +800,18 @@ const PokedexSection = () => {
 
                 {/* Type 2 */}
                 <div style={{ flex: '1 1 110px', minWidth: '100px' }}>
-                    <select value={type2Filter} onChange={e => setType2Filter(e.target.value)} style={{ ...inputStyle, opacity: type2Filter ? 1 : 0.7 }}>
-                        <option value="">+ 2nd Type</option>
+                    <select
+                        value={type2Filter}
+                        onChange={e => setType2Filter(e.target.value)}
+                        style={{
+                            ...inputStyle,
+                            background: type2Filter ? getTypeColor(type2Filter) : 'var(--input-bg)',
+                            color: type2Filter ? getContrastTextColor(getTypeColor(type2Filter)) : 'var(--text-primary)',
+                            fontWeight: type2Filter ? 700 : undefined,
+                            border: type2Filter ? `1px solid ${getTypeColor(type2Filter)}` : '1px solid var(--input-border)',
+                        }}
+                    >
+                        <option value="">2nd Type</option>
                         {POKEMON_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
                     </select>
                 </div>
@@ -782,6 +839,7 @@ const PokedexSection = () => {
                     <button
                         onClick={resetAll}
                         title="Reset all filters and sort"
+                        className="pokedex-filter-reset"
                         style={{ padding: '7px 12px', borderRadius: '8px', border: '1px solid var(--border-medium)', background: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '12px', whiteSpace: 'nowrap', flexShrink: 0 }}
                     >
                         ↺ Reset
@@ -810,9 +868,9 @@ const PokedexSection = () => {
                         >
                             {opt.label}
                             {isActive && (
-                                <span style={{ fontSize: '10px', lineHeight: 1 }}>
-                                    {sortDir === 'asc' ? '▲' : '▼'}
-                                </span>
+                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" style={{ flexShrink: 0, transition: 'transform 0.15s', transform: sortDir === 'asc' ? 'rotate(-90deg)' : 'rotate(90deg)' }}>
+                                    <polyline points="9 18 15 12 9 6" />
+                                </svg>
                             )}
                         </button>
                     );
@@ -832,9 +890,12 @@ const PokedexSection = () => {
                 <button
                     onClick={() => setSortDir(d => d === 'asc' ? 'desc' : 'asc')}
                     title="Toggle sort direction"
-                    style={{ padding: '6px 10px', borderRadius: '8px', border: '1.5px solid var(--poke-orange)', background: 'rgba(245,166,35,0.12)', color: 'var(--poke-orange-dark)', fontWeight: 700, fontSize: '12px', cursor: 'pointer', flexShrink: 0 }}
+                    style={{ padding: '6px 10px', borderRadius: '8px', border: '1.5px solid var(--poke-orange)', background: 'rgba(245,166,35,0.12)', color: 'var(--poke-orange-dark)', fontWeight: 700, fontSize: '12px', cursor: 'pointer', flexShrink: 0, display: 'flex', alignItems: 'center', gap: '4px' }}
                 >
-                    {sortDir === 'asc' ? '▲ Asc' : '▼ Desc'}
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" style={{ transition: 'transform 0.15s', transform: sortDir === 'asc' ? 'rotate(-90deg)' : 'rotate(90deg)' }}>
+                        <polyline points="9 18 15 12 9 6" />
+                    </svg>
+                    {sortDir === 'asc' ? 'Asc' : 'Desc'}
                 </button>
             </div>
 
@@ -858,7 +919,7 @@ const PokedexSection = () => {
             </div>
 
             {/* ── Species List ── */}
-            <div style={{ border: '1px solid var(--border-light)', borderRadius: '10px', overflow: 'hidden', background: 'var(--poke-white)' }}>
+            <div ref={listRef} style={{ border: '1px solid var(--border-light)', borderRadius: '10px', overflow: 'hidden', background: 'var(--poke-white)' }}>
                 {filtered.length === 0 ? (
                     <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '14px' }}>
                         No species found.{' '}
@@ -891,12 +952,12 @@ const PokedexSection = () => {
                 return (
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', marginTop: '10px', flexWrap: 'wrap' }}>
                         <button
-                            onClick={() => { setPage(0); setExpandedId(null); }}
+                            onClick={() => { setPage(0); setExpandedId(null); listRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }}
                             disabled={page === 0}
                             style={{ padding: '7px 12px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--bg-secondary)', cursor: page === 0 ? 'not-allowed' : 'pointer', opacity: page === 0 ? 0.4 : 1, fontSize: '12px' }}
                         >«</button>
                         <button
-                            onClick={() => { setPage(p => p - 1); setExpandedId(null); }}
+                            onClick={() => { setPage(p => p - 1); setExpandedId(null); listRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }}
                             disabled={page === 0}
                             style={{ padding: '7px 12px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--bg-secondary)', cursor: page === 0 ? 'not-allowed' : 'pointer', opacity: page === 0 ? 0.4 : 1, fontSize: '12px' }}
                         >‹ Prev</button>
@@ -904,12 +965,12 @@ const PokedexSection = () => {
                             Page {page + 1} of {totalPages}
                         </span>
                         <button
-                            onClick={() => { setPage(p => p + 1); setExpandedId(null); }}
+                            onClick={() => { setPage(p => p + 1); setExpandedId(null); listRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }}
                             disabled={page >= totalPages - 1}
                             style={{ padding: '7px 12px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--bg-secondary)', cursor: page >= totalPages - 1 ? 'not-allowed' : 'pointer', opacity: page >= totalPages - 1 ? 0.4 : 1, fontSize: '12px' }}
                         >Next ›</button>
                         <button
-                            onClick={() => { setPage(totalPages - 1); setExpandedId(null); }}
+                            onClick={() => { setPage(totalPages - 1); setExpandedId(null); listRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }}
                             disabled={page >= totalPages - 1}
                             style={{ padding: '7px 12px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--bg-secondary)', cursor: page >= totalPages - 1 ? 'not-allowed' : 'pointer', opacity: page >= totalPages - 1 ? 0.4 : 1, fontSize: '12px' }}
                         >»</button>

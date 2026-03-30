@@ -3995,6 +3995,18 @@
                 min-width: 36px !important;
                 height: 36px !important;
             }
+
+            /* Pokédex filter row: 2×2 grid on small screens */
+            .pokedex-filter-row {
+                display: grid !important;
+                grid-template-columns: 1fr 1fr;
+            }
+            .pokedex-filter-row > div:first-child {
+                grid-column: 1 / -1;
+            }
+            .pokedex-filter-reset {
+                align-self: center;
+            }
         }
 
         /* Very small phones (≤360px — Galaxy A series, older iPhones) */
@@ -4048,6 +4060,11 @@
             /* TypeChart type selector — narrower min so chips don't clip */
             .type-chart-grid {
                 grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)) !important;
+            }
+
+            /* Mega stat boost grid: 3 cols × 2 rows at ≤360px */
+            .mega-stat-grid {
+                grid-template-columns: repeat(3, 1fr) !important;
             }
         }
 
