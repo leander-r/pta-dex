@@ -187,7 +187,8 @@ const NaturesSection = () => {
                 Showing {filteredNatures.length} of {totalNatures} natures
             </div>
 
-            <div style={{ overflowX: 'auto' }}>
+            <div style={{ position: 'relative' }}>
+            <div style={{ overflowX: 'auto' }} className="natures-table-scroll">
                 {filteredNatures.length === 0 ? (
                     <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
                         No natures found matching your filters.
@@ -213,17 +214,23 @@ const NaturesSection = () => {
                                     <td style={{ padding: '8px', textAlign: 'center', color: data.nerf ? 'var(--danger-btn-start)' : 'var(--text-muted)', fontWeight: 'bold' }}>
                                         {data.nerf ? data.nerf.toUpperCase() : '—'}
                                     </td>
-                                    <td style={{ padding: '8px', textAlign: 'center', color: 'var(--text-secondary)' }}>
-                                        {data.likedFlavor || 'None'}
+                                    <td style={{ padding: '8px', textAlign: 'center', color: data.likedFlavor ? 'var(--text-secondary)' : 'var(--text-muted)' }}>
+                                        {data.likedFlavor || '—'}
                                     </td>
-                                    <td style={{ padding: '8px', textAlign: 'center', color: 'var(--text-secondary)' }}>
-                                        {data.dislikedFlavor || 'None'}
+                                    <td style={{ padding: '8px', textAlign: 'center', color: data.dislikedFlavor ? 'var(--text-secondary)' : 'var(--text-muted)' }}>
+                                        {data.dislikedFlavor || '—'}
                                     </td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
                 )}
+            </div>
+            <div className="natures-table-fade" style={{
+                position: 'absolute', top: 0, right: 0, bottom: 0, width: '32px',
+                background: 'linear-gradient(to right, transparent, var(--poke-cream))',
+                pointerEvents: 'none'
+            }} />
             </div>
         </div>
     );

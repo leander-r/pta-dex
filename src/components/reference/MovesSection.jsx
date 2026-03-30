@@ -209,6 +209,7 @@ const MovesSection = () => {
                             onMouseLeave={() => setHoveredMove(null)}
                         >
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '8px' }}>
+
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                                     <strong style={{ fontSize: '14px', color: 'var(--text-primary)' }}>{move}</strong>
                                     <span style={{
@@ -231,13 +232,14 @@ const MovesSection = () => {
                                         {data.category}
                                     </span>
                                 </div>
-                                <div style={{ display: 'flex', gap: '12px', fontSize: '12px', color: 'var(--text-secondary)' }}>
+                                <div style={{ display: 'flex', gap: '12px', fontSize: '12px', color: 'var(--text-secondary)', alignItems: 'center' }}>
                                     {data.damage && (
                                         <span style={{ fontWeight: 'bold', color: 'var(--moves-damage-text)' }}>
                                             {data.damage}
                                         </span>
                                     )}
                                     <span style={{ color: 'var(--moves-frequency-text)' }}>{data.frequency}</span>
+                                    {showDetail && <span style={{ color: 'var(--text-muted)', fontSize: '16px', lineHeight: 1 }}>›</span>}
                                 </div>
                             </div>
                             {data.range && (

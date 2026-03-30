@@ -129,8 +129,11 @@ const AbilitiesSection = () => {
                             onMouseEnter={() => showDetail && setHoveredAbility(name)}
                             onMouseLeave={() => setHoveredAbility(null)}
                         >
-                            <div style={{ fontWeight: 'bold', fontSize: '14px', marginBottom: '4px', color: 'var(--abilities-name-text)' }}>
-                                {name}
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px' }}>
+                                <div style={{ fontWeight: 'bold', fontSize: '14px', marginBottom: '4px', color: 'var(--abilities-name-text)' }}>
+                                    {name}
+                                </div>
+                                {showDetail && <span style={{ color: 'var(--text-muted)', fontSize: '16px', lineHeight: 1, flexShrink: 0 }}>›</span>}
                             </div>
                             <div style={{ fontSize: '13px', color: 'var(--abilities-desc-text)', lineHeight: '1.4' }}>
                                 {desc}

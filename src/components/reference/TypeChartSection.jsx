@@ -170,6 +170,11 @@ const TypeChartSection = () => {
                                 + pick a 2nd type for dual-type lookup
                             </span>
                         )}
+                        {selectedTypes.length === 2 && (
+                            <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontStyle: 'italic' }}>
+                                selecting a 3rd type replaces the first
+                            </span>
+                        )}
                         <button
                             onClick={() => setSelectedTypes([])}
                             style={{
@@ -207,7 +212,7 @@ const TypeChartSection = () => {
                             </span>
                         </span>
                     </h3>
-                    <p style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '12px' }}>
+                    <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '12px' }}>
                         How attacking types affect {selectedTypes.length === 2
                             ? `a ${selectedTypes[0]}/${selectedTypes[1]} Pokémon`
                             : `a ${selectedTypes[0]}-type Pokémon`

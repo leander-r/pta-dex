@@ -1413,6 +1413,9 @@
             animation: type-shimmer 5s ease infinite;
         }
 
+        /* Natures table scroll hint — hidden on desktop, shown via mobile media query */
+        .natures-table-fade { display: none; }
+
         /* Compact type pills used in the collapsed Pokémon card */
         .type-pill-single {
             display: inline-flex;
@@ -3686,6 +3689,12 @@
             /* Swap 9-button sort row for a compact select+direction button */
             .pokedex-sort-full { display: none !important; }
             .pokedex-sort-mobile { display: flex !important; }
+
+            /* Hide Type column in level-up moves table to save horizontal space */
+            .lv-moves-type-col { display: none !important; }
+
+            /* Natures table scroll hint — only needed on mobile */
+            .natures-table-fade { display: block; }
 
             /* ===== MOBILE TABLES ===== */
             table {

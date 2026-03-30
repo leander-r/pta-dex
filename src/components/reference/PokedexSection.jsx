@@ -388,7 +388,7 @@ const SpeciesDetail = ({ species }) => {
                                 <tr style={{ background: 'var(--bg-section)' }}>
                                     <th style={{ padding: '5px 8px', textAlign: 'right', color: 'var(--text-muted)', fontWeight: 700, borderBottom: '1px solid var(--border-light)', width: '36px' }}>Lv</th>
                                     <th style={{ padding: '5px 8px', textAlign: 'left', color: 'var(--text-muted)', fontWeight: 700, borderBottom: '1px solid var(--border-light)' }}>Move</th>
-                                    <th style={{ padding: '5px 8px', textAlign: 'left', color: 'var(--text-muted)', fontWeight: 700, borderBottom: '1px solid var(--border-light)' }}>Type</th>
+                                    <th className="lv-moves-type-col" style={{ padding: '5px 8px', textAlign: 'left', color: 'var(--text-muted)', fontWeight: 700, borderBottom: '1px solid var(--border-light)' }}>Type</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -403,7 +403,7 @@ const SpeciesDetail = ({ species }) => {
                                         <td style={{ padding: '5px 8px', color: 'var(--text-primary)', fontWeight: 500 }}>
                                             {move.name || moveName(move)}
                                         </td>
-                                        <td style={{ padding: '5px 8px' }}>
+                                        <td className="lv-moves-type-col" style={{ padding: '5px 8px' }}>
                                             {move.type && <TypeChip type={move.type} />}
                                         </td>
                                     </tr>
@@ -487,7 +487,7 @@ const SpeciesDetail = ({ species }) => {
                                             <div style={{ fontWeight: 700, fontSize: '13px', marginBottom: '4px' }}>{form.name} {species.species}</div>
                                             <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', alignItems: 'center' }}>
                                                 {form.types?.map(t => <TypeChip key={t} type={t} />)}
-                                                <span style={{ fontSize: '10px', fontWeight: 700, color: getContrastTextColor(formAccent), background: formAccent, padding: '1px 6px', borderRadius: '8px', marginLeft: 'auto' }}>BST {formBst}</span>
+                                                <span style={{ fontSize: '11px', fontWeight: 700, color: getContrastTextColor(formAccent), background: formAccent, padding: '1px 6px', borderRadius: '8px', marginLeft: 'auto' }}>BST {formBst}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -498,18 +498,18 @@ const SpeciesDetail = ({ species }) => {
                                     {/* Abilities */}
                                     {hasFormAbilities && (
                                         <div style={{ marginTop: '8px', fontSize: '12px' }}>
-                                            <span style={{ color: 'var(--text-muted)', fontWeight: 700, fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.6px' }}>Abilities </span>
+                                            <span style={{ color: 'var(--text-muted)', fontWeight: 700, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.6px' }}>Abilities </span>
                                             {[
-                                                form.abilities?.basic?.length > 0 && <span key="b"><span style={{ color: 'var(--text-muted)', fontSize: '10px' }}>Basic </span>{form.abilities.basic.join(', ')}</span>,
-                                                form.abilities?.adv?.length > 0   && <span key="a"><span style={{ color: 'var(--text-muted)', fontSize: '10px' }}> Adv </span>{form.abilities.adv.join(', ')}</span>,
-                                                form.abilities?.high?.length > 0  && <span key="h"><span style={{ color: 'var(--text-muted)', fontSize: '10px' }}> Hidden </span>{form.abilities.high.join(', ')}</span>,
+                                                form.abilities?.basic?.length > 0 && <span key="b"><span style={{ color: 'var(--text-muted)', fontSize: '11px' }}>Basic </span>{form.abilities.basic.join(', ')}</span>,
+                                                form.abilities?.adv?.length > 0   && <span key="a"><span style={{ color: 'var(--text-muted)', fontSize: '11px' }}> Adv </span>{form.abilities.adv.join(', ')}</span>,
+                                                form.abilities?.high?.length > 0  && <span key="h"><span style={{ color: 'var(--text-muted)', fontSize: '11px' }}> Hidden </span>{form.abilities.high.join(', ')}</span>,
                                             ].filter(Boolean)}
                                         </div>
                                     )}
                                     {/* Level-up moves */}
                                     {formMoves.length > 0 && (
                                         <div style={{ marginTop: '8px' }}>
-                                            <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '5px' }}>Level-up Moves</div>
+                                            <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '5px' }}>Level-up Moves</div>
                                             <div style={{ maxHeight: '150px', overflowY: 'auto', border: '1px solid var(--border-light)', borderRadius: '6px', background: 'var(--poke-white)' }}>
                                                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px' }}>
                                                     <tbody>
@@ -530,7 +530,7 @@ const SpeciesDetail = ({ species }) => {
                                         <div style={{ marginTop: '8px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
                                             {hasFormEgg && (
                                                 <div>
-                                                    <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '4px' }}>Egg Moves</div>
+                                                    <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '4px' }}>Egg Moves</div>
                                                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
                                                         {form.eggMoves.map((m, mi) => <Chip key={mi} label={typeof m === 'string' ? m : m?.name || String(m)} />)}
                                                     </div>
@@ -538,7 +538,7 @@ const SpeciesDetail = ({ species }) => {
                                             )}
                                             {hasFormTutor && (
                                                 <div>
-                                                    <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '4px' }}>Tutor Moves</div>
+                                                    <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '4px' }}>Tutor Moves</div>
                                                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
                                                         {form.tutorMoves.map((m, mi) => <Chip key={mi} label={typeof m === 'string' ? m : m?.name || String(m)} />)}
                                                     </div>
