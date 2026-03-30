@@ -199,10 +199,28 @@ const SpeciesDetail = ({ species }) => {
         <div style={{ background: 'var(--bg-section)', borderTop: `2px solid ${accentColor}` }}>
 
             {/* Species header — anchors name/type when scrolled */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 16px', borderBottom: '1px solid var(--border-light)', background: 'var(--bg-light)' }}>
-                <span style={{ fontWeight: 700, fontSize: '15px', color: 'var(--text-primary)', flex: 1, minWidth: 0 }}>{species.species}</span>
-                <DualTypeDisplay types={types} />
-            </div>
+            {(() => {
+                const headerSprite = getPokemonDisplayImage(species);
+                return (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderBottom: '1px solid var(--border-light)', background: 'var(--bg-light)' }}>
+                        <div style={{ width: '88px', height: '88px', flexShrink: 0, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <div style={{ position: 'absolute', inset: 0, borderRadius: '10px', background: 'var(--border-light)', opacity: 0.5 }} />
+                            {headerSprite && (
+                                <img
+                                    src={headerSprite}
+                                    alt={species.species}
+                                    style={{ width: '88px', height: '88px', imageRendering: 'pixelated', objectFit: 'contain', position: 'relative', zIndex: 1 }}
+                                    onError={e => { e.target.style.display = 'none'; }}
+                                />
+                            )}
+                        </div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontWeight: 700, fontSize: '16px', color: 'var(--text-primary)', marginBottom: '6px' }}>{species.species}</div>
+                            <DualTypeDisplay types={types} />
+                        </div>
+                    </div>
+                );
+            })()}
 
             {/* Pokédex Profile Info */}
             {hasProfileInfo && (
