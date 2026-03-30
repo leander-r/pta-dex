@@ -5,15 +5,12 @@
 
 import React, { useState, useMemo } from 'react';
 import { TYPE_CHART, POKEMON_TYPES, getCombinedTypeEffectiveness } from '../../data/typeChart.js';
-import { getTypeColor } from '../../utils/typeUtils.js';
-
-// Helper: determine if a type color is too light for white text
-const needsDarkText = (type) => ['Electric', 'Ice', 'Ground', 'Steel', 'Normal'].includes(type);
+import { getTypeColor, getContrastTextColor } from '../../utils/typeUtils.js';
 
 // Type badge pill used throughout the component
 const TypeBadge = ({ type, size = 'md', onClick, style = {} }) => {
     const sizes = {
-        sm: { padding: '2px 8px', fontSize: '10px', borderRadius: '10px' },
+        sm: { padding: '2px 8px', fontSize: '12px', borderRadius: '10px' },
         md: { padding: '4px 12px', fontSize: '12px', borderRadius: '12px' },
         lg: { padding: '6px 14px', fontSize: '13px', borderRadius: '14px' }
     };
@@ -23,7 +20,7 @@ const TypeBadge = ({ type, size = 'md', onClick, style = {} }) => {
             style={{
                 ...sizes[size],
                 background: getTypeColor(type),
-                color: needsDarkText(type) ? '#333' : 'white',
+                color: getContrastTextColor(getTypeColor(type)),
                 fontWeight: 'bold',
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -128,7 +125,7 @@ const TypeChartSection = () => {
                                         ? '3px solid var(--text-primary)'
                                         : '2px solid transparent',
                                     background: getTypeColor(type),
-                                    color: needsDarkText(type) ? '#333' : 'white',
+                                    color: getContrastTextColor(getTypeColor(type)),
                                     cursor: 'pointer',
                                     fontSize: '12px',
                                     fontWeight: 'bold',
@@ -258,9 +255,9 @@ const TypeChartSection = () => {
                             >
                                 <span>➖</span>
                                 <span>Neutral (1x) — {matchup.neutral.length} types</span>
-                                <span style={{ marginLeft: 'auto', fontSize: '10px' }}>
-                                    {showNeutral ? '▲ Hide' : '▼ Show'}
-                                </span>
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ marginLeft: 'auto', flexShrink: 0, transition: 'transform 0.2s', transform: showNeutral ? 'rotate(-90deg)' : 'rotate(90deg)' }}>
+                                    <polyline points="9 18 15 12 9 6" />
+                                </svg>
                             </button>
                             {showNeutral && (
                                 <div style={{
@@ -316,7 +313,7 @@ const TypeChartSection = () => {
                         padding: '8px 12px',
                         borderRadius: '8px',
                         background: 'var(--bg-secondary)',
-                        fontSize: '11px',
+                        fontSize: '12px',
                         color: 'var(--text-muted)',
                         display: 'flex',
                         flexWrap: 'wrap',
@@ -388,7 +385,9 @@ const TypeChartSection = () => {
                     gap: '8px'
                 }}
             >
-                <span>{showFullTable ? '▲' : '▼'}</span>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ flexShrink: 0, transition: 'transform 0.2s', transform: showFullTable ? 'rotate(-90deg)' : 'rotate(90deg)' }}>
+                    <polyline points="9 18 15 12 9 6" />
+                </svg>
                 {showFullTable ? 'Hide Full Table' : 'Show Full Type Chart Table'}
             </button>
 

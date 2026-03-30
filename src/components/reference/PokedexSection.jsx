@@ -61,7 +61,7 @@ const StatBar = ({ label, statKey, value }) => {
     return (
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
             <span style={{
-                width: '34px', fontSize: '10px', fontWeight: 700,
+                width: '38px', fontSize: '12px', fontWeight: 700,
                 color: 'var(--text-muted)', textAlign: 'right', flexShrink: 0
             }}>{label}</span>
             <div style={{
@@ -85,7 +85,7 @@ const StatBar = ({ label, statKey, value }) => {
 
 const Chip = ({ label, accent }) => (
     <span style={{
-        fontSize: '11px',
+        fontSize: '12px',
         background: accent ? 'rgba(245,166,35,0.12)' : 'var(--poke-gray)',
         border: `1px solid ${accent ? 'rgba(245,166,35,0.35)' : 'var(--border-light)'}`,
         color: accent ? 'var(--poke-orange-dark)' : 'var(--text-primary)',
@@ -96,8 +96,8 @@ const Chip = ({ label, accent }) => (
 
 const SectionLabel = ({ children }) => (
     <div style={{
-        fontSize: '10px', fontWeight: 800, color: 'var(--text-muted)',
-        textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '7px'
+        fontSize: '11px', fontWeight: 800, color: 'var(--text-muted)',
+        textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '7px'
     }}>{children}</div>
 );
 
@@ -125,7 +125,7 @@ const WEIGHT_COLORS = {
 const InfoChip = ({ label, color = 'var(--bg-section)', textColor }) => (
     <span style={{
         display: 'inline-block',
-        padding: '2px 9px', borderRadius: '10px', fontSize: '11px', fontWeight: 600,
+        padding: '2px 9px', borderRadius: '10px', fontSize: '12px', fontWeight: 600,
         background: color, color: textColor || 'var(--text-primary)',
         border: '1px solid var(--border-light)'
     }}>{label}</span>
@@ -134,7 +134,7 @@ const InfoChip = ({ label, color = 'var(--bg-section)', textColor }) => (
 const InfoRow = ({ icon, label, children }) => (
     <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '6px' }}>
         <span style={{ fontSize: '12px', width: '16px', flexShrink: 0, marginTop: '1px' }}>{icon}</span>
-        <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-muted)', flexShrink: 0, minWidth: '64px', marginTop: '2px' }}>{label}</span>
+        <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)', flexShrink: 0, minWidth: '64px', marginTop: '2px' }}>{label}</span>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>{children}</div>
     </div>
 );
@@ -151,7 +151,7 @@ const GenderBar = ({ genderRatio }) => {
                 {male   > 0 && <div style={{ width: `${male}%`,   background: '#5b8dde' }} />}
                 {female > 0 && <div style={{ width: `${female}%`, background: '#e86eb0' }} />}
             </div>
-            <div style={{ display: 'flex', gap: '10px', fontSize: '11px' }}>
+            <div style={{ display: 'flex', gap: '10px', fontSize: '12px' }}>
                 {male   > 0 && <span style={{ color: '#5b8dde', fontWeight: 600 }}>♂ {male}%</span>}
                 {female > 0 && <span style={{ color: '#e86eb0', fontWeight: 600 }}>♀ {female}%</span>}
             </div>
@@ -215,7 +215,7 @@ const SpeciesDetail = ({ species }) => {
                     {/* Gender Ratio */}
                     <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '6px' }}>
                         <span style={{ fontSize: '12px', width: '16px', flexShrink: 0, marginTop: '1px' }}>⚥</span>
-                        <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-muted)', flexShrink: 0, minWidth: '64px', marginTop: '2px' }}>Gender</span>
+                        <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)', flexShrink: 0, minWidth: '64px', marginTop: '2px' }}>Gender</span>
                         <GenderBar genderRatio={genderRatio} />
                     </div>
 
@@ -283,9 +283,9 @@ const SpeciesDetail = ({ species }) => {
                                             <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', alignItems: 'center' }}>
                                                 {form.types?.map(t => <TypeChip key={t} type={t} />)}
                                                 {form.ability && (
-                                                    <span style={{ fontSize: '11px', color: 'var(--text-muted)', marginLeft: '4px' }}>· {form.ability}</span>
+                                                    <span style={{ fontSize: '12px', color: 'var(--text-muted)', marginLeft: '4px' }}>· {form.ability}</span>
                                                 )}
-                                                <span style={{ fontSize: '10px', fontWeight: 700, color: getContrastTextColor(megaAccent), background: megaAccent, padding: '1px 6px', borderRadius: '8px', marginLeft: 'auto' }}>BST {megaBst}</span>
+                                                <span style={{ fontSize: '11px', fontWeight: 700, color: getContrastTextColor(megaAccent), background: megaAccent, padding: '1px 6px', borderRadius: '8px', marginLeft: 'auto' }}>BST {megaBst}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -298,10 +298,10 @@ const SpeciesDetail = ({ species }) => {
                                                 const total = base + boost;
                                                 return (
                                                     <div key={k} style={{ textAlign: 'center' }}>
-                                                        <div style={{ fontSize: '8px', fontWeight: 700, color: STAT_COLORS[k] }}>{STAT_LABELS[ki]}</div>
+                                                        <div style={{ fontSize: '10px', fontWeight: 700, color: STAT_COLORS[k] }}>{STAT_LABELS[ki]}</div>
                                                         <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-primary)' }}>{total}</div>
                                                         {boost !== 0 && (
-                                                            <div style={{ fontSize: '9px', fontWeight: 700, color: boost > 0 ? 'var(--color-success-text, #4caf50)' : 'var(--color-danger-text, #ef5350)' }}>
+                                                            <div style={{ fontSize: '11px', fontWeight: 700, color: boost > 0 ? 'var(--color-success-text, #4caf50)' : 'var(--color-danger-text, #ef5350)' }}>
                                                                 {boost > 0 ? `+${boost}` : boost}
                                                             </div>
                                                         )}
@@ -324,19 +324,19 @@ const SpeciesDetail = ({ species }) => {
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '13px' }}>
                         {abilities.basic?.length > 0 && (
                             <div>
-                                <span style={{ color: 'var(--text-muted)', fontWeight: 600, fontSize: '11px' }}>Basic </span>
+                                <span style={{ color: 'var(--text-muted)', fontWeight: 600, fontSize: '12px' }}>Basic </span>
                                 {abilities.basic.join(', ')}
                             </div>
                         )}
                         {abilities.adv?.length > 0 && (
                             <div>
-                                <span style={{ color: 'var(--text-muted)', fontWeight: 600, fontSize: '11px' }}>Advanced </span>
+                                <span style={{ color: 'var(--text-muted)', fontWeight: 600, fontSize: '12px' }}>Advanced </span>
                                 {abilities.adv.join(', ')}
                             </div>
                         )}
                         {abilities.high?.length > 0 && (
                             <div>
-                                <span style={{ color: 'var(--text-muted)', fontWeight: 600, fontSize: '11px' }}>Hidden </span>
+                                <span style={{ color: 'var(--text-muted)', fontWeight: 600, fontSize: '12px' }}>Hidden </span>
                                 {abilities.high.join(', ')}
                             </div>
                         )}
@@ -355,7 +355,7 @@ const SpeciesDetail = ({ species }) => {
                             return (
                                 <span key={name} style={{
                                     display: 'inline-flex', alignItems: 'center', gap: '4px',
-                                    padding: '3px 9px', borderRadius: '10px', fontSize: '11px', fontWeight: 600,
+                                    padding: '3px 9px', borderRadius: '10px', fontSize: '12px', fontWeight: 600,
                                     background: isFlag ? 'rgba(245,166,35,0.15)' : 'var(--poke-gray)',
                                     border: `1px solid ${isFlag ? 'rgba(245,166,35,0.4)' : 'var(--border-light)'}`,
                                     color: isFlag ? 'var(--poke-orange-dark)' : 'var(--text-primary)'

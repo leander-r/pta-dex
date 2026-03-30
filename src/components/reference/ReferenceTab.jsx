@@ -3,7 +3,7 @@
 // ============================================================
 // Quick reference section with type chart, moves, abilities, etc.
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 
 // Sub-components for each reference section
 import TypeChartSection from './TypeChartSection.jsx';
@@ -20,6 +20,7 @@ import PokedexSection from './PokedexSection.jsx';
  */
 const ReferenceTab = () => {
     const [activeSection, setActiveSection] = useState('pokedex');
+    const visitedRef = useRef(new Set(['pokedex']));
 
     const sections = [
         { id: 'pokedex', label: 'Pokédex' },
@@ -44,7 +45,7 @@ const ReferenceTab = () => {
                     <button
                         key={section.id}
                         className={`tab ${activeSection === section.id ? 'active' : ''}`}
-                        onClick={() => setActiveSection(section.id)}
+                        onClick={() => { visitedRef.current.add(section.id); setActiveSection(section.id); }}
                         style={{
                             flexShrink: 0,
                             background: activeSection === section.id ? 'var(--poke-orange)' : 'transparent',
@@ -58,14 +59,14 @@ const ReferenceTab = () => {
                 ))}
             </div>
 
-            {/* Content Sections */}
-            {activeSection === 'pokedex' && <PokedexSection />}
-            {activeSection === 'types' && <TypeChartSection />}
-            {activeSection === 'natures' && <NaturesSection />}
-            {activeSection === 'moves' && <MovesSection />}
-            {activeSection === 'abilities' && <AbilitiesSection />}
-            {activeSection === 'rules' && <GameRulesSection />}
-            {activeSection === 'exp' && <ExpChartSection />}
+            {/* Content Sections — kept mounted after first visit to preserve filter/scroll state */}
+            {visitedRef.current.has('pokedex')    && <div style={{ display: activeSection === 'pokedex'    ? undefined : 'none' }}><PokedexSection /></div>}
+            {visitedRef.current.has('types')      && <div style={{ display: activeSection === 'types'      ? undefined : 'none' }}><TypeChartSection /></div>}
+            {visitedRef.current.has('natures')    && <div style={{ display: activeSection === 'natures'    ? undefined : 'none' }}><NaturesSection /></div>}
+            {visitedRef.current.has('moves')      && <div style={{ display: activeSection === 'moves'      ? undefined : 'none' }}><MovesSection /></div>}
+            {visitedRef.current.has('abilities')  && <div style={{ display: activeSection === 'abilities'  ? undefined : 'none' }}><AbilitiesSection /></div>}
+            {visitedRef.current.has('rules')      && <div style={{ display: activeSection === 'rules'      ? undefined : 'none' }}><GameRulesSection /></div>}
+            {visitedRef.current.has('exp')        && <div style={{ display: activeSection === 'exp'        ? undefined : 'none' }}><ExpChartSection /></div>}
         </div>
     );
 };

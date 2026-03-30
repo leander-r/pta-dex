@@ -185,7 +185,7 @@ const MovesSection = () => {
             </div>
 
             {/* Moves List */}
-            <div style={{ maxHeight: '550px', overflowY: 'auto' }}>
+            <div style={{ maxHeight: 'min(550px, 65vh)', overflowY: 'auto' }}>
                 {filteredMoves.length === 0 ? (
                     <div style={{ textAlign: 'center', padding: '40px', color: 'var(--moves-empty-text)' }}>
                         No moves found matching your filters.
@@ -214,17 +214,17 @@ const MovesSection = () => {
                                     <span style={{
                                         padding: '2px 8px',
                                         borderRadius: '4px',
-                                        fontSize: '10px',
+                                        fontSize: '12px',
                                         fontWeight: 'bold',
                                         background: getTypeColor(data.type),
-                                        color: ['Electric', 'Ice', 'Ground', 'Steel'].includes(data.type) ? '#333' : 'white'
+                                        color: getContrastTextColor(getTypeColor(data.type))
                                     }}>
                                         {data.type}
                                     </span>
                                     <span style={{
                                         padding: '2px 8px',
                                         borderRadius: '4px',
-                                        fontSize: '10px',
+                                        fontSize: '12px',
                                         background: data.category === 'Physical' ? 'var(--moves-category-physical-bg)' : data.category === 'Special' ? 'var(--moves-category-special-bg)' : 'var(--moves-category-status-bg)',
                                         color: data.category === 'Physical' ? 'var(--moves-category-physical-text)' : data.category === 'Special' ? 'var(--moves-category-special-text)' : 'var(--moves-category-status-text)'
                                     }}>
@@ -241,7 +241,7 @@ const MovesSection = () => {
                                 </div>
                             </div>
                             {data.range && (
-                                <div style={{ fontSize: '11px', color: 'var(--moves-range-text)', marginTop: '4px' }}>
+                                <div style={{ fontSize: '12px', color: 'var(--moves-range-text)', marginTop: '4px' }}>
                                     {data.range}
                                 </div>
                             )}

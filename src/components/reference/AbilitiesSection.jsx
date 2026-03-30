@@ -106,7 +106,7 @@ const AbilitiesSection = () => {
             </div>
 
             {/* Abilities List */}
-            <div style={{ maxHeight: '500px', overflowY: 'auto' }}>
+            <div style={{ maxHeight: 'min(500px, 65vh)', overflowY: 'auto' }}>
                 {filteredAbilities.length === 0 ? (
                     <div style={{ textAlign: 'center', padding: '40px', color: 'var(--abilities-empty-text)' }}>
                         No abilities found matching your search.
