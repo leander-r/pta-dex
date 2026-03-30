@@ -4035,6 +4035,11 @@
             .stat-cards-grid {
                 grid-template-columns: repeat(2, 1fr) !important;
             }
+
+            /* TypeChart type selector — narrower min so chips don't clip */
+            .type-chart-grid {
+                grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)) !important;
+            }
         }
 
         /* Touch-specific improvements */

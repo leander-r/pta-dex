@@ -53,7 +53,7 @@ const AbilitiesSection = () => {
                             minWidth: '200px',
                             padding: '10px 15px',
                             borderRadius: '8px',
-                            border: '2px solid var(--border-medium)',
+                            border: '1px solid var(--border-medium)',
                             fontSize: '14px',
                             background: 'var(--input-bg)',
                             color: 'var(--text-primary)'
@@ -79,7 +79,7 @@ const AbilitiesSection = () => {
 
                 {/* Quick Search */}
                 <div style={{ marginTop: '10px', display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                    <span style={{ fontSize: '11px', color: 'var(--text-muted)', marginRight: '4px' }}>Quick:</span>
+                    <span style={{ fontSize: '12px', color: 'var(--text-muted)', marginRight: '4px' }}>Quick:</span>
                     {quickTerms.map(term => (
                         <button
                             key={term}
@@ -91,7 +91,7 @@ const AbilitiesSection = () => {
                                 background: filter.search === term ? 'var(--abilities-quick-btn-active-bg)' : 'var(--abilities-quick-btn-bg)',
                                 color: filter.search === term ? 'var(--abilities-quick-btn-active-text)' : 'var(--abilities-quick-btn-text)',
                                 cursor: 'pointer',
-                                fontSize: '11px'
+                                fontSize: '12px'
                             }}
                         >
                             {term}

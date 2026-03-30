@@ -598,7 +598,7 @@ const PokedexRow = memo(({ species, idx, isExpanded, isHovered, onRowClick, onMo
                         />
                     )}
                 </div>
-                <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 600, width: '34px', flexShrink: 0, textAlign: 'right' }}>
+                <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: 600, width: '34px', flexShrink: 0, textAlign: 'right' }}>
                     #{species.id || '?'}
                 </span>
                 <span style={{ fontWeight: 700, fontSize: '14px', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -607,16 +607,16 @@ const PokedexRow = memo(({ species, idx, isExpanded, isHovered, onRowClick, onMo
                 <DualTypeDisplay types={species.types} />
                 <div style={{ display: 'flex', gap: '3px', flexShrink: 0 }}>
                     {species.megaForms?.length > 0 && (
-                        <span title={`${species.megaForms.length} Mega Form${species.megaForms.length > 1 ? 's' : ''}`} style={{ fontSize: '9px', fontWeight: 700, padding: '1px 4px', borderRadius: '4px', background: 'rgba(102,126,234,0.15)', color: 'var(--color-purple)', border: '1px solid rgba(102,126,234,0.3)' }}>M</span>
+                        <span title={`${species.megaForms.length} Mega Form${species.megaForms.length > 1 ? 's' : ''}`} style={{ fontSize: '11px', fontWeight: 700, padding: '1px 5px', borderRadius: '4px', background: 'rgba(102,126,234,0.15)', color: 'var(--color-purple)', border: '1px solid rgba(102,126,234,0.3)' }}>M</span>
                     )}
                     {species.regionalForms?.length > 0 && (
-                        <span title={`${species.regionalForms.length} Regional Form${species.regionalForms.length > 1 ? 's' : ''}`} style={{ fontSize: '9px', fontWeight: 700, padding: '1px 4px', borderRadius: '4px', background: 'rgba(255,152,0,0.15)', color: 'var(--poke-orange-dark, #e65100)', border: '1px solid rgba(255,152,0,0.3)' }}>R</span>
+                        <span title={`${species.regionalForms.length} Regional Form${species.regionalForms.length > 1 ? 's' : ''}`} style={{ fontSize: '11px', fontWeight: 700, padding: '1px 5px', borderRadius: '4px', background: 'rgba(255,152,0,0.15)', color: 'var(--poke-orange-dark, #e65100)', border: '1px solid rgba(255,152,0,0.3)' }}>R</span>
                     )}
                 </div>
                 <span
                     className="pokedex-bst"
                     title="Base Stat Total"
-                    style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 600, flexShrink: 0, minWidth: '44px', textAlign: 'right' }}
+                    style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: 600, flexShrink: 0, minWidth: '44px', textAlign: 'right' }}
                 >
                     {bst} BST
                 </span>
@@ -791,7 +791,7 @@ const PokedexSection = () => {
 
             {/* ── Sort row — full (desktop) ── */}
             <div className="pokedex-sort-full" style={{ display: 'flex', gap: '4px', marginBottom: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
-                <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 600, marginRight: '2px', flexShrink: 0 }}>Sort:</span>
+                <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: 600, marginRight: '2px', flexShrink: 0 }}>Sort:</span>
                 {SORT_OPTIONS.map(opt => {
                     const isActive = sortKey === opt.key;
                     return (
@@ -800,7 +800,7 @@ const PokedexSection = () => {
                             onClick={() => handleSort(opt.key)}
                             title={`Sort by ${opt.label}`}
                             style={{
-                                padding: '4px 9px', borderRadius: '6px', fontSize: '11px', fontWeight: isActive ? 700 : 500,
+                                padding: '4px 9px', borderRadius: '6px', fontSize: '12px', fontWeight: isActive ? 700 : 500,
                                 border: isActive ? '1.5px solid var(--poke-orange)' : '1px solid var(--border-light)',
                                 background: isActive ? 'rgba(245,166,35,0.12)' : 'var(--poke-gray)',
                                 color: isActive ? 'var(--poke-orange-dark)' : 'var(--text-secondary)',
@@ -821,7 +821,7 @@ const PokedexSection = () => {
 
             {/* ── Sort row — compact (mobile) ── */}
             <div className="pokedex-sort-mobile" style={{ display: 'none', gap: '6px', marginBottom: '8px', alignItems: 'center' }}>
-                <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 600, flexShrink: 0 }}>Sort:</span>
+                <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: 600, flexShrink: 0 }}>Sort:</span>
                 <select
                     value={sortKey}
                     onChange={e => { setSortKey(e.target.value); setSortDir(e.target.value === 'name' || e.target.value === 'id' ? 'asc' : 'desc'); }}
@@ -893,12 +893,12 @@ const PokedexSection = () => {
                         <button
                             onClick={() => { setPage(0); setExpandedId(null); }}
                             disabled={page === 0}
-                            style={{ padding: '5px 10px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--bg-secondary)', cursor: page === 0 ? 'not-allowed' : 'pointer', opacity: page === 0 ? 0.4 : 1, fontSize: '12px' }}
+                            style={{ padding: '7px 12px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--bg-secondary)', cursor: page === 0 ? 'not-allowed' : 'pointer', opacity: page === 0 ? 0.4 : 1, fontSize: '12px' }}
                         >«</button>
                         <button
                             onClick={() => { setPage(p => p - 1); setExpandedId(null); }}
                             disabled={page === 0}
-                            style={{ padding: '5px 10px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--bg-secondary)', cursor: page === 0 ? 'not-allowed' : 'pointer', opacity: page === 0 ? 0.4 : 1, fontSize: '12px' }}
+                            style={{ padding: '7px 12px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--bg-secondary)', cursor: page === 0 ? 'not-allowed' : 'pointer', opacity: page === 0 ? 0.4 : 1, fontSize: '12px' }}
                         >‹ Prev</button>
                         <span style={{ fontSize: '12px', color: 'var(--text-muted)', padding: '0 4px' }}>
                             Page {page + 1} of {totalPages}
@@ -906,12 +906,12 @@ const PokedexSection = () => {
                         <button
                             onClick={() => { setPage(p => p + 1); setExpandedId(null); }}
                             disabled={page >= totalPages - 1}
-                            style={{ padding: '5px 10px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--bg-secondary)', cursor: page >= totalPages - 1 ? 'not-allowed' : 'pointer', opacity: page >= totalPages - 1 ? 0.4 : 1, fontSize: '12px' }}
+                            style={{ padding: '7px 12px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--bg-secondary)', cursor: page >= totalPages - 1 ? 'not-allowed' : 'pointer', opacity: page >= totalPages - 1 ? 0.4 : 1, fontSize: '12px' }}
                         >Next ›</button>
                         <button
                             onClick={() => { setPage(totalPages - 1); setExpandedId(null); }}
                             disabled={page >= totalPages - 1}
-                            style={{ padding: '5px 10px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--bg-secondary)', cursor: page >= totalPages - 1 ? 'not-allowed' : 'pointer', opacity: page >= totalPages - 1 ? 0.4 : 1, fontSize: '12px' }}
+                            style={{ padding: '7px 12px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--bg-secondary)', cursor: page >= totalPages - 1 ? 'not-allowed' : 'pointer', opacity: page >= totalPages - 1 ? 0.4 : 1, fontSize: '12px' }}
                         >»</button>
                     </div>
                 );

@@ -4,7 +4,7 @@
 
 import React, { useMemo, useState } from 'react';
 import { GAME_DATA } from '../../data/configs.js';
-import { getTypeColor } from '../../utils/typeUtils.js';
+import { getTypeColor, getContrastTextColor } from '../../utils/typeUtils.js';
 import { POKEMON_TYPES } from '../../data/typeChart.js';
 import { useModal, useFilter } from '../../contexts/index.js';
 
@@ -76,7 +76,7 @@ const MovesSection = () => {
                             width: '100%',
                             padding: '10px 15px',
                             borderRadius: '8px',
-                            border: '2px solid var(--border-medium)',
+                            border: '1px solid var(--border-medium)',
                             fontSize: '14px',
                             background: 'var(--input-bg)',
                             color: 'var(--text-primary)'
@@ -167,9 +167,9 @@ const MovesSection = () => {
                             borderRadius: '4px',
                             border: filter.type === type ? '2px solid var(--moves-type-btn-border)' : '1px solid transparent',
                             background: getTypeColor(type),
-                            color: ['Electric', 'Ice', 'Ground', 'Steel'].includes(type) ? '#333' : 'white',
+                            color: getContrastTextColor(getTypeColor(type)),
                             cursor: 'pointer',
-                            fontSize: '10px',
+                            fontSize: '12px',
                             fontWeight: 'bold',
                             opacity: filter.type && filter.type !== type ? 0.5 : 1
                         }}

@@ -187,7 +187,10 @@ const GameRulesSection = () => {
                             }}
                         >
                             <span>{section.title}</span>
-                            <span>{expandedSection === section.id ? '▲' : '▼'}</span>
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
+                                style={{ flexShrink: 0, transition: 'transform 0.2s', transform: expandedSection === section.id ? 'rotate(-90deg)' : 'rotate(90deg)' }}>
+                                <polyline points="9 18 15 12 9 6" />
+                            </svg>
                         </button>
 
                         {expandedSection === section.id && (

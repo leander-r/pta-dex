@@ -88,7 +88,7 @@ const NaturesSection = () => {
                             width: '100%',
                             padding: '10px 15px',
                             borderRadius: '8px',
-                            border: '2px solid var(--border-medium)',
+                            border: '1px solid var(--border-medium)',
                             fontSize: '14px',
                             background: 'var(--input-bg)',
                             color: 'var(--text-primary)'
@@ -160,7 +160,7 @@ const NaturesSection = () => {
 
                 {/* Quick Stat Buttons */}
                 <div style={{ marginTop: '10px', display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                    <span style={{ fontSize: '11px', color: 'var(--text-muted)', marginRight: '4px' }}>Quick +Stat:</span>
+                    <span style={{ fontSize: '12px', color: 'var(--text-muted)', marginRight: '4px' }}>Quick +Stat:</span>
                     {quickStats.map(stat => (
                         <button
                             key={stat}
@@ -172,7 +172,7 @@ const NaturesSection = () => {
                                 background: filter.buffStat === stat ? 'var(--stat-hp)' : 'var(--input-bg)',
                                 color: filter.buffStat === stat ? 'white' : 'var(--text-secondary)',
                                 cursor: 'pointer',
-                                fontSize: '11px',
+                                fontSize: '12px',
                                 fontWeight: 'bold'
                             }}
                         >

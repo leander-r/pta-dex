@@ -60,7 +60,7 @@ const EffectivenessTier = ({ label, icon, types, bgColor, borderColor, labelColo
                 <span>{label}</span>
                 <span style={{
                     marginLeft: 'auto',
-                    fontSize: '11px',
+                    fontSize: '12px',
                     fontWeight: 'normal',
                     opacity: 0.7
                 }}>
@@ -110,7 +110,7 @@ const TypeChartSection = () => {
 
             {/* Type Selector Grid */}
             <div className="section-card" style={{ marginBottom: '16px' }}>
-                <div style={{
+                <div className="type-chart-grid" style={{
                     display: 'grid',
                     gridTemplateColumns: 'repeat(auto-fill, minmax(85px, 1fr))',
                     gap: '6px'
@@ -169,7 +169,7 @@ const TypeChartSection = () => {
                             />
                         ))}
                         {selectedTypes.length < 2 && (
-                            <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontStyle: 'italic' }}>
+                            <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontStyle: 'italic' }}>
                                 + pick a 2nd type for dual-type lookup
                             </span>
                         )}
@@ -183,7 +183,7 @@ const TypeChartSection = () => {
                                 background: 'var(--danger-btn-start)',
                                 color: 'white',
                                 cursor: 'pointer',
-                                fontSize: '11px',
+                                fontSize: '12px',
                                 fontWeight: 'bold'
                             }}
                         >
