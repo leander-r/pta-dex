@@ -169,7 +169,7 @@ const BiomeEncounters = () => {
                 </h3>
                 {rolled && (
                     <div style={{
-                        margin: '10px 16px 0', padding: '8px 14px', borderRadius: 8,
+                        margin: '10px 0 0', padding: '8px 14px', borderRadius: 8,
                         background: 'var(--tint-purple-bg)', border: '1px solid var(--tint-purple-border)',
                         fontSize: 14, fontWeight: 700, color: 'var(--color-purple)',
                         display: 'flex', alignItems: 'center', gap: 8,

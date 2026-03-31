@@ -2674,6 +2674,11 @@
             padding: 20px;
             border: 1px solid var(--border-light);
         }
+
+        /* EXP Drop quick reference clickable items */
+        .exp-ref-item:hover {
+            border-color: var(--color-purple) !important;
+        }
         
         .card-header {
             margin-bottom: 0;
@@ -5801,7 +5806,7 @@
             margin-bottom: 8px;
         }
         [data-compact="true"] .card-header {
-            margin-bottom: 8px;
+            padding-bottom: 8px;
             font-size: 13px;
         }
 

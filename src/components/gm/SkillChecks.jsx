@@ -340,10 +340,9 @@ const SkillChecks = () => {
             {ROLL_HOW}
 
             {/* Quick roll widget */}
-            <div className="card-orange" style={{ marginBottom: 14, padding: '14px 16px' }}>
-                <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 10, color: 'var(--text-primary)' }}>
-                    🎲 Quick Skill Roll
-                </div>
+            <div className="card-orange" style={{ marginBottom: 14 }}>
+                <div className="card-header font-bold">🎲 Quick Skill Roll</div>
+                <div style={{ paddingTop: 14 }}>
                 <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
                     {[
                         { label: 'No Skill',       title: '1d20 plain — no skill bonus',              fn: () => doRoll(0, false, false) },
@@ -377,6 +376,7 @@ const SkillChecks = () => {
                         {roll.bonus !== 0 && <> {roll.bonus >= 0 ? '+' : ''}{roll.bonus}</>} = <strong style={{ color: 'var(--color-purple)', fontSize: 18 }}>{roll.total}</strong>
                     </div>
                 )}
+                </div>
             </div>
 
             {/* Stat group nav */}
@@ -405,6 +405,7 @@ const SkillChecks = () => {
                     <div
                         key={skill.name}
                         className="card-orange"
+                        style={{ padding: 0 }}
                     >
                         <div style={{
                             padding: '10px 14px', fontWeight: 700, fontSize: 14,

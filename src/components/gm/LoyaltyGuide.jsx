@@ -51,7 +51,6 @@ const LOWER_LOYALTY = [
 
 const RAISE_LOYALTY = [
     'Loyalty should rise naturally over in-game time — every few in-game weeks with no negative actions.',
-    'Note: Loyalty 3 and 4 should NOT be gained passively — only through triumphant events.',
     'Triumphant events: solo-ing a gym, saving the trainer\'s life, a major battle victory.',
     'Stone evolutions are not GM-controlled — they happen automatically.',
 ];
@@ -166,6 +165,13 @@ const LoyaltyGuide = () => {
             <div className="card-orange" style={{ marginBottom: 14 }}>
                 <h3 className="card-header font-bold">📈 What Raises Loyalty</h3>
                 <div style={{ paddingTop: 14 }}>
+                    <div style={{
+                        padding: '8px 12px', borderRadius: 6, marginBottom: 10,
+                        background: 'var(--tint-orange-bg)', border: '1px solid var(--tint-orange-border)',
+                        fontSize: 13, color: 'var(--poke-orange)', fontWeight: 600,
+                    }}>
+                        ⚠️ Loyalty 3 and 4 cannot be gained passively — only through triumphant events.
+                    </div>
                     <ul style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.8, paddingLeft: 18 }}>
                         {RAISE_LOYALTY.map((l, i) => <li key={i}>{l}</li>)}
                     </ul>
@@ -186,7 +192,7 @@ const LoyaltyGuide = () => {
                         onClick={rollDefiance}
                         style={{
                             padding: '9px 20px', marginBottom: 14,
-                            background: 'linear-gradient(135deg, #f44336, #b71c1c)',
+                            background: 'linear-gradient(135deg, var(--danger-btn-start), var(--danger-btn-end))',
                             border: 'none', borderRadius: 8, color: 'white',
                             fontSize: 14, fontWeight: 700, cursor: 'pointer',
                             boxShadow: '0 2px 6px rgba(0,0,0,0.18)'

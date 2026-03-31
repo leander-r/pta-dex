@@ -183,9 +183,9 @@ const JudgeCard = ({ judge, color, selected, onSelect, disabled, holdThought, ex
             Judge {judge.id}
         </div>
         <VoltageBar voltage={judge.voltage} color={color} />
-        {judge.voltage === 6 && <div style={{ fontSize: 10, color: 'var(--poke-orange)', fontWeight: 700, marginTop: 2 }}>MAX ⚡</div>}
-        {holdThought && <div style={{ fontSize: 10, color: 'var(--poke-orange)', fontWeight: 700, marginTop: 2 }}>🔒 Locked</div>}
-        {excitement && <div style={{ fontSize: 10, color: 'var(--stat-hp)', fontWeight: 700, marginTop: 2 }}>🛡 Protected</div>}
+        {judge.voltage === 6 && <div style={{ fontSize: 11, color: 'var(--poke-orange)', fontWeight: 700, marginTop: 2 }}>MAX ⚡</div>}
+        {holdThought && <div style={{ fontSize: 11, color: 'var(--poke-orange)', fontWeight: 700, marginTop: 2 }}>🔒 Locked</div>}
+        {excitement && <div style={{ fontSize: 11, color: 'var(--stat-hp)', fontWeight: 700, marginTop: 2 }}>🛡 Protected</div>}
     </button>
 );
 
@@ -193,7 +193,7 @@ const StepLabel = ({ n, label }) => (
     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
         <span style={{
             width: 20, height: 20, borderRadius: '50%', background: 'var(--color-purple)', color: 'white',
-            fontSize: 11, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+            fontSize: 12, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
         }}>{n}</span>
         <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>{label}</span>
     </div>

@@ -196,12 +196,14 @@ const ExpCalculator = () => {
                         ].map(([name, drop]) => (
                             <div
                                 key={name}
+                                className="exp-ref-item"
                                 onClick={() => setExpDrop(drop)}
                                 style={{
                                     padding: '6px 10px', borderRadius: 6, cursor: 'pointer',
                                     border: '1px solid var(--border-light)',
                                     background: expDrop === drop ? 'var(--tint-purple-bg)' : 'var(--surface-bg)',
-                                    display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+                                    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                                    transition: 'border-color 0.15s',
                                 }}
                             >
                                 <span style={{ color: 'var(--text-primary)' }}>{name}</span>

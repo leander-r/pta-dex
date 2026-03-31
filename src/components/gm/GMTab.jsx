@@ -15,14 +15,14 @@ import ContestRunner from './ContestRunner.jsx';
 
 // Sections drawn directly from the PTA GM Guide (final).pdf
 const SECTIONS = [
-    { id: 'capture',   icon: '🎯', label: 'Capture Rates',  desc: 'Calculate catch rate and roll against a target number' },
-    { id: 'encounter', icon: '🌿', label: 'Wild Encounters', desc: 'Look up encounter tables by area and time of day' },
-    { id: 'biome',     icon: '🗺️', label: 'Habitats',       desc: 'Browse Pokémon by habitat and terrain type' },
-    { id: 'rewards',   icon: '⭐', label: 'EXP Calculator',  desc: 'Calculate EXP and money rewards after a battle' },
-    { id: 'gym',       icon: '❤️', label: 'Loyalty Guide',  desc: 'Track Pokémon loyalty and happiness mechanics' },
-    { id: 'npc',       icon: '📋', label: 'Skill Checks',   desc: 'Reference DCs and skill check rules for NPCs' },
-    { id: 'death',     icon: '💀', label: 'Death Saves',    desc: 'Manage death saving throws and stabilization' },
-    { id: 'contest',   icon: '🎭', label: 'Contests',       desc: 'Run Pokémon Contests with appeals and judging' },
+    { id: 'capture',   icon: '🎯', label: 'Capture Rates'  },
+    { id: 'encounter', icon: '🌿', label: 'Wild Encounters' },
+    { id: 'biome',     icon: '🗺️', label: 'Habitats'       },
+    { id: 'rewards',   icon: '⭐', label: 'EXP Calculator'  },
+    { id: 'gym',       icon: '❤️', label: 'Loyalty Guide'  },
+    { id: 'npc',       icon: '📋', label: 'Skill Checks'   },
+    { id: 'death',     icon: '💀', label: 'Death Saves'    },
+    { id: 'contest',   icon: '🎭', label: 'Contests'       },
 ];
 
 const SECTION_COMPONENTS = {
@@ -44,8 +44,6 @@ const GMTab = () => {
         visitedRef.current.add(id);
         setActiveSection(id);
     };
-
-    const activeDesc = SECTIONS.find(s => s.id === activeSection)?.desc;
 
     return (
         <div>
