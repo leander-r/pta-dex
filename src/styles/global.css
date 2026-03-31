@@ -2679,6 +2679,11 @@
         .exp-ref-item:hover {
             border-color: var(--color-purple) !important;
         }
+
+        /* Alliance action buttons in EncounterGuide */
+        .ally-action-btn:hover {
+            opacity: 0.82;
+        }
         
         .card-header {
             margin-bottom: 0;

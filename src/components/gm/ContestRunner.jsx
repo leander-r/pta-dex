@@ -856,7 +856,7 @@ const ContestRunner = () => {
                                 <li><strong>Round end:</strong> After all appeals, click Next Round. Repeat for all rounds.</li>
                                 <li><strong>Results:</strong> Final standings shown after the last round.</li>
                             </ol>
-                            <div style={{ marginTop: 8, color: 'var(--text-muted)', fontSize: 11 }}>
+                            <div style={{ marginTop: 8, color: 'var(--text-muted)', fontSize: 13 }}>
                                 Turn order: Rounds 1, 3, 5… go lowest→highest appeal. Rounds 2, 4, 6… go highest→lowest.
                                 Move keywords (Round Starter, Get Ready!, etc.) are applied automatically.
                             </div>
@@ -866,10 +866,10 @@ const ContestRunner = () => {
 
                 {/* Step 1 */}
                 <div className="card-orange" style={{ marginBottom: 14 }}>
-                    <h3 className="card-header font-bold">
+                    <div style={{ paddingBottom: 12, borderBottom: '1px solid var(--border-light)' }}>
                         <StepLabel n={1} label="Choose Contest Type" />
-                    </h3>
-                    <div style={{ padding: '10px 16px', display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                    </div>
+                    <div style={{ paddingTop: 10, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                         {CONTEST_TYPES.map(ct => (
                             <button
                                 key={ct.id}
@@ -887,7 +887,7 @@ const ContestRunner = () => {
                         ))}
                     </div>
                     {contestType && (
-                        <div style={{ padding: '0 16px 10px', fontSize: 12, color: 'var(--text-muted)' }}>
+                        <div style={{ paddingBottom: 10, fontSize: 12, color: 'var(--text-muted)' }}>
                             <strong>Adjacent</strong> (no voltage effect): {TYPE_ADJACENT[contestType]?.join(', ')} &nbsp;·&nbsp;
                             <strong>Opposite</strong> (−1 voltage):&nbsp;
                             {CONTEST_TYPES.filter(t => t.id !== contestType && !TYPE_ADJACENT[contestType]?.includes(t.id)).map(t => t.id).join(', ')}
@@ -897,20 +897,18 @@ const ContestRunner = () => {
 
                 {/* Step 2 */}
                 <div className="card-orange" style={{ marginBottom: 14 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <h3 className="card-header font-bold">
-                            <StepLabel n={2} label="Add Participants (Trainer + Pokémon)" />
-                        </h3>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 12, borderBottom: '1px solid var(--border-light)' }}>
+                        <StepLabel n={2} label="Add Participants (Trainer + Pokémon)" />
                         <button
                             onClick={() => setShowImport(v => !v)}
-                            style={{ margin: '0 16px 0 0', padding: '4px 12px', borderRadius: 6, border: '1px solid var(--border-light)', background: showImport ? 'var(--color-purple)' : 'var(--surface-bg)', color: showImport ? 'white' : 'var(--text-secondary)', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
+                            style={{ padding: '4px 12px', borderRadius: 6, border: '1px solid var(--border-light)', background: showImport ? 'var(--color-purple)' : 'var(--surface-bg)', color: showImport ? 'white' : 'var(--text-secondary)', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
                         >
                             📋 Paste list
                         </button>
                     </div>
 
                     {showImport && (
-                        <div style={{ padding: '0 16px 10px' }}>
+                        <div style={{ paddingBottom: 10 }}>
                             <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 6 }}>
                                 One name per line — moves will be declared during the contest.
                             </div>
@@ -931,7 +929,7 @@ const ContestRunner = () => {
                         </div>
                     )}
 
-                    <div style={{ padding: '10px 16px' }}>
+                    <div style={{ paddingTop: 10 }}>
                         <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
                             <input
                                 type="text"
@@ -1031,7 +1029,7 @@ const ContestRunner = () => {
 
                 <div className="card-orange" style={{ marginBottom: 14 }}>
                     <h3 className="card-header font-bold">📊 Final Standings</h3>
-                    <div style={{ padding: '10px 16px', display: 'flex', flexDirection: 'column', gap: 7 }}>
+                    <div style={{ paddingTop: 10, display: 'flex', flexDirection: 'column', gap: 7 }}>
                         {sortedByAppeal.map((p, idx) => (
                             <div key={p.id} style={{
                                 display: 'flex', alignItems: 'center', gap: 12,
@@ -1068,7 +1066,7 @@ const ContestRunner = () => {
                 {log.length > 0 && (
                     <div className="card-orange" style={{ marginBottom: 14 }}>
                         <h3 className="card-header font-bold">📜 Appeal Log</h3>
-                        <div style={{ padding: '8px 16px', display: 'flex', flexDirection: 'column', gap: 3, maxHeight: 200, overflowY: 'auto' }}>
+                        <div style={{ paddingTop: 8, display: 'flex', flexDirection: 'column', gap: 3, maxHeight: 200, overflowY: 'auto' }}>
                             {log.map((entry, i) => (
                                 <div key={i} style={{ fontSize: 12, color: entry.color, fontFamily: 'monospace' }}>{entry.text}</div>
                             ))}
@@ -1183,12 +1181,12 @@ const ContestRunner = () => {
                         </div>
                         <div style={{ display: 'flex', gap: 4, alignItems: 'center', flexWrap: 'wrap' }}>
                             {curGetReady && (
-                                <span title="Get Ready! is active — this turn's dice are doubled" style={{ padding: '2px 8px', borderRadius: 8, fontSize: 11, fontWeight: 700, background: '#e91e6322', border: '1px solid #e91e6344', color: '#e91e63' }}>
+                                <span title="Get Ready! is active — this turn's dice are doubled" style={{ padding: '2px 8px', borderRadius: 8, fontSize: 12, fontWeight: 700, background: '#e91e6322', border: '1px solid #e91e6344', color: '#e91e63' }}>
                                     ⚡ Get Ready! (2× dice)
                                 </span>
                             )}
                             {curReliableMove && (
-                                <span title={`Reliable: using ${curReliableMove} again scores 1d4`} style={{ padding: '2px 8px', borderRadius: 8, fontSize: 11, fontWeight: 700, background: '#e91e6322', border: '1px solid #e91e6344', color: '#e91e63' }}>
+                                <span title={`Reliable: using ${curReliableMove} again scores 1d4`} style={{ padding: '2px 8px', borderRadius: 8, fontSize: 12, fontWeight: 700, background: '#e91e6322', border: '1px solid #e91e6344', color: '#e91e63' }}>
                                     ♻ Reliable ({curReliableMove})
                                 </span>
                             )}
@@ -1234,7 +1232,7 @@ const ContestRunner = () => {
                                 }}
                             />
                             {pastedText && !parsedPaste && (
-                                <span style={{ fontSize: 11, color: '#f44336', alignSelf: 'center', whiteSpace: 'nowrap' }}>
+                                <span style={{ fontSize: 13, color: 'var(--color-danger-text)', alignSelf: 'center', whiteSpace: 'nowrap' }}>
                                     ✗ Can't parse
                                 </span>
                             )}
@@ -1244,7 +1242,7 @@ const ContestRunner = () => {
                         {parsedPaste && (
                             <div style={{ marginTop: 8, padding: '8px 12px', borderRadius: 7, background: 'var(--bg-light)', border: `1px solid ${color}44` }}>
                                 {nameMatchWarning && (
-                                    <div style={{ fontSize: 11, color: '#ff9800', fontWeight: 700, marginBottom: 4 }}>
+                                    <div style={{ fontSize: 13, color: 'var(--poke-orange)', fontWeight: 700, marginBottom: 4 }}>
                                         ⚠ Name "{parsedPaste.name}" doesn't match current participant — check you're entering the right score
                                     </div>
                                 )}
@@ -1278,7 +1276,7 @@ const ContestRunner = () => {
                                     disabled={!canConfirmPaste}
                                     style={{
                                         marginTop: 10, width: '100%', padding: '9px', borderRadius: 7, border: 'none',
-                                        background: canConfirmPaste ? `linear-gradient(135deg, #4caf50, #388e3c)` : 'var(--border-light)',
+                                        background: canConfirmPaste ? 'var(--gradient-purple)' : 'var(--border-light)',
                                         color: canConfirmPaste ? 'white' : 'var(--text-muted)',
                                         fontWeight: 700, fontSize: 14,
                                         cursor: canConfirmPaste ? 'pointer' : 'not-allowed',
@@ -1346,7 +1344,7 @@ const ContestRunner = () => {
                                         )}
                                     </div>
                                 ) : (
-                                    <span style={{ color: '#e65100' }}>⚠ Move not found — will roll 0 base appeal</span>
+                                    <span style={{ color: 'var(--color-danger-text)' }}>⚠ Move not found — will roll 0 base appeal</span>
                                 )}
                             </div>
                         )}
@@ -1372,7 +1370,7 @@ const ContestRunner = () => {
                 </div>
             ) : (
                 <div style={{ padding: '12px 16px', borderRadius: 10, marginBottom: 14, background: 'var(--surface-bg)', border: '1px solid var(--border-light)', textAlign: 'center' }}>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: '#4caf50', marginBottom: 8 }}>✓ All participants have appealed this round</div>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--color-success-text)', marginBottom: 8 }}>✓ All participants have appealed this round</div>
                     <button
                         onClick={handleNextRound}
                         style={{ padding: '10px 28px', borderRadius: 7, border: 'none', background: `linear-gradient(135deg, ${color}, ${color}cc)`, color: 'white', fontWeight: 800, fontSize: 14, cursor: 'pointer' }}
@@ -1407,16 +1405,16 @@ const ContestRunner = () => {
                             {!done && (
                                 <div style={{ display: 'flex', gap: 3 }}>
                                     {pFx.getReadyActive && (
-                                        <span title="Get Ready! — dice doubled this turn" style={{ fontSize: 10, padding: '1px 5px', borderRadius: 6, background: '#e91e6322', color: '#e91e63', fontWeight: 700 }}>⚡ GR</span>
+                                        <span title="Get Ready! — dice doubled this turn" style={{ fontSize: 12, padding: '1px 5px', borderRadius: 6, background: '#e91e6322', color: '#e91e63', fontWeight: 700 }}>⚡ GR</span>
                                     )}
                                     {pFx.reliableMove && (
-                                        <span title={`Reliable: ${pFx.reliableMove}`} style={{ fontSize: 10, padding: '1px 5px', borderRadius: 6, background: '#e91e6322', color: '#e91e63', fontWeight: 700 }}>♻ Rel</span>
+                                        <span title={`Reliable: ${pFx.reliableMove}`} style={{ fontSize: 12, padding: '1px 5px', borderRadius: 6, background: '#e91e6322', color: '#e91e63', fontWeight: 700 }}>♻ Rel</span>
                                     )}
                                     {nextRoundFirst === id && (
-                                        <span title="Quick Set — goes first next round" style={{ fontSize: 10, padding: '1px 5px', borderRadius: 6, background: '#9c27b022', color: '#9c27b0', fontWeight: 700 }}>⏩ QS</span>
+                                        <span title="Quick Set — goes first next round" style={{ fontSize: 12, padding: '1px 5px', borderRadius: 6, background: '#9c27b022', color: '#9c27b0', fontWeight: 700 }}>⏩ QS</span>
                                     )}
                                     {nextRoundLast === id && (
-                                        <span title="Slow Set — goes last next round" style={{ fontSize: 10, padding: '1px 5px', borderRadius: 6, background: '#9c27b022', color: '#9c27b0', fontWeight: 700 }}>⏪ SS</span>
+                                        <span title="Slow Set — goes last next round" style={{ fontSize: 12, padding: '1px 5px', borderRadius: 6, background: '#9c27b022', color: '#9c27b0', fontWeight: 700 }}>⏪ SS</span>
                                     )}
                                 </div>
                             )}
@@ -1429,11 +1427,11 @@ const ContestRunner = () => {
                                         <KeywordPill keyword={rResult.keyword} />
                                     )}
                                     <span style={{ color: 'var(--text-muted)' }}>J{rResult.judgeId}</span>
-                                    <strong style={{ color: rResult.isSameMove ? '#f44336' : rResult.maxVoltageBonusRolls?.length ? '#ff9800' : 'var(--text-primary)' }}>
+                                    <strong style={{ color: rResult.isSameMove ? 'var(--color-danger-text)' : rResult.maxVoltageBonusRolls?.length ? 'var(--poke-orange)' : 'var(--text-primary)' }}>
                                         {rResult.isSameMove ? '0 (same)' : `+${rResult.appeal}`}
                                     </strong>
                                     {rResult.voltageChange !== 0 && (
-                                        <span style={{ color: rResult.voltageChange > 0 ? '#4caf50' : '#f44336', fontSize: 11 }}>
+                                        <span style={{ color: rResult.voltageChange > 0 ? 'var(--color-success-text)' : 'var(--color-danger-text)', fontSize: 12 }}>
                                             ⚡{rResult.voltageChange > 0 ? '▲' : '▼'}
                                         </span>
                                     )}

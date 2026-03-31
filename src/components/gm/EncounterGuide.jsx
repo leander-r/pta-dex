@@ -253,12 +253,14 @@ const EncounterGuide = () => {
                             <button
                                 key={action.label}
                                 onClick={() => addAllyAction(action.value)}
+                                className="ally-action-btn"
                                 style={{
                                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                                     padding: '8px 12px', borderRadius: 8,
                                     border: action.value >= 0 ? '1px solid var(--color-success-text)' : '1px solid var(--color-danger-text)',
                                     background: action.value >= 0 ? 'var(--tint-success-bg)' : 'var(--tint-fail-bg)',
-                                    cursor: 'pointer', fontSize: 13, textAlign: 'left'
+                                    cursor: 'pointer', fontSize: 13, textAlign: 'left',
+                                    transition: 'opacity 0.15s',
                                 }}
                             >
                                 <span style={{ color: 'var(--text-primary)' }}>{action.label}</span>
