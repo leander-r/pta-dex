@@ -78,6 +78,7 @@ const GMTab = () => {
                         onClick={() => handleSectionChange(id)}
                         className={activeSection === id ? 'tab active' : 'tab'}
                         aria-selected={activeSection === id}
+                        title={label}
                         style={{
                             display: 'flex',
                             alignItems: 'center',
@@ -94,7 +95,7 @@ const GMTab = () => {
                         }}
                     >
                         <span aria-hidden="true">{icon}</span>
-                        <span>{label}</span>
+                        <span className="gm-tab-label">{label}</span>
                     </button>
                 ))}
             </div>

@@ -3793,6 +3793,12 @@
             }
         }
 
+        /* GM Tools tab strip — icon-only on small screens */
+        @media (max-width: 480px) {
+            .gm-tab-label { display: none; }
+            .tabs .tab { padding: 8px 10px !important; }
+        }
+
         /* Small mobile breakpoint */
         @media (max-width: 480px) {
             body {
