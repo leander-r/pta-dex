@@ -245,7 +245,7 @@ const CaptureCalculator = () => {
                 )}
             </div>
 
-            <p style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 8 }}>
+            <p style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 8 }}>
                 ⓘ The PH2 combat demo shows a Basic Ball adds +15 to the d100 roll (higher roll = harder to capture). Other ball modifiers are not defined — apply as GM discretion.
                 Always award EXP to active Pokémon even on a successful capture!
             </p>

@@ -102,18 +102,22 @@ const LoyaltyGuide = () => {
                         {LOYALTY_RANKS.map(lr => (
                             <div
                                 key={lr.rank}
-                                onClick={() => setExpandedRank(expandedRank === lr.rank ? null : lr.rank)}
                                 style={{
                                     borderRadius: 8,
                                     border: `1px solid ${lr.color}88`,
                                     background: expandedRank === lr.rank ? `${lr.color}38` : `${lr.color}22`,
-                                    overflow: 'hidden', cursor: 'pointer'
+                                    overflow: 'hidden'
                                 }}
                             >
-                                <div style={{
-                                    padding: '10px 14px', display: 'flex',
-                                    alignItems: 'center', gap: 10
-                                }}>
+                                <button
+                                    onClick={() => setExpandedRank(expandedRank === lr.rank ? null : lr.rank)}
+                                    aria-expanded={expandedRank === lr.rank}
+                                    style={{
+                                        width: '100%', padding: '10px 14px', display: 'flex',
+                                        alignItems: 'center', gap: 10,
+                                        background: 'transparent', border: 'none', cursor: 'pointer', textAlign: 'left'
+                                    }}
+                                >
                                     <div style={{
                                         width: 28, height: 28, borderRadius: '50%',
                                         background: lr.color, color: 'white',
@@ -125,10 +129,14 @@ const LoyaltyGuide = () => {
                                     <div style={{ fontWeight: 700, color: lr.color, fontSize: 15 }}>
                                         Loyalty {lr.rank} — {lr.label}
                                     </div>
-                                    <span style={{ marginLeft: 'auto', color: 'var(--text-muted)', fontSize: 13 }}>
-                                        {expandedRank === lr.rank ? '▲' : '▼'}
-                                    </span>
-                                </div>
+                                    <svg
+                                        aria-hidden="true"
+                                        style={{ marginLeft: 'auto', flexShrink: 0, transform: expandedRank === lr.rank ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}
+                                        width="14" height="14" viewBox="0 0 14 14" fill="none"
+                                    >
+                                        <path d="M2 4.5L7 9.5L12 4.5" stroke="var(--text-muted)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                                    </svg>
+                                </button>
                                 {expandedRank === lr.rank && (
                                     <div style={{ padding: '8px 14px 12px', fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6, borderTop: `1px solid ${lr.color}33` }}>
                                         {lr.desc}

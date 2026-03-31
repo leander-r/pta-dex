@@ -36,10 +36,7 @@ const EncounterGuide = () => {
     const wildHp = customHpBase * 3 + customLevel * 3;
     const wildStatValue = v => v + customLevel;
 
-    const allyTier = ALLY_SCALE.reduce((best, tier) => {
-        if (allyScore >= tier.value) return tier;
-        return best;
-    }, ALLY_SCALE[ALLY_SCALE.length - 1]);
+    const allyTier = ALLY_SCALE.find(tier => allyScore >= tier.value) ?? ALLY_SCALE[ALLY_SCALE.length - 1];
 
     const barPct = Math.round(((allyScore + 50) / 100) * 100);
 

@@ -73,7 +73,7 @@ const ExpCalculator = () => {
                                     fontSize: 16, textAlign: 'center', boxSizing: 'border-box'
                                 }}
                             />
-                            <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 3 }}>
+                            <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 3 }}>
                                 Look up in the alphabetic list (p.20+)
                             </div>
                         </div>
@@ -108,7 +108,7 @@ const ExpCalculator = () => {
                                     fontSize: 16, textAlign: 'center', boxSizing: 'border-box'
                                 }}
                             />
-                            <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 3 }}>
+                            <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 3 }}>
                                 Split EXP Drop between them first
                             </div>
                         </div>
@@ -159,7 +159,10 @@ const ExpCalculator = () => {
                             </div>
                         )}
                         <button
-                            onClick={() => toast.success(`EXP awarded: ${splitExp.toLocaleString()} per active Pokémon`)}
+                            onClick={() => {
+                                navigator.clipboard.writeText(String(splitExp)).catch(() => {});
+                                toast.success(`EXP awarded: ${splitExp.toLocaleString()} per active Pokémon`);
+                            }}
                             style={{
                                 marginTop: 10, padding: '7px 16px',
                                 background: 'var(--gradient-purple)',

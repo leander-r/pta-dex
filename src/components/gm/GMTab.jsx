@@ -3,7 +3,7 @@
 // ============================================================
 // Main Game Master tools tab with sub-section navigation.
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import CaptureCalculator from './CaptureCalculator.jsx';
 import EncounterGuide from './EncounterGuide.jsx';
 import RewardTables from './RewardTables.jsx';
@@ -38,8 +38,13 @@ const SECTION_COMPONENTS = {
 
 const GMTab = () => {
     const [activeSection, setActiveSection] = useState('capture');
+    const visitedRef = useRef(new Set(['capture']));
 
-    const ActiveComponent = SECTION_COMPONENTS[activeSection];
+    const handleSectionChange = (id) => {
+        visitedRef.current.add(id);
+        setActiveSection(id);
+    };
+
     const activeDesc = SECTIONS.find(s => s.id === activeSection)?.desc;
 
     return (
@@ -70,7 +75,7 @@ const GMTab = () => {
                 {SECTIONS.map(({ id, icon, label }) => (
                     <button
                         key={id}
-                        onClick={() => setActiveSection(id)}
+                        onClick={() => handleSectionChange(id)}
                         className={activeSection === id ? 'tab active' : 'tab'}
                         style={{
                             display: 'flex',
@@ -108,8 +113,16 @@ const GMTab = () => {
                 </p>
             )}
 
-            {/* Active section content */}
-            <ActiveComponent />
+            {/* Mount all visited sections, hide non-active — preserves state on tab switch */}
+            {SECTIONS.map(({ id }) => {
+                const SectionComponent = SECTION_COMPONENTS[id];
+                if (!visitedRef.current.has(id)) return null;
+                return (
+                    <div key={id} style={{ display: activeSection === id ? 'block' : 'none' }}>
+                        <SectionComponent />
+                    </div>
+                );
+            })}
         </div>
     );
 };

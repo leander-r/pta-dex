@@ -346,20 +346,21 @@ const SkillChecks = () => {
                 </div>
                 <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
                     {[
-                        { label: 'No Skill (1d20)',               fn: () => doRoll(0, false, false) },
-                        { label: 'Skill ×1 (±0 modifier)',         fn: () => doRoll(0, true,  false) },
-                        { label: 'Skill ×1 (+4 modifier)',         fn: () => doRoll(4, true,  false) },
-                        { label: 'Skill ×2 (±0 modifier)',         fn: () => doRoll(0, true,  true)  },
-                        { label: 'Skill ×2 (+4 modifier)',         fn: () => doRoll(4, true,  true)  },
-                    ].map(({ label, fn }) => (
+                        { label: 'No Skill',    title: '1d20 plain',                    fn: () => doRoll(0, false, false) },
+                        { label: '×1  ±0',      title: 'Skill ×1, no stat modifier',    fn: () => doRoll(0, true,  false) },
+                        { label: '×1  +4',      title: 'Skill ×1, +4 stat modifier',    fn: () => doRoll(4, true,  false) },
+                        { label: '×2  ±0',      title: 'Skill ×2, no stat modifier',    fn: () => doRoll(0, true,  true)  },
+                        { label: '×2  +4',      title: 'Skill ×2, +4 stat modifier',    fn: () => doRoll(4, true,  true)  },
+                    ].map(({ label, title, fn }) => (
                         <button
                             key={label}
                             onClick={fn}
+                            title={title}
                             style={{
                                 padding: '7px 12px', borderRadius: 6,
                                 background: 'var(--gradient-purple)',
                                 border: 'none', color: 'white', fontSize: 12,
-                                fontWeight: 600, cursor: 'pointer', minWidth: '80px'
+                                fontWeight: 600, cursor: 'pointer', minWidth: '72px'
                             }}
                         >
                             {label}
@@ -422,10 +423,10 @@ const SkillChecks = () => {
                             </div>
                         ) : (
                             <div style={{ padding: '8px 14px' }}>
-                                {skill.dcs.map(([dc, result]) => (
+                                {skill.dcs.map(([dc, result], idx) => (
                                     <div key={dc} style={{
                                         display: 'flex', gap: 10, padding: '5px 0',
-                                        borderBottom: '1px solid var(--border-light)',
+                                        borderBottom: idx < skill.dcs.length - 1 ? '1px solid var(--border-light)' : 'none',
                                         fontSize: 13, alignItems: 'flex-start'
                                     }}>
                                         <span style={{
