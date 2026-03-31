@@ -57,6 +57,7 @@ const GMTab = () => {
             {/* Sub-tab navigation — wraps in a gradient-masked scroll container on mobile */}
             <div style={{ position: 'relative', marginBottom: '20px' }}>
             <div
+                role="tablist"
                 className="tabs"
                 style={{
                     display: 'flex',
@@ -75,8 +76,10 @@ const GMTab = () => {
                 {SECTIONS.map(({ id, icon, label }) => (
                     <button
                         key={id}
+                        role="tab"
                         onClick={() => handleSectionChange(id)}
                         className={activeSection === id ? 'tab active' : 'tab'}
+                        aria-selected={activeSection === id}
                         style={{
                             display: 'flex',
                             alignItems: 'center',
@@ -84,10 +87,6 @@ const GMTab = () => {
                             padding: '8px 14px',
                             borderRadius: '7px',
                             border: 'none',
-                            background: activeSection === id
-                                ? 'linear-gradient(135deg, var(--poke-orange), var(--poke-orange-dark))'
-                                : 'transparent',
-                            color: activeSection === id ? 'white' : 'var(--text-secondary)',
                             fontWeight: activeSection === id ? 700 : 500,
                             fontSize: '13px',
                             cursor: 'pointer',
@@ -95,7 +94,6 @@ const GMTab = () => {
                             flexShrink: 0,
                             whiteSpace: 'nowrap',
                         }}
-                        aria-current={activeSection === id ? 'true' : undefined}
                     >
                         <span aria-hidden="true">{icon}</span>
                         <span>{label}</span>
@@ -105,13 +103,6 @@ const GMTab = () => {
             {/* Right-edge fade hint — only visible when content overflows (mobile) */}
             <div style={{ pointerEvents: 'none', position: 'absolute', top: 0, right: 0, bottom: 0, width: '32px', borderRadius: '0 10px 10px 0', background: 'linear-gradient(to right, transparent, var(--surface-bg))' }} aria-hidden="true" />
             </div>
-
-            {/* Active section description */}
-            {activeDesc && (
-                <p className="section-description" style={{ marginBottom: '12px', marginTop: '-8px' }}>
-                    {activeDesc}
-                </p>
-            )}
 
             {/* Mount all visited sections, hide non-active — preserves state on tab switch */}
             {SECTIONS.map(({ id }) => {

@@ -31,7 +31,7 @@ const ExpCalculator = () => {
             {/* Formula card */}
             <div className="card-orange" style={{ marginBottom: 14 }}>
                 <h3 className="card-header font-bold">📐 EXP Formula</h3>
-                <div style={{ padding: '14px 16px' }}>
+                <div style={{ paddingTop: 14 }}>
                     <div style={{
                         padding: '12px 16px', borderRadius: 8,
                         background: 'var(--surface-bg)', border: '1px solid var(--border-light)',
@@ -40,7 +40,7 @@ const ExpCalculator = () => {
                         <div>
                             <strong>(EXP Drop × Pokémon Level)</strong>
                             <span style={{ color: 'var(--text-muted)' }}> × </span>
-                            <strong>(1 + Is it a Trainer's Pokémon?)</strong>
+                            <strong>multiplier</strong>
                         </div>
                         <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 4 }}>
                             Wild Pokémon = ×1 &nbsp;|&nbsp; Trainer's Pokémon = ×2
@@ -56,7 +56,7 @@ const ExpCalculator = () => {
             {/* Calculator */}
             <div className="card-orange" style={{ marginBottom: 14 }}>
                 <h3 className="card-header font-bold">🧮 Interactive Calculator</h3>
-                <div style={{ padding: '14px 16px' }}>
+                <div style={{ paddingTop: 14 }}>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 12, marginBottom: 16 }}>
                         <div>
                             <label style={{ fontSize: 13, color: 'var(--text-muted)', display: 'block', marginBottom: 5 }}>
@@ -179,7 +179,7 @@ const ExpCalculator = () => {
             {/* EXP Drop quick reference */}
             <div className="card-orange">
                 <h3 className="card-header font-bold">📖 EXP Drop Quick Reference</h3>
-                <div style={{ padding: '14px 16px' }}>
+                <div style={{ paddingTop: 14 }}>
                     <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 12 }}>
                         Common EXP Drop values from the GM Guide alphabetic list.
                         Full list covers all Pokémon (pp.20–57).
@@ -209,7 +209,7 @@ const ExpCalculator = () => {
                             </div>
                         ))}
                     </div>
-                    <p style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 8 }}>
+                    <p style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 8 }}>
                         Click a Pokémon to load its EXP Drop into the calculator.
                     </p>
                 </div>

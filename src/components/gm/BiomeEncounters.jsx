@@ -120,7 +120,7 @@ const BiomeEncounters = () => {
             {/* Biome selector */}
             <div className="card-orange" style={{ marginBottom: 14 }}>
                 <h3 className="card-header font-bold">🌍 Select Biome</h3>
-                <div style={{ padding: '14px 16px' }}>
+                <div style={{ paddingTop: 14 }}>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                         {BIOMES.map(b => (
                             <button
@@ -158,8 +158,8 @@ const BiomeEncounters = () => {
                         onClick={rollRandom}
                         style={{
                             padding: '5px 14px', borderRadius: 20,
-                            border: '2px solid rgba(255,255,255,0.5)',
-                            background: 'rgba(255,255,255,0.2)',
+                            border: '1px solid var(--border-light)',
+                            background: 'var(--gradient-purple)',
                             color: 'white', fontWeight: 700, fontSize: 13,
                             cursor: 'pointer', whiteSpace: 'nowrap',
                         }}
@@ -190,7 +190,7 @@ const BiomeEncounters = () => {
                         </button>
                     </div>
                 )}
-                <div style={{ padding: '14px 16px' }}>
+                <div style={{ paddingTop: 14 }}>
                     <input
                         type="search"
                         placeholder="Filter Pokémon…"
@@ -218,15 +218,13 @@ const BiomeEncounters = () => {
                             {filtered.map(p => (
                                 <div
                                     key={p}
-                                    className="biome-chip"
                                     style={{
-                                        padding: '5px 10px',
+                                        padding: '4px 10px',
                                         borderRadius: 6,
                                         background: 'var(--surface-bg)',
                                         border: '1px solid var(--border-light)',
                                         fontSize: 13,
-                                        color: 'var(--text-primary)',
-                                        transition: 'background 0.12s',
+                                        color: 'var(--text-secondary)',
                                     }}
                                 >
                                     {p}

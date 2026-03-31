@@ -205,7 +205,7 @@ const KeywordPill = ({ keyword }) => {
     const c = KEYWORD_COLOR[kw] || '#9e9e9e';
     return (
         <span title={KEYWORD_DESC[kw]} style={{
-            padding: '1px 6px', borderRadius: 8, fontSize: 10, fontWeight: 700,
+            padding: '1px 6px', borderRadius: 8, fontSize: 12, fontWeight: 700,
             background: `${c}22`, border: `1px solid ${c}55`, color: c,
             cursor: 'help', whiteSpace: 'nowrap',
             textDecoration: 'underline dotted', textUnderlineOffset: '2px',

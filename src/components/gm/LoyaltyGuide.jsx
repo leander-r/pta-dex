@@ -71,7 +71,7 @@ const DEFIANCE_TABLE = [
 
 const LoyaltyGuide = () => {
     const [defianceRoll, setDefianceRoll] = useState(null);
-    const [expandedRank, setExpandedRank] = useState(null);
+    const [expandedRank, setExpandedRank] = useState(1);
 
     const rollDefiance = () => {
         const r = Math.floor(Math.random() * 100) + 1;
@@ -80,7 +80,7 @@ const LoyaltyGuide = () => {
             const [lo, hi] = e.range.replace('00', '100').split('–').map(Number);
             return normalized >= lo && normalized <= hi;
         });
-        setDefianceRoll({ roll: r === 100 ? '00 (100)' : String(r).padStart(2, '0'), entry });
+        setDefianceRoll({ roll: r === 100 ? '00' : String(r).padStart(2, '0'), entry });
         toast.info(`Defiance roll: ${r} — ${entry?.result ?? '?'}`);
     };
 
@@ -97,7 +97,7 @@ const LoyaltyGuide = () => {
             {/* Loyalty Ranks */}
             <div className="card-orange" style={{ marginBottom: 14 }}>
                 <h3 className="card-header font-bold">🏅 Loyalty Ranks</h3>
-                <div style={{ padding: '14px 16px' }}>
+                <div style={{ paddingTop: 14 }}>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                         {LOYALTY_RANKS.map(lr => (
                             <div
@@ -151,7 +151,7 @@ const LoyaltyGuide = () => {
             {/* What lowers loyalty */}
             <div className="card-orange" style={{ marginBottom: 14 }}>
                 <h3 className="card-header font-bold">📉 What Lowers Loyalty</h3>
-                <div style={{ padding: '14px 16px' }}>
+                <div style={{ paddingTop: 14 }}>
                     <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 8 }}>
                         Loyalty 4 Pokémon understand hardship and will forgive much — but a true betrayal drops
                         it hard and recovering it becomes very difficult.
@@ -165,7 +165,7 @@ const LoyaltyGuide = () => {
             {/* What raises loyalty */}
             <div className="card-orange" style={{ marginBottom: 14 }}>
                 <h3 className="card-header font-bold">📈 What Raises Loyalty</h3>
-                <div style={{ padding: '14px 16px' }}>
+                <div style={{ paddingTop: 14 }}>
                     <ul style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.8, paddingLeft: 18 }}>
                         {RAISE_LOYALTY.map((l, i) => <li key={i}>{l}</li>)}
                     </ul>
@@ -175,7 +175,7 @@ const LoyaltyGuide = () => {
             {/* Defiance Table */}
             <div className="card-orange">
                 <h3 className="card-header font-bold">⚠️ Defiance Table (Loyalty 0)</h3>
-                <div style={{ padding: '14px 16px' }}>
+                <div style={{ paddingTop: 14 }}>
                     <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 10 }}>
                         At Loyalty 0 — if cruelty was benign/neglectful — consult this table each time the trainer
                         tries to order the Pokémon. With active violence, the Pokémon is GM-controlled and attacks.

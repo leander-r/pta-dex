@@ -2676,7 +2676,9 @@
         }
         
         .card-header {
-            margin-bottom: 15px;
+            margin-bottom: 0;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-light);
             color: var(--poke-orange);
             display: flex;
             align-items: center;
@@ -4548,8 +4550,7 @@
         }
 
         [data-theme="dark"] .card-header {
-            background: var(--bg-section) !important;
-            border-color: var(--border-light) !important;
+            border-bottom-color: var(--border-medium) !important;
         }
 
         /* Dark mode: Placeholders */

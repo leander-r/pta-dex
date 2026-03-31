@@ -62,7 +62,7 @@ const EncounterGuide = () => {
             {/* Encounter Composition */}
             <div className="card-orange" style={{ marginBottom: 14 }}>
                 <h3 className="card-header font-bold">📋 Encounter Composition</h3>
-                <div style={{ padding: '14px 16px', fontSize: 14 }}>
+                <div style={{ paddingTop: 14, fontSize: 14 }}>
                     <p style={{ marginBottom: 10, color: 'var(--text-secondary)' }}>
                         Don't pre-stat wild Pokémon — players may catch them and choose their own stat allocation.
                         Every wild encounter should have three elements:
@@ -89,7 +89,7 @@ const EncounterGuide = () => {
             {/* Wild Pokémon Stats Calculator */}
             <div className="card-orange" style={{ marginBottom: 14 }}>
                 <h3 className="card-header font-bold">📊 Wild Pokémon Stats Formula</h3>
-                <div style={{ padding: '14px 16px' }}>
+                <div style={{ paddingTop: 14 }}>
                     <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 12 }}>
                         Use the Pokémon's prominent Base Stats, then add the wild's level to each stat.
                         HP uses a different formula. Wild Pokémon do not have Death Saving Throws.
@@ -173,7 +173,7 @@ const EncounterGuide = () => {
             {/* Allying with Wild Pokémon */}
             <div className="card-orange">
                 <h3 className="card-header font-bold">🤝 Allying with Wild Pokémon</h3>
-                <div style={{ padding: '14px 16px' }}>
+                <div style={{ paddingTop: 14 }}>
                     <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 12 }}>
                         Trainers can set aside Poké Balls and try to befriend a non-aggressive wild Pokémon.
                         Track an alliance score from −50 to +50. A Pokémon below −10 responds to positive actions
@@ -256,8 +256,8 @@ const EncounterGuide = () => {
                                 style={{
                                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                                     padding: '8px 12px', borderRadius: 8,
-                                    border: `1px solid ${action.value >= 0 ? '#43a04766' : '#e5393566'}`,
-                                    background: action.value >= 0 ? '#43a04730' : '#e5393530',
+                                    border: action.value >= 0 ? '1px solid var(--color-success-text)' : '1px solid var(--color-danger-text)',
+                                    background: action.value >= 0 ? 'var(--tint-success-bg)' : 'var(--tint-fail-bg)',
                                     cursor: 'pointer', fontSize: 13, textAlign: 'left'
                                 }}
                             >

@@ -346,11 +346,11 @@ const SkillChecks = () => {
                 </div>
                 <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
                     {[
-                        { label: 'No Skill',    title: '1d20 plain',                    fn: () => doRoll(0, false, false) },
-                        { label: '×1  ±0',      title: 'Skill ×1, no stat modifier',    fn: () => doRoll(0, true,  false) },
-                        { label: '×1  +4',      title: 'Skill ×1, +4 stat modifier',    fn: () => doRoll(4, true,  false) },
-                        { label: '×2  ±0',      title: 'Skill ×2, no stat modifier',    fn: () => doRoll(0, true,  true)  },
-                        { label: '×2  +4',      title: 'Skill ×2, +4 stat modifier',    fn: () => doRoll(4, true,  true)  },
+                        { label: 'No Skill',       title: '1d20 plain — no skill bonus',              fn: () => doRoll(0, false, false) },
+                        { label: 'Skill ×1',       title: 'Skill once, no stat mod: 1d20 + 2',        fn: () => doRoll(0, true,  false) },
+                        { label: 'Skill ×1 +mod',  title: 'Skill once, stat mod +4 example: 1d20 + 6', fn: () => doRoll(4, true,  false) },
+                        { label: 'Skill ×2',       title: 'Skill twice, no stat mod: 1d20 + 4',       fn: () => doRoll(0, true,  true)  },
+                        { label: 'Skill ×2 +mod',  title: 'Skill twice, stat mod +4 example: 1d20 + 12', fn: () => doRoll(4, true,  true)  },
                     ].map(({ label, title, fn }) => (
                         <button
                             key={label}
@@ -360,7 +360,7 @@ const SkillChecks = () => {
                                 padding: '7px 12px', borderRadius: 6,
                                 background: 'var(--gradient-purple)',
                                 border: 'none', color: 'white', fontSize: 12,
-                                fontWeight: 600, cursor: 'pointer', minWidth: '72px'
+                                fontWeight: 600, cursor: 'pointer',
                             }}
                         >
                             {label}

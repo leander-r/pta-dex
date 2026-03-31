@@ -45,7 +45,7 @@ const DeathSaves = () => {
             {/* Fainting rules */}
             <div className="card-orange" style={{ marginBottom: 14 }}>
                 <h3 className="card-header font-bold">😵 Fainting Rules</h3>
-                <div style={{ padding: '14px 16px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 12 }}>
+                <div style={{ paddingTop: 14, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 12 }}>
                     <div style={{ padding: '12px 14px', borderRadius: 8, background: 'var(--tint-blue-bg)', border: '1px solid var(--tint-blue-border)' }}>
                         <div style={{ fontWeight: 700, color: 'var(--poke-blue)', marginBottom: 6 }}>🧑 Trainer Fainting</div>
                         <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
@@ -66,7 +66,7 @@ const DeathSaves = () => {
             {/* Death threshold */}
             <div className="card-orange" style={{ marginBottom: 14 }}>
                 <h3 className="card-header font-bold">⚠️ Death Threshold & Lethal Damage</h3>
-                <div style={{ padding: '14px 16px' }}>
+                <div style={{ paddingTop: 14 }}>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12, marginBottom: 12 }}>
                         <div style={{
                             padding: '12px 14px', borderRadius: 8,
@@ -104,7 +104,7 @@ const DeathSaves = () => {
             {/* Trainer DST calculator */}
             <div className="card-orange" style={{ marginBottom: 14 }}>
                 <h3 className="card-header font-bold">🧑 Trainer Death Saving Throw</h3>
-                <div style={{ padding: '14px 16px' }}>
+                <div style={{ paddingTop: 14 }}>
                     <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 12 }}>
                         Roll <strong>1d20</strong>. Success if roll ≤ Trainer Level (capped at 18).
                         The cap leaves at least a 10% chance of death at all times. Fail = death.
@@ -173,7 +173,7 @@ const DeathSaves = () => {
             {/* Pokémon DST calculator */}
             <div className="card-orange">
                 <h3 className="card-header font-bold">🐾 Pokémon Death Saving Throw</h3>
-                <div style={{ padding: '14px 16px' }}>
+                <div style={{ paddingTop: 14 }}>
                     <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 12 }}>
                         Roll <strong>1d100</strong>. Success if roll ≤ Pokémon Level × 2 (capped at 90).
                         The cap leaves at least a 10% chance of death. Fail = death.
