@@ -20,6 +20,7 @@
 
             /* Purple gradient (used for trainer level, etc.) */
             --gradient-purple: linear-gradient(135deg, #667eea, #764ba2);
+            --gradient-blue: linear-gradient(135deg, #2196f3, #1565c0);
             --color-purple: #667eea;
             --color-purple-dark: #764ba2;
 
@@ -1412,6 +1413,9 @@
             background-size: 300% 300%;
             animation: type-shimmer 5s ease infinite;
         }
+
+        /* Biome encounter Pokémon chips */
+        .biome-chip:hover { background: var(--hover-bg) !important; }
 
         /* Natures table scroll hint — hidden on desktop, shown via mobile media query */
         .natures-table-fade { display: none; }

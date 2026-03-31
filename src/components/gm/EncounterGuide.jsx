@@ -79,7 +79,7 @@ const EncounterGuide = () => {
                             }}>
                                 <div style={{ fontSize: 20, marginBottom: 6 }}>{item.icon}</div>
                                 <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 4, color: 'var(--text-primary)' }}>{item.title}</div>
-                                <div style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.5 }}>{item.desc}</div>
+                                <div style={{ fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.5 }}>{item.desc}</div>
                             </div>
                         ))}
                     </div>
@@ -113,7 +113,7 @@ const EncounterGuide = () => {
 
                     <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap', marginBottom: 12 }}>
                         <div>
-                            <label style={{ fontSize: 12, color: 'var(--text-muted)', display: 'block', marginBottom: 3 }}>
+                            <label style={{ fontSize: 13, color: 'var(--text-muted)', display: 'block', marginBottom: 3 }}>
                                 HP Base Stat
                             </label>
                             <input
@@ -129,7 +129,7 @@ const EncounterGuide = () => {
                             />
                         </div>
                         <div>
-                            <label style={{ fontSize: 12, color: 'var(--text-muted)', display: 'block', marginBottom: 3 }}>
+                            <label style={{ fontSize: 13, color: 'var(--text-muted)', display: 'block', marginBottom: 3 }}>
                                 Wild Level
                             </label>
                             <input
@@ -235,7 +235,7 @@ const EncounterGuide = () => {
                                     <div style={{ fontWeight: 700, color: tier.color, fontSize: 13 }}>
                                         {tier.value > 0 ? '+' : ''}{tier.value} — {tier.label}
                                     </div>
-                                    <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{tier.desc}</div>
+                                    <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>{tier.desc}</div>
                                 </div>
                             ))}
                         </div>

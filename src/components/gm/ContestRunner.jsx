@@ -159,7 +159,7 @@ const VoltageBar = ({ voltage, color }) => (
                 boxShadow: i < voltage ? `0 0 4px ${color}66` : 'none',
             }} />
         ))}
-        <span style={{ fontSize: 11, color: 'var(--text-muted)', marginLeft: 2, fontWeight: 700 }}>
+        <span style={{ fontSize: 12, color: 'var(--text-muted)', marginLeft: 2, fontWeight: 700 }}>
             {voltage}/6
         </span>
     </div>

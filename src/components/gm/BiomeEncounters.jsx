@@ -169,7 +169,7 @@ const BiomeEncounters = () => {
                 </h3>
                 {rolled && (
                     <div style={{
-                        margin: '0 16px', padding: '8px 14px', borderRadius: 8,
+                        margin: '10px 16px 0', padding: '8px 14px', borderRadius: 8,
                         background: 'var(--tint-purple-bg)', border: '1px solid var(--tint-purple-border)',
                         fontSize: 14, fontWeight: 700, color: 'var(--color-purple)',
                         display: 'flex', alignItems: 'center', gap: 8,
@@ -218,6 +218,7 @@ const BiomeEncounters = () => {
                             {filtered.map(p => (
                                 <div
                                     key={p}
+                                    className="biome-chip"
                                     style={{
                                         padding: '5px 10px',
                                         borderRadius: 6,
@@ -225,6 +226,7 @@ const BiomeEncounters = () => {
                                         border: '1px solid var(--border-light)',
                                         fontSize: 13,
                                         color: 'var(--text-primary)',
+                                        transition: 'background 0.12s',
                                     }}
                                 >
                                     {p}
