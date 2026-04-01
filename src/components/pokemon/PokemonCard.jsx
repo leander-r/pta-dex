@@ -510,6 +510,9 @@ const PokemonCard = ({
                         </div>
                     ) : (
                         <div
+                            role="button"
+                            tabIndex={0}
+                            aria-label="Drag to reorder"
                             title="Drag to reorder"
                             style={{ flexShrink: 0, cursor: 'grab', fontSize: '18px', color: 'var(--text-muted)', userSelect: 'none', width: '20px', textAlign: 'center' }}
                         >
@@ -656,64 +659,52 @@ const PokemonCard = ({
                         </div>
 
                         {/* Expandable Section Buttons */}
+                        {(() => {
+                            const expandBtnStyle = (section) => ({
+                                padding: '4px 10px',
+                                borderRadius: '12px',
+                                border: expandedSection === section ? '1.5px solid transparent' : '1.5px solid var(--border-medium)',
+                                background: expandedSection === section ? 'var(--gradient-purple)' : 'var(--collapsed-btn-bg)',
+                                color: expandedSection === section ? 'white' : 'var(--collapsed-btn-text)',
+                                fontSize: '12px',
+                                fontWeight: 'bold',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '4px'
+                            });
+                            const abilities = (pokemon.abilities && pokemon.abilities.length > 0)
+                                ? pokemon.abilities
+                                : (pokemon.ability ? [pokemon.ability] : []);
+                            const moves = pokemon.moves || [];
+                            const natCount = moves.filter(m => m.source === 'natural').length;
+                            const taughtCount = moves.filter(m => m.source === 'taught').length;
+                            const atNatLimit = natCount >= MAX_NATURAL_MOVES;
+                            const atTaughtLimit = taughtCount >= MAX_TAUGHT_MOVES;
+                            const visibleSkills = (pokemon.pokemonSkills || []).filter(s => s.value === undefined || s.value > 0);
+                            return (
                         <div style={{ display: 'flex', gap: '6px', marginTop: '8px', flexWrap: 'wrap' }}>
                             {/* Abilities Button */}
-                            {(() => {
-                                const abilities = (pokemon.abilities && pokemon.abilities.length > 0)
-                                    ? pokemon.abilities
-                                    : (pokemon.ability ? [pokemon.ability] : []);
-                                return abilities.length > 0 && (
+                            {abilities.length > 0 && (
                                     <button
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             setExpandedSection(expandedSection === 'abilities' ? null : 'abilities');
                                         }}
-                                        style={{
-                                            padding: '4px 10px',
-                                            borderRadius: '12px',
-                                            border: expandedSection === 'abilities' ? '1.5px solid transparent' : '1.5px solid var(--border-medium)',
-                                            background: expandedSection === 'abilities' ? 'var(--gradient-purple)' : 'var(--collapsed-btn-bg)',
-                                            color: expandedSection === 'abilities' ? 'white' : 'var(--collapsed-btn-text)',
-                                            fontSize: '12px',
-                                            fontWeight: 'bold',
-                                            cursor: 'pointer',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            gap: '4px'
-                                        }}
+                                        style={expandBtnStyle('abilities')}
                                     >
                                         <span>✨</span> Abilities ({abilities.length})
                                     </button>
-                                );
-                            })()}
+                            )}
                             {/* Moves Button */}
-                            {(() => {
-                                const moves = pokemon.moves || [];
-                                const natCount = moves.filter(m => m.source === 'natural').length;
-                                const taughtCount = moves.filter(m => m.source === 'taught').length;
-                                const atNatLimit = natCount >= MAX_NATURAL_MOVES;
-                                const atTaughtLimit = taughtCount >= MAX_TAUGHT_MOVES;
-                                if (moves.length === 0) return null;
-                                return (
+                            {moves.length > 0 && (
                                     <button
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             setExpandedSection(expandedSection === 'moves' ? null : 'moves');
                                         }}
                                         title={`Natural: ${natCount}/${MAX_NATURAL_MOVES} | Taught: ${taughtCount}/${MAX_TAUGHT_MOVES}`}
-                                        style={{
-                                            padding: '4px 10px',
-                                            borderRadius: '12px',
-                                            border: expandedSection === 'moves' ? '1.5px solid transparent' : '1.5px solid var(--border-medium)',
-                                            background: expandedSection === 'moves' ? 'var(--gradient-purple)' : 'var(--collapsed-btn-bg)',
-                                            color: expandedSection === 'moves' ? 'white' : 'var(--collapsed-btn-text)',
-                                            fontSize: '12px',
-                                            fontWeight: 'bold',
-                                            cursor: 'pointer',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            gap: '4px'
-                                        }}
+                                        style={expandBtnStyle('moves')}
                                     >
                                         <span>⚔️</span> Moves
                                         <span style={{ fontSize: '11px', display: 'flex', alignItems: 'center', gap: '3px' }}>
@@ -723,33 +714,22 @@ const PokemonCard = ({
                                             {atNatLimit && <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: expandedSection === 'moves' ? 'white' : 'var(--color-danger-text)', flexShrink: 0, display: 'inline-block' }} />}
                                         </span>
                                     </button>
-                                );
-                            })()}
+                            )}
                             {/* Skills Button */}
-                            {(pokemon.pokemonSkills || []).filter(s => s.value === undefined || s.value > 0).length > 0 && (
+                            {visibleSkills.length > 0 && (
                                 <button
                                     onClick={(e) => {
                                         e.stopPropagation();
                                         setExpandedSection(expandedSection === 'skills' ? null : 'skills');
                                     }}
-                                    style={{
-                                        padding: '4px 10px',
-                                        borderRadius: '12px',
-                                        border: expandedSection === 'skills' ? '1.5px solid transparent' : '1.5px solid var(--border-medium)',
-                                        background: expandedSection === 'skills' ? 'var(--gradient-purple)' : 'var(--collapsed-btn-bg)',
-                                        color: expandedSection === 'skills' ? 'white' : 'var(--collapsed-btn-text)',
-                                        fontSize: '12px',
-                                        fontWeight: 'bold',
-                                        cursor: 'pointer',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '4px'
-                                    }}
+                                    style={expandBtnStyle('skills')}
                                 >
-                                    <span>🐾</span> Skills ({(pokemon.pokemonSkills || []).filter(s => s.value === undefined || s.value > 0).length})
+                                    <span>🐾</span> Skills ({visibleSkills.length})
                                 </button>
                             )}
                         </div>
+                        );
+                        })()}
 
                         {/* Expanded Abilities */}
                         {expandedSection === 'abilities' && (() => {
@@ -1035,7 +1015,7 @@ const PokemonCard = ({
                             <span style={{
                                 position: 'absolute', top: '4px', right: '4px',
                                 minWidth: '16px', height: '16px', lineHeight: '16px',
-                                borderRadius: '8px', fontSize: '10px', fontWeight: 'bold',
+                                borderRadius: '8px', fontSize: '11px', fontWeight: 'bold',
                                 background: id === 'stats' ? 'var(--color-success-text)' : 'var(--text-muted)',
                                 color: 'white', textAlign: 'center', padding: '0 2px'
                             }}>{badge}</span>
@@ -1065,6 +1045,7 @@ const PokemonCard = ({
                                 <div style={{ position: 'relative' }}>
                                     <input
                                         id="species-search-input"
+                                        aria-label="Search Pokémon species"
                                         type="text"
                                         value={speciesSearch}
                                         onChange={(e) => {
@@ -1072,7 +1053,7 @@ const PokemonCard = ({
                                             setShowSpeciesDropdown(true);
                                         }}
                                         onFocus={() => setShowSpeciesDropdown(true)}
-                                        placeholder={pokemon.species ? `Current: ${pokemon.species} — search to change…` : 'Search species by name...'}
+                                        placeholder="Search species by name…"
                                         style={{
                                             width: '100%',
                                             padding: '10px',
@@ -1139,7 +1120,7 @@ const PokemonCard = ({
                                             {/* Type Filter Chips */}
                                             <div style={{ marginBottom: '8px' }}>
                                                 <div style={{ fontSize: '12px', fontWeight: 'bold', color: 'var(--species-label-text)', marginBottom: '4px' }}>Filter by Type:</div>
-                                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', paddingBottom: '3px' }}>
+                                                <div role="group" aria-label="Filter by type" style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', paddingBottom: '3px' }}>
                                                     <button
                                                         onClick={() => setSpeciesTypeFilter('all')}
                                                         style={{
@@ -1251,7 +1232,7 @@ const PokemonCard = ({
                                                                         fontSize: '12px',
                                                                         color: 'white',
                                                                         background: 'var(--color-purple)',
-                                                                        padding: '1px 4px',
+                                                                        padding: '2px 6px',
                                                                         borderRadius: '4px',
                                                                         fontWeight: 'bold'
                                                                     }}>
@@ -1847,7 +1828,7 @@ const PokemonCard = ({
                                                         );
                                                     }}
                                                     style={{
-                                                        background: 'rgba(255,255,255,0.3)',
+                                                        background: 'var(--bg-light)',
                                                         border: 'none',
                                                         borderRadius: '50%',
                                                         width: '24px',
@@ -2077,10 +2058,10 @@ const PokemonCard = ({
                                                         onClick={() => updatePokemon({ avatar: '' })}
                                                         style={{
                                                             position: 'absolute',
-                                                            top: '-8px',
-                                                            right: '-8px',
-                                                            width: '22px',
-                                                            height: '22px',
+                                                            top: '-10px',
+                                                            right: '-10px',
+                                                            width: '26px',
+                                                            height: '26px',
                                                             borderRadius: '50%',
                                                             background: 'var(--danger-btn-start)',
                                                             color: 'white',
@@ -2325,7 +2306,7 @@ const PokemonCard = ({
                                     {canAdd && (
                                         <div style={{ fontSize: '12px', color: 'var(--color-success-text)', fontWeight: 'bold', marginBottom: '3px', background: 'var(--tint-success-bg)', borderRadius: '4px', padding: '1px 4px', display: 'inline-block' }}>▲ point</div>
                                     )}
-                                    <div className="text-light" style={{ fontSize: '11px', marginBottom: '1px' }}>
+                                    <div className="text-light" style={{ fontSize: '12px', marginBottom: '1px' }}>
                                         Base {natureModifiedBase[stat] || 10}
                                     </div>
                                     {/* P11: show greyed "0" instead of em-dash when nothing added */}
@@ -2428,7 +2409,7 @@ const PokemonCard = ({
                             <div style={{ textAlign: 'center', padding: '18px 16px', marginBottom: '10px', borderRadius: '8px', background: 'var(--bg-light)', border: '1px dashed var(--border-medium)' }}>
                                 <div style={{ fontSize: '22px', marginBottom: '6px' }}>📭</div>
                                 <div style={{ fontSize: '13px', fontWeight: 'bold', color: 'var(--text-secondary)', marginBottom: '4px' }}>No moves learned yet</div>
-                                <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Open <strong>Browse ▼</strong> below to search for moves, or pick a source filter to see species-specific options.</div>
+                                <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Use the <strong>Browse</strong> panel below to search for moves, or pick a source filter to see species-specific options.</div>
                             </div>
                         )}
 
@@ -2458,8 +2439,8 @@ const PokemonCard = ({
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '5px', flexWrap: 'wrap' }}>
                                         <div style={{ fontWeight: 'bold' }}>{move.name}</div>
                                         <span style={{
-                                            fontSize: '11px', fontWeight: 'bold', padding: '1px 4px',
-                                            borderRadius: '3px',
+                                            fontSize: '11px', fontWeight: 'bold', padding: '2px 6px',
+                                            borderRadius: '4px',
                                             background: move.source === 'taught' ? 'var(--color-taught)'
                                                 : move.source === 'egg' ? 'var(--stat-satk)'
                                                 : move.source === 'custom' ? 'var(--stat-spd)'
