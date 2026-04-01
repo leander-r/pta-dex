@@ -420,7 +420,7 @@ const PokemonTab = () => {
                             <div className="pokemon-import-footer" style={{
                                 padding: '8px 14px',
                                 fontSize: '12px',
-                                borderTop: '1px solid var(--border-light, #e8e3f3)'
+                                borderTop: '1px solid var(--border-light)'
                             }}>
                                 Receive Pokemon from trades or gifts
                             </div>
@@ -500,7 +500,7 @@ const PokemonTab = () => {
                 >
                     🔍 Search
                     {(filter.search || filter.type) && (
-                        <span style={{ background: activePanel === 'search' ? 'rgba(0,0,0,0.25)' : 'var(--poke-orange)', color: activePanel === 'search' ? 'rgba(255,255,255,0.95)' : 'white', borderRadius: '8px', padding: '0 5px', fontSize: '11px', fontWeight: 'bold' }}>
+                        <span style={{ background: activePanel === 'search' ? 'var(--bg-primary)' : 'var(--poke-orange)', color: 'white', borderRadius: '8px', padding: '0 5px', fontSize: '11px', fontWeight: 'bold' }}>
                             {[filter.search && '✓', filter.type && filter.type].filter(Boolean).join(' ')}
                         </span>
                     )}
@@ -538,7 +538,7 @@ const PokemonTab = () => {
                     >
                         ⭐ Presets
                         {partyPresets.length > 0 && (
-                            <span style={{ background: activePanel === 'presets' ? 'rgba(0,0,0,0.25)' : 'var(--bg-secondary)', color: activePanel === 'presets' ? 'rgba(255,255,255,0.95)' : 'var(--text-muted)', borderRadius: '8px', padding: '0 5px', fontSize: '11px', fontWeight: 'bold' }}>
+                            <span style={{ background: activePanel === 'presets' ? 'var(--bg-primary)' : 'var(--bg-secondary)', color: activePanel === 'presets' ? 'white' : 'var(--text-muted)', borderRadius: '8px', padding: '0 5px', fontSize: '11px', fontWeight: 'bold' }}>
                                 {partyPresets.length}
                             </span>
                         )}
@@ -677,9 +677,9 @@ const PokemonTab = () => {
                                                     }}
                                                     title={teamCoverage.superWeakSet.has(t) ? '×4 weakness! At least one Pokémon takes quadruple damage' : 'Click to see which Pokémon are weak'}
                                                 >
-                                                    {teamCoverage.superWeakSet.has(t) && <span style={{ fontSize: '9px' }}>⚠</span>}
+                                                    {teamCoverage.superWeakSet.has(t) && <span style={{ fontSize: '11px' }}>⚠</span>}
                                                     {t}
-                                                    <span style={{ background: 'rgba(0,0,0,0.3)', borderRadius: '8px', padding: '0 4px', fontSize: '10px' }}>
+                                                    <span style={{ background: 'var(--bg-primary)', borderRadius: '8px', padding: '0 4px', fontSize: '11px' }}>
                                                         ×{teamCoverage.weakCount[t]}
                                                     </span>
                                                 </button>
@@ -712,7 +712,7 @@ const PokemonTab = () => {
                                         display: 'flex', alignItems: 'center', gap: '4px'
                                     }}>
                                         {t}
-                                        <span style={{ background: 'var(--border-medium)', borderRadius: '8px', padding: '0 4px', fontSize: '10px' }}>
+                                        <span style={{ background: 'var(--border-medium)', borderRadius: '8px', padding: '0 4px', fontSize: '11px' }}>
                                             ×{teamCoverage.immuneCount[t]}
                                         </span>
                                     </span>
