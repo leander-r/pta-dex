@@ -997,7 +997,7 @@ const PokemonCard = ({
                                 border: 'none',
                                 borderRadius: '6px',
                                 padding: '8px 18px',
-                                color: '#1a1a2e',
+                                color: 'var(--bg-primary)',
                                 cursor: 'pointer',
                                 fontWeight: 'bold',
                                 fontSize: '13px'
@@ -1045,7 +1045,7 @@ const PokemonCard = ({
                         {/* Species Selection */}
                         <div style={{ marginBottom: '15px' }}>
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
-                                <label style={{ fontSize: '12px', fontWeight: 'bold', display: 'block' }}>
+                                <label style={{ fontSize: '13px', fontWeight: 'bold', display: 'block' }}>
                                     Species
                                 </label>
                                 {pokemon.species && speciesSearch && (
@@ -1141,7 +1141,7 @@ const PokemonCard = ({
                                                             border: 'none',
                                                             background: speciesTypeFilter === 'all' ? 'var(--color-purple)' : 'var(--species-filter-inactive)',
                                                             color: speciesTypeFilter === 'all' ? 'white' : 'var(--species-label-text)',
-                                                            fontSize: '10px',
+                                                            fontSize: '12px',
                                                             fontWeight: 'bold',
                                                             cursor: 'pointer'
                                                         }}
@@ -1156,7 +1156,7 @@ const PokemonCard = ({
                                                                 border: 'none',
                                                                 background: speciesTypeFilter === type ? getTypeColor(type) : 'var(--species-filter-inactive)',
                                                                 color: speciesTypeFilter === type ? 'white' : 'var(--species-label-text)',
-                                                                fontSize: '10px',
+                                                                fontSize: '12px',
                                                                 fontWeight: 'bold',
                                                                 cursor: 'pointer'
                                                             }}
@@ -1188,9 +1188,9 @@ const PokemonCard = ({
                                                         <option value="bst-low">BST (Low → High)</option>
                                                     </select>
                                                 </div>
-                                                <span style={{ fontSize: '11px', color: 'var(--species-muted-text)' }}>
+                                                <span style={{ fontSize: '12px', color: 'var(--species-muted-text)', fontWeight: filteredSpecies.length > 50 ? 'bold' : 'normal' }}>
                                                     {filteredSpecies.length > 50
-                                                        ? `Showing 50 of ${filteredSpecies.length} — refine your search`
+                                                        ? `${filteredSpecies.length} matches — refine search`
                                                         : `${filteredSpecies.length} results`}
                                                 </span>
                                             </div>
@@ -1519,21 +1519,10 @@ const PokemonCard = ({
                             </div>
                         </div>
 
-                        {/* Level, EXP & Nature */}
+                        {/* EXP & Nature */}
                         <div className="pokemon-info-grid">
                             <div>
-                                <label style={{ fontSize: '12px', fontWeight: 'bold', marginBottom: '4px', display: 'block' }}>Level</label>
-                                <input
-                                    type="number"
-                                    value={pokemon.level || 1}
-                                    onChange={(e) => updatePokemon({ level: parseInt(e.target.value) || 1 })}
-                                    min="1"
-                                    max="100"
-                                    style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--input-bg)', color: 'var(--text-primary)' }}
-                                />
-                            </div>
-                            <div>
-                                <label style={{ fontSize: '12px', fontWeight: 'bold', marginBottom: '4px', display: 'block' }}>
+                                <label style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '4px', display: 'block' }}>
                                     Experience
                                     <span style={{ fontWeight: 'normal', fontSize: '11px', color: 'var(--text-muted)', marginLeft: '4px' }}>
                                         (auto-levels)
@@ -1585,7 +1574,7 @@ const PokemonCard = ({
                             </div>
                             <div>
                                 {/* P1: Nature with inline modifier hint */}
-                                <label style={{ fontSize: '12px', fontWeight: 'bold', marginBottom: '4px', display: 'flex', flexWrap: 'wrap', alignItems: 'baseline', gap: '4px' }}>
+                                <label style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '4px', display: 'flex', flexWrap: 'wrap', alignItems: 'baseline', gap: '4px' }}>
                                     <span>Nature</span>
                                     {(() => {
                                         const nd = GAME_DATA?.natures?.[pokemon.nature];
@@ -1614,7 +1603,7 @@ const PokemonCard = ({
                         {/* P2: Gender + Origin in a 2-col grid */}
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '15px' }}>
                             <div>
-                                <label style={{ fontSize: '12px', fontWeight: 'bold', marginBottom: '4px', display: 'block' }}>Gender</label>
+                                <label style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '4px', display: 'block' }}>Gender</label>
                                 <select
                                     value={pokemon.gender || ''}
                                     onChange={(e) => updatePokemon({ gender: e.target.value })}
@@ -1627,7 +1616,7 @@ const PokemonCard = ({
                                 </select>
                             </div>
                             <div>
-                                <label style={{ fontSize: '12px', fontWeight: 'bold', marginBottom: '4px', display: 'block' }}>Origin</label>
+                                <label style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '4px', display: 'block' }}>Origin</label>
                                 <select
                                     value={pokemon.origin || 'caught'}
                                     onChange={(e) => {
@@ -1656,7 +1645,7 @@ const PokemonCard = ({
                             const currentLoyalty = pokemon.loyalty ?? 1;
                             return (
                                 <div style={{ marginBottom: '15px' }}>
-                                    <label style={{ fontSize: '12px', fontWeight: 'bold', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                    <label style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                                         <span>Loyalty</span>
                                         <span style={{
                                             padding: '1px 8px', borderRadius: '8px', fontSize: '11px', fontWeight: 'bold',
@@ -1796,11 +1785,12 @@ const PokemonCard = ({
                         </div>
 
                         <div style={{ borderTop: '1px solid var(--border-medium)', margin: '12px 0 15px' }} />
+                        <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '10px' }}>Abilities &amp; Moves</div>
 
                         {/* Abilities Section - Up to 3 */}
                         <div style={{ marginBottom: '15px' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                                <span style={{ fontSize: '12px', fontWeight: 'bold' }}>Abilities</span>
+                                <span style={{ fontSize: '13px', fontWeight: 'bold' }}>Abilities</span>
                                 <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                     <span style={{ fontSize: '10px', color: 'var(--text-muted)' }}>● Basic · ★ Adv. · ◆ High</span>
                                     <span className="text-muted" style={{ fontSize: '12px', fontWeight: 'normal' }}>{(pokemon.abilities || []).length}/3</span>
@@ -1966,10 +1956,11 @@ const PokemonCard = ({
                         </div>
 
                         <div style={{ borderTop: '1px solid var(--border-medium)', margin: '12px 0 15px' }} />
+                        <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '10px' }}>Held Item &amp; Appearance</div>
 
                         {/* Held Item */}
                         <div style={{ marginBottom: '15px' }}>
-                            <label style={{ fontSize: '12px', fontWeight: 'bold', marginBottom: '8px', display: 'block' }}>
+                            <label style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '8px', display: 'block' }}>
                                 Held Item
                             </label>
                             <div style={{ position: 'relative' }}>
@@ -2051,7 +2042,7 @@ const PokemonCard = ({
 
                         {/* Pokémon Image */}
                         <div style={{ marginBottom: '15px' }}>
-                            <label style={{ fontSize: '12px', fontWeight: 'bold', marginBottom: '8px', display: 'block' }}>
+                            <label style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '8px', display: 'block' }}>
                                 Pokémon Image
                             </label>
                             <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
@@ -2193,7 +2184,7 @@ const PokemonCard = ({
                                             onConfirm: () => deletePokemon()
                                         });
                                     }}
-                                    style={{ padding: '8px 16px', background: 'var(--danger-btn-start)', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer' }}
+                                    style={{ padding: '8px 16px', background: 'linear-gradient(135deg, var(--danger-btn-start), var(--danger-btn-end))', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
                                 >
                                     Delete
                                 </button>
@@ -2302,7 +2293,7 @@ const PokemonCard = ({
                             </button>
                         </div>
 
-                        <div className="stat-cards-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
+                        <div className="stat-cards-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(85px, 1fr))', gap: '10px' }}>
                             {(() => {
                                 const natureModifiedBase = applyNature(pokemon.baseStats || { hp: 10, atk: 10, def: 10, satk: 10, sdef: 10, spd: 10 }, pokemon.nature);
                                 return ['hp', 'atk', 'def', 'satk', 'sdef', 'spd'].map(stat => {
@@ -2324,7 +2315,7 @@ const PokemonCard = ({
                                     </div>
                                     {/* P9: ▲ point indicator bumped to 10px with background badge */}
                                     {canAdd && (
-                                        <div style={{ fontSize: '11px', color: 'var(--color-success-text)', fontWeight: 'bold', marginBottom: '3px', background: 'rgba(76,175,80,0.12)', borderRadius: '4px', padding: '1px 4px', display: 'inline-block' }}>▲ point</div>
+                                        <div style={{ fontSize: '11px', color: 'var(--color-success-text)', fontWeight: 'bold', marginBottom: '3px', background: 'var(--tint-success-bg)', borderRadius: '4px', padding: '1px 4px', display: 'inline-block' }}>▲ point</div>
                                     )}
                                     <div className="text-light" style={{ fontSize: '11px', marginBottom: '1px' }}>
                                         Base {natureModifiedBase[stat] || 10}
@@ -2429,7 +2420,7 @@ const PokemonCard = ({
                             <div style={{ textAlign: 'center', padding: '18px 16px', marginBottom: '10px', borderRadius: '8px', background: 'var(--bg-light)', border: '1px dashed var(--border-medium)' }}>
                                 <div style={{ fontSize: '22px', marginBottom: '6px' }}>📭</div>
                                 <div style={{ fontSize: '13px', fontWeight: 'bold', color: 'var(--text-secondary)', marginBottom: '4px' }}>No moves learned yet</div>
-                                <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Use the Add Moves section below to learn moves.</div>
+                                <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Open <strong>Browse ▼</strong> below to search for moves, or pick a source filter to see species-specific options.</div>
                             </div>
                         )}
 
@@ -2746,7 +2737,7 @@ const PokemonCard = ({
                                                                 cursor: (naturalMoveCount === 0 && (pokemon.moves?.length || 0) >= MAX_TOTAL_MOVES) ? 'not-allowed' : 'pointer',
                                                                 opacity: (naturalMoveCount === 0 && (pokemon.moves?.length || 0) >= MAX_TOTAL_MOVES) ? 0.6 : 1
                                                             }}
-                                                            title={(naturalMoveCount >= MAX_NATURAL_MOVES || (pokemon.moves?.length || 0) >= MAX_TOTAL_MOVES) ? "Replace a Natural move" : "Add as Natural move"}
+                                                            title={(naturalMoveCount >= MAX_NATURAL_MOVES || (pokemon.moves?.length || 0) >= MAX_TOTAL_MOVES) ? "Replace oldest Natural move" : "Add as Natural move"}
                                                         >
                                                             Nat
                                                         </button>
@@ -2765,7 +2756,7 @@ const PokemonCard = ({
                                                                 cursor: (taughtMoveCount === 0 && (pokemon.moves?.length || 0) >= MAX_TOTAL_MOVES) ? 'not-allowed' : 'pointer',
                                                                 opacity: (taughtMoveCount === 0 && (pokemon.moves?.length || 0) >= MAX_TOTAL_MOVES) ? 0.6 : 1
                                                             }}
-                                                            title={(taughtMoveCount >= MAX_TAUGHT_MOVES || (pokemon.moves?.length || 0) >= MAX_TOTAL_MOVES) ? "Replace a Taught move" : "Add as Taught move"}
+                                                            title={(taughtMoveCount >= MAX_TAUGHT_MOVES || (pokemon.moves?.length || 0) >= MAX_TOTAL_MOVES) ? "Replace oldest Taught move" : "Add as Taught move"}
                                                         >
                                                             Tght
                                                         </button>
@@ -2827,7 +2818,7 @@ const PokemonCard = ({
                             <div style={{ textAlign: 'center', padding: '24px 16px', borderRadius: '8px', background: 'var(--bg-light)', border: '1px dashed var(--border-medium)' }}>
                                 <div style={{ fontSize: '22px', marginBottom: '6px' }}>🎯</div>
                                 <div style={{ fontSize: '13px', fontWeight: 'bold', color: 'var(--text-secondary)', marginBottom: '4px' }}>No Skills Data</div>
-                                <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Skills come from this Pokémon's species definition. No skill data is available for {pokemon.species || 'this species'} in the Pokédex.</div>
+                                <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Skills come from this Pokémon's species. No skill data is available for <strong>{pokemon.species || 'this species'}</strong> in the Pokédex. Set a species in the <button onClick={() => setEditTab('info')} style={{ background: 'none', border: 'none', color: 'var(--color-purple)', cursor: 'pointer', padding: 0, fontSize: '12px', fontWeight: 'bold', textDecoration: 'underline' }}>Info tab</button> to populate skills.</div>
                             </div>
                         ) : (
                             <div style={{ display: 'grid', gap: '8px' }}>
@@ -2915,10 +2906,10 @@ const PokemonCard = ({
                                 // Apply the same nature to all forms — nature carries over on evolution
                                 const displayStats = baseStats ? applyNature(baseStats, pokemon.nature) : null;
                                 const styles = {
-                                    current:  { bg: 'var(--bg-light)',               border: 'var(--border-medium)',               label: 'var(--text-muted)' },
-                                    evolve:   { bg: 'rgba(76,175,80,0.07)',           border: 'var(--stat-hp, #4caf50)',            label: 'var(--stat-hp, #4caf50)' },
-                                    locked:   { bg: 'rgba(255,152,0,0.07)',           border: 'var(--poke-orange, #ff9800)',        label: 'var(--poke-orange, #ff9800)' },
-                                    devolve:  { bg: 'rgba(239,83,80,0.07)',           border: 'var(--color-danger-text, #ef5350)', label: 'var(--color-danger-text, #ef5350)' },
+                                    current:  { bg: 'var(--bg-light)',           border: 'var(--border-medium)',          label: 'var(--text-muted)' },
+                                    evolve:   { bg: 'var(--tint-success-bg)',    border: 'var(--stat-hp)',                label: 'var(--stat-hp)' },
+                                    locked:   { bg: 'var(--tint-orange-bg)',     border: 'var(--poke-orange)',            label: 'var(--poke-orange)' },
+                                    devolve:  { bg: 'var(--tint-fail-bg)',       border: 'var(--color-danger-text)',      label: 'var(--color-danger-text)' },
                                 }[variant] || { bg: 'var(--bg-light)', border: 'var(--border-medium)', label: 'var(--text-muted)' };
 
                                 return (
@@ -3015,7 +3006,7 @@ const PokemonCard = ({
                                                                 species: pokemon.species, regionalForm: pokemon.regionalForm,
                                                                 label: 'Current', types: pokemon.types, baseStats: pokemon.baseStats, variant: 'current'
                                                             })}
-                                                            <div style={{ flexShrink: 0, fontSize: '20px', color: evo.canEvolveNow ? 'var(--stat-hp, #4caf50)' : 'var(--border-medium)', alignSelf: 'center' }}>→</div>
+                                                            <div style={{ flexShrink: 0, width: 32, textAlign: 'center', fontSize: '22px', fontWeight: 'bold', color: evo.canEvolveNow ? 'var(--stat-hp)' : 'var(--border-medium)', alignSelf: 'center' }}>→</div>
                                                             {renderSpeciesCard({
                                                                 species: evo.species, regionalForm: evo.regionalForm,
                                                                 label: evo.canEvolveNow ? 'Evolves into' : 'Next Form',
@@ -3063,7 +3054,7 @@ const PokemonCard = ({
                                                         species: pokemon.species, regionalForm: pokemon.regionalForm,
                                                         label: 'Current', types: pokemon.types, baseStats: pokemon.baseStats, variant: 'current'
                                                     })}
-                                                    <div style={{ flexShrink: 0, fontSize: '20px', color: 'var(--color-danger-text, #ef5350)', alignSelf: 'center' }}>→</div>
+                                                    <div style={{ flexShrink: 0, width: 32, textAlign: 'center', fontSize: '22px', fontWeight: 'bold', color: 'var(--color-danger-text)', alignSelf: 'center' }}>→</div>
                                                     {(() => {
                                                         const prevData = pokedex?.find(p => p.species?.toLowerCase() === canDevolve.species?.toLowerCase());
                                                         const devoRegionalForm = canDevolve.regionalForm || null;

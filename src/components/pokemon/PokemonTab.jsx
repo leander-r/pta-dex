@@ -643,7 +643,7 @@ const PokemonTab = () => {
                 <div className="section-card" style={{ marginBottom: '15px' }}>
                     {/* Defensive weaknesses */}
                     <div style={{ marginBottom: '14px' }}>
-                        <div style={{ fontSize: '12px', fontWeight: 'bold', color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                        <div style={{ fontSize: '13px', fontWeight: 'bold', color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                             🛡 Defensive Weaknesses
                         </div>
                         {(() => {
@@ -670,7 +670,7 @@ const PokemonTab = () => {
                                                         background: getTypeColor(t), color: 'white',
                                                         fontSize: '11px', fontWeight: 'bold', border: 'none', cursor: 'pointer',
                                                         display: 'flex', alignItems: 'center', gap: '4px',
-                                                        outline: isExpanded ? '2px solid white' : teamCoverage.superWeakSet.has(t) ? '2px solid #ff5722' : 'none'
+                                                        outline: isExpanded ? '2px solid white' : teamCoverage.superWeakSet.has(t) ? '2px solid var(--color-danger-text)' : 'none'
                                                     }}
                                                     title={teamCoverage.superWeakSet.has(t) ? '×4 weakness! At least one Pokémon takes quadruple damage' : 'Click to see which Pokémon are weak'}
                                                 >
@@ -681,7 +681,7 @@ const PokemonTab = () => {
                                                     </span>
                                                 </button>
                                                 {isExpanded && (
-                                                    <div style={{ fontSize: '10px', color: 'var(--text-muted)', paddingLeft: '4px', lineHeight: 1.5 }}>
+                                                    <div style={{ fontSize: '12px', color: 'var(--text-muted)', paddingLeft: '4px', lineHeight: 1.5 }}>
                                                         {weakPokemon.map(p => p.name || p.species).join(', ')}
                                                     </div>
                                                 )}
@@ -696,8 +696,8 @@ const PokemonTab = () => {
                     {/* Immunities */}
                     {Object.keys(teamCoverage.immuneCount).length > 0 && (
                         <div style={{ marginBottom: '14px' }}>
-                            <div style={{ fontSize: '12px', fontWeight: 'bold', color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                                ⬛ Immunities
+                            <div style={{ fontSize: '13px', fontWeight: 'bold', color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                                🛡 Immunities
                             </div>
                             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
                                 {POKEMON_TYPES.filter(t => teamCoverage.immuneCount[t]).map(t => (
@@ -720,7 +720,7 @@ const PokemonTab = () => {
 
                     {/* Offensive coverage */}
                     <div>
-                        <div style={{ fontSize: '12px', fontWeight: 'bold', color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                        <div style={{ fontSize: '13px', fontWeight: 'bold', color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                             ⚔️ Offensive Coverage (STAB + Move Types)
                         </div>
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
@@ -732,7 +732,7 @@ const PokemonTab = () => {
                                         background: covered ? getTypeColor(t) : 'var(--border-medium)',
                                         color: covered ? 'white' : 'var(--text-muted)',
                                         fontSize: '11px', fontWeight: covered ? 'bold' : 'normal',
-                                        opacity: covered ? 1 : 0.5
+                                        opacity: covered ? 1 : 0.7
                                     }}>
                                         {t}
                                     </span>
@@ -814,37 +814,28 @@ const PokemonTab = () => {
             )}
 
             {/* Custom Species — Export / Import */}
-            {customSpecies.length > 0 && (
-                <div style={{ display: 'flex', gap: '8px', marginBottom: '15px', alignItems: 'center', flexWrap: 'wrap' }}>
-                    <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
-                        {customSpecies.length} custom species
-                    </span>
-                    <button
-                        onClick={handleExportCustomSpecies}
-                        style={{ padding: '6px 12px', background: 'var(--color-purple)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}
-                    >
-                        ↑ Export Custom Species
-                    </button>
-                    <button
-                        onClick={() => customSpeciesFileRef.current?.click()}
-                        style={{ padding: '6px 12px', background: 'var(--input-bg)', color: 'var(--text-primary)', border: '1px solid var(--border-medium)', borderRadius: '4px', cursor: 'pointer', fontSize: '12px' }}
-                    >
-                        ↓ Import Custom Species
-                    </button>
-                    <input ref={customSpeciesFileRef} type="file" accept=".json" onChange={handleImportCustomSpecies} style={{ display: 'none' }} />
-                </div>
-            )}
-            {customSpecies.length === 0 && (
-                <div style={{ display: 'flex', gap: '8px', marginBottom: '15px', alignItems: 'center' }}>
-                    <button
-                        onClick={() => customSpeciesFileRef.current?.click()}
-                        style={{ padding: '6px 12px', background: 'var(--input-bg)', color: 'var(--text-primary)', border: '1px solid var(--border-medium)', borderRadius: '4px', cursor: 'pointer', fontSize: '12px' }}
-                    >
-                        ↓ Import Custom Species
-                    </button>
-                    <input ref={customSpeciesFileRef} type="file" accept=".json" onChange={handleImportCustomSpecies} style={{ display: 'none' }} />
-                </div>
-            )}
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '15px', alignItems: 'center', flexWrap: 'wrap' }}>
+                {customSpecies.length > 0 && (
+                    <>
+                        <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+                            {customSpecies.length} custom species
+                        </span>
+                        <button
+                            onClick={handleExportCustomSpecies}
+                            style={{ padding: '6px 12px', background: 'var(--color-purple)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}
+                        >
+                            ↑ Export Custom Species
+                        </button>
+                    </>
+                )}
+                <button
+                    onClick={() => customSpeciesFileRef.current?.click()}
+                    style={{ padding: '6px 12px', background: 'var(--input-bg)', color: 'var(--text-primary)', border: '1px solid var(--border-medium)', borderRadius: '4px', cursor: 'pointer', fontSize: '12px' }}
+                >
+                    ↓ Import Custom Species
+                </button>
+                <input ref={customSpeciesFileRef} type="file" accept=".json" onChange={handleImportCustomSpecies} style={{ display: 'none' }} />
+            </div>
 
             {/* Pokemon List */}
             {filteredList.length === 0 ? (
@@ -892,7 +883,7 @@ const PokemonTab = () => {
             ) : (
                 <>
                 {!hasDragged && !compareMode && currentList.length > 1 && (
-                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', textAlign: 'center', marginBottom: '8px', opacity: 0.7 }}>
+                    <div style={{ fontSize: '12px', color: 'var(--text-muted)', textAlign: 'center', marginBottom: '8px', opacity: 0.7 }}>
                         ⠿ Drag the grip handle on any card to reorder
                     </div>
                 )}
