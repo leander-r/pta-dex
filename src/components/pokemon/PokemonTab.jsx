@@ -419,7 +419,7 @@ const PokemonTab = () => {
                             </button>
                             <div className="pokemon-import-footer" style={{
                                 padding: '8px 14px',
-                                fontSize: '11px',
+                                fontSize: '12px',
                                 borderTop: '1px solid var(--border-light, #e8e3f3)'
                             }}>
                                 Receive Pokemon from trades or gifts
@@ -472,14 +472,16 @@ const PokemonTab = () => {
                     </button>
                 )}
 
-                <button
-                    onClick={() => setShowBulkExpModal(true)}
-                    className="btn btn-secondary"
-                    style={{ padding: '10px 16px' }}
-                    title="Award EXP to multiple party Pokemon"
-                >
-                    Award EXP
-                </button>
+                {pokemonView === 'party' && (
+                    <button
+                        onClick={() => setShowBulkExpModal(true)}
+                        className="btn btn-secondary"
+                        style={{ padding: '10px 16px' }}
+                        title="Award EXP to multiple party Pokemon"
+                    >
+                        Award EXP
+                    </button>
+                )}
             </div>
 
             {/* Tools toolbar — Search / Coverage / Presets */}
@@ -545,18 +547,19 @@ const PokemonTab = () => {
 
                 <button
                     onClick={() => { setEditingCustomSpeciesId(null); setShowCustomSpeciesModal(true); }}
+                    title="Create or edit homebrew species (opens dialog)"
                     style={{
                         padding: '6px 13px', borderRadius: '20px', cursor: 'pointer',
-                        border: '1.5px solid var(--border-medium)',
+                        border: '1.5px dashed var(--color-purple)',
                         background: 'var(--input-bg)',
-                        color: 'var(--text-primary)',
+                        color: 'var(--color-purple)',
                         fontSize: '12px', fontWeight: 'bold',
                         display: 'flex', alignItems: 'center', gap: '5px'
                     }}
                 >
-                    ✨ Custom Species
+                    ✨ Custom Species ↗
                     {customSpecies.length > 0 && (
-                        <span style={{ background: 'var(--bg-secondary)', color: 'var(--text-muted)', borderRadius: '8px', padding: '0 5px', fontSize: '11px', fontWeight: 'bold' }}>
+                        <span style={{ background: 'var(--tint-purple-bg)', color: 'var(--color-purple)', borderRadius: '8px', padding: '0 5px', fontSize: '11px', fontWeight: 'bold', border: '1px solid var(--tint-purple-border)' }}>
                             {customSpecies.length}
                         </span>
                     )}
@@ -600,9 +603,9 @@ const PokemonTab = () => {
                             ))}
                         </select>
                         <select
-                            value=""
+                            value={lastSortBy}
                             onChange={(e) => handleSort(e.target.value)}
-                            style={{ padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--border-medium)', fontSize: '13px', background: 'var(--input-bg)', color: 'var(--text-primary)' }}
+                            style={{ padding: '8px 12px', borderRadius: '6px', border: `1px solid ${lastSortBy ? 'var(--color-purple)' : 'var(--border-medium)'}`, fontSize: '13px', background: lastSortBy ? 'var(--tint-purple-bg)' : 'var(--input-bg)', color: 'var(--text-primary)' }}
                         >
                             <option value="">Sort by...</option>
                             <option value="name">Name</option>
