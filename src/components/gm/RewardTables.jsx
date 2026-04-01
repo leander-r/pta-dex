@@ -8,6 +8,7 @@ import React, { useState } from 'react';
 import toast from '../../utils/toast.js';
 
 const ExpCalculator = () => {
+    const [formulaOpen, setFormulaOpen] = useState(false);
     const [expDrop, setExpDrop]   = useState(20);
     const [pokeLevel, setPokeLevel] = useState(10);
     const [isTrainer, setIsTrainer] = useState(false);
@@ -28,14 +29,25 @@ const ExpCalculator = () => {
                 Source: PTA GM Guide, p.20.
             </p>
 
-            {/* Formula card */}
-            <div className="card-orange" style={{ marginBottom: 14 }}>
-                <h3 className="card-header font-bold">📐 EXP Formula</h3>
-                <div style={{ paddingTop: 14 }}>
+            {/* Formula card — collapsible */}
+            <div style={{ marginBottom: 14 }}>
+                <button
+                    onClick={() => setFormulaOpen(v => !v)}
+                    style={{
+                        width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                        padding: '8px 14px', borderRadius: formulaOpen ? '8px 8px 0 0' : 8,
+                        border: '1px solid var(--border-light)', background: 'var(--surface-bg)',
+                        cursor: 'pointer', fontSize: 13, fontWeight: 700, color: 'var(--text-secondary)',
+                    }}
+                >
+                    <span>📐 EXP Formula</span>
+                    <span style={{ fontSize: 11 }}>{formulaOpen ? '▲' : '▼'}</span>
+                </button>
+                {formulaOpen && (
                     <div style={{
-                        padding: '12px 16px', borderRadius: 8,
-                        background: 'var(--surface-bg)', border: '1px solid var(--border-light)',
-                        fontSize: 14, lineHeight: 1.8
+                        padding: '12px 14px', borderRadius: '0 0 8px 8px',
+                        border: '1px solid var(--border-light)', borderTop: 'none',
+                        background: 'var(--bg-light)', fontSize: 14, lineHeight: 1.8,
                     }}>
                         <div>
                             <strong>(EXP Drop × Pokémon Level)</strong>
@@ -50,7 +62,7 @@ const ExpCalculator = () => {
                             If the trainer has multiple active Pokémon, they split the EXP Drop between them first.
                         </div>
                     </div>
-                </div>
+                )}
             </div>
 
             {/* Calculator */}
@@ -180,9 +192,12 @@ const ExpCalculator = () => {
             <div className="card-orange">
                 <h3 className="card-header font-bold">📖 EXP Drop Quick Reference</h3>
                 <div style={{ paddingTop: 14 }}>
-                    <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 12 }}>
+                    <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 4 }}>
                         Common EXP Drop values from the GM Guide alphabetic list.
                         Full list covers all Pokémon (pp.20–57).
+                    </p>
+                    <p style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 10 }}>
+                        Click a Pokémon to load its EXP Drop into the calculator above.
                     </p>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: 6, fontSize: 13 }}>
                         {[
@@ -211,9 +226,6 @@ const ExpCalculator = () => {
                             </div>
                         ))}
                     </div>
-                    <p style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 8 }}>
-                        Click a Pokémon to load its EXP Drop into the calculator.
-                    </p>
                 </div>
             </div>
         </div>

@@ -315,9 +315,10 @@ const ROLL_HOW = (
 
 const SkillChecks = () => {
     const [activeGroup, setActiveGroup] = useState('ATK');
+    const [statMod, setStatMod] = useState(0);
     const [roll, setRoll] = useState(null);
 
-    const doRoll = (statMod = 0, hasSkill = false, hasTwice = false) => {
+    const doRoll = (hasSkill = false, hasTwice = false) => {
         const base  = Math.floor(Math.random() * 20) + 1;
         const bonus = hasTwice ? 4 + 2 * statMod : hasSkill ? 2 + statMod : 0;
         const total = base + bonus;
@@ -343,50 +344,84 @@ const SkillChecks = () => {
             <div className="card-orange" style={{ marginBottom: 14 }}>
                 <div className="card-header font-bold">🎲 Quick Skill Roll</div>
                 <div style={{ paddingTop: 14 }}>
-                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-                    {[
-                        { label: 'No Skill',       title: '1d20 plain — no skill bonus',              fn: () => doRoll(0, false, false) },
-                        { label: 'Skill ×1',       title: 'Skill once, no stat mod: 1d20 + 2',        fn: () => doRoll(0, true,  false) },
-                        { label: 'Skill ×1 +mod',  title: 'Skill once, stat mod +4 example: 1d20 + 6', fn: () => doRoll(4, true,  false) },
-                        { label: 'Skill ×2',       title: 'Skill twice, no stat mod: 1d20 + 4',       fn: () => doRoll(0, true,  true)  },
-                        { label: 'Skill ×2 +mod',  title: 'Skill twice, stat mod +4 example: 1d20 + 12', fn: () => doRoll(4, true,  true)  },
-                    ].map(({ label, title, fn }) => (
-                        <button
-                            key={label}
-                            onClick={fn}
-                            title={title}
-                            style={{
-                                padding: '7px 12px', borderRadius: 6,
-                                background: 'var(--gradient-purple)',
-                                border: 'none', color: 'white', fontSize: 12,
-                                fontWeight: 600, cursor: 'pointer',
-                            }}
-                        >
-                            {label}
-                        </button>
-                    ))}
-                </div>
-                {roll && (
-                    <div style={{
-                        marginTop: 10, padding: '8px 12px', borderRadius: 8,
-                        background: 'var(--tint-purple-bg)', border: '1px solid var(--tint-purple-border)',
-                        fontSize: 14, color: 'var(--text-primary)'
-                    }}>
-                        Rolled <strong>{roll.base}</strong>
-                        {roll.bonus !== 0 && <> {roll.bonus >= 0 ? '+' : ''}{roll.bonus}</>} = <strong style={{ color: 'var(--color-purple)', fontSize: 18 }}>{roll.total}</strong>
+                    {/* Stat modifier input */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10, flexWrap: 'wrap' }}>
+                        <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>Stat modifier:</span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                            <button
+                                onClick={() => setStatMod(v => v - 1)}
+                                style={{ width: 28, height: 28, borderRadius: 6, border: '1px solid var(--border-light)', background: 'var(--surface-bg)', color: 'var(--text-primary)', fontWeight: 700, cursor: 'pointer', fontSize: 16, lineHeight: 1 }}
+                            >−</button>
+                            <span style={{ minWidth: 32, textAlign: 'center', fontWeight: 700, fontSize: 15, color: statMod > 0 ? 'var(--color-success-text)' : statMod < 0 ? 'var(--color-danger-text)' : 'var(--text-primary)' }}>
+                                {statMod > 0 ? `+${statMod}` : statMod}
+                            </span>
+                            <button
+                                onClick={() => setStatMod(v => v + 1)}
+                                style={{ width: 28, height: 28, borderRadius: 6, border: '1px solid var(--border-light)', background: 'var(--surface-bg)', color: 'var(--text-primary)', fontWeight: 700, cursor: 'pointer', fontSize: 16, lineHeight: 1 }}
+                            >+</button>
+                        </div>
+                        {statMod !== 0 && (
+                            <button
+                                onClick={() => setStatMod(0)}
+                                style={{ fontSize: 12, color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer', padding: '2px 6px' }}
+                            >Reset</button>
+                        )}
+                        <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
+                            (stat 14 → +2 · stat 9 → −1)
+                        </span>
                     </div>
-                )}
+
+                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+                        {[
+                            { label: 'No Skill',  title: '1d20 plain — no skill bonus',                                     fn: () => doRoll(false, false) },
+                            { label: 'Skill ×1',  title: `Skill once: 1d20 + ${2 + statMod} (2 + mod)`,                    fn: () => doRoll(true,  false) },
+                            { label: 'Skill ×2',  title: `Skill twice: 1d20 + ${4 + 2 * statMod} (4 + 2×mod)`,             fn: () => doRoll(true,  true)  },
+                        ].map(({ label, title, fn }) => (
+                            <button
+                                key={label}
+                                onClick={fn}
+                                title={title}
+                                style={{
+                                    padding: '7px 14px', borderRadius: 6,
+                                    background: 'var(--gradient-purple)',
+                                    border: 'none', color: 'white', fontSize: 13,
+                                    fontWeight: 600, cursor: 'pointer',
+                                }}
+                            >
+                                {label}
+                            </button>
+                        ))}
+                    </div>
+                    {roll && (
+                        <div style={{
+                            marginTop: 10, padding: '8px 12px', borderRadius: 8,
+                            background: 'var(--tint-purple-bg)', border: '1px solid var(--tint-purple-border)',
+                            fontSize: 14, color: 'var(--text-primary)'
+                        }}>
+                            Rolled <strong>{roll.base}</strong>
+                            {roll.bonus !== 0 && <> {roll.bonus >= 0 ? '+' : ''}{roll.bonus}</>} = <strong style={{ color: 'var(--color-purple)', fontSize: 18 }}>{roll.total}</strong>
+                        </div>
+                    )}
                 </div>
             </div>
 
-            {/* Stat group nav */}
-            <div className="tabs" style={{ marginBottom: 14 }}>
+            {/* Stat group nav — pill style to differentiate from outer GM tab strip */}
+            <div style={{
+                display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 12,
+                padding: '6px 8px', borderRadius: 8,
+                background: 'var(--surface-bg)', border: '1px solid var(--border-light)',
+            }}>
                 {Object.entries(SKILLS).map(([key, g]) => (
                     <button
                         key={key}
-                        className={`tab ${activeGroup === key ? 'active' : ''}`}
                         onClick={() => setActiveGroup(key)}
-                        style={{ color: activeGroup === key ? 'white' : g.color }}
+                        style={{
+                            padding: '4px 12px', borderRadius: 20, fontSize: 12, fontWeight: 700,
+                            border: activeGroup === key ? `1px solid ${g.color}` : '1px solid transparent',
+                            background: activeGroup === key ? g.color : 'transparent',
+                            color: activeGroup === key ? 'white' : g.color,
+                            cursor: 'pointer', transition: 'all 0.15s',
+                        }}
                     >
                         {key}
                     </button>
@@ -401,28 +436,39 @@ const SkillChecks = () => {
                     <p style={{ fontSize: 13, color: 'var(--text-muted)', marginTop: -6 }}>{grp.note}</p>
                 )}
 
-                {grp.skills.map(skill => (
-                    <div
-                        key={skill.name}
-                        className="card-orange"
-                        style={{ padding: 0 }}
-                    >
-                        <div style={{
-                            padding: '10px 14px', fontWeight: 700, fontSize: 14,
-                            color: grp.color, borderBottom: `1px solid ${grp.color}66`
-                        }}>
-                            {skill.name}
-                            {skill.note && (
-                                <span style={{ fontWeight: 400, fontSize: 12, color: 'var(--text-muted)', marginLeft: 8 }}>
-                                    — {skill.note}
-                                </span>
-                            )}
+                {/* HP passive skills: single info card instead of 4 identical cards */}
+                {grp.skills.every(s => s.dcs.length === 0) ? (
+                    <div className="card-orange" style={{ padding: '12px 16px' }}>
+                        <div style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 8 }}>
+                            All HP skills are <strong>passive</strong> — no roll required. Having a skill twice is redundant.
                         </div>
-                        {skill.dcs.length === 0 ? (
-                            <div style={{ padding: '10px 14px', fontSize: 13, color: 'var(--text-muted)' }}>
-                                Passive ability — no roll required.
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                            {grp.skills.map(skill => (
+                                <div key={skill.name} style={{ display: 'flex', gap: 8, alignItems: 'baseline' }}>
+                                    <span style={{ fontWeight: 700, color: grp.color, minWidth: 100, fontSize: 13 }}>{skill.name}</span>
+                                    <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{skill.note}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                ) : (
+                    grp.skills.map(skill => (
+                        <div
+                            key={skill.name}
+                            className="card-orange"
+                            style={{ padding: 0 }}
+                        >
+                            <div style={{
+                                padding: '10px 14px', fontWeight: 700, fontSize: 14,
+                                color: grp.color, borderBottom: `1px solid ${grp.color}66`
+                            }}>
+                                {skill.name}
+                                {skill.note && (
+                                    <span style={{ fontWeight: 400, fontSize: 12, color: 'var(--text-muted)', marginLeft: 8 }}>
+                                        — {skill.note}
+                                    </span>
+                                )}
                             </div>
-                        ) : (
                             <div style={{ padding: '8px 14px' }}>
                                 {skill.dcs.map(([dc, result], idx) => (
                                     <div key={dc} style={{
@@ -440,9 +486,9 @@ const SkillChecks = () => {
                                     </div>
                                 ))}
                             </div>
-                        )}
-                    </div>
-                ))}
+                        </div>
+                    ))
+                )}
             </div>
         </div>
     );

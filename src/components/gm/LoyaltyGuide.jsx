@@ -148,14 +148,14 @@ const LoyaltyGuide = () => {
             </div>
 
             {/* What lowers loyalty */}
-            <div className="card-orange" style={{ marginBottom: 14 }}>
-                <h3 className="card-header font-bold">📉 What Lowers Loyalty</h3>
+            <div className="card-orange" style={{ marginBottom: 14, borderLeft: '3px solid var(--color-danger-text)' }}>
+                <h3 className="card-header font-bold" style={{ color: 'var(--color-danger-text)' }}>📉 What Lowers Loyalty</h3>
                 <div style={{ paddingTop: 14 }}>
                     <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 8 }}>
                         Loyalty 4 Pokémon understand hardship and will forgive much — but a true betrayal drops
                         it hard and recovering it becomes very difficult.
                     </p>
-                    <ul style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.8, paddingLeft: 18 }}>
+                    <ul style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.8, paddingLeft: 18, margin: 0 }}>
                         {LOWER_LOYALTY.map((l, i) => <li key={i}>{l}</li>)}
                     </ul>
                 </div>

@@ -109,7 +109,7 @@ const DeathSaves = () => {
                         Roll <strong>1d20</strong>. Success if roll ≤ Trainer Level (capped at 18).
                         The cap leaves at least a 10% chance of death at all times. Fail = death.
                     </p>
-                    <div style={{ display: 'flex', gap: 12, alignItems: 'flex-end', flexWrap: 'wrap', marginBottom: 14 }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr auto', gap: 12, alignItems: 'end', marginBottom: 14 }}>
                         <div>
                             <label style={{ fontSize: 13, color: 'var(--text-muted)', display: 'block', marginBottom: 4 }}>
                                 Trainer Level
@@ -119,27 +119,27 @@ const DeathSaves = () => {
                                 value={trainerLevel}
                                 onChange={e => setTrainerLevel(Math.max(1, Math.min(50, Number(e.target.value))))}
                                 style={{
-                                    width: '100%', maxWidth: 80, padding: '7px 10px', borderRadius: 6,
+                                    width: 80, padding: '7px 10px', borderRadius: 6,
                                     border: '1px solid var(--border-light)',
                                     background: 'var(--surface-bg)', color: 'var(--text-primary)',
-                                    fontSize: 16, textAlign: 'center'
+                                    fontSize: 16, textAlign: 'center', boxSizing: 'border-box'
                                 }}
                             />
                         </div>
                         <div style={{
                             padding: '8px 14px', borderRadius: 8,
                             background: 'var(--surface-bg)', border: '1px solid var(--border-light)',
-                            fontSize: 14
+                            fontSize: 13, minWidth: 0
                         }}>
                             Must roll ≤ <strong style={{ color: 'var(--poke-blue)', fontSize: 18 }}>{trainerDC}</strong>
                             <span style={{ fontSize: 12, color: 'var(--text-muted)', marginLeft: 6 }}>
-                                ({trainerDC === 18 ? 'capped at 18' : `= level ${trainerLevel}`}, {Math.round(trainerDC / 20 * 100)}% survival chance)
+                                ({trainerDC === 18 ? 'capped at 18' : `level ${trainerLevel}`} · {Math.round(trainerDC / 20 * 100)}% survival)
                             </span>
                         </div>
                         <button
                             onClick={rollTrainer}
                             style={{
-                                padding: '9px 20px',
+                                padding: '9px 20px', whiteSpace: 'nowrap',
                                 background: 'var(--gradient-blue)',
                                 border: 'none', borderRadius: 8, color: 'white',
                                 fontSize: 14, fontWeight: 700, cursor: 'pointer',
@@ -159,7 +159,7 @@ const DeathSaves = () => {
                             <span style={{ fontSize: 22 }}>{trainerRoll.success ? '✅' : '☠️'}</span>
                             <div>
                                 <div style={{ fontWeight: 700, color: trainerRoll.success ? 'var(--color-success-text)' : 'var(--color-danger-text)' }}>
-                                    Rolled {trainerRoll.value} — {trainerRoll.success ? 'SURVIVED! Must be stabilized.' : 'DIED!'}
+                                    Rolled {trainerRoll.value} — {trainerRoll.success ? 'SURVIVED! Must be stabilized within 10 minutes or roll again.' : 'DIED!'}
                                 </div>
                                 <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>
                                     Needed 1–{trainerRoll.dc} to survive (DC {trainerRoll.dc})
@@ -179,7 +179,7 @@ const DeathSaves = () => {
                         The cap leaves at least a 10% chance of death. Fail = death.
                         Wild Pokémon do <strong>not</strong> roll death saves.
                     </p>
-                    <div style={{ display: 'flex', gap: 12, alignItems: 'flex-end', flexWrap: 'wrap', marginBottom: 14 }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr auto', gap: 12, alignItems: 'end', marginBottom: 14 }}>
                         <div>
                             <label style={{ fontSize: 13, color: 'var(--text-muted)', display: 'block', marginBottom: 4 }}>
                                 Pokémon Level
@@ -189,27 +189,27 @@ const DeathSaves = () => {
                                 value={pokeLevel}
                                 onChange={e => setPokeLevel(Math.max(1, Math.min(100, Number(e.target.value))))}
                                 style={{
-                                    width: '100%', maxWidth: 80, padding: '7px 10px', borderRadius: 6,
+                                    width: 80, padding: '7px 10px', borderRadius: 6,
                                     border: '1px solid var(--border-light)',
                                     background: 'var(--surface-bg)', color: 'var(--text-primary)',
-                                    fontSize: 16, textAlign: 'center'
+                                    fontSize: 16, textAlign: 'center', boxSizing: 'border-box'
                                 }}
                             />
                         </div>
                         <div style={{
                             padding: '8px 14px', borderRadius: 8,
                             background: 'var(--surface-bg)', border: '1px solid var(--border-light)',
-                            fontSize: 14
+                            fontSize: 13, minWidth: 0
                         }}>
                             Must roll ≤ <strong style={{ color: 'var(--poke-orange)', fontSize: 18 }}>{pokeDC}</strong>
                             <span style={{ fontSize: 12, color: 'var(--text-muted)', marginLeft: 6 }}>
-                                ({pokeDC === 90 ? 'capped at 90' : `= ${pokeLevel}×2`}, {pokeDC}% survival chance)
+                                ({pokeDC === 90 ? 'capped at 90' : `${pokeLevel}×2`} · {pokeDC}% survival)
                             </span>
                         </div>
                         <button
                             onClick={rollPoke}
                             style={{
-                                padding: '9px 20px',
+                                padding: '9px 20px', whiteSpace: 'nowrap',
                                 background: 'linear-gradient(135deg, var(--danger-btn-start), var(--danger-btn-end))',
                                 border: 'none', borderRadius: 8, color: 'white',
                                 fontSize: 14, fontWeight: 700, cursor: 'pointer',

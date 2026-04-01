@@ -94,18 +94,18 @@ const BiomeEncounters = () => {
 
     const biome = BIOMES.find(b => b.id === selectedBiome);
 
-    const rollRandom = useCallback(() => {
-        const pool = biome.pokemon;
-        const pick = pool[Math.floor(Math.random() * pool.length)];
-        setRolled(pick);
-        toast.success(`Rolled: ${pick}`);
-    }, [biome]);
-
     const filtered = useMemo(() => {
         const q = search.trim().toLowerCase();
         if (!q) return biome.pokemon;
         return biome.pokemon.filter(p => p.toLowerCase().includes(q));
     }, [biome, search]);
+
+    const rollRandom = useCallback(() => {
+        const pool = search.trim() && filtered.length > 0 ? filtered : biome.pokemon;
+        const pick = pool[Math.floor(Math.random() * pool.length)];
+        setRolled(pick);
+        toast.success(`Rolled: ${pick}`);
+    }, [biome, filtered, search]);
 
     return (
         <div>
@@ -164,7 +164,7 @@ const BiomeEncounters = () => {
                             cursor: 'pointer', whiteSpace: 'nowrap',
                         }}
                     >
-                        🎲 Roll Random
+                        🎲 {search.trim() && filtered.length > 0 ? `Roll from ${filtered.length}` : 'Roll Random'}
                     </button>
                 </h3>
                 {rolled && (
@@ -218,6 +218,7 @@ const BiomeEncounters = () => {
                             {filtered.map(p => (
                                 <div
                                     key={p}
+                                    className="biome-chip"
                                     style={{
                                         padding: '4px 10px',
                                         borderRadius: 6,
@@ -225,6 +226,7 @@ const BiomeEncounters = () => {
                                         border: '1px solid var(--border-light)',
                                         fontSize: 13,
                                         color: 'var(--text-secondary)',
+                                        transition: 'background 0.15s',
                                     }}
                                 >
                                     {p}

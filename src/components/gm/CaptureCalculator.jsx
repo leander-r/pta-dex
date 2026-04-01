@@ -189,7 +189,7 @@ const CaptureCalculator = () => {
                         )}
                         {target > 100 && (
                             <div style={{ color: 'var(--color-success-text)', fontWeight: 600, fontSize: 13 }}>
-                                Succeeds on any roll 1–99 (rate &gt; 100)
+                                Succeeds on any roll (rate &gt; 100)
                             </div>
                         )}
                     </div>
@@ -199,7 +199,7 @@ const CaptureCalculator = () => {
                         title={target <= 0 ? 'Capture rate is 0 or lower — adjust the modifiers above' : undefined}
                         style={{
                             padding: '10px 24px',
-                            background: target <= 0 ? 'var(--border-light)' : 'var(--gradient-purple)',
+                            background: target <= 0 ? 'var(--border-light)' : 'linear-gradient(135deg, var(--poke-orange), var(--poke-orange-dark))',
                             border: 'none', borderRadius: 8, color: target <= 0 ? 'var(--text-muted)' : 'white',
                             fontSize: 15, fontWeight: 700,
                             cursor: target <= 0 ? 'not-allowed' : 'pointer',
@@ -213,7 +213,7 @@ const CaptureCalculator = () => {
                 {/* Progress bar */}
                 <div style={{ marginTop: 14 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: 'var(--text-muted)', marginBottom: 4 }}>
-                        <span>Capture chance (succeed on 1–{Math.max(0, target - 1)})</span>
+                        <span>Capture chance (succeed on 1–{Math.max(0, Math.min(100, target - 1))})</span>
                         <span style={{ fontWeight: 700, color: barColor }}>{successPct}%</span>
                     </div>
                     <div style={{ height: 10, background: 'var(--border-light)', borderRadius: 5, overflow: 'hidden' }}>
@@ -243,15 +243,14 @@ const CaptureCalculator = () => {
                         </div>
                     </div>
                 )}
-            </div>
 
-            <div style={{
-                marginTop: 10, padding: '10px 14px', borderRadius: 8,
-                background: 'var(--surface-bg)', border: '1px solid var(--border-light)',
-                fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.6
-            }}>
-                ⓘ The PH2 combat demo shows a Basic Ball adds +15 to the d100 roll (higher roll = harder to capture). Other ball modifiers are not defined — apply as GM discretion.
-                Always award EXP to active Pokémon even on a successful capture!
+                <div style={{
+                    marginTop: 14, paddingTop: 12, borderTop: '1px solid var(--border-light)',
+                    fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.6
+                }}>
+                    ⓘ Basic Ball adds +15 to the d100 roll (higher roll = harder to capture). Other ball modifiers are GM discretion.
+                    Always award EXP to active Pokémon even on a successful capture.
+                </div>
             </div>
         </div>
     );

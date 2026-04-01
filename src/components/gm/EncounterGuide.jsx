@@ -157,10 +157,10 @@ const EncounterGuide = () => {
                         </div>
                         <div style={{
                             padding: '8px 16px', borderRadius: 8,
-                            background: 'var(--surface-bg)', border: '1px solid var(--border-light)',
+                            background: 'var(--tint-purple-bg)', border: '1px solid var(--tint-purple-border)',
                             fontSize: 13, color: 'var(--text-secondary)'
                         }}>
-                            Other stats = Base Stat + {customLevel}
+                            Other stats = Base Stat + <strong style={{ color: 'var(--color-purple)' }}>{customLevel}</strong>
                         </div>
                     </div>
                     <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>
@@ -197,8 +197,9 @@ const EncounterGuide = () => {
                         </div>
                         <div style={{
                             marginTop: 8, padding: '8px 12px', borderRadius: 8,
-                            background: `${allyTier.color}44`,
-                            border: `1px solid ${allyTier.color}88`,
+                            background: 'var(--surface-bg)',
+                            border: `1px solid ${allyTier.color}`,
+                            borderLeft: `4px solid ${allyTier.color}`,
                             display: 'flex', alignItems: 'center', gap: 10
                         }}>
                             <span style={{ fontSize: 22, fontWeight: 800, color: allyTier.color }}>{allyScore > 0 ? '+' : ''}{allyScore}</span>
@@ -210,9 +211,11 @@ const EncounterGuide = () => {
                                 onClick={() => setAllyScore(0)}
                                 style={{
                                     marginLeft: 'auto', padding: '4px 10px',
-                                    background: 'var(--border-light)', border: 'none',
+                                    background: 'var(--surface-bg)',
+                                    border: '1px solid var(--border-medium)',
                                     borderRadius: 6, cursor: 'pointer',
-                                    fontSize: 12, color: 'var(--text-muted)'
+                                    fontSize: 12, color: 'var(--text-secondary)',
+                                    transition: 'background 0.15s',
                                 }}
                             >
                                 Reset
@@ -228,9 +231,10 @@ const EncounterGuide = () => {
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 6 }}>
                             {ALLY_SCALE.map(tier => (
                                 <div key={tier.value} style={{
-                                    padding: '6px 10px', borderRadius: 6,
-                                    border: `1px solid ${tier.color}88`,
-                                    background: `${tier.color}30`
+                                    padding: '6px 10px 6px 12px', borderRadius: 6,
+                                    border: '1px solid var(--border-light)',
+                                    borderLeft: `3px solid ${tier.color}`,
+                                    background: 'var(--surface-bg)',
                                 }}>
                                     <div style={{ fontWeight: 700, color: tier.color, fontSize: 13 }}>
                                         {tier.value > 0 ? '+' : ''}{tier.value} — {tier.label}

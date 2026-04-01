@@ -152,14 +152,14 @@ const VoltageBar = ({ voltage, color }) => (
     <div style={{ display: 'flex', gap: 3, alignItems: 'center' }}>
         {Array.from({ length: 6 }, (_, i) => (
             <div key={i} style={{
-                width: 12, height: 12, borderRadius: 2,
+                width: 16, height: 16, borderRadius: 3,
                 background: i < voltage ? color : 'var(--border-light)',
                 border: `1px solid ${i < voltage ? color : 'var(--border-medium)'}`,
                 transition: 'background 0.2s',
-                boxShadow: i < voltage ? `0 0 4px ${color}66` : 'none',
+                boxShadow: i < voltage ? `0 0 5px ${color}66` : 'none',
             }} />
         ))}
-        <span style={{ fontSize: 12, color: 'var(--text-muted)', marginLeft: 2, fontWeight: 700 }}>
+        <span style={{ fontSize: 12, color: 'var(--text-muted)', marginLeft: 3, fontWeight: 700 }}>
             {voltage}/6
         </span>
     </div>
@@ -170,7 +170,7 @@ const JudgeCard = ({ judge, color, selected, onSelect, disabled, holdThought, ex
         onClick={() => !disabled && onSelect(judge.id)}
         disabled={disabled}
         style={{
-            flex: 1, padding: '10px 8px', borderRadius: 8,
+            flex: 1, minWidth: 90, padding: '10px 8px', borderRadius: 8,
             border: `2px solid ${selected ? color : 'var(--border-light)'}`,
             background: selected ? `${color}18` : 'var(--surface-bg)',
             cursor: disabled ? 'default' : 'pointer',
@@ -225,7 +225,8 @@ const ContestRunner = () => {
     const [discordEnabled, setDiscordEnabled] = useState(true);
 
     // ── Setup state ────────────────────────────────────────────────────────
-    const [showGuide, setShowGuide] = useState(false);
+    const [showGuide,    setShowGuide]    = useState(false);
+    const [showKeywords, setShowKeywords] = useState(false);
     const [contestType, setContestType] = useState('');
     const [participants, setParticipants] = useState([]);
     const [newName, setNewName] = useState('');
@@ -1214,9 +1215,10 @@ const ContestRunner = () => {
                             <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.4px' }}>
                                 Player result
                             </div>
-                            <div style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'monospace' }}>
-                                format: <span style={{ color: 'var(--text-secondary)' }}>Name|Move|Type|Score</span>
-                                <span style={{ color: 'var(--text-muted)' }}>[|Effect]</span>
+                            <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>
+                                paste from Dice Roller:
+                                <span style={{ fontFamily: 'monospace', color: 'var(--text-secondary)', marginLeft: 4 }}>Name|Move|Type|Score</span>
+                                <span style={{ color: 'var(--text-muted)', fontFamily: 'monospace' }}>[|Effect]</span>
                             </div>
                         </div>
                         <div style={{ display: 'flex', gap: 8 }}>
@@ -1289,11 +1291,9 @@ const ContestRunner = () => {
                     </div>
 
                     {/* ── NPC roll ── */}
-                    <div>
+                    <div style={{ marginTop: 4, padding: '10px 12px', borderRadius: 8, background: 'var(--bg-light)', border: '1px solid var(--border-light)' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                            <div style={{ flex: 1, height: 1, background: 'var(--border-light)' }} />
-                            <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.4px', whiteSpace: 'nowrap' }}>NPC Appeal</span>
-                            <div style={{ flex: 1, height: 1, background: 'var(--border-light)' }} />
+                            <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.4px' }}>NPC Appeal</span>
                         </div>
                         <div style={{ display: 'flex', gap: 8 }}>
                             <input
@@ -1441,6 +1441,38 @@ const ContestRunner = () => {
                         </div>
                     );
                 })}
+            </div>
+
+            {/* Keyword reference — collapsible */}
+            <div style={{ marginBottom: 8 }}>
+                <button
+                    onClick={() => setShowKeywords(v => !v)}
+                    style={{
+                        width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                        padding: '6px 12px', borderRadius: showKeywords ? '7px 7px 0 0' : 7,
+                        border: '1px solid var(--border-light)', background: 'var(--surface-bg)',
+                        cursor: 'pointer', fontSize: 12, fontWeight: 700, color: 'var(--text-secondary)',
+                    }}
+                >
+                    <span>📖 Keyword Reference</span>
+                    <span style={{ fontSize: 11 }}>{showKeywords ? '▲' : '▼'}</span>
+                </button>
+                {showKeywords && (
+                    <div style={{
+                        padding: '8px 12px', borderRadius: '0 0 7px 7px',
+                        border: '1px solid var(--border-light)', borderTop: 'none',
+                        background: 'var(--bg-light)',
+                        display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '4px 12px',
+                    }}>
+                        {Object.entries(KEYWORD_DESC).map(([kw, desc]) => (
+                            <div key={kw} style={{ fontSize: 11, lineHeight: 1.5 }}>
+                                <span style={{ fontWeight: 700, color: KEYWORD_COLOR[kw] || 'var(--text-muted)' }}>{kw}:</span>
+                                {' '}
+                                <span style={{ color: 'var(--text-secondary)' }}>{desc}</span>
+                            </div>
+                        ))}
+                    </div>
+                )}
             </div>
 
             {/* Recent log */}
