@@ -308,15 +308,15 @@ const TrainerSkills = () => {
                                         padding: '3px 8px', borderRadius: '10px', fontSize: '11px', fontWeight: 'bold',
                                         background: rank === 2
                                             ? 'linear-gradient(135deg, var(--poke-orange), var(--poke-orange-dark))'
-                                            : 'linear-gradient(135deg, #667eea, #764ba2)',
+                                            : 'var(--gradient-purple)',
                                         color: 'white', cursor: 'pointer',
                                         display: 'inline-flex', alignItems: 'center', gap: '3px'
                                     }}
                                 >
                                     {name}
                                     {isHPSkill
-                                        ? <span style={{ opacity: 0.85, fontSize: '10px' }}>◆</span>
-                                        : <span style={{ opacity: 0.9, fontSize: '10px' }}>{bonus >= 0 ? `+${bonus}` : bonus}</span>
+                                        ? <span style={{ opacity: 0.85, fontSize: '11px' }}>◆</span>
+                                        : <span style={{ opacity: 0.9, fontSize: '11px' }}>{bonus >= 0 ? `+${bonus}` : bonus}</span>
                                     }
                                 </span>
                             );

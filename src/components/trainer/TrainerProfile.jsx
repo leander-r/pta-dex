@@ -105,7 +105,7 @@ const TrainerProfile = () => {
                         width: '40px',
                         height: '40px',
                         borderRadius: '50%',
-                        background: trainer.avatar ? 'transparent' : 'linear-gradient(135deg, #667eea, #764ba2)',
+                        background: trainer.avatar ? 'transparent' : 'var(--gradient-purple)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -120,7 +120,7 @@ const TrainerProfile = () => {
                     <span style={{
                         position: 'absolute', bottom: '-2px', right: '-4px',
                         fontSize: '13px', lineHeight: 1,
-                        background: 'var(--bg-card, #fff)',
+                        background: 'var(--bg-primary)',
                         borderRadius: '50%',
                         width: '18px', height: '18px',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -191,7 +191,7 @@ const TrainerProfile = () => {
                             borderRadius: '4px',
                             fontSize: '12px',
                             textAlign: 'center',
-                            border: '1px solid var(--border-medium, #ddd)',
+                            border: '1px solid var(--border-medium)',
                             background: 'var(--input-bg)',
                             color: 'var(--text-primary)',
                             outline: 'none'
@@ -213,7 +213,7 @@ const TrainerProfile = () => {
                                 borderRadius: '8px',
                                 fontSize: '11px',
                                 fontWeight: '700',
-                                background: 'linear-gradient(135deg, #667eea, #764ba2)',
+                                background: 'var(--gradient-purple)',
                                 color: 'white',
                                 cursor: 'pointer'
                             }}
@@ -228,20 +228,20 @@ const TrainerProfile = () => {
             {isLevel0 && (
                 <div style={{
                     padding: '10px 12px',
-                    background: 'var(--warning-bg, #fff3cd)',
+                    background: 'var(--warning-bg)',
                     borderRadius: '8px',
-                    border: '1px solid var(--warning-border, #ffc107)',
+                    border: '1px solid var(--warning-border)',
                     fontSize: '12px',
                     marginBottom: '12px'
                 }}>
-                    <div style={{ fontWeight: 'bold', marginBottom: '6px', color: 'var(--warning-text, #856404)' }}>
+                    <div style={{ fontWeight: 'bold', marginBottom: '6px', color: 'var(--warning-text)' }}>
                         Character Creation — allocate stats, pick a class, then level up!
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px', color: creationPointsRemaining === 0 ? 'var(--color-success-text, #2e7d32)' : 'var(--color-danger-text, #c62828)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px', color: creationPointsRemaining === 0 ? 'var(--color-success-text)' : 'var(--color-danger-text)' }}>
                         <span>{creationPointsRemaining === 0 ? '✓' : '○'}</span>
                         <span>Spend all {CREATION_STAT_POINTS} Creation points ({CREATION_STAT_POINTS - creationPointsRemaining}/{CREATION_STAT_POINTS})</span>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: hasClass ? 'var(--color-success-text, #2e7d32)' : 'var(--color-danger-text, #c62828)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: hasClass ? 'var(--color-success-text)' : 'var(--color-danger-text)' }}>
                         <span>{hasClass ? '✓' : '○'}</span>
                         <span>Pick your first class</span>
                     </div>
@@ -250,7 +250,7 @@ const TrainerProfile = () => {
 
             {/* Level Controls */}
             {isLevel0 && !canLevelUp && (
-                <div style={{ fontSize: '12px', color: 'var(--warning-text, #856404)', textAlign: 'center', marginBottom: '6px', fontStyle: 'italic' }}>
+                <div style={{ fontSize: '12px', color: 'var(--warning-text)', textAlign: 'center', marginBottom: '6px', fontStyle: 'italic' }}>
                     Complete the steps above to level up
                 </div>
             )}
@@ -277,26 +277,26 @@ const TrainerProfile = () => {
             {/* Quick Stats — 3 boxes */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', marginTop: '14px' }}>
                 <div
-                    style={{ textAlign: 'center', padding: '10px 6px', background: 'linear-gradient(180deg, rgba(76,175,80,0.15) 0%, transparent 70%)', borderRadius: '8px', border: '1px solid rgba(76,175,80,0.33)', borderTop: '3px solid var(--stat-hp, #4caf50)' }}
+                    style={{ textAlign: 'center', padding: '10px 6px', background: 'linear-gradient(180deg, rgba(76,175,80,0.15) 0%, transparent 70%)', borderRadius: '8px', border: '1px solid rgba(76,175,80,0.33)', borderTop: '3px solid var(--stat-hp)' }}
                     title="Max HP = (HP stat × 4) + (Level × 4)"
                 >
-                    <div style={{ fontSize: '12px', color: 'var(--stat-hp, #4caf50)', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Max HP</div>
-                    <div style={{ fontSize: '20px', fontWeight: 'bold', color: 'var(--stat-hp, #4caf50)', lineHeight: 1.2 }}>{calculateMaxHP()}</div>
+                    <div style={{ fontSize: '12px', color: 'var(--stat-hp)', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Max HP</div>
+                    <div style={{ fontSize: '20px', fontWeight: 'bold', color: 'var(--stat-hp)', lineHeight: 1.2 }}>{calculateMaxHP()}</div>
                 </div>
                 <div
-                    style={{ textAlign: 'center', padding: '10px 6px', background: 'linear-gradient(180deg, rgba(245,166,35,0.15) 0%, transparent 70%)', borderRadius: '8px', border: '1px solid rgba(245,166,35,0.33)', borderTop: '3px solid var(--poke-orange, #f5a623)' }}
+                    style={{ textAlign: 'center', padding: '10px 6px', background: 'linear-gradient(180deg, rgba(245,166,35,0.15) 0%, transparent 70%)', borderRadius: '8px', border: '1px solid rgba(245,166,35,0.33)', borderTop: '3px solid var(--poke-orange)' }}
                     title="Feat points are used to buy features. Gain points from leveling up."
                 >
-                    <div style={{ fontSize: '12px', color: 'var(--poke-orange-dark, #e8941c)', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Feat Pts</div>
-                    <div style={{ fontSize: '20px', fontWeight: 'bold', color: (trainer.featPoints || 0) > 0 ? 'var(--poke-orange, #f5a623)' : 'var(--text-muted, #999)', lineHeight: 1.2 }}>{trainer.featPoints || 0}</div>
+                    <div style={{ fontSize: '12px', color: 'var(--poke-orange-dark)', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Feat Pts</div>
+                    <div style={{ fontSize: '20px', fontWeight: 'bold', color: (trainer.featPoints || 0) > 0 ? 'var(--poke-orange)' : 'var(--text-muted)', lineHeight: 1.2 }}>{trainer.featPoints || 0}</div>
                 </div>
                 <div
-                    style={{ textAlign: 'center', padding: '10px 6px', background: 'linear-gradient(180deg, #667eea25 0%, transparent 70%)', borderRadius: '8px', border: '1px solid #667eea55', borderTop: '3px solid #667eea', cursor: 'pointer' }}
+                    style={{ textAlign: 'center', padding: '10px 6px', background: 'var(--tint-purple-bg)', borderRadius: '8px', border: '1px solid var(--tint-purple-border)', borderTop: '3px solid var(--color-purple)', cursor: 'pointer' }}
                     title="Gym Badges earned — click to jump to list"
                     onClick={() => document.getElementById('trainer-badges-section')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })}
                 >
-                    <div style={{ fontSize: '12px', color: '#667eea', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.5px' }}>🏅 Badges</div>
-                    <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#667eea', lineHeight: 1.2 }}>{badges.length}</div>
+                    <div style={{ fontSize: '12px', color: 'var(--color-purple)', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.5px' }}>🏅 Badges</div>
+                    <div style={{ fontSize: '20px', fontWeight: 'bold', color: 'var(--color-purple)', lineHeight: 1.2 }}>{badges.length}</div>
                 </div>
             </div>
 
@@ -306,12 +306,12 @@ const TrainerProfile = () => {
                 alignItems: 'center',
                 gap: '8px',
                 padding: '8px 12px',
-                background: 'linear-gradient(135deg, #ffd700, #ffb300)',
+                background: 'var(--gradient-money)',
                 borderRadius: '8px',
                 marginTop: '12px'
             }}>
-                <span style={{ fontWeight: 'bold', color: '#5d4e00', fontSize: '14px' }}>💰</span>
-                <span style={{ fontWeight: 'bold', color: '#5d4e00', fontSize: '16px' }}>₽</span>
+                <span style={{ fontWeight: 'bold', color: 'var(--money-text)', fontSize: '14px' }}>💰</span>
+                <span style={{ fontWeight: 'bold', color: 'var(--money-text)', fontSize: '16px' }}>₽</span>
                 <input
                     type="number"
                     value={trainer.money || 0}
@@ -321,7 +321,7 @@ const TrainerProfile = () => {
                     style={{
                         flex: 1,
                         padding: '3px 6px',
-                        border: '2px solid #c9a800',
+                        border: '2px solid var(--money-input-border)',
                         borderRadius: '5px',
                         fontSize: '16px',
                         fontWeight: 'bold',
@@ -345,7 +345,7 @@ const TrainerProfile = () => {
             {/* Badges */}
             <div id="trainer-badges-section" style={{ marginTop: '12px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-                    <span style={{ fontWeight: 'bold', color: 'var(--color-purple, #667eea)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    <span style={{ fontWeight: 'bold', color: 'var(--color-purple)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                         🏅 Badges ({badges.length})
                     </span>
                     <button
@@ -353,7 +353,7 @@ const TrainerProfile = () => {
                         style={{
                             padding: '6px 12px',
                             fontSize: '12px',
-                            background: 'linear-gradient(135deg, var(--poke-orange, #f5a623), var(--poke-orange-dark, #e8941c))',
+                            background: 'linear-gradient(135deg, var(--poke-orange), var(--poke-orange-dark))',
                             color: 'white',
                             border: 'none',
                             borderRadius: '6px',
@@ -389,7 +389,7 @@ const TrainerProfile = () => {
                                     <span>{badgeName}</span>
                                     <button
                                         onClick={() => handleRemoveBadge(badgeId, badgeName, index)}
-                                        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0 2px', fontSize: '11px', color: '#8d6e00', opacity: 0.7 }}
+                                        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0 2px', fontSize: '11px', color: 'var(--poke-orange-dark)', opacity: 0.7 }}
                                         title="Remove badge"
                                     >✕</button>
                                 </div>
@@ -400,13 +400,13 @@ const TrainerProfile = () => {
                     <div style={{
                         textAlign: 'center',
                         padding: '10px 8px',
-                        color: 'var(--text-muted, #999)',
+                        color: 'var(--text-muted)',
                         fontSize: '12px',
-                        background: 'var(--bg-light, #f5f5f5)',
+                        background: 'var(--bg-light)',
                         borderRadius: '6px'
                     }}>
                         <div style={{ fontStyle: 'italic', marginBottom: '4px' }}>No badges earned yet</div>
-                        <div style={{ fontSize: '11px', opacity: 0.75 }}>Press <strong>+ Add</strong> above to record your first badge</div>
+                        <div style={{ fontSize: '12px' }}>Press <strong>+ Add</strong> above to record your first badge</div>
                     </div>
                 )}
             </div>
@@ -436,7 +436,7 @@ const TrainerProfile = () => {
                 return (
                     <div style={{ marginTop: '12px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-                            <span style={{ fontWeight: 'bold', color: 'var(--color-purple, #667eea)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                            <span style={{ fontWeight: 'bold', color: 'var(--color-purple)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                                 🏆 Contest Ribbons {totalRibbons > 0 && `(${totalRibbons})`}
                             </span>
                         </div>
@@ -445,21 +445,21 @@ const TrainerProfile = () => {
                                 const count = ribbons[key] || 0;
                                 return (
                                     <div key={key} style={{ textAlign: 'center' }}>
-                                        <div style={{ fontSize: '10px', fontWeight: 'bold', color: 'var(--text-muted)', marginBottom: '3px' }}>
+                                        <div style={{ fontSize: '12px', fontWeight: 'bold', color: 'var(--text-muted)', marginBottom: '3px' }}>
                                             {icon} {label}
                                         </div>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                                             <button
                                                 onClick={() => updateRibbon(key, -1)}
                                                 disabled={count === 0}
-                                                style={{ flex: 1, padding: '4px 2px', background: 'var(--bg-light, #e0e0e0)', color: 'var(--text-primary)', border: '1px solid var(--border-light)', borderRadius: '4px', cursor: count === 0 ? 'not-allowed' : 'pointer', opacity: count === 0 ? 0.4 : 1, fontSize: '12px' }}
+                                                style={{ flex: 1, padding: '4px 2px', background: 'var(--bg-light)', color: 'var(--text-primary)', border: '1px solid var(--border-light)', borderRadius: '4px', cursor: count === 0 ? 'not-allowed' : 'pointer', opacity: count === 0 ? 0.4 : 1, fontSize: '12px' }}
                                             >−</button>
                                             <span style={{ minWidth: '20px', textAlign: 'center', fontWeight: 'bold', fontSize: '13px' }}>
                                                 {count > 0 ? count : '—'}
                                             </span>
                                             <button
                                                 onClick={() => updateRibbon(key, 1)}
-                                                style={{ flex: 1, padding: '4px 2px', background: 'var(--bg-light, #e0e0e0)', color: 'var(--text-primary)', border: '1px solid var(--border-light)', borderRadius: '4px', cursor: 'pointer', fontSize: '12px' }}
+                                                style={{ flex: 1, padding: '4px 2px', background: 'var(--bg-light)', color: 'var(--text-primary)', border: '1px solid var(--border-light)', borderRadius: '4px', cursor: 'pointer', fontSize: '12px' }}
                                             >+</button>
                                         </div>
                                     </div>

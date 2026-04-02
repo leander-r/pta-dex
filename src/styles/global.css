@@ -17,6 +17,9 @@
             --poke-blue: #3498db;
             --poke-green: #4caf50;
             --loyalty-neutral: #fdd835;
+            --gradient-money: linear-gradient(135deg, #ffd700, #ffb300);
+            --money-text: #5d4e00;
+            --money-input-border: #c9a800;
             --poke-shadow: rgba(0, 0, 0, 0.15);
 
             /* Purple gradient (used for trainer level, etc.) */
@@ -276,6 +279,9 @@
             --quick-stat-hp-tint: rgba(229, 57, 53, 0.18);
             --quick-stat-feat-tint: rgba(245, 166, 35, 0.12);
             --quick-stat-badge-tint: rgba(102, 126, 234, 0.15);
+            --gradient-money: linear-gradient(135deg, #b8960a, #9a7c08);
+            --money-text: #ffd93d;
+            --money-input-border: #8a6c00;
 
             /* Status colors - dark mode */
             --warning-bg: #3d3520;

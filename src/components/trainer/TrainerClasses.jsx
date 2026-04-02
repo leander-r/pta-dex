@@ -280,7 +280,7 @@ const TrainerClasses = () => {
                             alignItems: 'center',
                             gap: '8px',
                             padding: '8px 12px',
-                            background: 'linear-gradient(135deg, #667eea, #764ba2)',
+                            background: 'var(--gradient-purple)',
                             borderRadius: '20px',
                             color: 'white'
                         }}>
@@ -317,7 +317,7 @@ const TrainerClasses = () => {
                     padding: '15px',
                     background: 'var(--skill-picker-bg, linear-gradient(135deg, #f3e5f5, #ede7f6))',
                     borderRadius: '8px',
-                    border: '2px solid var(--color-purple, #667eea)'
+                    border: '2px solid var(--color-purple)'
                 }}>
                     <div style={{ marginBottom: '10px' }}>
                         <strong style={{ fontSize: '14px', color: 'var(--text-primary)' }}>Adding: {pendingClass}</strong>
@@ -351,9 +351,9 @@ const TrainerClasses = () => {
                                     disabled={isMaxed}
                                     style={{
                                         padding: '8px 14px',
-                                        background: isSelected ? 'var(--poke-orange, #f5a623)' : isMaxed ? 'var(--skill-btn-disabled-bg, #e0e0e0)' : alreadyHas ? 'var(--skill-btn-has-bg, #fff3e0)' : 'var(--skill-btn-bg, white)',
-                                        color: isSelected ? 'white' : isMaxed ? 'var(--skill-btn-disabled-text, #999)' : 'var(--skill-btn-text, #333)',
-                                        border: `2px solid ${isSelected ? 'var(--poke-orange-dark, #e8941c)' : isMaxed ? 'var(--skill-btn-disabled-border, #bdbdbd)' : alreadyHas ? 'var(--stat-sdef)' : 'var(--skill-btn-border, #e0d0f0)'}`,
+                                        background: isSelected ? 'var(--poke-orange)' : isMaxed ? 'var(--skill-btn-disabled-bg)' : alreadyHas ? 'var(--skill-btn-has-bg)' : 'var(--skill-btn-bg)',
+                                        color: isSelected ? 'white' : isMaxed ? 'var(--skill-btn-disabled-text, #999)' : 'var(--skill-btn-text)',
+                                        border: `2px solid ${isSelected ? 'var(--poke-orange-dark)' : isMaxed ? 'var(--skill-btn-disabled-border, #bdbdbd)' : alreadyHas ? 'var(--stat-sdef)' : 'var(--skill-btn-border)'}`,
                                         borderRadius: '20px',
                                         cursor: isMaxed ? 'not-allowed' : 'pointer',
                                         fontSize: '12px',
@@ -374,8 +374,8 @@ const TrainerClasses = () => {
                             style={{
                                 flex: 1,
                                 padding: '10px',
-                                background: selectedClassSkills.length >= getSkillCount(pendingClass) ? 'linear-gradient(135deg, var(--poke-orange, #f5a623), var(--poke-orange-dark, #e8941c))' : 'var(--collapsed-btn-bg, #ccc)',
-                                color: selectedClassSkills.length >= getSkillCount(pendingClass) ? 'white' : 'var(--collapsed-btn-text, #999)',
+                                background: selectedClassSkills.length >= getSkillCount(pendingClass) ? 'linear-gradient(135deg, var(--poke-orange), var(--poke-orange-dark))' : 'var(--collapsed-btn-bg)',
+                                color: selectedClassSkills.length >= getSkillCount(pendingClass) ? 'white' : 'var(--collapsed-btn-text)',
                                 border: 'none',
                                 borderRadius: '6px',
                                 cursor: selectedClassSkills.length >= getSkillCount(pendingClass) ? 'pointer' : 'not-allowed',
@@ -389,7 +389,7 @@ const TrainerClasses = () => {
                             onClick={handleCancelClass}
                             style={{
                                 padding: '10px 20px',
-                                background: 'var(--danger-btn-start, #f44336)',
+                                background: 'var(--danger-btn-start)',
                                 color: 'white',
                                 border: 'none',
                                 borderRadius: '6px',
@@ -439,12 +439,12 @@ const TrainerClasses = () => {
                         {currentClasses.map((cls, i) => (
                             <span key={i} style={{
                                 padding: '3px 10px', borderRadius: '10px',
-                                background: 'linear-gradient(135deg, #667eea, #764ba2)',
+                                background: 'var(--gradient-purple)',
                                 color: 'white', fontSize: '11px', fontWeight: 'bold'
                             }}>
                                 {cls}
                                 {GAME_DATA.trainerClasses[cls] && (
-                                    <span style={{ opacity: 0.75, marginLeft: '4px', fontSize: '10px' }}>
+                                    <span style={{ opacity: 0.75, marginLeft: '4px', fontSize: '11px' }}>
                                         ({GAME_DATA.trainerClasses[cls].type === 'base' ? 'Base' : 'Adv'})
                                     </span>
                                 )}

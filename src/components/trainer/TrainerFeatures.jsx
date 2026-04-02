@@ -290,7 +290,7 @@ const TrainerFeatures = () => {
                                     alignItems: 'center',
                                     gap: '6px',
                                     padding: '6px 10px',
-                                    background: isBase ? 'linear-gradient(135deg, var(--poke-orange, #f5a623), var(--poke-orange-dark, #e8941c))' : 'linear-gradient(135deg, #667eea, #764ba2)',
+                                    background: isBase ? 'linear-gradient(135deg, var(--poke-orange), var(--poke-orange-dark))' : 'var(--gradient-purple)',
                                     borderRadius: '15px',
                                     color: 'white',
                                     fontSize: '12px',
@@ -299,19 +299,19 @@ const TrainerFeatures = () => {
                                 onClick={() => showDetail && showDetail('feature', featureName, featureData)}
                             >
                                 <span>{featureName}</span>
-                                {isBase && <span style={{ fontSize: '9px', opacity: 0.8 }}>(Base)</span>}
+                                {isBase && <span style={{ fontSize: '11px', opacity: 0.8 }}>(Base)</span>}
                                 {typeof feature === 'object' && feature.weaponType && (
-                                    <span style={{ fontSize: '9px', opacity: 0.9, background: 'rgba(255,255,255,0.2)', padding: '1px 4px', borderRadius: '4px' }}>
+                                    <span style={{ fontSize: '11px', opacity: 0.9, background: 'rgba(255,255,255,0.2)', padding: '1px 4px', borderRadius: '4px' }}>
                                         {feature.weaponType}
                                     </span>
                                 )}
                                 {featureName === 'Weapon of Choice' && (
-                                    <span style={{ fontSize: '9px', opacity: 0.85, background: 'rgba(255,255,255,0.15)', padding: '1px 4px', borderRadius: '4px' }}>
+                                    <span style={{ fontSize: '11px', opacity: 0.85, background: 'rgba(255,255,255,0.15)', padding: '1px 4px', borderRadius: '4px' }}>
                                         {getWeaponOfChoiceDamage(trainer.level)}
                                     </span>
                                 )}
                                 {typeof feature === 'object' && feature.statBoost && feature.statBoost.value > 0 && (
-                                    <span style={{ fontSize: '9px', opacity: 0.9, background: 'rgba(255,255,255,0.2)', padding: '1px 4px', borderRadius: '4px' }}>
+                                    <span style={{ fontSize: '11px', opacity: 0.9, background: 'rgba(255,255,255,0.2)', padding: '1px 4px', borderRadius: '4px' }}>
                                         +{feature.statBoost.value} {STAT_LABELS[feature.statBoost.stat]}
                                     </span>
                                 )}
@@ -327,7 +327,7 @@ const TrainerFeatures = () => {
                                         hpBonusValue = defMod * 3;
                                     }
                                     return hpBonusValue > 0 ? (
-                                        <span style={{ fontSize: '9px', opacity: 0.9, background: 'rgba(255,255,255,0.2)', padding: '1px 4px', borderRadius: '4px' }}>
+                                        <span style={{ fontSize: '11px', opacity: 0.9, background: 'rgba(255,255,255,0.2)', padding: '1px 4px', borderRadius: '4px' }}>
                                             +{hpBonusValue} Max HP
                                         </span>
                                     ) : null;
@@ -374,11 +374,11 @@ const TrainerFeatures = () => {
             {pendingStatFeature && (
                 <div style={{
                     padding: '15px',
-                    background: 'var(--bg-light, #f5f5f5)',
+                    background: 'var(--bg-light)',
                     borderRadius: '8px',
-                    border: '2px solid var(--color-purple, #667eea)'
+                    border: '2px solid var(--color-purple)'
                 }}>
-                    <h4 style={{ margin: '0 0 6px 0', color: 'var(--color-purple, #667eea)', fontSize: '14px' }}>
+                    <h4 style={{ margin: '0 0 6px 0', color: 'var(--color-purple)', fontSize: '14px' }}>
                         {pendingStatFeature.name}
                     </h4>
                     <p style={{ margin: '0 0 12px 0', fontSize: '13px', color: 'var(--text-secondary)' }}>
@@ -411,7 +411,7 @@ const TrainerFeatures = () => {
                             width: '100%',
                             padding: '8px',
                             background: 'none',
-                            border: '1px solid var(--border-medium, #ddd)',
+                            border: '1px solid var(--border-medium)',
                             borderRadius: '6px',
                             cursor: 'pointer',
                             fontSize: '13px',
@@ -427,12 +427,12 @@ const TrainerFeatures = () => {
             {pendingWeaponChoice && (
                 <div style={{
                     padding: '15px',
-                    background: 'var(--bg-light, #f5f5f5)',
+                    background: 'var(--bg-light)',
                     borderRadius: '8px',
-                    border: '2px solid var(--color-purple, #667eea)',
+                    border: '2px solid var(--color-purple)',
                     marginBottom: '10px'
                 }}>
-                    <h4 style={{ margin: '0 0 4px 0', color: 'var(--color-purple, #667eea)', fontSize: '14px' }}>
+                    <h4 style={{ margin: '0 0 4px 0', color: 'var(--color-purple)', fontSize: '14px' }}>
                         Weapon of Choice
                     </h4>
                     <p style={{ margin: '0 0 10px 0', fontSize: '13px', color: 'var(--text-secondary)' }}>
@@ -444,9 +444,9 @@ const TrainerFeatures = () => {
                         value={weaponChoiceInput}
                         onChange={e => setWeaponChoiceInput(e.target.value)}
                         onKeyDown={e => e.key === 'Enter' && handleWeaponChoiceConfirm()}
-                        placeholder="Weapon name..."
+                        placeholder="e.g., Longsword, Unarmed, Bow"
                         autoFocus
-                        style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--border-medium, #ddd)', background: 'var(--input-bg)', color: 'var(--text-primary)', marginBottom: '10px', boxSizing: 'border-box' }}
+                        style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--input-bg)', color: 'var(--text-primary)', marginBottom: '10px', boxSizing: 'border-box' }}
                     />
                     <div style={{ display: 'flex', gap: '8px' }}>
                         <button
@@ -458,7 +458,7 @@ const TrainerFeatures = () => {
                         </button>
                         <button
                             onClick={() => setPendingWeaponChoice(null)}
-                            style={{ padding: '10px 16px', background: 'none', border: '1px solid var(--border-medium, #ddd)', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', color: 'var(--text-muted)' }}
+                            style={{ padding: '10px 16px', background: 'none', border: '1px solid var(--border-medium)', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', color: 'var(--text-muted)' }}
                         >
                             Cancel
                         </button>
@@ -480,7 +480,7 @@ const TrainerFeatures = () => {
                         aria-label="Search features"
                         value={featureSearch}
                         onChange={(e) => setFeatureSearch(e.target.value)}
-                        style={{ flex: 1, minWidth: '150px', padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--border-medium, #ddd)', background: 'var(--input-bg)', color: 'var(--text-primary)' }}
+                        style={{ flex: 1, minWidth: '150px', padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--input-bg)', color: 'var(--text-primary)' }}
                     />
                     <select
                         value={featureFilter}
@@ -515,7 +515,7 @@ const TrainerFeatures = () => {
                                     marginBottom: '4px',
                                     background: 'var(--input-bg)',
                                     borderRadius: '6px',
-                                    borderLeft: `3px solid ${data.category === 'General (Free)' ? 'var(--poke-orange, #f5a623)' : 'var(--color-purple, #667eea)'}`,
+                                    borderLeft: `3px solid ${data.category === 'General (Free)' ? 'var(--poke-orange)' : 'var(--color-purple)'}`,
                                     cursor: 'pointer'
                                 }}
                                 onClick={() => showDetail && showDetail('feature', name, data)}
@@ -591,7 +591,7 @@ const TrainerFeatures = () => {
                                     title={data.category !== 'General (Free)' && (trainer.featPoints || 0) <= 0 ? 'No feat points available — earn more by leveling up or adding a base class' : undefined}
                                     style={{
                                         padding: '4px 12px',
-                                        background: data.category === 'General (Free)' ? 'var(--poke-orange, #f5a623)' : '#667eea',
+                                        background: data.category === 'General (Free)' ? 'var(--poke-orange)' : 'var(--color-purple)',
                                         color: 'white',
                                         border: 'none',
                                         borderRadius: '4px',
@@ -624,10 +624,10 @@ const TrainerFeatures = () => {
                                     style={{
                                         padding: '3px 8px', borderRadius: '10px', fontSize: '12px', fontWeight: 'bold',
                                         background: isBase
-                                            ? 'linear-gradient(135deg, var(--poke-orange, #f5a623), var(--poke-orange-dark, #e8941c))'
+                                            ? 'linear-gradient(135deg, var(--poke-orange), var(--poke-orange-dark))'
                                             : isFree
-                                            ? 'linear-gradient(135deg, #388e3c, #2e7d32)'
-                                            : 'linear-gradient(135deg, #667eea, #764ba2)',
+                                            ? 'linear-gradient(135deg, var(--poke-green), var(--stat-hp))'
+                                            : 'var(--gradient-purple)',
                                         color: 'white',
                                         cursor: 'pointer'
                                     }}
