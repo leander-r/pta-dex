@@ -1035,7 +1035,7 @@ const PokemonCard = ({
                                     Species
                                 </label>
                                 {pokemon.species && speciesSearch && (
-                                    <span style={{ fontSize: '11px', color: 'var(--text-muted)', background: 'var(--tint-purple-bg)', padding: '1px 6px', borderRadius: '4px', border: '1px solid var(--tint-purple-border)' }}>
+                                    <span style={{ fontSize: '12px', color: 'var(--text-muted)', background: 'var(--tint-purple-bg)', padding: '1px 6px', borderRadius: '4px', border: '1px solid var(--tint-purple-border)' }}>
                                         Current: {pokemon.regionalForm ? `${pokemon.regionalForm} ` : ''}{pokemon.species}
                                     </span>
                                 )}
@@ -1113,7 +1113,7 @@ const PokemonCard = ({
                                         }}>
                                             {/* P4: Warning shown inside dropdown when species is already set */}
                                             {pokemon.species && (
-                                                <div style={{ marginBottom: '8px', padding: '5px 8px', borderRadius: '5px', background: 'var(--tint-fail-bg)', border: '1px solid var(--tint-fail-border)', fontSize: '11px', color: 'var(--color-danger-text)' }}>
+                                                <div style={{ marginBottom: '8px', padding: '5px 8px', borderRadius: '5px', background: 'var(--tint-fail-bg)', border: '1px solid var(--tint-fail-border)', fontSize: '12px', color: 'var(--color-danger-text)' }}>
                                                     ⚠ Changing species resets types, abilities, learned moves, and the available move pool.
                                                 </div>
                                             )}
@@ -1637,7 +1637,7 @@ const PokemonCard = ({
                                     <label style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                                         <span>Loyalty</span>
                                         <span style={{
-                                            padding: '1px 8px', borderRadius: '8px', fontSize: '11px', fontWeight: 'bold',
+                                            padding: '1px 8px', borderRadius: '8px', fontSize: '12px', fontWeight: 'bold',
                                             background: LOYALTY_COLORS[currentLoyalty], color: currentLoyalty === 2 ? 'black' : 'white'
                                         }}>
                                             {currentLoyalty} — {LOYALTY_LABELS[currentLoyalty]}
@@ -1715,7 +1715,7 @@ const PokemonCard = ({
                                             const val = contestStats[stat] || 0;
                                             return (
                                                 <div key={stat} style={{ textAlign: 'center' }}>
-                                                    <div style={{ fontSize: '11px', fontWeight: 'bold', color: 'var(--text-muted)', marginBottom: '4px', textTransform: 'capitalize' }}>{icon}<br/>{stat}</div>
+                                                    <div style={{ fontSize: '12px', fontWeight: 'bold', color: 'var(--text-muted)', marginBottom: '4px', textTransform: 'capitalize' }}>{icon}<br/>{stat}</div>
                                                     <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                                                         <button
                                                             onClick={() => updatePokemon({ contestStats: { ...contestStats, [stat]: Math.max(0, val - 1) } })}
@@ -1753,7 +1753,7 @@ const PokemonCard = ({
                                             const count = ribbons[type] || 0;
                                             return (
                                                 <div key={type} style={{ textAlign: 'center' }}>
-                                                    <div style={{ fontSize: '11px', fontWeight: 'bold', color: 'var(--text-muted)', marginBottom: '4px', textTransform: 'capitalize' }}>{icon}<br/>{type}</div>
+                                                    <div style={{ fontSize: '12px', fontWeight: 'bold', color: 'var(--text-muted)', marginBottom: '4px', textTransform: 'capitalize' }}>{icon}<br/>{type}</div>
                                                     <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                                                         <button
                                                             onClick={() => updatePokemon({ ribbons: { ...ribbons, [type]: Math.max(0, count - 1) } })}
@@ -2253,7 +2253,7 @@ const PokemonCard = ({
 
                         <div style={{ marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Stat Points Available:</span>
-                            <span style={{ fontSize: '14px', fontWeight: 'bold', color: (pokemon.statPointsAvailable || 0) > 0 ? 'var(--color-success-text)' : 'var(--text-muted)', background: (pokemon.statPointsAvailable || 0) > 0 ? 'var(--tint-green-bg, rgba(76,175,80,0.1))' : 'var(--tint-purple-bg)', border: `1px solid ${(pokemon.statPointsAvailable || 0) > 0 ? 'var(--stat-hp)' : 'transparent'}`, padding: '2px 8px', borderRadius: '6px' }} title="Spend these to increase stats. Pokémon gain stat points when leveling up.">{pokemon.statPointsAvailable || 0}</span>
+                            <span style={{ fontSize: '14px', fontWeight: 'bold', color: (pokemon.statPointsAvailable || 0) > 0 ? 'var(--color-success-text)' : 'var(--text-muted)', background: (pokemon.statPointsAvailable || 0) > 0 ? 'var(--tint-success-bg)' : 'var(--tint-purple-bg)', border: `1px solid ${(pokemon.statPointsAvailable || 0) > 0 ? 'var(--stat-hp)' : 'transparent'}`, padding: '2px 8px', borderRadius: '6px' }} title="Spend these to increase stats. Pokémon gain stat points when leveling up.">{pokemon.statPointsAvailable || 0}</span>
                             <button
                                 onClick={() => showHelp('pokemon-stats')}
                                 style={HELP_BTN_STYLE}
@@ -2496,7 +2496,7 @@ const PokemonCard = ({
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: '14px 0 8px', paddingTop: '14px', borderTop: '1px solid var(--border-light)' }}>
                                 <span style={{ fontSize: '13px', fontWeight: 'bold', color: 'var(--text-primary)' }}>Add Moves</span>
                                 <span style={{ display: 'flex', gap: '4px' }}>
-                                    <span style={{ fontSize: '12px', fontWeight: 'bold', padding: '2px 8px', borderRadius: '5px', background: naturalMoveCount >= MAX_NATURAL_MOVES ? 'var(--tint-fail-bg)' : 'var(--tint-green-bg, rgba(76,175,80,0.1))', color: naturalMoveCount >= MAX_NATURAL_MOVES ? 'var(--color-danger-text)' : 'var(--stat-hp)', border: `1px solid ${naturalMoveCount >= MAX_NATURAL_MOVES ? 'var(--color-danger-text)' : 'var(--stat-hp)'}` }}>Nat {naturalMoveCount}/{MAX_NATURAL_MOVES}</span>
+                                    <span style={{ fontSize: '12px', fontWeight: 'bold', padding: '2px 8px', borderRadius: '5px', background: naturalMoveCount >= MAX_NATURAL_MOVES ? 'var(--tint-fail-bg)' : 'var(--tint-success-bg)', color: naturalMoveCount >= MAX_NATURAL_MOVES ? 'var(--color-danger-text)' : 'var(--stat-hp)', border: `1px solid ${naturalMoveCount >= MAX_NATURAL_MOVES ? 'var(--color-danger-text)' : 'var(--stat-hp)'}` }}>Nat {naturalMoveCount}/{MAX_NATURAL_MOVES}</span>
                                     <span style={{ fontSize: '12px', fontWeight: 'bold', padding: '2px 8px', borderRadius: '5px', background: taughtMoveCount >= MAX_TAUGHT_MOVES ? 'var(--tint-fail-bg)' : 'var(--tint-purple-bg)', color: taughtMoveCount >= MAX_TAUGHT_MOVES ? 'var(--color-danger-text)' : 'var(--color-taught)', border: `1px solid ${taughtMoveCount >= MAX_TAUGHT_MOVES ? 'var(--color-danger-text)' : 'var(--color-taught)'}` }}>Tght {taughtMoveCount}/{MAX_TAUGHT_MOVES}</span>
                                 </span>
                                 <button

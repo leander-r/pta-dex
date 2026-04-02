@@ -500,7 +500,7 @@ const PokemonTab = () => {
                 >
                     🔍 Search
                     {(filter.search || filter.type) && (
-                        <span style={{ background: activePanel === 'search' ? 'var(--bg-primary)' : 'var(--poke-orange)', color: 'white', borderRadius: '8px', padding: '0 5px', fontSize: '11px', fontWeight: 'bold' }}>
+                        <span style={{ background: activePanel === 'search' ? 'var(--bg-primary)' : 'var(--poke-orange)', color: 'white', borderRadius: '8px', padding: '0 5px', fontSize: '11px', fontWeight: 'bold', minWidth: '18px', textAlign: 'center' }}>
                             {[filter.search && '✓', filter.type && filter.type].filter(Boolean).join(' ')}
                         </span>
                     )}
@@ -538,7 +538,7 @@ const PokemonTab = () => {
                     >
                         ⭐ Presets
                         {partyPresets.length > 0 && (
-                            <span style={{ background: activePanel === 'presets' ? 'var(--bg-primary)' : 'var(--bg-secondary)', color: activePanel === 'presets' ? 'white' : 'var(--text-muted)', borderRadius: '8px', padding: '0 5px', fontSize: '11px', fontWeight: 'bold' }}>
+                            <span style={{ background: activePanel === 'presets' ? 'var(--bg-primary)' : 'var(--bg-secondary)', color: activePanel === 'presets' ? 'white' : 'var(--text-muted)', borderRadius: '8px', padding: '0 5px', fontSize: '11px', fontWeight: 'bold', minWidth: '18px', textAlign: 'center' }}>
                                 {partyPresets.length}
                             </span>
                         )}
@@ -559,7 +559,7 @@ const PokemonTab = () => {
                 >
                     ✨ Custom Species ↗
                     {customSpecies.length > 0 && (
-                        <span style={{ background: 'var(--tint-purple-bg)', color: 'var(--color-purple)', borderRadius: '8px', padding: '0 5px', fontSize: '11px', fontWeight: 'bold', border: '1px solid var(--tint-purple-border)' }}>
+                        <span style={{ background: 'var(--tint-purple-bg)', color: 'var(--color-purple)', borderRadius: '8px', padding: '0 5px', fontSize: '11px', fontWeight: 'bold', border: '1px solid var(--tint-purple-border)', minWidth: '18px', textAlign: 'center' }}>
                             {customSpecies.length}
                         </span>
                     )}
@@ -682,15 +682,15 @@ const PokemonTab = () => {
                                                     style={{
                                                         padding: '3px 8px', borderRadius: '10px',
                                                         background: getTypeColor(t), color: 'white',
-                                                        fontSize: '11px', fontWeight: 'bold', border: 'none', cursor: 'pointer',
+                                                        fontSize: '12px', fontWeight: 'bold', border: 'none', cursor: 'pointer',
                                                         display: 'flex', alignItems: 'center', gap: '4px',
                                                         outline: isExpanded ? '2px solid white' : teamCoverage.superWeakSet.has(t) ? '2px solid var(--color-danger-text)' : 'none'
                                                     }}
                                                     title={teamCoverage.superWeakSet.has(t) ? '×4 weakness! At least one Pokémon takes quadruple damage' : 'Click to see which Pokémon are weak'}
                                                 >
-                                                    {teamCoverage.superWeakSet.has(t) && <span style={{ fontSize: '11px' }}>⚠</span>}
+                                                    {teamCoverage.superWeakSet.has(t) && <span style={{ fontSize: '12px' }}>⚠</span>}
                                                     {t}
-                                                    <span style={{ background: 'var(--bg-primary)', borderRadius: '8px', padding: '0 4px', fontSize: '11px' }}>
+                                                    <span style={{ background: 'var(--bg-primary)', borderRadius: '8px', padding: '0 4px', fontSize: '12px' }}>
                                                         ×{teamCoverage.weakCount[t]}
                                                     </span>
                                                 </button>
@@ -711,7 +711,7 @@ const PokemonTab = () => {
                     {Object.keys(teamCoverage.immuneCount).length > 0 && (
                         <div style={{ marginBottom: '14px' }}>
                             <div style={{ fontSize: '13px', fontWeight: 'bold', color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                                🛡 Immunities
+                                🔰 Immunities
                             </div>
                             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
                                 {POKEMON_TYPES.filter(t => teamCoverage.immuneCount[t]).map(t => (
@@ -719,11 +719,11 @@ const PokemonTab = () => {
                                         padding: '3px 8px', borderRadius: '10px',
                                         background: 'var(--bg-secondary)', color: 'var(--text-primary)',
                                         border: '1px solid var(--border-medium)',
-                                        fontSize: '11px', fontWeight: 'bold',
+                                        fontSize: '12px', fontWeight: 'bold',
                                         display: 'flex', alignItems: 'center', gap: '4px'
                                     }}>
                                         {t}
-                                        <span style={{ background: 'var(--border-medium)', borderRadius: '8px', padding: '0 4px', fontSize: '11px' }}>
+                                        <span style={{ background: 'var(--border-medium)', borderRadius: '8px', padding: '0 4px', fontSize: '12px' }}>
                                             ×{teamCoverage.immuneCount[t]}
                                         </span>
                                     </span>
@@ -745,7 +745,7 @@ const PokemonTab = () => {
                                         padding: '3px 8px', borderRadius: '10px',
                                         background: covered ? getTypeColor(t) : 'var(--border-medium)',
                                         color: covered ? 'white' : 'var(--text-muted)',
-                                        fontSize: '11px', fontWeight: covered ? 'bold' : 'normal',
+                                        fontSize: '12px', fontWeight: covered ? 'bold' : 'normal',
                                         opacity: covered ? 1 : 0.7
                                     }}>
                                         {t}
@@ -753,8 +753,12 @@ const PokemonTab = () => {
                                 );
                             })}
                         </div>
-                        {teamCoverage.offenseTypes.size < POKEMON_TYPES.length && (
-                            <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '6px' }}>
+                        {teamCoverage.offenseTypes.size >= POKEMON_TYPES.length ? (
+                            <div style={{ fontSize: '12px', color: 'var(--color-success-text)', marginTop: '6px', fontWeight: 'bold' }}>
+                                ✓ All types covered
+                            </div>
+                        ) : (
+                            <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '6px' }}>
                                 Missing: {POKEMON_TYPES.filter(t => !teamCoverage.offenseTypes.has(t)).join(', ')}
                             </div>
                         )}
@@ -802,19 +806,19 @@ const PokemonTab = () => {
                                     }}>
                                         <div style={{ flex: 1, minWidth: 0 }}>
                                             <div style={{ fontWeight: 'bold', fontSize: '13px' }}>{preset.name}</div>
-                                            <div style={{ fontSize: '11px', color: 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                            <div style={{ fontSize: '12px', color: 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                                 {members.length ? members.map(p => p.name || p.species).join(', ') : '(Pokémon not found)'}
                                             </div>
                                         </div>
                                         <button
                                             onClick={() => handleLoadPreset(preset)}
-                                            style={{ padding: '5px 10px', background: 'var(--color-purple)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '11px', fontWeight: 'bold', whiteSpace: 'nowrap' }}
+                                            style={{ padding: '5px 10px', background: 'var(--color-purple)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold', whiteSpace: 'nowrap' }}
                                         >
                                             Load
                                         </button>
                                         <button
                                             onClick={() => handleDeletePreset(preset.id)}
-                                            style={{ padding: '5px 8px', background: 'var(--danger-btn-start)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '11px' }}
+                                            style={{ padding: '5px 8px', background: 'var(--danger-btn-start)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px' }}
                                             title="Delete preset"
                                         >
                                             ✕
