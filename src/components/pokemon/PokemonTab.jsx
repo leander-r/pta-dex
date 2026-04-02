@@ -644,6 +644,17 @@ const PokemonTab = () => {
             {/* Coverage panel */}
             {activePanel === 'coverage' && pokemonView === 'party' && party.length > 0 && teamCoverage && (
                 <div className="section-card" style={{ marginBottom: '15px' }}>
+                    {/* Summary line */}
+                    <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '12px', padding: '6px 10px', background: 'var(--bg-light)', borderRadius: '6px' }}>
+                        <strong style={{ color: 'var(--text-primary)' }}>{teamCoverage.offenseTypes.size}</strong> type{teamCoverage.offenseTypes.size !== 1 ? 's' : ''} covered offensively
+                        {' · '}
+                        <strong style={{ color: Object.keys(teamCoverage.weakCount).length > 0 ? 'var(--color-danger-text)' : 'var(--color-success-text)' }}>
+                            {Object.keys(teamCoverage.weakCount).length}
+                        </strong> defensive weakness{Object.keys(teamCoverage.weakCount).length !== 1 ? 'es' : ''}
+                        {teamCoverage.superWeakSet.size > 0 && (
+                            <span style={{ color: 'var(--color-danger-text)', fontWeight: 'bold' }}> ({teamCoverage.superWeakSet.size} ×4)</span>
+                        )}
+                    </div>
                     {/* Defensive weaknesses */}
                     <div style={{ marginBottom: '14px' }}>
                         <div style={{ fontSize: '13px', fontWeight: 'bold', color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
@@ -776,7 +787,7 @@ const PokemonTab = () => {
                     </div>
                     {partyPresets.length === 0 ? (
                         <div style={{ fontSize: '12px', color: 'var(--text-muted)', textAlign: 'center', padding: '8px' }}>
-                            No presets saved yet.
+                            No presets saved yet. Name your current party above and click <strong>Save Party</strong> to store it — then reload it any time with one click.
                         </div>
                     ) : (
                         <div style={{ display: 'grid', gap: '6px' }}>

@@ -543,7 +543,7 @@ const PokemonCard = ({
                     {/* Info */}
                     <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                            <span style={{ fontWeight: 'bold', fontSize: '16px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 'clamp(130px, 28%, 240px)' }}>
+                            <span title={pokemon.name || pokemon.species || 'Unknown'} style={{ fontWeight: 'bold', fontSize: '16px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 'clamp(130px, 28%, 240px)' }}>
                                 {pokemon.name || pokemon.species || 'Unknown'}
                             </span>
                             {pokemon.species && pokemon.species !== pokemon.name && (
@@ -593,11 +593,11 @@ const PokemonCard = ({
                                         style={{
                                             padding: '2px 8px',
                                             borderRadius: '10px',
-                                            background: 'var(--tint-purple-bg)',
+                                            background: 'var(--tint-blue-bg)',
                                             color: 'var(--text-primary)',
                                             fontSize: '12px',
                                             fontWeight: 'bold',
-                                            border: '1px solid var(--tint-purple-border)',
+                                            border: '1px solid var(--tint-blue-border)',
                                             cursor: showDetail && itemData ? 'pointer' : 'default'
                                         }}
                                     >
@@ -607,7 +607,7 @@ const PokemonCard = ({
                             })()}
                         </div>
 
-                        {/* Status Conditions — read-only display */}
+                        {/* Status Conditions — above HP bar for gameplay visibility */}
                         {(() => {
                             const active = STATUS_CONDITIONS.filter(c => pokemon.statusConditions?.[c.key]);
                             if (!active.length) return null;
@@ -626,7 +626,7 @@ const PokemonCard = ({
                             );
                         })()}
 
-                        {/* HP Bar - More Visible */}
+                        {/* HP Bar */}
                         <div style={{ marginTop: '6px' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                 <div
@@ -1114,13 +1114,13 @@ const PokemonCard = ({
                                             {/* P4: Warning shown inside dropdown when species is already set */}
                                             {pokemon.species && (
                                                 <div style={{ marginBottom: '8px', padding: '5px 8px', borderRadius: '5px', background: 'var(--tint-fail-bg)', border: '1px solid var(--tint-fail-border)', fontSize: '11px', color: 'var(--color-danger-text)' }}>
-                                                    ⚠ Changing species resets types, abilities, and available moves.
+                                                    ⚠ Changing species resets types, abilities, learned moves, and the available move pool.
                                                 </div>
                                             )}
                                             {/* Type Filter Chips */}
                                             <div style={{ marginBottom: '8px' }}>
                                                 <div style={{ fontSize: '12px', fontWeight: 'bold', color: 'var(--species-label-text)', marginBottom: '4px' }}>Filter by Type:</div>
-                                                <div role="group" aria-label="Filter by type" style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', paddingBottom: '3px' }}>
+                                                <div role="group" aria-label="Filter by type" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(58px, 1fr))', gap: '4px', paddingBottom: '3px' }}>
                                                     <button
                                                         onClick={() => setSpeciesTypeFilter('all')}
                                                         style={{
@@ -1178,8 +1178,8 @@ const PokemonCard = ({
                                                 </div>
                                                 <span style={{ fontSize: '12px', color: 'var(--species-muted-text)', fontWeight: filteredSpecies.length > 50 ? 'bold' : 'normal' }}>
                                                     {filteredSpecies.length > 50
-                                                        ? `${filteredSpecies.length} matches — refine search`
-                                                        : `${filteredSpecies.length} results`}
+                                                        ? `Showing 50 of ${filteredSpecies.length} — refine search`
+                                                        : `${filteredSpecies.length} result${filteredSpecies.length !== 1 ? 's' : ''}`}
                                                 </span>
                                             </div>
                                         </div>
@@ -1642,9 +1642,11 @@ const PokemonCard = ({
                                         }}>
                                             {currentLoyalty} — {LOYALTY_LABELS[currentLoyalty]}
                                         </span>
-                                        <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 'normal', marginLeft: 'auto' }}>
-                                            GM Guide pp.10–13
-                                        </span>
+                                        <button
+                                            style={{ ...HELP_BTN_STYLE, marginLeft: 'auto' }}
+                                            title="Loyalty mechanics — GM Guide pp.10–13"
+                                            onClick={(e) => e.preventDefault()}
+                                        >?</button>
                                     </label>
                                     <div style={{ display: 'flex', gap: '6px' }}>
                                         {[0, 1, 2, 3, 4].map(rank => (
@@ -2282,6 +2284,7 @@ const PokemonCard = ({
                             </button>
                         </div>
 
+                        <div style={{ background: 'var(--surface-bg)', borderRadius: '8px', padding: '10px', border: '1px solid var(--border-light)' }}>
                         <div className="stat-cards-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
                             {(() => {
                                 const natureModifiedBase = applyNature(pokemon.baseStats || { hp: 10, atk: 10, def: 10, satk: 10, sdef: 10, spd: 10 }, pokemon.nature);
@@ -2366,6 +2369,7 @@ const PokemonCard = ({
                             });
                             })()}
                         </div>
+                        </div>
 
                         {/* Base Relation rule hint — always visible */}
                         <div style={{ marginTop: '8px', padding: '6px 10px', borderRadius: '6px', background: 'var(--tint-purple-bg)', border: '1px solid var(--tint-purple-border)', fontSize: '11px', color: 'var(--text-muted)', lineHeight: 1.5 }}>
@@ -2426,6 +2430,7 @@ const PokemonCard = ({
                                     marginBottom: '6px',
                                     borderRadius: '6px',
                                     borderLeft: `4px solid ${getTypeColor(move.type)}`,
+                                    background: `${getTypeColor(move.type)}18`,
                                     cursor: showDetail ? 'pointer' : 'default'
                                 }}
                                 onClick={() => {
@@ -3005,7 +3010,7 @@ const PokemonCard = ({
                                                         </div>
                                                         {/* Requirement + action */}
                                                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
-                                                            <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+                                                            <div style={{ fontSize: '12px', color: evo.canEvolveNow ? 'var(--text-muted)' : 'var(--poke-orange)', fontWeight: evo.canEvolveNow ? 'normal' : '600' }}>
                                                                 {evo.reason || evo.requirement}
                                                                 {evo.note && ` (${evo.note})`}
                                                             </div>
@@ -3100,7 +3105,7 @@ const PokemonCard = ({
     );
 };
 
-const LOYALTY_COLORS = ['var(--color-danger-text)', 'var(--poke-orange)', '#fdd835', 'var(--color-success-text)', 'var(--poke-blue)'];
+const LOYALTY_COLORS = ['var(--color-danger-text)', 'var(--poke-orange)', 'var(--loyalty-neutral)', 'var(--color-success-text)', 'var(--poke-blue)'];
 const LOYALTY_LABELS = ['Defiant', 'Wary', 'Neutral', 'Friendly', 'Loyal'];
 
 const quickBtnStyle = {
