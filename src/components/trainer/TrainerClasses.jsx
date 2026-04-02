@@ -286,7 +286,7 @@ const TrainerClasses = () => {
                         }}>
                             <span className="font-bold">{cls}</span>
                             {GAME_DATA.trainerClasses[cls] && (
-                                <span style={{ background: 'rgba(255,255,255,0.2)', padding: '2px 6px', borderRadius: '10px', fontSize: '10px' }}>
+                                <span style={{ background: 'rgba(255,255,255,0.2)', padding: '2px 6px', borderRadius: '10px', fontSize: '11px' }}>
                                     {GAME_DATA.trainerClasses[cls].type === 'base' ? 'Base' : 'Adv'}
                                 </span>
                             )}

@@ -110,7 +110,7 @@ const TrainerProfile = () => {
                         alignItems: 'center',
                         justifyContent: 'center',
                         overflow: 'hidden',
-                        border: '2px solid rgba(102,126,234,0.35)'
+                        border: '2px solid var(--tint-purple-border)'
                     }}>
                         {trainer.avatar
                             ? <img src={trainer.avatar} alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -147,7 +147,7 @@ const TrainerProfile = () => {
                         minWidth: 0,
                         background: 'transparent',
                         border: 'none',
-                        borderBottom: '2px solid rgba(102,126,234,0.35)',
+                        borderBottom: '2px solid var(--tint-purple-border)',
                         outline: 'none',
                         fontSize: '16px',
                         fontWeight: '800',
@@ -170,12 +170,12 @@ const TrainerProfile = () => {
                                 onChange={() => setTrainer(prev => ({ ...prev, gender: val }))}
                                 style={{ accentColor: col }}
                             />
-                            <span title={val.charAt(0).toUpperCase() + val.slice(1)}>{sym} <span style={{ fontSize: '11px', fontWeight: 'bold' }}>{abbr}</span></span>
+                            <span title={val.charAt(0).toUpperCase() + val.slice(1)}>{sym} <span style={{ fontSize: '12px', fontWeight: 'bold' }}>{abbr}</span></span>
                         </label>
                     ))}
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '500' }}>Age</span>
+                    <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '500' }}>Age</span>
                     <input
                         type="number"
                         value={trainer.age || ''}
@@ -211,7 +211,7 @@ const TrainerProfile = () => {
                             style={{
                                 padding: '2px 8px',
                                 borderRadius: '8px',
-                                fontSize: '11px',
+                                fontSize: '12px',
                                 fontWeight: '700',
                                 background: 'var(--gradient-purple)',
                                 color: 'white',
@@ -277,14 +277,14 @@ const TrainerProfile = () => {
             {/* Quick Stats — 3 boxes */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', marginTop: '14px' }}>
                 <div
-                    style={{ textAlign: 'center', padding: '10px 6px', background: 'linear-gradient(180deg, rgba(76,175,80,0.15) 0%, transparent 70%)', borderRadius: '8px', border: '1px solid rgba(76,175,80,0.33)', borderTop: '3px solid var(--stat-hp)' }}
+                    style={{ textAlign: 'center', padding: '10px 6px', background: 'linear-gradient(180deg, var(--tint-success-bg) 0%, transparent 70%)', borderRadius: '8px', border: '1px solid var(--tint-success-border)', borderTop: '3px solid var(--stat-hp)' }}
                     title="Max HP = (HP stat × 4) + (Level × 4)"
                 >
                     <div style={{ fontSize: '12px', color: 'var(--stat-hp)', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Max HP</div>
                     <div style={{ fontSize: '20px', fontWeight: 'bold', color: 'var(--stat-hp)', lineHeight: 1.2 }}>{calculateMaxHP()}</div>
                 </div>
                 <div
-                    style={{ textAlign: 'center', padding: '10px 6px', background: 'linear-gradient(180deg, rgba(245,166,35,0.15) 0%, transparent 70%)', borderRadius: '8px', border: '1px solid rgba(245,166,35,0.33)', borderTop: '3px solid var(--poke-orange)' }}
+                    style={{ textAlign: 'center', padding: '10px 6px', background: 'linear-gradient(180deg, var(--tint-orange-bg) 0%, transparent 70%)', borderRadius: '8px', border: '1px solid var(--tint-orange-border)', borderTop: '3px solid var(--poke-orange)' }}
                     title="Feat points are used to buy features. Gain points from leveling up."
                 >
                     <div style={{ fontSize: '12px', color: 'var(--poke-orange-dark)', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Feat Pts</div>
@@ -326,7 +326,7 @@ const TrainerProfile = () => {
                         fontSize: '16px',
                         fontWeight: 'bold',
                         textAlign: 'right',
-                        background: 'rgba(255,255,255,0.88)',
+                        background: 'var(--input-bg)',
                         minWidth: 0
                     }}
                 />
@@ -346,7 +346,7 @@ const TrainerProfile = () => {
             <div id="trainer-badges-section" style={{ marginTop: '12px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
                     <span style={{ fontWeight: 'bold', color: 'var(--color-purple)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                        🏅 Badges ({badges.length})
+                        🏅 Badges{badges.length > 0 ? ` (${badges.length})` : ''}
                     </span>
                     <button
                         onClick={handleAddBadge}

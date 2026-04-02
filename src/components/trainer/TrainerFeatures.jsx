@@ -485,7 +485,7 @@ const TrainerFeatures = () => {
                     <select
                         value={featureFilter}
                         onChange={(e) => setFeatureFilter(e.target.value)}
-                        style={{ padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--border-medium, #ddd)' }}
+                        style={{ padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--border-medium)' }}
                     >
                         {categories.map(cat => (
                             <option key={cat} value={cat}>
@@ -547,7 +547,7 @@ const TrainerFeatures = () => {
                                                             hpBonusValue = defMod * 3;
                                                         }
                                                         return (
-                                                            <span style={{ marginLeft: '6px', fontSize: '12px', color: hpBonusValue > 0 ? '#e53935' : '#999', fontWeight: 'normal' }}>
+                                                            <span style={{ marginLeft: '6px', fontSize: '12px', color: hpBonusValue > 0 ? 'var(--color-danger-text)' : 'var(--text-muted)', fontWeight: 'normal' }}>
                                                                 (+{hpBonusValue} Max HP)
                                                             </span>
                                                         );
@@ -559,19 +559,19 @@ const TrainerFeatures = () => {
                                                         }
                                                         displayStat = STAT_LABELS[statMod.stat];
                                                         return (
-                                                            <span style={{ marginLeft: '6px', fontSize: '12px', color: displayValue > 0 ? '#4caf50' : '#999', fontWeight: 'normal' }}>
+                                                            <span style={{ marginLeft: '6px', fontSize: '12px', color: displayValue > 0 ? 'var(--poke-green)' : 'var(--text-muted)', fontWeight: 'normal' }}>
                                                                 (+{displayValue} {displayStat} from {STAT_LABELS[statMod.calculated.baseStat]})
                                                             </span>
                                                         );
                                                     } else if (statMod.choices) {
                                                         return (
-                                                            <span style={{ marginLeft: '6px', fontSize: '12px', color: '#4caf50', fontWeight: 'normal' }}>
+                                                            <span style={{ marginLeft: '6px', fontSize: '12px', color: 'var(--poke-green)', fontWeight: 'normal' }}>
                                                                 (+{displayValue} to choice)
                                                             </span>
                                                         );
                                                     } else {
                                                         return (
-                                                            <span style={{ marginLeft: '6px', fontSize: '12px', color: '#4caf50', fontWeight: 'normal' }}>
+                                                            <span style={{ marginLeft: '6px', fontSize: '12px', color: 'var(--poke-green)', fontWeight: 'normal' }}>
                                                                 (+{displayValue} {displayStat})
                                                             </span>
                                                         );

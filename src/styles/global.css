@@ -89,6 +89,7 @@
             --tint-purple-bg: rgba(102,126,234,0.12);
             --tint-purple-border: rgba(102,126,234,0.27);
             --tint-success-bg: rgba(67,160,71,0.10);
+            --tint-success-border: rgba(67,160,71,0.33);
             --tint-fail-bg: rgba(229,57,53,0.10);
             --tint-warn-bg: rgba(255,152,0,0.10);
             --tint-warn-border: rgba(255,152,0,0.35);
@@ -326,6 +327,7 @@
             --tint-purple-bg: rgba(102,126,234,0.25);
             --tint-purple-border: rgba(102,126,234,0.50);
             --tint-success-bg: rgba(67,160,71,0.22);
+            --tint-success-border: rgba(67,160,71,0.50);
             --tint-fail-bg: rgba(229,57,53,0.22);
             --tint-warn-bg: rgba(255,152,0,0.15);
             --tint-warn-border: rgba(255,152,0,0.40);

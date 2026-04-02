@@ -147,15 +147,15 @@ const TrainerSkills = () => {
                     aria-label="Search skills"
                     value={skillSearch}
                     onChange={e => setSkillSearch(e.target.value)}
-                    style={{ flex: 1, minWidth: '140px', padding: '6px 10px', borderRadius: '6px', border: '1px solid var(--border-medium, #ddd)', background: 'var(--input-bg)', color: 'var(--text-primary)', fontSize: '13px' }}
+                    style={{ flex: 1, minWidth: '140px', padding: '6px 10px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--input-bg)', color: 'var(--text-primary)', fontSize: '13px' }}
                 />
                 <button
                     onClick={() => setShowTrainedOnly(v => !v)}
                     style={{
                         padding: '6px 12px',
                         borderRadius: '6px',
-                        border: '1px solid var(--border-medium, #ddd)',
-                        background: showTrainedOnly ? 'linear-gradient(135deg, #667eea, #764ba2)' : 'var(--input-bg)',
+                        border: '1px solid var(--border-medium)',
+                        background: showTrainedOnly ? 'var(--gradient-purple)' : 'var(--input-bg)',
                         color: showTrainedOnly ? 'white' : 'var(--text-primary)',
                         fontSize: '12px',
                         fontWeight: 'bold',
@@ -187,11 +187,11 @@ const TrainerSkills = () => {
                             <div style={{
                                 fontWeight: 'bold',
                                 fontSize: '12px',
-                                color: stat === 'HP' ? 'var(--stat-hp, #4caf50)' :
-                                       stat === 'ATK' ? 'var(--stat-atk, #f44336)' :
-                                       stat === 'DEF' ? 'var(--stat-def, #2196f3)' :
-                                       stat === 'SATK' ? 'var(--stat-satk, #9c27b0)' :
-                                       stat === 'SDEF' ? 'var(--stat-sdef, #ff9800)' : 'var(--stat-spd, #00bcd4)',
+                                color: stat === 'HP' ? 'var(--stat-hp)' :
+                                       stat === 'ATK' ? 'var(--stat-atk)' :
+                                       stat === 'DEF' ? 'var(--stat-def)' :
+                                       stat === 'SATK' ? 'var(--stat-satk)' :
+                                       stat === 'SDEF' ? 'var(--stat-sdef)' : 'var(--stat-spd)',
                                 marginBottom: '8px',
                                 borderBottom: '1px solid var(--border-light, #ddd)',
                                 paddingBottom: '4px',
@@ -223,7 +223,7 @@ const TrainerSkills = () => {
                                             background: isTrained
                                                 ? rank === 2
                                                     ? 'linear-gradient(135deg, var(--poke-orange), var(--poke-orange-dark))'
-                                                    : 'linear-gradient(135deg, #667eea, #764ba2)'
+                                                    : 'var(--gradient-purple)'
                                                 : undefined,
                                             color: isTrained ? 'white' : undefined,
                                             borderRadius: '6px',
@@ -246,7 +246,7 @@ const TrainerSkills = () => {
                                                         width: '13px',
                                                         height: '13px',
                                                         borderRadius: '50%',
-                                                        border: isTrained ? 'none' : '2px solid var(--border-medium, #ddd)',
+                                                        border: isTrained ? 'none' : '2px solid var(--border-medium)',
                                                         background: i < rank
                                                             ? 'rgba(255,255,255,0.9)'
                                                             : isTrained
