@@ -671,7 +671,8 @@ const PokemonCard = ({
                                 cursor: 'pointer',
                                 display: 'flex',
                                 alignItems: 'center',
-                                gap: '4px'
+                                gap: '4px',
+                                transition: 'all 0.15s ease'
                             });
                             const abilities = (pokemon.abilities && pokemon.abilities.length > 0)
                                 ? pokemon.abilities
@@ -906,7 +907,8 @@ const PokemonCard = ({
             <div style={{
                 background: `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})`,
                 padding: '15px',
-                color: 'white'
+                color: 'white',
+                textShadow: '0 1px 3px rgba(0,0,0,0.5)'
             }}>
                 <div className="pokemon-expanded-header">
                     <div className="pokemon-expanded-header-left">
@@ -1976,7 +1978,7 @@ const PokemonCard = ({
                                         }}
                                         style={{ width: '100%', padding: '10px', paddingRight: '28px', borderRadius: '6px', border: showHeldItemDropdown ? '2px solid var(--color-purple)' : '1px solid var(--border-medium)', fontSize: '13px', background: 'var(--input-bg)', color: 'var(--text-primary)', boxSizing: 'border-box' }}
                                     />
-                                    <span style={{ position: 'absolute', right: '10px', top: '50%', transform: `translateY(-50%) ${showHeldItemDropdown ? 'rotate(180deg)' : ''}`, color: 'var(--text-muted)', pointerEvents: 'none', fontSize: '10px', transition: 'transform 0.2s ease' }}>▼</span>
+                                    <span style={{ position: 'absolute', right: '10px', top: '50%', transform: `translateY(-50%) ${showHeldItemDropdown ? 'rotate(180deg)' : ''}`, color: 'var(--text-muted)', pointerEvents: 'none', fontSize: '12px', transition: 'transform 0.2s ease' }}>▼</span>
                                     </div>
                                     {pokemon.heldItem && (
                                         <button
@@ -2314,7 +2316,7 @@ const PokemonCard = ({
                                     </div>
                                     {/* P11: show greyed "0" instead of em-dash when nothing added */}
                                     <div style={{ fontSize: '12px', fontWeight: 'bold', color: addedVal > 0 ? statColor : 'var(--text-muted)' }} title="Points you've added from level-up bonuses.">
-                                        {addedVal > 0 ? `+${addedVal}` : <span style={{ fontSize: '10px', opacity: 0.4 }}>+0</span>}
+                                        {addedVal > 0 ? `+${addedVal}` : <span style={{ fontSize: '11px', opacity: 0.35 }}>+0</span>}
                                     </div>
                                     <div style={{ borderTop: '1px solid var(--border-light)', margin: '3px 0 3px', paddingTop: '3px', fontSize: '20px', fontWeight: 'bold' }} title="Nature-modified base stat ± added points. Used for damage calculations and skill checks.">
                                         {actualStats[stat]}
@@ -2444,7 +2446,7 @@ const PokemonCard = ({
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '5px', flexWrap: 'wrap' }}>
                                         <div style={{ fontWeight: 'bold' }}>{move.name}</div>
                                         <span style={{
-                                            fontSize: '11px', fontWeight: 'bold', padding: '2px 6px',
+                                            fontSize: '12px', fontWeight: 'bold', padding: '2px 6px',
                                             borderRadius: '4px',
                                             background: move.source === 'taught' ? 'var(--color-taught)'
                                                 : move.source === 'egg' ? 'var(--stat-satk)'
@@ -2452,8 +2454,8 @@ const PokemonCard = ({
                                                 : 'var(--stat-hp)',
                                             color: 'white'
                                         }}>{move.source === 'taught' ? 'Tght' : move.source === 'egg' ? 'Egg' : move.source === 'custom' ? 'TM' : 'Nat'}</span>
-                                        <span style={{ padding: '1px 5px', borderRadius: '8px', fontSize: '11px', fontWeight: 'bold', background: getTypeColor(move.type), color: getContrastTextColor(getTypeColor(move.type)) }}>{move.type}</span>
-                                        <span style={{ padding: '1px 5px', borderRadius: '8px', fontSize: '11px', fontWeight: 'bold', background: move.category === 'Physical' ? 'var(--move-cat-physical)' : move.category === 'Special' ? 'var(--move-cat-special)' : 'var(--move-cat-status)', color: 'white' }}>{move.category || 'Status'}</span>
+                                        <span style={{ padding: '1px 5px', borderRadius: '8px', fontSize: '12px', fontWeight: 'bold', background: getTypeColor(move.type), color: getContrastTextColor(getTypeColor(move.type)) }}>{move.type}</span>
+                                        <span style={{ padding: '1px 5px', borderRadius: '8px', fontSize: '12px', fontWeight: 'bold', background: move.category === 'Physical' ? 'var(--move-cat-physical)' : move.category === 'Special' ? 'var(--move-cat-special)' : 'var(--move-cat-status)', color: 'white' }}>{move.category || 'Status'}</span>
                                     </div>
                                     <div className="text-muted" style={{ fontSize: '12px' }}>
                                         {move.damage || 'Status'} · {(() => { const f = GAME_DATA?.moves?.[move.name]?.frequency || move.frequency || 'At-Will'; return f.charAt(0).toUpperCase() + f.slice(1); })()}
@@ -2859,10 +2861,10 @@ const PokemonCard = ({
                                                 const desc = skillData?.description;
                                                 if (!desc) return null;
                                                 return (
-                                                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>
+                                                    <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '2px' }}>
                                                         {desc.length > 80 ? desc.slice(0, 80) + '…' : desc}
                                                         {desc.length > 80 && showDetail && (
-                                                            <span style={{ color: 'var(--color-purple)', marginLeft: '4px', fontSize: '11px' }}>click for full</span>
+                                                            <span style={{ color: 'var(--color-purple)', marginLeft: '4px', fontSize: '12px' }}>click for full</span>
                                                         )}
                                                     </div>
                                                 );
@@ -2960,13 +2962,13 @@ const PokemonCard = ({
                                         )}
                                         {displayStats && (
                                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '2px', marginTop: '4px' }}>
-                                            <div style={{ gridColumn: '1 / -1', fontSize: '10px', color: 'var(--text-muted)', textAlign: 'center', marginBottom: '2px', opacity: 0.7 }}>{pokemon.nature ? 'nature-modified' : 'base stats'}</div>
+                                            <div style={{ gridColumn: '1 / -1', fontSize: '11px', color: 'var(--text-muted)', textAlign: 'center', marginBottom: '2px', opacity: 0.7 }}>{pokemon.nature ? 'nature-modified' : 'base stats'}</div>
                                                 {STAT_ORDER.map(s => {
                                                     const isBuff = natureData?.buff === s;
                                                     const isNerf = natureData?.nerf === s;
                                                     return (
                                                         <div key={s} style={{ padding: '2px 0' }}>
-                                                            <div style={{ color: `var(--stat-${s})`, fontWeight: 'bold', fontSize: '10px' }}>{s.toUpperCase()}</div>
+                                                            <div style={{ color: `var(--stat-${s})`, fontWeight: 'bold', fontSize: '11px' }}>{s.toUpperCase()}</div>
                                                             <div style={{
                                                                 fontWeight: 'bold', fontSize: '12px',
                                                                 color: isBuff ? 'var(--color-success-text)' : isNerf ? 'var(--color-danger-text)' : 'var(--text-primary)'
@@ -2993,7 +2995,7 @@ const PokemonCard = ({
                                                 // use types stored on the evo entry if present, otherwise fall back to pokedex
                                                 const targetTypes = evo.types || targetData?.types;
                                                 return (
-                                                    <div key={idx} style={{ marginBottom: '10px', padding: '12px', borderRadius: '10px', border: '1px solid var(--border-light)', background: 'var(--surface-bg, var(--bg-primary))' }}>
+                                                    <div key={idx} style={{ marginBottom: '10px', padding: '12px', borderRadius: '10px', border: '1px solid var(--border-light)', background: 'var(--surface-bg)' }}>
                                                         {/* Sprite comparison */}
                                                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px', flexWrap: 'wrap' }}>
                                                             {renderSpeciesCard({
@@ -3027,7 +3029,7 @@ const PokemonCard = ({
                                                                     Evolve{evo.needsItem ? ` (${evo.needsItem})` : ''}
                                                                 </button>
                                                             ) : (
-                                                                <span style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0, fontSize: '11px', color: 'var(--text-muted)', padding: '4px 8px', borderRadius: '6px', background: 'var(--border-light)', whiteSpace: 'nowrap' }}>
+                                                                <span style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0, fontSize: '12px', color: 'var(--poke-orange)', fontWeight: 'bold', padding: '4px 8px', borderRadius: '6px', background: 'var(--tint-orange-bg)', border: '1px solid var(--tint-orange-border)', whiteSpace: 'nowrap' }}>
                                                                     🔒 Locked
                                                                 </span>
                                                             )}
@@ -3041,7 +3043,7 @@ const PokemonCard = ({
                                     {canDevolve && devolvePokemon && (
                                         <div>
                                             <h4 style={{ margin: '0 0 10px', fontSize: '13px', fontWeight: 'bold', color: 'var(--text-secondary)' }}>Devolution</h4>
-                                            <div style={{ padding: '12px', borderRadius: '10px', border: '1px solid var(--border-light)', background: 'var(--surface-bg, var(--bg-primary))' }}>
+                                            <div style={{ padding: '12px', borderRadius: '10px', border: '1px solid var(--border-light)', background: 'var(--surface-bg)' }}>
                                                 {/* Sprite comparison */}
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
                                                     {renderSpeciesCard({

@@ -652,7 +652,7 @@ const PokemonTab = () => {
                             {Object.keys(teamCoverage.weakCount).length}
                         </strong> defensive weakness{Object.keys(teamCoverage.weakCount).length !== 1 ? 'es' : ''}
                         {teamCoverage.superWeakSet.size > 0 && (
-                            <span style={{ color: 'var(--color-danger-text)', fontWeight: 'bold' }}> ({teamCoverage.superWeakSet.size} ×4)</span>
+                            <span style={{ display: 'inline-flex', alignItems: 'center', marginLeft: '4px', padding: '1px 6px', borderRadius: '8px', background: 'var(--tint-fail-bg)', border: '1px solid var(--tint-fail-border)', color: 'var(--color-danger-text)', fontWeight: 'bold', fontSize: '12px' }}>{teamCoverage.superWeakSet.size} ×4</span>
                         )}
                     </div>
                     {/* Defensive weaknesses */}
