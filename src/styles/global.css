@@ -1855,6 +1855,13 @@
             box-shadow: 0 2px 8px rgba(245, 166, 35, 0.4);
         }
 
+        /* Pokémon card expanded tabs follow the Pokémon's type colors */
+        .pokemon-card-expanded .tab.active {
+            background: linear-gradient(135deg, var(--type-primary), var(--type-secondary, var(--type-primary)));
+            color: white;
+            box-shadow: 0 2px 8px var(--type-shadow-color, rgba(0,0,0,0.2));
+        }
+
         .tab.active::before {
             display: none;
         }
@@ -4359,6 +4366,12 @@
         [data-theme="dark"] .tab.active {
             background: var(--gradient-purple);
             color: white;
+        }
+
+        [data-theme="dark"] .pokemon-card-expanded .tab.active {
+            background: linear-gradient(135deg, var(--type-primary), var(--type-secondary, var(--type-primary)));
+            color: white;
+            box-shadow: 0 2px 8px var(--type-shadow-color, rgba(0,0,0,0.3));
         }
 
         [data-theme="dark"] .feature-item,

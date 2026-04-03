@@ -664,7 +664,7 @@ const PokemonCard = ({
                                 padding: '4px 10px',
                                 borderRadius: '12px',
                                 border: expandedSection === section ? '1.5px solid transparent' : '1.5px solid var(--border-medium)',
-                                background: expandedSection === section ? 'var(--gradient-purple)' : 'var(--collapsed-btn-bg)',
+                                background: expandedSection === section ? `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})` : 'var(--collapsed-btn-bg)',
                                 color: expandedSection === section ? 'white' : 'var(--collapsed-btn-text)',
                                 fontSize: '12px',
                                 fontWeight: 'bold',
@@ -738,7 +738,7 @@ const PokemonCard = ({
                                 ? pokemon.abilities
                                 : (pokemon.ability ? [pokemon.ability] : []);
                             return (
-                                <div style={{ display: 'flex', gap: '4px', marginTop: '8px', flexWrap: 'wrap', padding: '8px', background: 'var(--collapsed-abilities-bg)', borderRadius: '8px' }}>
+                                <div style={{ display: 'flex', gap: '4px', marginTop: '8px', flexWrap: 'wrap', padding: '8px', background: `${primaryColor}12`, borderRadius: '8px' }}>
                                     {abilities.map((abilityName, idx) => (
                                         <span
                                             key={idx}
@@ -768,7 +768,7 @@ const PokemonCard = ({
 
                         {/* Expanded Moves */}
                         {expandedSection === 'moves' && (
-                            <div style={{ display: 'flex', gap: '4px', marginTop: '8px', flexWrap: 'wrap', padding: '8px', background: 'var(--collapsed-moves-bg)', borderRadius: '8px' }}>
+                            <div style={{ display: 'flex', gap: '4px', marginTop: '8px', flexWrap: 'wrap', padding: '8px', background: `${primaryColor}0e`, borderRadius: '8px' }}>
                                 {(pokemon.moves || []).map((move, idx) => (
                                     <span
                                         key={idx}
@@ -797,7 +797,7 @@ const PokemonCard = ({
 
                         {/* Expanded Skills */}
                         {expandedSection === 'skills' && (
-                            <div style={{ display: 'flex', gap: '4px', marginTop: '8px', flexWrap: 'wrap', padding: '8px', background: 'var(--collapsed-skills-bg)', borderRadius: '8px' }}>
+                            <div style={{ display: 'flex', gap: '4px', marginTop: '8px', flexWrap: 'wrap', padding: '8px', background: `${secondaryColor}10`, borderRadius: '8px' }}>
                                 {(pokemon.pokemonSkills || []).filter(s => s.value === undefined || s.value > 0).map((skill, idx) => (
                                     <span
                                         key={idx}
@@ -1803,7 +1803,7 @@ const PokemonCard = ({
                                                     alignItems: 'center',
                                                     gap: '6px',
                                                     padding: '6px 10px',
-                                                    background: 'var(--gradient-purple)',
+                                                    background: `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})`,
                                                     color: 'white',
                                                     borderRadius: '16px',
                                                     fontSize: '12px'
@@ -2255,7 +2255,7 @@ const PokemonCard = ({
 
                         <div style={{ marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Stat Points Available:</span>
-                            <span style={{ fontSize: '14px', fontWeight: 'bold', color: (pokemon.statPointsAvailable || 0) > 0 ? 'var(--color-success-text)' : 'var(--text-muted)', background: (pokemon.statPointsAvailable || 0) > 0 ? 'var(--tint-success-bg)' : 'var(--tint-purple-bg)', border: `1px solid ${(pokemon.statPointsAvailable || 0) > 0 ? 'var(--stat-hp)' : 'transparent'}`, padding: '2px 8px', borderRadius: '6px' }} title="Spend these to increase stats. Pokémon gain stat points when leveling up.">{pokemon.statPointsAvailable || 0}</span>
+                            <span style={{ fontSize: '14px', fontWeight: 'bold', color: (pokemon.statPointsAvailable || 0) > 0 ? 'var(--color-success-text)' : 'var(--text-muted)', background: (pokemon.statPointsAvailable || 0) > 0 ? 'var(--tint-success-bg)' : 'var(--tint-purple-bg)', border: `1px solid ${(pokemon.statPointsAvailable || 0) > 0 ? primaryColor : 'transparent'}`, padding: '2px 8px', borderRadius: '6px' }} title="Spend these to increase stats. Pokémon gain stat points when leveling up.">{pokemon.statPointsAvailable || 0}</span>
                             <button
                                 onClick={() => showHelp('pokemon-stats')}
                                 style={HELP_BTN_STYLE}
@@ -2309,7 +2309,7 @@ const PokemonCard = ({
                                     </div>
                                     {/* P9: ▲ point indicator bumped to 10px with background badge */}
                                     {canAdd && (
-                                        <div style={{ fontSize: '12px', color: 'var(--color-success-text)', fontWeight: 'bold', marginBottom: '3px', background: 'var(--tint-success-bg)', borderRadius: '4px', padding: '1px 4px', display: 'inline-block' }}>▲ point</div>
+                                        <div style={{ fontSize: '12px', color: primaryColor, fontWeight: 'bold', marginBottom: '3px', background: `${primaryColor}18`, borderRadius: '4px', padding: '1px 4px', display: 'inline-block' }}>▲ point</div>
                                     )}
                                     <div className="text-light" style={{ fontSize: '12px', marginBottom: '1px' }}>
                                         Base {natureModifiedBase[stat] || 10}
@@ -2378,7 +2378,7 @@ const PokemonCard = ({
                             <strong style={{ color: 'var(--color-purple)' }}>Base Relation</strong> — a stat with a higher species base value must always have a higher total than one with a lower base value (PH2 p.257).
                         </div>
 
-                        <div style={{ marginTop: '15px', padding: '12px 14px', background: 'var(--bg-light)', borderRadius: '8px', border: '1px solid var(--border-light)', borderTop: '3px solid var(--color-purple)' }}>
+                        <div style={{ marginTop: '15px', padding: '12px 14px', background: 'var(--bg-light)', borderRadius: '8px', border: '1px solid var(--border-light)', borderTop: `3px solid ${primaryColor}` }}>
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', textAlign: 'center' }}>
                                 <div title="Maximum Hit Points = Level + (HP stat × 3)">
                                     <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '2px' }}>Max HP</div>
@@ -2505,7 +2505,7 @@ const PokemonCard = ({
                                     onClick={() => setShowMoveDropdown(!showMoveDropdown)}
                                     style={{
                                         marginLeft: 'auto', padding: '3px 10px',
-                                        background: 'var(--color-purple)', color: 'white',
+                                        background: primaryColor, color: 'white',
                                         border: 'none', borderRadius: '4px',
                                         fontSize: '12px', fontWeight: 'bold',
                                         cursor: 'pointer', opacity: showMoveDropdown ? 0.8 : 1
@@ -2552,8 +2552,8 @@ const PokemonCard = ({
                                                             padding: '5px 12px',
                                                             borderRadius: '12px',
                                                             border: '1px solid',
-                                                            borderColor: active ? 'var(--color-purple)' : 'var(--border-light)',
-                                                            background: active ? 'var(--color-purple)' : 'var(--bg-primary)',
+                                                            borderColor: active ? primaryColor : 'var(--border-light)',
+                                                            background: active ? primaryColor : 'var(--bg-primary)',
                                                             color: active ? 'white' : 'var(--text-secondary)',
                                                             fontSize: '12px',
                                                             fontWeight: active ? 'bold' : 'normal',
@@ -2844,7 +2844,7 @@ const PokemonCard = ({
                                             padding: '10px 12px',
                                             background: 'var(--bg-primary)',
                                             borderRadius: '6px',
-                                            borderLeft: `4px solid ${skill.value !== undefined ? 'var(--skill-value-color)' : 'var(--skill-no-value-color)'}`,
+                                            borderLeft: `4px solid ${skill.value !== undefined ? primaryColor : secondaryColor}`,
                                             cursor: showDetail ? 'pointer' : 'default',
                                             transition: 'background 0.2s ease'
                                         }}
@@ -2873,7 +2873,7 @@ const PokemonCard = ({
                                         {skill.value !== undefined && (
                                             <div style={{
                                                 padding: '4px 10px',
-                                                background: 'var(--skill-value-color)',
+                                                background: primaryColor,
                                                 color: 'white',
                                                 borderRadius: '12px',
                                                 fontSize: '12px',
@@ -3024,7 +3024,7 @@ const PokemonCard = ({
                                                                         confirmLabel: 'Evolve',
                                                                         onConfirm: () => evolvePokemon(pokemon.id, evo.species, evo.regionalForm, evo.needsItem)
                                                                     })}
-                                                                    style={{ padding: '6px 16px', background: 'var(--gradient-purple)', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: 'bold', whiteSpace: 'nowrap', flexShrink: 0 }}
+                                                                    style={{ padding: '6px 16px', background: `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})`, color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: 'bold', whiteSpace: 'nowrap', flexShrink: 0 }}
                                                                 >
                                                                     Evolve{evo.needsItem ? ` (${evo.needsItem})` : ''}
                                                                 </button>
