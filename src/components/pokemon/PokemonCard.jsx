@@ -708,7 +708,7 @@ const PokemonCard = ({
                                         style={expandBtnStyle('moves')}
                                     >
                                         <span>⚔️</span> Moves
-                                        <span style={{ fontSize: '11px', display: 'flex', alignItems: 'center', gap: '3px' }}>
+                                        <span style={{ fontSize: '12px', display: 'flex', alignItems: 'center', gap: '3px' }}>
                                             <span style={{ color: atNatLimit ? (expandedSection === 'moves' ? 'white' : 'var(--color-danger-text)') : 'inherit' }}>
                                                 {natCount}/{MAX_NATURAL_MOVES}
                                             </span>
@@ -1270,7 +1270,7 @@ const PokemonCard = ({
                                                                                 color: 'white',
                                                                                 border: 'none',
                                                                                 borderRadius: '3px',
-                                                                                fontSize: '11px',
+                                                                                fontSize: '12px',
                                                                                 cursor: 'pointer',
                                                                                 marginLeft: '4px'
                                                                             }}
@@ -1293,7 +1293,7 @@ const PokemonCard = ({
                                                                                 color: 'white',
                                                                                 border: 'none',
                                                                                 borderRadius: '3px',
-                                                                                fontSize: '11px',
+                                                                                fontSize: '12px',
                                                                                 cursor: 'pointer'
                                                                             }}
                                                                             title={`Delete ${sp.species}`}
@@ -1311,7 +1311,7 @@ const PokemonCard = ({
                                                                             background: getTypeColor(t),
                                                                             color: 'white',
                                                                             borderRadius: '8px',
-                                                                            fontSize: '11px',
+                                                                            fontSize: '12px',
                                                                             fontWeight: 'bold'
                                                                         }}
                                                                     >{t}</span>
@@ -1324,7 +1324,7 @@ const PokemonCard = ({
                                                                             background: getTypeColor(t),
                                                                             color: 'white',
                                                                             borderRadius: '8px',
-                                                                            fontSize: '11px',
+                                                                            fontSize: '12px',
                                                                             fontWeight: 'bold',
                                                                             opacity: 0.6,
                                                                             border: '1px dashed white'
@@ -1332,7 +1332,7 @@ const PokemonCard = ({
                                                                         title="Regional form type"
                                                                     >{t}</span>
                                                                 ))}
-                                                                <span style={{ fontSize: '11px', color: 'var(--species-muted-text)', marginLeft: '4px' }}>
+                                                                <span style={{ fontSize: '12px', color: 'var(--species-muted-text)', marginLeft: '4px' }}>
                                                                     BST: {getBaseStatTotal(sp)}
                                                                 </span>
                                                             </div>
@@ -1433,7 +1433,7 @@ const PokemonCard = ({
                                                                     background: getTypeColor(t),
                                                                     color: 'white',
                                                                     borderRadius: '8px',
-                                                                    fontSize: '11px',
+                                                                    fontSize: '12px',
                                                                     fontWeight: 'bold'
                                                                 }}
                                                             >{t}</span>
@@ -1469,7 +1469,7 @@ const PokemonCard = ({
                                                                         background: getTypeColor(t),
                                                                         color: 'white',
                                                                         borderRadius: '8px',
-                                                                        fontSize: '11px',
+                                                                        fontSize: '12px',
                                                                         fontWeight: 'bold'
                                                                     }}
                                                                 >{t}</span>
@@ -2006,9 +2006,9 @@ const PokemonCard = ({
                                             >
                                                 <div>
                                                     <div style={{ fontWeight: 'bold' }}>{item.name}</div>
-                                                    {item.effect && <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>{item.effect}</div>}
+                                                    {item.effect && <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '2px' }}>{item.effect}</div>}
                                                 </div>
-                                                <span style={{ fontSize: '11px', color: 'var(--text-muted)', whiteSpace: 'nowrap', marginLeft: '8px', marginTop: '2px' }}>×{item.quantity ?? 1}</span>
+                                                <span style={{ fontSize: '12px', color: 'var(--text-muted)', whiteSpace: 'nowrap', marginLeft: '8px', marginTop: '2px' }}>×{item.quantity ?? 1}</span>
                                             </div>
                                         ))}
                                         {filteredHeldItems.length === 0 && !heldItemSearch && (
@@ -2275,7 +2275,7 @@ const PokemonCard = ({
                                     })
                                 })}
                                 style={{
-                                    marginLeft: 'auto', padding: '2px 8px', fontSize: '11px',
+                                    marginLeft: 'auto', padding: '2px 8px', fontSize: '12px',
                                     borderRadius: '4px', border: '1px solid var(--border-medium)',
                                     background: 'transparent', color: 'var(--text-muted)',
                                     cursor: 'pointer'
@@ -2935,40 +2935,40 @@ const PokemonCard = ({
                                         {types?.length > 0 && (
                                             <div style={{ display: 'flex', justifyContent: 'center', gap: '3px', margin: '4px 0' }}>
                                                 {types.map(t => (
-                                                    <span key={t} style={{ padding: '1px 5px', borderRadius: '8px', fontSize: '11px', fontWeight: 'bold', background: getTypeColor(t), color: getContrastTextColor(getTypeColor(t)) }}>{t}</span>
+                                                    <span key={t} style={{ padding: '1px 5px', borderRadius: '8px', fontSize: '12px', fontWeight: 'bold', background: getTypeColor(t), color: getContrastTextColor(getTypeColor(t)) }}>{t}</span>
                                                 ))}
                                             </div>
                                         )}
                                         {/* Nature badge — same nature applies to all forms since it carries over */}
                                         {pokemon.nature && (
                                             <div style={{ margin: '5px 0 2px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '4px', flexWrap: 'wrap' }}>
-                                                <span style={{ fontSize: '11px', padding: '1px 5px', borderRadius: '8px', background: 'var(--tint-purple-bg)', color: 'var(--color-purple)', fontWeight: 'bold', border: '1px solid var(--tint-purple-border)' }}>
+                                                <span style={{ fontSize: '12px', padding: '1px 5px', borderRadius: '8px', background: 'var(--tint-purple-bg)', color: 'var(--color-purple)', fontWeight: 'bold', border: '1px solid var(--tint-purple-border)' }}>
                                                     {pokemon.nature}
                                                 </span>
                                                 {natureData?.buff && (
-                                                    <span style={{ fontSize: '11px', fontWeight: 'bold', color: 'var(--color-success-text)' }}>
+                                                    <span style={{ fontSize: '12px', fontWeight: 'bold', color: 'var(--color-success-text)' }}>
                                                         +{natureData.buff.toUpperCase()}
                                                     </span>
                                                 )}
                                                 {natureData?.nerf && (
-                                                    <span style={{ fontSize: '11px', fontWeight: 'bold', color: 'var(--color-danger-text)' }}>
+                                                    <span style={{ fontSize: '12px', fontWeight: 'bold', color: 'var(--color-danger-text)' }}>
                                                         −{natureData.nerf.toUpperCase()}
                                                     </span>
                                                 )}
                                                 {!natureData?.buff && !natureData?.nerf && (
-                                                    <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>neutral</span>
+                                                    <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>neutral</span>
                                                 )}
                                             </div>
                                         )}
                                         {displayStats && (
                                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '2px', marginTop: '4px' }}>
-                                            <div style={{ gridColumn: '1 / -1', fontSize: '11px', color: 'var(--text-muted)', textAlign: 'center', marginBottom: '2px', opacity: 0.7 }}>{pokemon.nature ? 'nature-modified' : 'base stats'}</div>
+                                            <div style={{ gridColumn: '1 / -1', fontSize: '12px', color: 'var(--text-muted)', textAlign: 'center', marginBottom: '2px', opacity: 0.7 }}>{pokemon.nature ? 'nature-modified' : 'base stats'}</div>
                                                 {STAT_ORDER.map(s => {
                                                     const isBuff = natureData?.buff === s;
                                                     const isNerf = natureData?.nerf === s;
                                                     return (
                                                         <div key={s} style={{ padding: '2px 0' }}>
-                                                            <div style={{ color: `var(--stat-${s})`, fontWeight: 'bold', fontSize: '11px' }}>{s.toUpperCase()}</div>
+                                                            <div style={{ color: `var(--stat-${s})`, fontWeight: 'bold', fontSize: '12px' }}>{s.toUpperCase()}</div>
                                                             <div style={{
                                                                 fontWeight: 'bold', fontSize: '12px',
                                                                 color: isBuff ? 'var(--color-success-text)' : isNerf ? 'var(--color-danger-text)' : 'var(--text-primary)'
