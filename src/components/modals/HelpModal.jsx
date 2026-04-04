@@ -138,6 +138,25 @@ const HELP_CONTENT = {
             </>
         )
     },
+    'pokemon-loyalty': {
+        title: 'Pokémon Loyalty',
+        body: () => (
+            <>
+                <p>Loyalty measures how much your Pokémon trusts and respects you. It affects what moves it can use and how reliably it follows commands.</p>
+                <h4 style={{ margin: '14px 0 6px', fontSize: '13px', color: 'var(--text-secondary)' }}>Loyalty Levels</h4>
+                <ul style={{ paddingLeft: '18px', margin: '0 0 10px', lineHeight: '1.8' }}>
+                    <li><strong>0 — Defiant:</strong> Can use Frustration. May refuse to evolve.</li>
+                    <li><strong>1 — Wary:</strong> May occasionally ignore commands.</li>
+                    <li><strong>2 — Neutral:</strong> Follows commands. Immune to Snagging.</li>
+                    <li><strong>3 — Friendly:</strong> Can use Return. Immune to Snagging.</li>
+                    <li><strong>4 — Loyal:</strong> Maximum trust — unlocks full cooperative potential.</li>
+                </ul>
+                <h4 style={{ margin: '14px 0 6px', fontSize: '13px', color: 'var(--text-secondary)' }}>Origin & Starting Loyalty</h4>
+                <p>Pokémon that were <strong>hatched</strong> from eggs start with a minimum loyalty of 2. Caught, traded, or befriended Pokémon typically start at 1.</p>
+                <p style={{ marginTop: '10px', fontSize: '12px', color: 'var(--text-muted)' }}>See GM Guide pp. 10–13 for the full loyalty mechanic rules.</p>
+            </>
+        )
+    },
     'hp-tracking': {
         title: 'HP Tracking',
         body: () => (
