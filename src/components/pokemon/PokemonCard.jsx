@@ -1838,8 +1838,6 @@ const PokemonCard = ({
                             Abilities <span style={{ fontWeight: 'normal', fontSize: '11px', letterSpacing: 0 }}>({(pokemon.abilities || []).length}/3)</span>
                         </div>
                         <div style={{ marginBottom: '15px' }}>
-                            <div>
-
                             {/* Empty state when no abilities selected */}
                             {(pokemon.abilities || []).length === 0 && (
                                 <div style={{ fontSize: '12px', color: 'var(--text-muted)', fontStyle: 'italic', marginBottom: '8px' }}>
