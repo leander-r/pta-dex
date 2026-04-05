@@ -2977,12 +2977,16 @@ const PokemonCard = ({
                                 };
                                 const bg = bgs[variant] || 'var(--bg-light)';
                                 const labelColor = labelColors[variant] || 'var(--text-muted)';
-                                // Border: primary type color for visual identity, fallback to variant color
-                                const primaryTypeColor = types?.[0] ? getTypeColor(types[0]) : null;
-                                const borderColor = primaryTypeColor || labelColor;
+                                // Border: type color(s) — gradient for dual-type, solid for single, fallback to variant color
+                                const type1Color = types?.[0] ? getTypeColor(types[0]) : null;
+                                const type2Color = types?.[1] ? getTypeColor(types[1]) : null;
+                                const borderBg = type1Color && type2Color
+                                    ? `linear-gradient(135deg, ${type1Color}, ${type2Color})`
+                                    : type1Color || labelColor;
 
                                 return (
-                                    <div style={{ flex: '1 1 100px', minWidth: '90px', textAlign: 'center', padding: '10px 6px', borderRadius: '8px', background: bg, border: `2px solid ${borderColor}`, position: 'relative' }}>
+                                    <div style={{ flex: '1 1 100px', minWidth: '90px', background: borderBg, borderRadius: '10px', padding: '2px', position: 'relative' }}>
+                                    <div style={{ textAlign: 'center', padding: '10px 6px', borderRadius: '8px', background: bg, position: 'relative', height: '100%' }}>
                                         {/* Locked badge */}
                                         {variant === 'locked' && (
                                             <span style={{ position: 'absolute', top: '4px', right: '4px', fontSize: '12px', lineHeight: 1 }} title="Evolution locked">🔒</span>
@@ -3055,6 +3059,7 @@ const PokemonCard = ({
                                                 </div>
                                             );
                                         })()}
+                                    </div>
                                     </div>
                                 );
                             };
