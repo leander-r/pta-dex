@@ -2960,7 +2960,7 @@ const PokemonCard = ({
                             const STAT_ORDER = ['hp', 'atk', 'def', 'satk', 'sdef', 'spd'];
                             const natureData = GAME_DATA?.natures?.[pokemon.nature];
 
-                            // Mini species card: sprite + types + nature + BST
+                            // Mini species card: sprite + types + nature + stat grid
                             const renderSpeciesCard = ({ species, regionalForm, label, types, baseStats, variant = 'neutral' }) => {
                                 const spriteUrl = getPokemonSprite({ species, regionalForm });
                                 const bgs = {
@@ -3027,11 +3027,34 @@ const PokemonCard = ({
                                                 {!natureData?.buff && !natureData?.nerf && <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>neutral</span>}
                                             </div>
                                         )}
-                                        {baseStats && (
-                                            <div style={{ marginTop: '4px', fontSize: '12px', color: 'var(--text-muted)', fontWeight: 'bold' }}>
-                                                BST: <span style={{ color: 'var(--text-primary)' }}>{STAT_ORDER.reduce((sum, s) => sum + (baseStats[s] || 0), 0)}</span>
-                                            </div>
-                                        )}
+                                        {baseStats && (() => {
+                                            const STAT_LABELS = { hp: 'HP', atk: 'Atk', def: 'Def', satk: 'SAtk', sdef: 'SDef', spd: 'Spd' };
+                                            const natureMod = applyNature(baseStats, pokemon.nature);
+                                            const bst = STAT_ORDER.reduce((sum, s) => sum + (baseStats[s] || 0), 0);
+                                            return (
+                                                <div style={{ marginTop: '6px', textAlign: 'left' }}>
+                                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1px 4px' }}>
+                                                        {STAT_ORDER.map(s => {
+                                                            const raw = baseStats[s] || 0;
+                                                            const modded = natureMod[s] || 0;
+                                                            const isBuff = natureData?.buff === s;
+                                                            const isNerf = natureData?.nerf === s;
+                                                            return (
+                                                                <div key={s} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '2px' }}>
+                                                                    <span style={{ fontSize: '10px', color: `var(--stat-${s})`, fontWeight: 'bold', whiteSpace: 'nowrap' }}>{STAT_LABELS[s]}</span>
+                                                                    <span style={{ fontSize: '11px', fontWeight: 'bold', color: isBuff ? 'var(--color-success-text)' : isNerf ? 'var(--color-danger-text)' : 'var(--text-primary)' }}>
+                                                                        {pokemon.nature ? modded : raw}
+                                                                    </span>
+                                                                </div>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                    <div style={{ marginTop: '3px', fontSize: '10px', color: 'var(--text-muted)', textAlign: 'right' }}>
+                                                        BST <span style={{ fontWeight: 'bold', color: 'var(--text-secondary)' }}>{bst}</span>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })()}
                                     </div>
                                 );
                             };
