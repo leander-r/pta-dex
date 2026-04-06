@@ -2930,9 +2930,9 @@ const PokemonCard = ({
                                 const spriteUrl = getPokemonSprite({ species, regionalForm });
                                 const bgs = {
                                     current: 'var(--bg-light)',
-                                    evolve:  'var(--tint-success-bg)',
-                                    locked:  'var(--tint-orange-bg)',
-                                    devolve: 'var(--tint-fail-bg)',
+                                    evolve:  'var(--bg-primary)',
+                                    locked:  'var(--bg-primary)',
+                                    devolve: 'var(--bg-primary)',
                                 };
                                 const labelColors = {
                                     current: 'var(--text-muted)',
