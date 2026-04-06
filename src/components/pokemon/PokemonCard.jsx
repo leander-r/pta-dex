@@ -1028,11 +1028,11 @@ const PokemonCard = ({
                                 }
                             }}
                             style={{
-                                background: 'rgba(200,60,60,0.25)',
-                                border: '1px solid rgba(255,120,120,0.7)',
+                                background: 'rgba(255,255,255,0.08)',
+                                border: '1px solid rgba(255,255,255,0.35)',
                                 borderRadius: '6px',
                                 padding: '8px 14px',
-                                color: 'white',
+                                color: 'rgba(255,255,255,0.75)',
                                 cursor: 'pointer',
                                 fontSize: '13px'
                             }}
@@ -1584,7 +1584,7 @@ const PokemonCard = ({
                         </div>
 
                         {/* Section: EXP & Nature */}
-                        <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '8px', paddingTop: '12px', borderTop: '1px solid var(--border-light)' }}>Experience &amp; Nature</div>
+                        <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '8px', paddingTop: '12px', borderTop: '1px solid var(--border-light)' }}>Experience &amp; Nature</div>
                         <div className="pokemon-info-grid">
                             <div>
                                 <label style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '4px', display: 'block' }}>
@@ -1668,7 +1668,7 @@ const PokemonCard = ({
                         </div>
 
                         {/* Section: Gender & Origin */}
-                        <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '8px', paddingTop: '10px', borderTop: '1px solid var(--border-light)' }}>Gender &amp; Origin</div>
+                        <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '8px', paddingTop: '10px', borderTop: '1px solid var(--border-light)' }}>Gender &amp; Origin</div>
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '15px' }}>
                             <div>
                                 <label style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '4px', display: 'block' }}>Gender</label>
@@ -1711,7 +1711,7 @@ const PokemonCard = ({
                         </div>
 
                         {/* Section: Loyalty */}
-                        <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '8px', paddingTop: '10px', borderTop: '1px solid var(--border-light)' }}>Loyalty</div>
+                        <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '8px', paddingTop: '10px', borderTop: '1px solid var(--border-light)' }}>Loyalty</div>
                         {(() => {
                             const currentLoyalty = pokemon.loyalty ?? 1;
                             return (
@@ -1738,18 +1738,20 @@ const PokemonCard = ({
                                                 title={`${rank} — ${LOYALTY_LABELS[rank]}`}
                                                 aria-label={`Set loyalty to ${rank} — ${LOYALTY_LABELS[rank]}`}
                                                 style={{
-                                                    flex: 1, padding: '8px 4px', borderRadius: '6px', border: '2px solid',
+                                                    flex: 1, padding: '7px 4px', borderRadius: '6px', border: '2px solid',
                                                     borderColor: currentLoyalty === rank ? LOYALTY_COLORS[rank] : LOYALTY_COLORS[rank] + '55',
                                                     background: currentLoyalty === rank ? LOYALTY_COLORS[rank] : LOYALTY_COLORS[rank] + '18',
                                                     color: currentLoyalty === rank ? (rank === 2 ? 'black' : 'white') : 'var(--text-secondary)',
-                                                    cursor: 'pointer', fontSize: '13px', fontWeight: 'bold', transition: 'all 0.15s'
+                                                    cursor: 'pointer', fontWeight: 'bold', transition: 'all 0.15s',
+                                                    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px'
                                                 }}
                                             >
-                                                {rank}
+                                                <span style={{ fontSize: '14px', lineHeight: 1 }}>{rank}</span>
+                                                <span style={{ fontSize: '10px', fontWeight: currentLoyalty === rank ? 'bold' : 'normal', opacity: currentLoyalty === rank ? 1 : 0.7, lineHeight: 1 }}>{LOYALTY_LABELS[rank]}</span>
                                             </button>
                                         ))}
                                     </div>
-                                    <div style={{ marginTop: '4px', fontSize: '12px', color: 'var(--text-muted)' }}>
+                                    <div style={{ marginTop: '5px', fontSize: '12px', color: 'var(--text-muted)' }}>
                                         {currentLoyalty === 0 && '⚠ Can use Frustration. May refuse to evolve.'}
                                         {currentLoyalty === 1 && '⚠ May occasionally ignore commands.'}
                                         {currentLoyalty === 2 && '✓ Immune to Snagging. Follows commands.'}
@@ -1857,7 +1859,7 @@ const PokemonCard = ({
                         </div>
 
                         {/* Abilities Section - Up to 3 */}
-                        <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '8px', paddingTop: '10px', borderTop: '1px solid var(--border-light)' }}>
+                        <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '8px', paddingTop: '10px', borderTop: '1px solid var(--border-light)' }}>
                             Abilities <span style={{ fontWeight: 'normal', fontSize: '12px', letterSpacing: 0, opacity: 0.7 }}>({(pokemon.abilities || []).length}/3)</span>
                         </div>
                         <div style={{ marginBottom: '15px' }}>
@@ -2027,7 +2029,7 @@ const PokemonCard = ({
                             )}
                         </div>
 
-                        <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-light)' }}>Held Item &amp; Appearance</div>
+                        <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-light)' }}>Held Item</div>
 
                         {/* Held Item */}
                         <div style={{ marginBottom: '15px' }}>
@@ -2109,8 +2111,8 @@ const PokemonCard = ({
                         </div>
 
                         {/* Pokémon Image */}
-                        <div style={{ borderTop: '1px solid var(--border-light)', marginTop: '4px', paddingTop: '10px', marginBottom: '4px' }}>
-                            <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '8px' }}>Custom Image <span style={{ fontWeight: 'normal', fontSize: '12px', letterSpacing: 0, opacity: 0.7 }}>(optional)</span></div>
+                        <div style={{ borderTop: '1px solid var(--border-light)', marginTop: '10px', paddingTop: '10px', marginBottom: '4px' }}>
+                            <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '8px' }}>Appearance <span style={{ fontWeight: 'normal', fontSize: '13px', letterSpacing: 0, opacity: 0.7 }}>(optional)</span></div>
                         </div>
                         <div style={{ marginBottom: '15px' }}>
                             <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
@@ -2220,7 +2222,7 @@ const PokemonCard = ({
 
                         {/* Danger zone */}
                         <div style={{ paddingTop: '10px', borderTop: '1px solid var(--border-light)', marginTop: '12px' }}>
-                            <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '8px' }}>Danger Zone</div>
+                            <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '8px' }}>Danger Zone</div>
                             <button
                                 onClick={() => {
                                     showConfirm({
@@ -2290,36 +2292,10 @@ const PokemonCard = ({
                             );
                         })()}
 
-                        {/* Nature display */}
-                        {(() => {
-                            const nd = GAME_DATA?.natures?.[pokemon.nature];
-                            if (!pokemon.nature) return null;
-                            return (
-                                <div style={{ marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', padding: '6px 10px', borderRadius: '6px', background: 'var(--tint-purple-bg)', border: '1px solid var(--tint-purple-border)' }}>
-                                    <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Nature:</span>
-                                    <span style={{ fontSize: '12px', fontWeight: 'bold', color: 'var(--color-purple)' }}>{pokemon.nature}</span>
-                                    {nd?.buff && nd?.nerf ? (
-                                        <>
-                                            <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>·</span>
-                                            <span style={{ fontSize: '12px', fontWeight: 'bold', color: 'var(--color-success-text)' }}>+2 {nd.buff.toUpperCase()}</span>
-                                            <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>/</span>
-                                            <span style={{ fontSize: '12px', fontWeight: 'bold', color: 'var(--color-danger-text)' }}>−2 {nd.nerf.toUpperCase()}</span>
-                                        </>
-                                    ) : (
-                                        <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>· no stat changes</span>
-                                    )}
-                                </div>
-                            );
-                        })()}
+                        {/* Nature is already shown in Info tab — no redundant box here */}
 
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
-                            <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px' }}>Stat Allocation</div>
-                            <button
-                                onClick={() => showHelp('pokemon-stats')}
-                                style={HELP_BTN_STYLE}
-                                aria-label="Help: Pokémon Stats"
-                                title="About Pokémon stat allocation"
-                            >?</button>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '10px' }}>
+                            <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px' }}>Stat Allocation</div>
                             <div style={{
                                 marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '6px',
                                 padding: '3px 8px', borderRadius: '6px',
@@ -2330,6 +2306,12 @@ const PokemonCard = ({
                                 <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Stat Points:</span>
                                 <span style={{ fontSize: '13px', fontWeight: 'bold', color: (pokemon.statPointsAvailable || 0) > 0 ? 'var(--color-success-text)' : 'var(--text-muted)' }} title="Spend these to increase stats. Pokémon gain stat points when leveling up.">{pokemon.statPointsAvailable || 0}</span>
                             </div>
+                            <button
+                                onClick={() => showHelp('pokemon-stats')}
+                                style={HELP_BTN_STYLE}
+                                aria-label="Help: Pokémon Stats"
+                                title="About Pokémon stat allocation"
+                            >?</button>
                         </div>
 
                         <div className="stat-cards-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
@@ -2348,22 +2330,14 @@ const PokemonCard = ({
                                 const canAdd = pointsLeft > 0 && !addViolates;
                                 return (
                                 <div key={stat} className="bg-light" style={{ padding: '10px', paddingBottom: '8px', borderRadius: '8px', textAlign: 'center', boxShadow: canAdd ? `0 0 0 2px ${statColor}` : '0 1px 3px rgba(0,0,0,0.06)', borderTop: `3px solid ${statColor}`, display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                                    <div>
-                                    <div style={{ fontSize: '12px', fontWeight: 'bold', color: statColor, marginBottom: '2px' }}>
+                                    <div style={{ fontSize: '12px', fontWeight: 'bold', color: statColor }}>
                                         {stat.toUpperCase()}
                                     </div>
-                                    <div className="text-light" style={{ fontSize: '12px', marginBottom: '1px', color: 'var(--text-muted)' }}>
+                                    <div style={{ fontSize: '12px', color: 'var(--text-muted)' }} title="Nature-modified base stat">
                                         {natureModifiedBase[stat] || 10}
                                     </div>
-                                    {/* P11: show greyed "0" instead of em-dash when nothing added */}
-                                    <div style={{ fontSize: '12px', fontWeight: 'bold', color: addedVal > 0 ? statColor : 'var(--text-muted)' }} title="Points you've added from level-up bonuses.">
-                                        {addedVal > 0 ? `+${addedVal}` : <span style={{ fontSize: '12px', opacity: 0.4 }}>+0</span>}
-                                    </div>
-                                    <div style={{ borderTop: '1px solid var(--border-light)', margin: '3px 0 3px', paddingTop: '3px', fontSize: '20px', fontWeight: 'bold' }} title="Nature-modified base stat ± added points. Used for damage calculations and skill checks.">
-                                        {actualStats[stat]}
-                                    </div>
-                                    </div>
-                                    <div style={{ display: 'flex', justifyContent: 'center', gap: '4px', marginTop: '4px' }}>
+                                    {/* −/+ buttons flanking the added-points counter */}
+                                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '4px' }}>
                                         <button
                                             onClick={() => {
                                                 if (!minusDisabled) {
@@ -2384,6 +2358,9 @@ const PokemonCard = ({
                                         >
                                             −
                                         </button>
+                                        <span style={{ minWidth: '28px', fontSize: '12px', fontWeight: 'bold', color: addedVal > 0 ? statColor : 'var(--text-muted)', opacity: addedVal > 0 ? 1 : 0.4 }} title="Points added from level-up bonuses">
+                                            {addedVal > 0 ? `+${addedVal}` : '+0'}
+                                        </span>
                                         <button
                                             onClick={() => {
                                                 if (!plusDisabled) {
@@ -2402,8 +2379,11 @@ const PokemonCard = ({
                                             +
                                         </button>
                                     </div>
+                                    <div style={{ borderTop: '1px solid var(--border-light)', marginTop: '4px', paddingTop: '4px', fontSize: '20px', fontWeight: 'bold' }} title="Total stat (base ± added). Used for damage calculations and skill checks.">
+                                        {actualStats[stat]}
+                                    </div>
                                     {(addViolates || removeViolates) && (
-                                        <div style={{ fontSize: '12px', color: 'var(--color-danger-text)', marginTop: '3px', lineHeight: 1.3, textAlign: 'center', opacity: 0.85 }}>
+                                        <div style={{ fontSize: '11px', color: 'var(--color-danger-text)', lineHeight: 1.3, textAlign: 'center', opacity: 0.85 }}>
                                             ⚠ Base Relation
                                         </div>
                                     )}
@@ -2430,13 +2410,8 @@ const PokemonCard = ({
                             </div>
                         </div>
 
-                        <div style={{ marginTop: '6px', textAlign: 'right' }}>
-                            <button onClick={() => setEditing(false)} style={{ background: 'none', border: 'none', padding: 0, fontSize: '12px', color: 'var(--color-purple)', cursor: 'pointer', textDecoration: 'underline' }}>Set current HP in Battle tab →</button>
-                        </div>
-
-                        {/* Base Relation rule hint */}
-                        <div style={{ marginTop: '8px', padding: '6px 10px', borderRadius: '6px', background: 'var(--tint-purple-bg)', border: '1px solid var(--tint-purple-border)', fontSize: '12px', color: 'var(--text-muted)', lineHeight: 1.5 }}>
-                            <strong style={{ color: 'var(--color-purple)' }}>Base Relation</strong> — a stat with a higher species base value must always have a higher total than one with a lower base value (PH2 p.257).
+                        <div style={{ marginTop: '8px', textAlign: 'right' }}>
+                            <button onClick={() => setEditing(false)} style={{ background: 'var(--tint-purple-bg)', border: '1px solid var(--tint-purple-border)', borderRadius: '12px', padding: '4px 12px', fontSize: '12px', color: 'var(--color-purple)', cursor: 'pointer', fontWeight: 'bold' }}>Set current HP in Battle tab →</button>
                         </div>
                     </div>
                 )}
@@ -2444,15 +2419,18 @@ const PokemonCard = ({
                 {editTab === 'moves' && (
                     <div>
                         {/* Known Moves section */}
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
-                            <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px' }}>Known Moves</span>
-                            <span style={{ fontSize: '12px', fontWeight: 'bold', color: (pokemon.moves || []).length >= MAX_TOTAL_MOVES ? 'var(--color-success-text)' : (pokemon.moves || []).length === 0 ? 'var(--text-muted)' : 'var(--text-secondary)' }}>{(pokemon.moves || []).length}/{MAX_TOTAL_MOVES}</span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '10px', flexWrap: 'wrap' }}>
+                            <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px' }}>Known Moves</span>
                             <button
                                 onClick={() => showHelp('move-slots')}
                                 style={HELP_BTN_STYLE}
                                 aria-label="Help: Move Slots"
                                 title="About move slots"
                             >?</button>
+                            <div style={{ marginLeft: 'auto', display: 'flex', gap: '5px' }}>
+                                <span style={{ fontSize: '12px', fontWeight: 'bold', padding: '2px 8px', borderRadius: '5px', background: naturalMoveCount >= MAX_NATURAL_MOVES ? 'var(--tint-fail-bg)' : 'var(--tint-success-bg)', color: naturalMoveCount >= MAX_NATURAL_MOVES ? 'var(--color-danger-text)' : 'var(--stat-hp)', border: `1px solid ${naturalMoveCount >= MAX_NATURAL_MOVES ? 'var(--color-danger-text)' : 'var(--stat-hp)'}` }} title={`Natural moves: ${naturalMoveCount} of ${MAX_NATURAL_MOVES}`}>Nat {naturalMoveCount}/{MAX_NATURAL_MOVES}</span>
+                                <span style={{ fontSize: '12px', fontWeight: 'bold', padding: '2px 8px', borderRadius: '5px', background: taughtMoveCount >= MAX_TAUGHT_MOVES ? 'var(--tint-fail-bg)' : 'var(--tint-purple-bg)', color: taughtMoveCount >= MAX_TAUGHT_MOVES ? 'var(--color-danger-text)' : 'var(--color-taught)', border: `1px solid ${taughtMoveCount >= MAX_TAUGHT_MOVES ? 'var(--color-danger-text)' : 'var(--color-taught)'}` }} title={`Taught moves: ${taughtMoveCount} of ${MAX_TAUGHT_MOVES}`}>Taught {taughtMoveCount}/{MAX_TAUGHT_MOVES}</span>
+                            </div>
                         </div>
 
                         {(pokemon.moves || []).length === 0 && !showMoveDropdown && (
@@ -2542,29 +2520,27 @@ const PokemonCard = ({
                         ))}
 
                         {((pokemon.moves || []).length < MAX_TOTAL_MOVES || naturalMoveCount > 0 || taughtMoveCount > 0) && (
-                            <div style={{ marginTop: '14px', background: showMoveDropdown ? 'var(--bg-light)' : 'transparent', border: showMoveDropdown ? '1px solid var(--border-light)' : '1px dashed var(--border-medium)', borderRadius: '8px', padding: '10px 12px' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: showMoveDropdown ? '8px' : '0' }}>
-                                <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px' }}>Add Moves</span>
-                                <button
-                                    onClick={() => setShowMoveDropdown(!showMoveDropdown)}
-                                    style={{
-                                        marginLeft: 'auto', padding: '3px 10px',
-                                        background: 'var(--color-purple)', color: 'white',
-                                        border: 'none', borderRadius: '4px',
-                                        fontSize: '12px', fontWeight: 'bold',
-                                        cursor: 'pointer', opacity: showMoveDropdown ? 0.8 : 1
-                                    }}
-                                >
-                                    {showMoveDropdown ? '▲ Hide' : '▼ Browse'}
-                                </button>
-                            </div>
+                            <div style={{ marginTop: '14px' }}>
+                            {/* Browse toggle — chevron divider style */}
+                            <button
+                                onClick={() => setShowMoveDropdown(!showMoveDropdown)}
+                                style={{
+                                    display: 'flex', alignItems: 'center', gap: '6px', width: '100%',
+                                    padding: '6px 10px', background: 'var(--bg-light)', border: '1px solid var(--border-light)',
+                                    borderRadius: showMoveDropdown ? '6px 6px 0 0' : '6px',
+                                    cursor: 'pointer', fontSize: '12px', fontWeight: 700,
+                                    color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px',
+                                    transition: 'border-radius 0.1s'
+                                }}
+                                aria-expanded={showMoveDropdown}
+                            >
+                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"
+                                    style={{ transition: 'transform 0.15s ease', transform: showMoveDropdown ? 'rotate(90deg)' : 'rotate(0deg)', flexShrink: 0 }}
+                                    aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+                                Browse Moves
+                            </button>
                             {showMoveDropdown && (
-                            <div className="add-move-panel" style={{ padding: '2px 0 0' }}>
-                                {/* Slot counters */}
-                                <div style={{ display: 'flex', gap: '6px', marginBottom: '8px' }}>
-                                    <span style={{ fontSize: '12px', fontWeight: 'bold', padding: '2px 8px', borderRadius: '5px', background: naturalMoveCount >= MAX_NATURAL_MOVES ? 'var(--tint-fail-bg)' : 'var(--tint-success-bg)', color: naturalMoveCount >= MAX_NATURAL_MOVES ? 'var(--color-danger-text)' : 'var(--stat-hp)', border: `1px solid ${naturalMoveCount >= MAX_NATURAL_MOVES ? 'var(--color-danger-text)' : 'var(--stat-hp)'}` }}>Natural {naturalMoveCount}/{MAX_NATURAL_MOVES}</span>
-                                    <span style={{ fontSize: '12px', fontWeight: 'bold', padding: '2px 8px', borderRadius: '5px', background: taughtMoveCount >= MAX_TAUGHT_MOVES ? 'var(--tint-fail-bg)' : 'var(--tint-purple-bg)', color: taughtMoveCount >= MAX_TAUGHT_MOVES ? 'var(--color-danger-text)' : 'var(--color-taught)', border: `1px solid ${taughtMoveCount >= MAX_TAUGHT_MOVES ? 'var(--color-danger-text)' : 'var(--color-taught)'}` }}>Taught {taughtMoveCount}/{MAX_TAUGHT_MOVES}</span>
-                                </div>
+                            <div className="add-move-panel" style={{ padding: '10px 12px', border: '1px solid var(--border-light)', borderTop: 'none', borderRadius: '0 0 6px 6px', background: 'var(--bg-light)' }}>
 
                                 {(pokemon.moves?.length || 0) >= MAX_TOTAL_MOVES && (
                                     <div style={{ padding: '6px 10px', background: 'var(--tint-fail-bg)', border: '1px solid var(--tint-fail-border)', borderRadius: '4px', fontSize: '12px', color: 'var(--color-danger-text)', marginBottom: '8px' }}>
@@ -2781,45 +2757,35 @@ const PokemonCard = ({
                                                             onClick={() => addMoveWithSource(name, data, 'natural')}
                                                             disabled={naturalMoveCount === 0 && (pokemon.moves?.length || 0) >= MAX_TOTAL_MOVES}
                                                             style={{
-                                                                padding: '4px 8px',
-                                                                minHeight: '28px',
-                                                                minWidth: '40px',
-                                                                flexShrink: 0,
+                                                                width: '28px', height: '28px', flexShrink: 0,
                                                                 background: (naturalMoveCount === 0 && (pokemon.moves?.length || 0) >= MAX_TOTAL_MOVES) ? 'var(--border-medium)' : ((naturalMoveCount >= MAX_NATURAL_MOVES || (pokemon.moves?.length || 0) >= MAX_TOTAL_MOVES) ? 'var(--poke-orange)' : 'var(--stat-hp)'),
-                                                                color: 'white',
-                                                                border: 'none',
-                                                                borderRadius: '4px',
-                                                                fontSize: '12px',
-                                                                fontWeight: 'bold',
+                                                                color: 'white', border: 'none', borderRadius: '50%',
+                                                                fontSize: '14px', fontWeight: 'bold',
                                                                 cursor: (naturalMoveCount === 0 && (pokemon.moves?.length || 0) >= MAX_TOTAL_MOVES) ? 'not-allowed' : 'pointer',
-                                                                opacity: (naturalMoveCount === 0 && (pokemon.moves?.length || 0) >= MAX_TOTAL_MOVES) ? 0.6 : 1
+                                                                opacity: (naturalMoveCount === 0 && (pokemon.moves?.length || 0) >= MAX_TOTAL_MOVES) ? 0.6 : 1,
+                                                                display: 'flex', alignItems: 'center', justifyContent: 'center'
                                                             }}
                                                             title={(naturalMoveCount >= MAX_NATURAL_MOVES || (pokemon.moves?.length || 0) >= MAX_TOTAL_MOVES) ? "Replace oldest Natural move" : "Add as Natural move"}
                                                             aria-label={`Add ${name} as Natural move`}
                                                         >
-                                                            Nat
+                                                            N
                                                         </button>
                                                         <button
                                                             onClick={() => addMoveWithSource(name, data, 'taught')}
                                                             disabled={taughtMoveCount === 0 && (pokemon.moves?.length || 0) >= MAX_TOTAL_MOVES}
                                                             style={{
-                                                                padding: '4px 8px',
-                                                                minHeight: '28px',
-                                                                minWidth: '40px',
-                                                                flexShrink: 0,
+                                                                width: '28px', height: '28px', flexShrink: 0,
                                                                 background: (taughtMoveCount === 0 && (pokemon.moves?.length || 0) >= MAX_TOTAL_MOVES) ? 'var(--border-medium)' : ((taughtMoveCount >= MAX_TAUGHT_MOVES || (pokemon.moves?.length || 0) >= MAX_TOTAL_MOVES) ? 'var(--poke-orange)' : 'var(--color-taught)'),
-                                                                color: 'white',
-                                                                border: 'none',
-                                                                borderRadius: '4px',
-                                                                fontSize: '12px',
-                                                                fontWeight: 'bold',
+                                                                color: 'white', border: 'none', borderRadius: '50%',
+                                                                fontSize: '14px', fontWeight: 'bold',
                                                                 cursor: (taughtMoveCount === 0 && (pokemon.moves?.length || 0) >= MAX_TOTAL_MOVES) ? 'not-allowed' : 'pointer',
-                                                                opacity: (taughtMoveCount === 0 && (pokemon.moves?.length || 0) >= MAX_TOTAL_MOVES) ? 0.6 : 1
+                                                                opacity: (taughtMoveCount === 0 && (pokemon.moves?.length || 0) >= MAX_TOTAL_MOVES) ? 0.6 : 1,
+                                                                display: 'flex', alignItems: 'center', justifyContent: 'center'
                                                             }}
                                                             title={(taughtMoveCount >= MAX_TAUGHT_MOVES || (pokemon.moves?.length || 0) >= MAX_TOTAL_MOVES) ? "Replace oldest Taught move" : "Add as Taught move"}
                                                             aria-label={`Add ${name} as Taught move`}
                                                         >
-                                                            Tgt
+                                                            T
                                                         </button>
                                                     </div>
                                                 </div>
@@ -2845,10 +2811,10 @@ const PokemonCard = ({
                     <div>
                         <div style={{ marginBottom: '10px' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '3px' }}>
-                                <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px' }}>Pokémon Skills</span>
+                                <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px' }}>Pokémon Skills</span>
                                 <button
                                     onClick={() => showHelp('pokemon-skills')}
-                                    style={HELP_BTN_STYLE}
+                                    style={{ ...HELP_BTN_STYLE, marginLeft: 'auto' }}
                                     aria-label="Help: Pokémon Skills"
                                     title="About Pokémon skills"
                                 >?</button>
@@ -2899,55 +2865,49 @@ const PokemonCard = ({
                                             borderRadius: '6px',
                                             borderLeft: `4px solid ${(skill.value !== undefined && skill.value > 0) ? 'var(--skill-value-color)' : 'var(--border-light)'}`,
                                             cursor: showDetail ? 'pointer' : 'default',
-                                            opacity: (skill.value === undefined || skill.value === 0) ? 0.45 : 1,
                                             transition: 'background 0.2s ease'
                                         }}
                                     >
-                                        <div>
-                                            <div style={{ fontWeight: 'bold', fontSize: '13px' }}>{skill.name}</div>
+                                        <div style={{ flex: 1, minWidth: 0, paddingRight: '10px', opacity: (skill.value === undefined || skill.value === 0) ? 0.55 : 1 }}>
                                             {(() => {
-                                                let skillData = GAME_DATA?.pokemonSkills?.[skill.name];
-                                                if (!skillData && GAME_DATA?.pokemonSkills) {
+                                                let sd = GAME_DATA?.pokemonSkills?.[skill.name];
+                                                if (!sd && GAME_DATA?.pokemonSkills) {
                                                     const n = skill.name.toLowerCase().replace(/\s+/g, '');
                                                     const k = Object.keys(GAME_DATA.pokemonSkills).find(key => key.toLowerCase().replace(/\s+/g, '') === n);
-                                                    if (k) skillData = GAME_DATA.pokemonSkills[k];
+                                                    if (k) sd = GAME_DATA.pokemonSkills[k];
                                                 }
-                                                const desc = skillData?.description;
-                                                if (!desc) return null;
                                                 return (
-                                                    <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '2px' }}>
-                                                        {desc.length > 80 ? desc.slice(0, 80) + '…' : desc}
-                                                        {desc.length > 80 && showDetail && (
-                                                            <span style={{ color: 'var(--color-purple)', marginLeft: '4px', fontSize: '12px' }}>click for full</span>
+                                                    <>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', marginBottom: '2px' }}>
+                                                            <span style={{ fontWeight: 'bold', fontSize: '13px' }}>{skill.name}</span>
+                                                            {sd?.type && (
+                                                                <span style={{ fontSize: '11px', color: 'var(--text-muted)', padding: '1px 5px', borderRadius: '4px', background: 'var(--bg-light)', border: '1px solid var(--border-light)', textTransform: 'capitalize' }}>{sd.type}</span>
+                                                            )}
+                                                        </div>
+                                                        {sd?.description && (
+                                                            <div style={{ fontSize: '12px', color: 'var(--text-muted)', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
+                                                                {sd.description}
+                                                            </div>
                                                         )}
-                                                    </div>
+                                                    </>
                                                 );
                                             })()}
                                         </div>
                                         {(() => {
-                                            let sd = GAME_DATA?.pokemonSkills?.[skill.name];
-                                            if (!sd && GAME_DATA?.pokemonSkills) {
-                                                const n = skill.name.toLowerCase().replace(/\s+/g, '');
-                                                const k = Object.keys(GAME_DATA.pokemonSkills).find(key => key.toLowerCase().replace(/\s+/g, '') === n);
-                                                if (k) sd = GAME_DATA.pokemonSkills[k];
-                                            }
                                             const hasValue = skill.value !== undefined && skill.value > 0;
+                                            if (!hasValue) return null;
                                             return (
-                                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1px', flexShrink: 0 }}>
-                                                    <div style={{
-                                                        padding: '3px 10px',
-                                                        background: hasValue ? 'var(--skill-value-color)' : 'var(--border-light)',
-                                                        color: hasValue ? 'white' : 'var(--text-muted)',
-                                                        borderRadius: '10px',
-                                                        fontSize: '13px',
-                                                        fontWeight: 'bold',
-                                                        lineHeight: 1
-                                                    }}>
-                                                        {skill.value ?? '—'}
-                                                    </div>
-                                                    {sd?.type && (
-                                                        <div style={{ fontSize: '12px', color: 'var(--text-muted)', textTransform: 'capitalize' }}>{sd.type}</div>
-                                                    )}
+                                                <div style={{
+                                                    padding: '3px 10px',
+                                                    background: 'var(--skill-value-color)',
+                                                    color: 'white',
+                                                    borderRadius: '10px',
+                                                    fontSize: '13px',
+                                                    fontWeight: 'bold',
+                                                    lineHeight: 1,
+                                                    flexShrink: 0
+                                                }}>
+                                                    {skill.value}
                                                 </div>
                                             );
                                         })()}
@@ -2970,9 +2930,9 @@ const PokemonCard = ({
                                 const spriteUrl = getPokemonSprite({ species, regionalForm });
                                 const bgs = {
                                     current: 'var(--bg-light)',
-                                    evolve:  'var(--bg-primary)',
-                                    locked:  'var(--bg-primary)',
-                                    devolve: 'var(--bg-primary)',
+                                    evolve:  'var(--tint-success-bg)',
+                                    locked:  'var(--tint-orange-bg)',
+                                    devolve: 'var(--tint-fail-bg)',
                                 };
                                 const labelColors = {
                                     current: 'var(--text-muted)',
@@ -3073,7 +3033,7 @@ const PokemonCard = ({
                                 <>
                                     {canEvolve && canEvolve.length > 0 && (
                                         <div style={{ marginBottom: '16px' }}>
-                                            <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-light)' }}>Evolution Options</div>
+                                            <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-light)' }}>Evolution Options</div>
                                             {canEvolve.map((evo, idx) => {
                                                 const targetData = pokedex?.find(p => p.species?.toLowerCase() === evo.species?.toLowerCase());
                                                 // Regional forms may have different types than the base species in the pokedex;
@@ -3101,12 +3061,12 @@ const PokemonCard = ({
                                                         {/* Requirement + action */}
                                                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', flexWrap: 'nowrap' }}>
                                                             {evo.canEvolveNow ? (
-                                                                <div title={`${evo.reason || evo.requirement}${evo.note ? ` (${evo.note})` : ''}`} style={{ fontSize: '12px', color: 'var(--text-muted)', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                                                    {evo.reason || evo.requirement}
+                                                                <div title={`${evo.reason || evo.requirement}${evo.note ? ` (${evo.note})` : ''}`} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '12px', fontWeight: 600, color: 'var(--color-success-text)', padding: '4px 10px', borderRadius: '12px', background: 'var(--tint-success-bg)', border: '1px solid var(--stat-hp)', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                                    ✓ {evo.reason || evo.requirement}
                                                                     {evo.note && ` (${evo.note})`}
                                                                 </div>
                                                             ) : (
-                                                                <div title={`${evo.reason || evo.requirement}${evo.note ? ` (${evo.note})` : ''}`} style={{ fontSize: '12px', color: 'var(--poke-orange)', fontWeight: 600, padding: '4px 8px', borderRadius: '4px', background: 'var(--tint-orange-bg)', border: '1px solid var(--tint-orange-border)', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                                <div title={`${evo.reason || evo.requirement}${evo.note ? ` (${evo.note})` : ''}`} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: 'var(--poke-orange)', fontWeight: 600, padding: '4px 10px', borderRadius: '12px', background: 'var(--tint-orange-bg)', border: '1px solid var(--tint-orange-border)', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                                                     🔒 {evo.reason || evo.requirement}
                                                                     {evo.note && ` (${evo.note})`}
                                                                 </div>
@@ -3138,7 +3098,7 @@ const PokemonCard = ({
                                                     No further evolutions available.
                                                 </div>
                                             )}
-                                            <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '10px' }}>Devolution</div>
+                                            <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '10px' }}>Devolution</div>
                                             <div style={{ padding: '12px', borderRadius: '10px', border: '1px solid var(--border-light)', background: 'var(--surface-bg)' }}>
                                                 {/* Sprite comparison */}
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
