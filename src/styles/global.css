@@ -4073,6 +4073,17 @@
                 grid-template-columns: repeat(2, 1fr) !important;
             }
 
+            /* Combat stages: tighter min so all 7 fit in 2 rows on very narrow screens */
+            .combat-stages-grid {
+                grid-template-columns: repeat(auto-fill, minmax(55px, 1fr)) !important;
+            }
+
+            /* Pokémon card tab labels: hide text at ≤360px, show icons only */
+            .pokemon-card-tabs .tab {
+                padding: 8px 5px !important;
+                font-size: 11px !important;
+            }
+
             /* TypeChart type selector — narrower min so chips don't clip */
             .type-chart-grid {
                 grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)) !important;

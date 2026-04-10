@@ -3059,7 +3059,7 @@ const PokemonCard = ({
                                                             })}
                                                         </div>
                                                         {/* Requirement + action */}
-                                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', flexWrap: 'nowrap' }}>
+                                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', flexWrap: 'wrap' }}>
                                                             {evo.canEvolveNow ? (
                                                                 <div title={`${evo.reason || evo.requirement}${evo.note ? ` (${evo.note})` : ''}`} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '12px', fontWeight: 600, color: 'var(--color-success-text)', padding: '4px 10px', borderRadius: '12px', background: 'var(--tint-success-bg)', border: '1px solid var(--stat-hp)', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                                                     ✓ {evo.reason || evo.requirement}
@@ -3128,8 +3128,8 @@ const PokemonCard = ({
                                                     })()}
                                                 </div>
                                                 {/* Action */}
-                                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
-                                                    <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Revert to {canDevolve.regionalForm ? `${canDevolve.regionalForm} ` : ''}{canDevolve.species}</div>
+                                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', flexWrap: 'wrap' }}>
+                                                    <div style={{ fontSize: '12px', color: 'var(--text-muted)', flex: 1, minWidth: 0 }}>Revert to {canDevolve.regionalForm ? `${canDevolve.regionalForm} ` : ''}{canDevolve.species}</div>
                                                     <button
                                                         onClick={() => showConfirm({
                                                             title: 'Devolve Pokémon?',
