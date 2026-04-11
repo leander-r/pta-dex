@@ -8,6 +8,12 @@ This tool replaces spreadsheets and manual note-taking with a clean, interactive
 
 ---
 
+## Screenshots
+
+![Pokémon Team tab](docs/screenshot-pokemon-team.png)
+
+---
+
 ## Features
 
 ### Trainer Management
@@ -30,9 +36,16 @@ This tool replaces spreadsheets and manual note-taking with a clean, interactive
 - **Comparison** — Side-by-side stat comparison for two Pokémon
 
 ### Battle Tools
-- **Dice Roller** — Roll move damage or trainer skill checks with full history
-- **Combat Stages** — Track stat modifiers (−6 to +6) per Pokémon during battle
-- **HP Tracking** — Current HP and damage for each party member
+- **Pokémon Attack Roller** — Roll move damage with accuracy check, STAB bonus, and full roll history
+- **Contest Mode** — Roll contest appeals with voltage tracking, type relations, and move-repetition penalties
+- **Trainer Skill Roller** — Roll trainer skill checks with stat modifier applied
+- **Custom Dice** — Roll any arbitrary dice expression (e.g. `3d6`, `1d20+5`)
+- **Heal Mode** — Apply healing items from your inventory directly to party members
+- **HP Tracking** — Current HP bar and quick ±1/5/10 buttons for each party member during battle
+- **Combat Stages** — Track temporary stat modifiers (−6 to +6) per Pokémon; reset on switch-out
+- **Status Conditions** — Track burn, paralysis, sleep, poison, freeze, and confusion per Pokémon
+- **Mega Evolution** — Apply battle-only Mega or alternate form changes with automatic stat deltas
+- **Type Matchup Display** — Live effectiveness chart for the selected move's type
 - **Discord Integration** — Send roll results to a channel via webhook
 
 ### Inventory
@@ -80,7 +93,7 @@ This tool replaces spreadsheets and manual note-taking with a clean, interactive
 - **Compact Mode** — Tighter layout for smaller screens
 - **Responsive Design** — Works on desktop, tablet, and mobile (bottom navigation bar on mobile)
 - **Onboarding Checklist** — Step-by-step guide for new users
-- **Contextual Help** — In-app help topics for stats, classes, move slots, combat stages, and more
+- **Contextual Help** — In-app help modals for: stat allocation, trainer classes, move slots, combat stages, save slots, trainer features, trainer skills, Pokémon stats, Pokémon skills, HP tracking, and Pokémon loyalty
 - **Example Trainer** — Load a pre-built trainer (Red + Pikachu + Bulbasaur) to explore the interface
 
 ---
@@ -156,6 +169,18 @@ npm run test:e2e:ui     # end-to-end tests with Playwright UI debugger
 2. Select **Pokémon** mode to roll move damage for a party member, or **Trainer** mode for skill checks
 3. Adjust combat stages with the ± buttons; they apply to displayed stats automatically
 4. Track HP damage directly on each Pokémon's combat row
+
+### Saving Your Data
+
+All changes are saved automatically to your browser's localStorage — no Save button is needed. However, **localStorage can be wiped if you clear browser data**, so it is not a reliable long-term backup.
+
+For peace of mind:
+
+- **Save Slots** (sidebar → *Save / Load*) — create up to 3 named snapshots; ideal for session checkpoints and quick restores
+- **Export JSON** (header *☰ menu → Export Trainer / Export All Data*) — downloads a `.json` file to your device; use this for backups, sharing characters, or moving data to another browser or device
+- **Import** (header *☰ menu → Import*) — restore any previously exported JSON file
+
+> **Tip:** Export a full backup at the end of each session and keep Save Slots for mid-session checkpoints.
 
 ### Exporting & Printing
 
