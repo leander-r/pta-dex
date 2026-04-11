@@ -6,6 +6,7 @@ import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { getTypeColor } from '../../utils/typeUtils.js';
 import { calculateSTAB, getActualStats, calculatePokemonHP, parseDice, applyCombatStage, parseHealFormula, parseCritThreshold } from '../../utils/dataUtils.js';
 import toast from '../../utils/toast.js';
+import { safeLocalStorageGet, safeLocalStorageSet } from '../../utils/storageUtils.js';
 import { useGameData, useModal, useTrainerContext, usePokemonContext, useData, useUI } from '../../contexts/index.js';
 import { MAX_ROLL_HISTORY } from '../../data/constants.js';
 import { getPokemonSprite, getPokemonDisplayImage, getMegaSprite } from '../../utils/pokemonSprite.js';
@@ -127,6 +128,17 @@ const BattleTab = () => {
     const [acOverride, setAcOverride] = useState('');
     const [megaEvolved, setMegaEvolved] = useState(false);
     const [currentMegaForm, setCurrentMegaForm] = useState(null);
+    const [battleCalloutDismissed, setBattleCalloutDismissed] = useState(
+        () => safeLocalStorageGet('pta-battle-visited', false)
+    );
+
+    // Mark battle tab as visited on first mount
+    useEffect(() => {
+        if (!safeLocalStorageGet('pta-battle-visited', false)) {
+            safeLocalStorageSet('pta-battle-visited', true);
+            window.dispatchEvent(new CustomEvent('pta-battle-visited'));
+        }
+    }, []);
 
     const selectedPokemon = useMemo(() => party.find(p => p.id === selectedPokemonId) || null, [party, selectedPokemonId]);
 
@@ -438,6 +450,60 @@ const BattleTab = () => {
             <p className="section-description">
                 Roll attacks, contest appeals, skills, and custom dice. Results can be sent to Discord via webhook.
             </p>
+
+            {/* First-visit callout */}
+            {!battleCalloutDismissed && (
+                <div style={{
+                    marginBottom: '16px',
+                    padding: '12px 14px',
+                    borderRadius: '10px',
+                    background: 'var(--tint-purple-bg, rgba(102,126,234,0.08))',
+                    border: '1px solid var(--tint-purple-border, rgba(102,126,234,0.25))',
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    gap: '12px'
+                }}>
+                    <span style={{ fontSize: '20px', flexShrink: 0, lineHeight: 1.2 }}>🎲</span>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontWeight: 700, fontSize: '13px', marginBottom: '4px', color: 'var(--text-color)' }}>
+                            Welcome to the Battle tab
+                        </div>
+                        <ul style={{ margin: '0 0 6px', paddingLeft: '16px', fontSize: '12px', color: 'var(--text-secondary)', lineHeight: '1.7' }}>
+                            <li><strong>HP Tracker</strong> — apply damage and healing during battle</li>
+                            <li><strong>Dice Roller</strong> — roll Pokémon attacks, trainer skills, or custom dice</li>
+                            <li><strong>Combat Stages</strong> — track temporary stat buffs and debuffs (−6 to +6)</li>
+                        </ul>
+                        <button
+                            onClick={() => setBattleCalloutDismissed(true)}
+                            style={{
+                                background: 'none',
+                                border: 'none',
+                                padding: 0,
+                                cursor: 'pointer',
+                                fontSize: '12px',
+                                color: 'var(--text-muted)',
+                                textDecoration: 'underline'
+                            }}
+                        >
+                            Got it, dismiss
+                        </button>
+                    </div>
+                    <button
+                        onClick={() => setBattleCalloutDismissed(true)}
+                        aria-label="Dismiss"
+                        style={{
+                            background: 'none',
+                            border: 'none',
+                            cursor: 'pointer',
+                            color: 'var(--text-muted)',
+                            fontSize: '16px',
+                            lineHeight: 1,
+                            padding: '2px 4px',
+                            flexShrink: 0
+                        }}
+                    >✕</button>
+                </div>
+            )}
 
             {/* Mode Selector */}
             <div className="tabs" style={{ marginBottom: '15px' }}>

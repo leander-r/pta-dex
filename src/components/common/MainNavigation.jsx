@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { TABS } from '../../data/constants.js';
-import { useModal } from '../../contexts/index.js';
+import { useModal, useData } from '../../contexts/index.js';
 import { useTrainerContext } from '../../contexts/TrainerContext.jsx';
 import { useOnboarding } from '../../hooks/useOnboarding.js';
 
@@ -23,6 +23,7 @@ const NAV_ITEMS = [
 const MainNavigation = ({ activeTab, setActiveTab }) => {
     const { openSaveLoadModal, setShowCardModal, openPrintSheet } = useModal();
     const { trainer } = useTrainerContext();
+    const { loadDemoTrainer } = useData();
     const { steps, allDone, dismissed, dismiss } = useOnboarding();
 
     const showChecklist = !dismissed && !allDone;
@@ -143,45 +144,66 @@ const MainNavigation = ({ activeTab, setActiveTab }) => {
                                     color: 'var(--color-success-text)',
                                     fontWeight: 600
                                 }}>
-                                    <span>✓</span>
+                                    <span style={{ flexShrink: 0 }}>✓</span>
                                     <span style={{ textDecoration: 'line-through', opacity: 0.7 }}>{step.label}</span>
                                 </div>
                             ) : (
                                 <button
                                     key={step.id}
-                                    onClick={() => setActiveTab(step.tab)}
+                                    onClick={() => step.tab ? setActiveTab(step.tab) : openSaveLoadModal()}
                                     style={{
                                         width: '100%',
                                         background: 'none',
                                         border: 'none',
                                         textAlign: 'left',
-                                        padding: '7px 10px',
+                                        padding: '6px 10px',
                                         cursor: 'pointer',
                                         display: 'flex',
-                                        alignItems: 'center',
+                                        alignItems: 'flex-start',
                                         gap: '7px',
-                                        color: 'var(--text-muted)',
+                                        color: 'var(--text-color)',
                                         fontSize: '13px'
                                     }}
-                                    title={`Go to ${step.tab} tab`}
+                                    title={step.tab ? `Go to ${step.tab} tab` : 'Open Save / Load'}
                                 >
-                                    <span>○</span>
-                                    <span>{step.label}</span>
+                                    <span style={{ flexShrink: 0, marginTop: '1px', color: 'var(--poke-orange)' }}>○</span>
+                                    <span>
+                                        <span style={{ display: 'block', fontWeight: 600 }}>{step.label}</span>
+                                        {step.hint && (
+                                            <span style={{ display: 'block', fontSize: '11px', color: 'var(--text-muted)', marginTop: '1px', lineHeight: '1.4' }}>
+                                                {step.hint}
+                                            </span>
+                                        )}
+                                    </span>
                                 </button>
                             )
                         ))}
                     </div>
 
-                    {/* Footer hint */}
+                    {/* Demo trainer link */}
                     <div style={{
                         padding: '6px 10px 8px',
                         background: 'var(--surface-bg)',
                         borderTop: '1px solid var(--border-light)',
-                        color: 'var(--text-muted)',
-                        fontSize: '12px',
-                        lineHeight: '1.5'
                     }}>
-                        ⓘ Auto-saves every minute. Use Save/Load for snapshots.
+                        <button
+                            onClick={loadDemoTrainer}
+                            style={{
+                                width: '100%',
+                                background: 'none',
+                                border: '1px dashed var(--border-color)',
+                                borderRadius: '6px',
+                                padding: '6px 8px',
+                                cursor: 'pointer',
+                                color: 'var(--text-muted)',
+                                fontSize: '12px',
+                                textAlign: 'center',
+                                lineHeight: '1.4'
+                            }}
+                            title="Load a pre-built trainer to explore the app"
+                        >
+                            ★ Load example trainer
+                        </button>
                     </div>
                 </div>
             )}
@@ -190,27 +212,46 @@ const MainNavigation = ({ activeTab, setActiveTab }) => {
             {showAllDone && (
                 <div className="nav-checklist" style={{
                     margin: '10px 8px 0',
-                    padding: '8px 10px',
                     borderRadius: '8px',
                     background: 'var(--success-bg)',
                     border: '1px solid var(--success-border)',
                     fontSize: '12px',
-                    color: 'var(--color-success-text)',
-                    lineHeight: '1.5'
+                    overflow: 'hidden'
                 }}>
-                    <div style={{ fontWeight: 700, marginBottom: '4px' }}>✓ All set! You're ready to play.</div>
-                    <button
-                        onClick={dismiss}
-                        style={{
-                            background: 'none',
-                            border: 'none',
-                            color: 'var(--color-success-text)',
-                            cursor: 'pointer',
-                            fontSize: '13px',
-                            padding: '4px 0',
-                            textDecoration: 'underline'
-                        }}
-                    >Dismiss</button>
+                    <div style={{
+                        padding: '7px 10px',
+                        background: 'var(--color-success-text)',
+                        color: 'white',
+                        fontWeight: 700,
+                        fontSize: '13px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between'
+                    }}>
+                        <span>✓ Setup complete!</span>
+                        <button
+                            onClick={dismiss}
+                            aria-label="Dismiss"
+                            style={{
+                                background: 'none',
+                                border: 'none',
+                                color: 'rgba(255,255,255,0.85)',
+                                cursor: 'pointer',
+                                fontSize: '16px',
+                                lineHeight: 1,
+                                padding: '2px 4px'
+                            }}
+                        >✕</button>
+                    </div>
+                    <div style={{ padding: '8px 10px', color: 'var(--color-success-text)', lineHeight: '1.6' }}>
+                        <div style={{ fontWeight: 600, marginBottom: '4px' }}>What to do next:</div>
+                        <ul style={{ margin: 0, paddingLeft: '16px', opacity: 0.9 }}>
+                            <li>Add more Pokémon to your party</li>
+                            <li>Browse the Inventory tab for items</li>
+                            <li>Set abilities &amp; held items per Pokémon</li>
+                            <li>Roll dice in the Battle tab</li>
+                        </ul>
+                    </div>
                 </div>
             )}
         </div>
