@@ -39,11 +39,14 @@ const ReferenceTab = () => {
                 Browse the Pokédex, type chart, moves, abilities, natures, and game rules.
             </p>
 
-            {/* Tab Navigation */}
-            <div className="tabs" style={{ display: 'flex', overflowX: 'auto', flexWrap: 'nowrap', WebkitOverflowScrolling: 'touch', gap: '4px', marginBottom: '16px' }}>
+            {/* Tab Navigation — wraps in a gradient-masked scroll container on mobile */}
+            <div style={{ position: 'relative', marginBottom: '16px' }}>
+            <div role="tablist" className="tabs" style={{ display: 'flex', overflowX: 'auto', flexWrap: 'nowrap', WebkitOverflowScrolling: 'touch', gap: '4px', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                 {sections.map(section => (
                     <button
                         key={section.id}
+                        role="tab"
+                        aria-selected={activeSection === section.id}
                         className={`tab ${activeSection === section.id ? 'active' : ''}`}
                         onClick={() => { visitedRef.current.add(section.id); setActiveSection(section.id); }}
                         style={{
@@ -57,6 +60,9 @@ const ReferenceTab = () => {
                         {section.label}
                     </button>
                 ))}
+            </div>
+            {/* Right-edge fade hint — only visible when content overflows (mobile) */}
+            <div style={{ pointerEvents: 'none', position: 'absolute', top: 0, right: 0, bottom: 0, width: '32px', borderRadius: '0 10px 10px 0', background: 'linear-gradient(to right, transparent, var(--card-bg, var(--surface-bg)))' }} aria-hidden="true" />
             </div>
 
             {/* Content Sections — kept mounted after first visit to preserve filter/scroll state */}

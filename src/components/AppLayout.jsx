@@ -45,7 +45,7 @@ const TabFallback = () => (
 );
 
 // Common Components
-import { Header, SaveIndicator, LevelUpNotification, MainNavigation, ModalsContainer } from './common';
+import { Header, SaveIndicator, LevelUpNotification, MainNavigation, ModalsContainer, OnboardingChecklist } from './common';
 import ToastContainer from './common/ToastContainer.jsx';
 import ErrorBoundary from './ErrorBoundary.jsx';
 
@@ -172,6 +172,10 @@ const AppLayout = () => {
                 {/* MAIN CONTENT AREA                             */}
                 {/* ============================================== */}
                 <main id="main-content" className="content-area">
+
+                    {/* Onboarding checklist — mobile-only; desktop shows it in the sidebar
+                        (MainNavigation's copy is CSS-hidden on mobile, this one is CSS-hidden on desktop) */}
+                    <OnboardingChecklist setActiveTab={setActiveTab} layout="banner" className="mobile-onboarding-banner" />
 
                     {/* Pokédex error banner (shown when data fails to load but app is not in loading state) */}
                     {pokedexError && !pokedexLoading && (

@@ -7,3 +7,4 @@ export { default as LevelUpNotification } from './LevelUpNotification.jsx';
 export { default as Header } from './Header.jsx';
 export { default as MainNavigation } from './MainNavigation.jsx';
 export { default as ModalsContainer } from './ModalsContainer.jsx';
+export { default as OnboardingChecklist } from './OnboardingChecklist.jsx';

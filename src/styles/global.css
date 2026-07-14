@@ -568,6 +568,11 @@
             transition: background 0.3s ease, border-color 0.3s ease;
         }
 
+        /* Onboarding checklist's mobile banner — desktop shows the sidebar copy instead */
+        .mobile-onboarding-banner {
+            display: none;
+        }
+
         .content-area {
             background: var(--poke-cream);
             border-radius: 20px;
@@ -3373,6 +3378,11 @@
             .nav-checklist,
             .nav-divider {
                 display: none;
+            }
+
+            /* Onboarding checklist's mobile banner (main content area) takes over here */
+            .mobile-onboarding-banner {
+                display: block;
             }
 
             /* Push content above the fixed bottom bar */
