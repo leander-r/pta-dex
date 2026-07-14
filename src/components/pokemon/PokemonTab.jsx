@@ -190,7 +190,9 @@ const PokemonTab = () => {
     const toggleCompareSelect = useCallback((id) => {
         setCompareSelected(prev => {
             if (prev.includes(id)) return prev.filter(x => x !== id);
-            if (prev.length >= 2) return prev;
+            // Picking a 3rd Pokémon replaces the oldest selection rather than
+            // silently doing nothing — same pattern as TypeChartSection's type picker.
+            if (prev.length >= 2) return [prev[1], id];
             return [...prev, id];
         });
     }, []);
