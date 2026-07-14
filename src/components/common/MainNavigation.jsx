@@ -11,7 +11,7 @@ import OnboardingChecklist from './OnboardingChecklist.jsx';
 
 const NAV_ITEMS = [
     { tab: TABS.TRAINER,   icon: '👤', label: 'Trainer',        mobileLabel: 'Trainer' },
-    { tab: TABS.POKEMON,   icon: '🎮', label: 'Pokémon Team',   mobileLabel: 'Pokémon' },
+    { tab: TABS.POKEMON,   icon: '🐾', label: 'Pokémon Team',   mobileLabel: 'Pokémon' },
     { tab: TABS.INVENTORY, icon: '🎒', label: 'Inventory',      mobileLabel: 'Items'   },
     { tab: TABS.BATTLE,    icon: '🎲', label: 'Dice Roller',    mobileLabel: 'Battle'  },
     { tab: TABS.REFERENCE, icon: '📚', label: 'Quick Reference', mobileLabel: 'Refs'   },

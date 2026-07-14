@@ -41,7 +41,15 @@ const MenuItem = ({ id, icon, label, onClick, danger, disabled, hoveredItem, set
             justifyContent: 'center',
             color: hoveredItem === id && !danger ? 'var(--poke-orange)' : 'inherit'
         }}>{icon}</span>
-        <span>{label}</span>
+        <span style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '2px', minWidth: 0 }}>
+            <span>{label}</span>
+            {/* Disabled reason as visible text, not just a title tooltip — invisible on touch devices */}
+            {disabled && title && (
+                <span style={{ fontSize: '11px', fontWeight: 400, color: 'var(--text-muted)', whiteSpace: 'normal', lineHeight: 1.3 }}>
+                    {title}
+                </span>
+            )}
+        </span>
     </button>
 );
 

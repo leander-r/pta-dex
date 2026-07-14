@@ -541,7 +541,13 @@ export const importSinglePokemon = (jsonData) => {
         return importedPokemon;
     } catch (error) {
         console.error('Error importing Pokemon:', error);
-        toast.error(`Import failed: ${error.message}`);
+        // Raw JSON.parse SyntaxErrors ("Unexpected token < in JSON at position 0")
+        // aren't actionable for a non-technical user — give them something they
+        // can act on instead. Deliberately-thrown errors already have clear text.
+        const message = error instanceof SyntaxError
+            ? "This file doesn't look like valid JSON. Make sure you selected a Pokémon export (.json) file."
+            : error.message;
+        toast.error(`Import failed: ${message}`);
         return null;
     }
 };

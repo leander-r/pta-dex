@@ -873,7 +873,7 @@ const PokemonTab = () => {
                     {currentList.length === 0 ? (
                         <>
                             <span className="empty-state-icon">
-                                {pokemonView === 'party' ? '🎮' : '📦'}
+                                {pokemonView === 'party' ? '🐾' : '📦'}
                             </span>
                             <p className="empty-state-title">
                                 {pokemonView === 'party' ? 'No Pokémon in your party' : 'Reserve is empty'}
