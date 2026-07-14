@@ -10,6 +10,7 @@ import { useModal } from '../../contexts/index.js';
 import { useTrainerContext } from '../../contexts/TrainerContext.jsx';
 import { usePokemonContext } from '../../contexts/PokemonContext.jsx';
 import { generatePrintSheetHTML } from '../../utils/exportUtils.js';
+import toast from '../../utils/toast.js';
 
 const PrintSheetModal = () => {
     const { showPrintSheetModal, closePrintSheet } = useModal();
@@ -23,7 +24,10 @@ const PrintSheetModal = () => {
     const handlePrint = () => {
         const html = generatePrintSheetHTML(trainer, party);
         const win  = window.open('', '_blank');
-        if (!win) return;
+        if (!win) {
+            toast.error('Pop-up blocked. Allow pop-ups for this site, then try again.');
+            return;
+        }
         win.document.write(html);
         win.document.close();
     };

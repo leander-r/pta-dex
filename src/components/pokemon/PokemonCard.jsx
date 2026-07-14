@@ -73,6 +73,8 @@ const PokemonCard = ({
     const [pendingSpeciesData, setPendingSpeciesData] = useState(null);
     // Info tab — contest section collapsed by default
     const [showContestSection, setShowContestSection] = useState(false);
+    // Skills tab — zero-value skills hidden by default, toggle to reveal
+    const [showZeroValueSkills, setShowZeroValueSkills] = useState(false);
 
     // Snapshot taken when editing opens — used to revert on Cancel.
     // Only captured once per edit session (not updated as the user types).
@@ -2823,7 +2825,14 @@ const PokemonCard = ({
                                     const total = (pokemon.pokemonSkills || []).length;
                                     const withValues = (pokemon.pokemonSkills || []).filter(s => s.value > 0).length;
                                     if (total === 0 || withValues === total) return null;
-                                    return <span style={{ marginLeft: '6px', color: 'var(--text-muted)', fontStyle: 'italic' }}>({withValues} of {total} with values)</span>;
+                                    return (
+                                        <button
+                                            onClick={() => setShowZeroValueSkills(v => !v)}
+                                            style={{ marginLeft: '6px', background: 'none', border: 'none', padding: 0, color: 'var(--color-purple)', fontStyle: 'italic', fontSize: '12px', cursor: 'pointer', textDecoration: 'underline' }}
+                                        >
+                                            ({withValues} of {total} with values — {showZeroValueSkills ? 'hide' : 'show'} rest)
+                                        </button>
+                                    );
                                 })()}
                             </div>
                         </div>
@@ -2836,7 +2845,7 @@ const PokemonCard = ({
                             </div>
                         ) : (
                             <div style={{ display: 'grid', gap: '8px' }}>
-                                {(pokemon.pokemonSkills || []).filter(s => s.value === undefined || s.value > 0).map((skill, idx) => (
+                                {(pokemon.pokemonSkills || []).filter(s => showZeroValueSkills || s.value === undefined || s.value > 0).map((skill, idx) => (
                                     <div
                                         key={idx}
                                         onClick={() => {
