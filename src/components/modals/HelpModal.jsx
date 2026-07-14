@@ -157,6 +157,20 @@ const HELP_CONTENT = {
             </>
         )
     },
+    'notes': {
+        title: 'Campaign Notes & Quests',
+        body: () => (
+            <>
+                <p>The Notes tab has three separate areas, switched with the tabs above the text box.</p>
+                <h4 style={{ margin: '14px 0 6px', fontSize: '13px', color: 'var(--text-secondary)' }}>Campaign vs Session Notes</h4>
+                <p><strong>Campaign Notes</strong> are one long-running document tied to your trainer — quest logs, NPCs, storyline events, anything worth keeping long-term.</p>
+                <p><strong>Session Notes</strong> are a separate scratch pad for quick notes during a single session. Use the <strong>Clear</strong> button to wipe it between sessions — this never touches your Campaign Notes.</p>
+                <h4 style={{ margin: '14px 0 6px', fontSize: '13px', color: 'var(--text-secondary)' }}>Quest Log</h4>
+                <p>Click a quest's colored status pill to cycle it through <strong>Active → Completed → Abandoned</strong> and back to Active. Click the quest's title to expand a notes field just for that quest.</p>
+                <p style={{ marginTop: '10px', fontSize: '12px', color: 'var(--text-muted)' }}>All three areas auto-save as you type, same as the rest of your trainer data.</p>
+            </>
+        )
+    },
     'hp-tracking': {
         title: 'HP Tracking',
         body: () => (

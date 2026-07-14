@@ -4,7 +4,8 @@
 // Campaign notes, session notes, and quest log
 
 import React, { useState, useCallback, useRef } from 'react';
-import { useTrainerContext, useModal } from '../../contexts/index.js';
+import { useTrainerContext, useModal, useUI } from '../../contexts/index.js';
+import { HELP_BTN_STYLE } from '../common/helpBtnStyle.js';
 import toast from '../../utils/toast.js';
 
 const QUEST_STATUSES = [
@@ -20,6 +21,7 @@ const QUEST_STATUSES = [
 const NotesTab = () => {
     const { trainer, setTrainer } = useTrainerContext();
     const { showConfirm } = useModal();
+    const { showHelp } = useUI();
     const [noteTab, setNoteTab] = useState('campaign');
     const [isFocused, setIsFocused] = useState(false);
     const [lastSaved, setLastSaved] = useState(null);
@@ -111,7 +113,15 @@ const NotesTab = () => {
 
     return (
         <div>
-            <h2 className="section-title">Notes</h2>
+            <h2 className="section-title">
+                Notes
+                <button
+                    onClick={() => showHelp('notes')}
+                    style={HELP_BTN_STYLE}
+                    aria-label="Help: Campaign Notes & Quests"
+                    title="About campaign notes, session notes, and quests"
+                >?</button>
+            </h2>
             <p className="section-description">
                 Track your adventure — quests, NPCs, story events, and session highlights.
             </p>
