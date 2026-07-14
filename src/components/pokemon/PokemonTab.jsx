@@ -22,7 +22,7 @@ const PokemonTab = () => {
     // Get state from contexts
     const { pokedex, pokedexLoading, GAME_DATA, customSpecies, setCustomSpecies } = useGameData();
     const { pokemonView, setPokemonView, editingPokemon: editingPokemonId, setEditingPokemon: setEditingPokemonId } = useUI();
-    const { showDetail, setShowCustomSpeciesModal, setEditingCustomSpeciesId, setShowBulkExpModal, openComparison } = useModal();
+    const { showDetail, setShowCustomSpeciesModal, setEditingCustomSpeciesId, setShowBulkExpModal, openComparison, showConfirm } = useModal();
     const { trainer, setTrainer, party, reserve, setParty, setReserve, moveToParty, moveToReserve, movePokemonUp, movePokemonDown, sortPokemonList, reorderPokemon } = useTrainerContext();
     const { addPokemon, updatePokemon, restorePokemon, deletePokemon, importPokemon, getEvolutionOptions, evolvePokemon, devolvePokemon } = usePokemonContext();
     const [filter, setFilter] = useState(() => ({
@@ -70,8 +70,16 @@ const PokemonTab = () => {
         toast.success(`Loaded preset "${preset.name}"`);
     };
 
-    const handleDeletePreset = (presetId) => {
-        setTrainer(prev => ({ ...prev, partyPresets: (prev.partyPresets || []).filter(p => p.id !== presetId) }));
+    const handleDeletePreset = (preset) => {
+        showConfirm({
+            title: 'Delete Preset?',
+            message: `Delete the party preset "${preset.name}"? This does not affect the Pokémon in it, only the saved list.`,
+            confirmLabel: 'Delete',
+            danger: true,
+            onConfirm: () => {
+                setTrainer(prev => ({ ...prev, partyPresets: (prev.partyPresets || []).filter(p => p.id !== preset.id) }));
+            }
+        });
     };
 
     // Team type coverage — computed from party types + move types
@@ -821,7 +829,7 @@ const PokemonTab = () => {
                                             Load
                                         </button>
                                         <button
-                                            onClick={() => handleDeletePreset(preset.id)}
+                                            onClick={() => handleDeletePreset(preset)}
                                             style={{ padding: '5px 8px', background: 'var(--danger-btn-start)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px' }}
                                             title="Delete preset"
                                         >

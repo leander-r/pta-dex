@@ -2226,14 +2226,7 @@ const PokemonCard = ({
                         <div style={{ paddingTop: '10px', borderTop: '1px solid var(--border-light)', marginTop: '12px' }}>
                             <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '8px' }}>Danger Zone</div>
                             <button
-                                onClick={() => {
-                                    showConfirm({
-                                        title: 'Delete Pokémon',
-                                        message: `Delete ${pokemon.name || pokemon.species || 'this Pokémon'}? This cannot be undone.`,
-                                        danger: true,
-                                        onConfirm: () => deletePokemon()
-                                    });
-                                }}
+                                onClick={() => deletePokemon()}
                                 className="pokemon-action-btn"
                                 style={{ background: 'linear-gradient(135deg, var(--danger-btn-start), var(--danger-btn-end))' }}
                                 title="Delete this Pokémon"
