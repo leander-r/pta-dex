@@ -22,7 +22,9 @@ const TrainerClasses = () => {
     // State for skill selection when adding a class
     const [pendingClass, setPendingClass] = useState(null);
     const [selectedClassSkills, setSelectedClassSkills] = useState([]);
-    const [collapsed, setCollapsed] = useState(true);
+    // Start expanded when no class has been picked yet — otherwise a trainer's
+    // first required class choice is hidden behind a collapsed panel.
+    const [collapsed, setCollapsed] = useState(() => currentClasses.length > 0);
 
     // Minimal fallback pool when a class has no skillPool defined in game data (PH2 p.14: 8 skills per base class)
     const FALLBACK_SKILL_POOL = ['Browbeat', 'Sprint', 'Concentration', 'Healing', 'Investigate', 'Perception', 'Acrobatics', 'Stealth'];

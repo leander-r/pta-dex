@@ -39,6 +39,7 @@ export const useOnboarding = () => {
             hint: '30 points across 6 stats (min 6, max 14 each)',
             done: (trainer?.statPoints || 0) === 0 && (trainer?.levelStatPoints || 0) === 0,
             tab: 'trainer',
+            sectionId: 'trainer-stats-section',
         },
         {
             id: 'class',
@@ -46,6 +47,7 @@ export const useOnboarding = () => {
             hint: 'Classes unlock features and skill ranks',
             done: (trainer?.classes?.length || 0) > 0,
             tab: 'trainer',
+            sectionId: 'trainer-classes-section',
         },
         {
             id: 'pokemon',

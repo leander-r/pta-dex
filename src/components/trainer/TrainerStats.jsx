@@ -24,10 +24,12 @@ const STAT_CONFIG = [
 const TrainerStats = () => {
     const { trainer, updateTrainerStat, calculateModifier, undoStatAllocation, canUndoStat } = useTrainerContext();
     const { showHelp } = useUI();
-    const [collapsed, setCollapsed] = useState(true);
+    // Start expanded whenever there are unspent points to allocate — otherwise
+    // the very first thing a new trainer needs to do is hidden behind a collapsed panel.
+    const [collapsed, setCollapsed] = useState(() => !((trainer.statPoints || 0) > 0 || (trainer.levelStatPoints || 0) > 0));
     const [draftStats, setDraftStats] = useState({});
     return (
-        <div className="section-card-purple">
+        <div id="trainer-stats-section" className="section-card-purple">
             <h3 className="section-title-purple" onClick={() => setCollapsed(c => !c)} style={{ cursor: 'pointer', userSelect: 'none' }}>
                 <span>📊</span> Stats
                 <button

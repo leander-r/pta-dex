@@ -237,11 +237,19 @@ const TrainerProfile = () => {
                     <div style={{ fontWeight: 'bold', marginBottom: '6px', color: 'var(--warning-text)' }}>
                         Character Creation — allocate stats, pick a class, then level up!
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px', color: creationPointsRemaining === 0 ? 'var(--color-success-text)' : 'var(--color-danger-text)' }}>
+                    <div
+                        onClick={() => document.getElementById('trainer-stats-section')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })}
+                        title="Jump to the Stats section"
+                        style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px', cursor: 'pointer', color: creationPointsRemaining === 0 ? 'var(--color-success-text)' : 'var(--color-danger-text)' }}
+                    >
                         <span>{creationPointsRemaining === 0 ? '✓' : '○'}</span>
                         <span>Spend all {CREATION_STAT_POINTS} Creation points ({CREATION_STAT_POINTS - creationPointsRemaining}/{CREATION_STAT_POINTS})</span>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: hasClass ? 'var(--color-success-text)' : 'var(--color-danger-text)' }}>
+                    <div
+                        onClick={() => document.getElementById('trainer-classes-section')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })}
+                        title="Jump to the Classes section"
+                        style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', color: hasClass ? 'var(--color-success-text)' : 'var(--color-danger-text)' }}
+                    >
                         <span>{hasClass ? '✓' : '○'}</span>
                         <span>Pick your first class</span>
                     </div>

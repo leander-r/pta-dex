@@ -81,7 +81,13 @@ const OnboardingChecklist = ({ setActiveTab, layout = 'sidebar', className }) =>
                             ) : (
                                 <button
                                     key={step.id}
-                                    onClick={() => step.tab ? setActiveTab(step.tab) : openSaveLoadModal()}
+                                    onClick={() => {
+                                        if (step.tab) setActiveTab(step.tab);
+                                        else openSaveLoadModal();
+                                        if (step.sectionId) {
+                                            setTimeout(() => document.getElementById(step.sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
+                                        }
+                                    }}
                                     style={{
                                         width: '100%',
                                         background: 'none',
