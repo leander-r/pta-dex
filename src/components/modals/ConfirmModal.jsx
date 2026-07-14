@@ -30,7 +30,15 @@ const ConfirmModal = () => {
         }
     }, [confirmModal.show, confirmModal.inputConfig]);
 
-    const handleClose = () => {
+    // Dismissing the modal (×, backdrop click, Escape) must always be a safe
+    // no-op — it must never run onCancel, since some callers repurpose the
+    // Cancel-labeled button as a second destructive action (e.g. "Replace All").
+    // Only an explicit click on that button counts as choosing it.
+    const handleDismiss = () => {
+        setConfirmModal({ ...DEFAULT_STATE });
+    };
+
+    const handleCancelClick = () => {
         const { onCancel } = confirmModal;
         setConfirmModal({ ...DEFAULT_STATE });
         if (onCancel) onCancel();
@@ -43,7 +51,7 @@ const ConfirmModal = () => {
         if (onConfirm) onConfirm(value);
     };
 
-    const { modalRef } = useModalKeyboard(confirmModal.show, handleClose);
+    const { modalRef } = useModalKeyboard(confirmModal.show, handleDismiss);
 
     if (!confirmModal.show) return null;
 
@@ -54,7 +62,7 @@ const ConfirmModal = () => {
         : 'var(--gradient-purple)';
 
     return (
-        <div className="modal-overlay" onClick={handleClose} role="presentation">
+        <div className="modal-overlay" onClick={handleDismiss} role="presentation">
             <div
                 ref={modalRef}
                 className="modal"
@@ -89,7 +97,7 @@ const ConfirmModal = () => {
                         {title}
                     </h3>
                     <button
-                        onClick={handleClose}
+                        onClick={handleDismiss}
                         aria-label="Close modal"
                         title="Close"
                         className="modal-close-btn"
@@ -153,7 +161,7 @@ const ConfirmModal = () => {
                     borderTop: '1px solid var(--border-light)'
                 }}>
                     <button
-                        onClick={handleClose}
+                        onClick={handleCancelClick}
                         style={{
                             padding: '10px 20px',
                             border: '1px solid var(--border-medium)',

@@ -511,16 +511,30 @@ export const DataProvider = ({ children }) => {
                         reserve: t.reserve || t.pokemon?.slice(6) || [],
                         skills: migrateSkills(t.skills)
                     }));
-                    setTrainers(migratedTrainers);
-                    setActiveTrainerId(data.activeTrainerId || migratedTrainers[0]?.id);
-                    if (data.inventory) setInventory(data.inventory);
-                    if (data.customSpecies) setCustomSpecies(data.customSpecies);
 
-                    const totalMoney = migratedTrainers.reduce((sum, t) => sum + (t.money || 0), 0);
-                    const totalPokemon = migratedTrainers.reduce((sum, t) => sum + (t.party?.length || 0) + (t.reserve?.length || 0), 0);
-                    const inventoryCount = data.inventory?.length || 0;
+                    const applyFullImport = () => {
+                        setTrainers(migratedTrainers);
+                        setActiveTrainerId(data.activeTrainerId || migratedTrainers[0]?.id);
+                        if (data.inventory) setInventory(data.inventory);
+                        if (data.customSpecies) setCustomSpecies(data.customSpecies);
 
-                    toast.success(`Data imported successfully!\n${migratedTrainers.length} trainer(s), ${totalPokemon} Pokemon, ${inventoryCount} item(s)`);
+                        const totalPokemon = migratedTrainers.reduce((sum, t) => sum + (t.party?.length || 0) + (t.reserve?.length || 0), 0);
+                        const inventoryCount = data.inventory?.length || 0;
+
+                        toast.success(`Data imported successfully!\n${migratedTrainers.length} trainer(s), ${totalPokemon} Pokemon, ${inventoryCount} item(s)`);
+                    };
+
+                    if (trainers.length > 0 && trainers[0].name) {
+                        showConfirm({
+                            title: 'Replace All Data?',
+                            message: `This backup file contains ${migratedTrainers.length} trainer(s). Importing it will replace all ${trainers.length} of your current trainer(s), including their Pokémon, inventory, and custom species.\n\nThis cannot be undone. Continue?`,
+                            confirmLabel: 'Replace All',
+                            danger: true,
+                            onConfirm: applyFullImport
+                        });
+                    } else {
+                        applyFullImport();
+                    }
                 } else if (data.trainer) {
                     let trainerData = data.trainer;
 
