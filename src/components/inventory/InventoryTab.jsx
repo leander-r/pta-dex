@@ -81,24 +81,23 @@ const InventoryTab = () => {
         });
     }, [inventory]);
 
-    // Get type color. Returns CSS vars where a matching var exists so dark-mode overrides apply.
-    // Remaining values are kept as hex (no matching CSS var defined).
+    // Get type color — always CSS-var-backed so dark-mode overrides can apply.
     const getTypeColor = (type) => {
         const t = (type || '').toLowerCase();
         const colors = {
             'healing':   'var(--stat-hp)',
             'medicine':  'var(--stat-hp)',
-            'ball':      '#f44336',
-            'pokeball':  '#f44336',
+            'ball':      'var(--item-ball)',
+            'pokeball':  'var(--item-ball)',
             'battle':    'var(--poke-orange)',
-            'berry':     '#e91e63',
+            'berry':     'var(--item-berry)',
             'held':      'var(--stat-spd)',
             'hold item': 'var(--stat-spd)',
-            'evolution': '#9c27b0',
-            'key':       '#ffd700',
-            'tm':        '#3f51b5',
-            'hm':        '#3f51b5',
-            'food':      '#8bc34a',
+            'evolution': 'var(--item-evolution)',
+            'key':       'var(--item-key)',
+            'tm':        'var(--item-tm)',
+            'hm':        'var(--item-tm)',
+            'food':      'var(--item-food)',
             'misc':      'var(--color-purple)',
         };
         return colors[t] || 'var(--color-purple)';

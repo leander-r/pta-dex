@@ -37,6 +37,14 @@
             --stat-spd: #00bcd4;
             --color-taught: #2196f3;
 
+            /* Inventory item type colors */
+            --item-ball: #f44336;
+            --item-berry: #e91e63;
+            --item-evolution: #9c27b0;
+            --item-key: #ffd700;
+            --item-tm: #3f51b5;
+            --item-food: #8bc34a;
+
             /* UI colors - improved for readability */
             --border-light: #e0e0e0;
             --border-medium: #dee2e6;
