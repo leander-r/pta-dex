@@ -85,6 +85,11 @@ const CustomSpeciesModal = () => {
     const [showMovePicker, setShowMovePicker] = useState(false);
     const [pendingMoveLevel, setPendingMoveLevel] = useState(1);
 
+    // Advanced sections — collapsed by default so the core fields (name, types,
+    // stats, abilities, moves) aren't buried under a long uninterrupted form.
+    const [showSkillsSection, setShowSkillsSection] = useState(false);
+    const [showEvolutionSection, setShowEvolutionSection] = useState(false);
+
     // Get total counts for display
     const totalAbilities = Object.keys(GAME_DATA.abilities || {}).length;
     const totalMoves = Object.keys(GAME_DATA.moves || {}).length;
@@ -188,6 +193,28 @@ const CustomSpeciesModal = () => {
         doClose();
     }, [species, editingIndex, showConfirm, doClose]);
 
+    // Abandon editing the current species and reset to "create new" — same
+    // unsaved-changes check as handleClose, but stays inside the modal.
+    const handleCancelEdit = useCallback(() => {
+        const resetToNew = () => {
+            setSpecies({ ...DEFAULT_SPECIES });
+            setEditingIndex(null);
+            originalSpeciesRef.current = null;
+        };
+        const isModified = JSON.stringify(species) !== JSON.stringify(originalSpeciesRef.current);
+        if (isModified) {
+            showConfirm({
+                title: 'Discard changes?',
+                message: 'You have unsaved changes to this species. Cancel editing without saving?',
+                confirmLabel: 'Discard',
+                danger: true,
+                onConfirm: resetToNew,
+            });
+            return;
+        }
+        resetToNew();
+    }, [species, showConfirm]);
+
     const { modalRef } = useModalKeyboard(showCustomSpeciesModal, handleClose);
 
     if (!showCustomSpeciesModal) return null;
@@ -221,7 +248,11 @@ const CustomSpeciesModal = () => {
             setCustomSpecies([...customSpecies, cleanedSpecies]);
         }
 
-        handleClose();
+        // Data was just saved — close directly rather than handleClose(), which
+        // would re-check for "unsaved changes" against the stale pre-save
+        // baseline and incorrectly prompt "Discard new species?" right after a
+        // successful save.
+        doClose();
     };
 
     const handleEditSpecies = (index) => {
@@ -663,9 +694,20 @@ const CustomSpeciesModal = () => {
                         )}
                     </div>
 
-                    {/* Pokemon Skills */}
+                    {/* Pokemon Skills — collapsed by default (advanced/optional) */}
                     <div className="form-group">
-                        <label>Movement & Capabilities</label>
+                        <label
+                            role="button"
+                            tabIndex={0}
+                            aria-expanded={showSkillsSection}
+                            onClick={() => setShowSkillsSection(v => !v)}
+                            onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setShowSkillsSection(v => !v)}
+                            style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', userSelect: 'none' }}
+                        >
+                            Movement & Capabilities
+                            <span aria-hidden="true" style={{ fontSize: '11px', display: 'inline-block', transform: showSkillsSection ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}>▼</span>
+                        </label>
+                        {showSkillsSection && <>
                         <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '8px' }}>
                             How this species moves and interacts with the environment. Higher values = faster/better at that movement type.
                         </div>
@@ -704,11 +746,23 @@ const CustomSpeciesModal = () => {
                                 Movement skills (0-10), Intelligence (0-6). Set to 0 if not applicable.
                             </div>
                         </div>
+                        </>}
                     </div>
 
-                    {/* Evolution Chain */}
+                    {/* Evolution Chain — collapsed by default (advanced/optional) */}
                     <div className="form-group">
-                        <label>Evolution Chain</label>
+                        <label
+                            role="button"
+                            tabIndex={0}
+                            aria-expanded={showEvolutionSection}
+                            onClick={() => setShowEvolutionSection(v => !v)}
+                            onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setShowEvolutionSection(v => !v)}
+                            style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', userSelect: 'none' }}
+                        >
+                            Evolution Chain
+                            <span aria-hidden="true" style={{ fontSize: '11px', display: 'inline-block', transform: showEvolutionSection ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}>▼</span>
+                        </label>
+                        {showEvolutionSection && <>
                         <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '8px' }}>
                             Define how this species connects to other species. Link to other custom species or official Pokédex entries.
                         </div>
@@ -855,12 +909,13 @@ const CustomSpeciesModal = () => {
                         <div style={{ fontSize: '10px', color: 'var(--text-secondary)', marginTop: '8px' }}>
                             Methods: Level (enter level number), Stone (select from dropdown), Trade (item or just "Trade"), Happiness, Other/Special
                         </div>
+                        </>}
                     </div>
 
                     {/* Action Buttons */}
                     <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '20px' }}>
                         {editingIndex !== null && (
-                            <button className="btn btn-secondary" onClick={() => { setSpecies({ ...DEFAULT_SPECIES }); setEditingIndex(null); }} style={{ marginRight: 'auto' }}>Cancel Edit</button>
+                            <button className="btn btn-secondary" onClick={handleCancelEdit} style={{ marginRight: 'auto' }}>Cancel Edit</button>
                         )}
                         <button className="btn btn-secondary" onClick={handleClose}>Close</button>
                         <button className="btn btn-primary" disabled={!species.species.trim()} onClick={handleSaveSpecies}>

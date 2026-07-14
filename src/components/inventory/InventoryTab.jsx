@@ -214,7 +214,7 @@ const InventoryTab = () => {
         // intentionally not resetting addQuantity — user may want to add more at the same qty
     };
 
-    const handleRemoveItem = (itemName) => {
+    const decrementQty = (itemName) => {
         setInventory(prev => {
             const idx = prev.findIndex(item =>
                 item.name.toLowerCase() === itemName.toLowerCase()
@@ -234,6 +234,23 @@ const InventoryTab = () => {
             }
             return newInventory;
         });
+    };
+
+    const handleRemoveItem = (itemName) => {
+        const invItem = inventory.find(item => item.name.toLowerCase() === itemName.toLowerCase());
+        const currentQty = invItem?.quantity || 1;
+
+        // Decrementing from 1 removes the row entirely — confirm, same as the explicit Delete button.
+        if (currentQty <= 1) {
+            showConfirm({
+                title: 'Remove Item',
+                message: `Remove "${itemName}" from inventory? This is the last one.`,
+                danger: true,
+                onConfirm: () => decrementQty(itemName)
+            });
+            return;
+        }
+        decrementQty(itemName);
     };
 
     const handleDeleteItem = (itemName) => {
