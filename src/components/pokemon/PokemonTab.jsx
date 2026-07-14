@@ -318,14 +318,18 @@ const PokemonTab = () => {
 
             {/* View Toggle */}
             <div style={{ display: 'flex', gap: '10px', marginBottom: '15px', flexWrap: 'wrap', alignItems: 'center' }}>
-                <div className="tabs" style={{ flex: 1 }}>
+                <div role="tablist" className="tabs" style={{ flex: 1 }}>
                     <button
+                        role="tab"
+                        aria-selected={pokemonView === 'party'}
                         className={`tab ${pokemonView === 'party' ? 'active' : ''}`}
                         onClick={() => setPokemonView('party')}
                     >
                         Party ({party.length}/{MAX_PARTY_SIZE})
                     </button>
                     <button
+                        role="tab"
+                        aria-selected={pokemonView === 'reserve'}
                         className={`tab ${pokemonView === 'reserve' ? 'active' : ''}`}
                         onClick={() => setPokemonView('reserve')}
                     >

@@ -511,11 +511,11 @@ const BattleTab = () => {
             )}
 
             {/* Mode Selector */}
-            <div className="tabs" style={{ marginBottom: '15px' }}>
-                <button className={`tab ${mode === 'pokemon'  ? 'active' : ''}`} onClick={() => setMode('pokemon')}>⚔️ Pokémon</button>
-                <button className={`tab ${mode === 'trainer'  ? 'active' : ''}`} onClick={() => setMode('trainer')}>🎯 Trainer</button>
-                <button className={`tab ${mode === 'custom'   ? 'active' : ''}`} onClick={() => setMode('custom')}>🎲 Custom</button>
-                <button className={`tab ${mode === 'heal'     ? 'active' : ''}`} onClick={() => setMode('heal')}>🩹 Heal</button>
+            <div role="tablist" className="tabs" style={{ marginBottom: '15px' }}>
+                <button role="tab" aria-selected={mode === 'pokemon'} className={`tab ${mode === 'pokemon'  ? 'active' : ''}`} onClick={() => setMode('pokemon')}>⚔️ Pokémon</button>
+                <button role="tab" aria-selected={mode === 'trainer'} className={`tab ${mode === 'trainer'  ? 'active' : ''}`} onClick={() => setMode('trainer')}>🎯 Trainer</button>
+                <button role="tab" aria-selected={mode === 'custom'} className={`tab ${mode === 'custom'   ? 'active' : ''}`} onClick={() => setMode('custom')}>🎲 Custom</button>
+                <button role="tab" aria-selected={mode === 'heal'} className={`tab ${mode === 'heal'     ? 'active' : ''}`} onClick={() => setMode('heal')}>🩹 Heal</button>
             </div>
 
             <div className="grid-responsive-2">

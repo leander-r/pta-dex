@@ -1060,7 +1060,7 @@ const PokemonCard = ({
             </div>
 
             {/* Edit Tabs */}
-            <div className="tabs pokemon-card-tabs" style={{ padding: '0 15px', overflowX: 'auto', flexShrink: 0 }}>
+            <div role="tablist" className="tabs pokemon-card-tabs" style={{ padding: '0 15px', overflowX: 'auto', flexShrink: 0 }}>
                 {[
                     { id: 'info',      icon: 'ℹ️',  label: 'Info'   },
                     { id: 'stats',     icon: '📊',  label: 'Stats',  badge: (pokemon.statPointsAvailable || 0) > 0 ? String(pokemon.statPointsAvailable) : null },
@@ -1070,6 +1070,8 @@ const PokemonCard = ({
                 ].map(({ id, icon, label, badge }) => (
                     <button
                         key={id}
+                        role="tab"
+                        aria-selected={editTab === id}
                         className={`tab ${editTab === id ? 'active' : ''}`}
                         onClick={() => setEditTab(id)}
                         style={{ position: 'relative' }}

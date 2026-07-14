@@ -328,20 +328,26 @@ const CardExportModal = () => {
 
                 {/* Scrollable content: tabs + card preview */}
                 <div style={{ overflowY: 'auto', flex: 1, padding: '20px 25px' }}>
-                    <div className="tabs">
+                    <div role="tablist" className="tabs">
                         <button
+                            role="tab"
+                            aria-selected={cardType === 'trainer'}
                             className={`tab ${cardType === 'trainer' ? 'active' : ''}`}
                             onClick={() => setCardType('trainer')}
                         >
                             Trainer
                         </button>
                         <button
+                            role="tab"
+                            aria-selected={cardType === 'team'}
                             className={`tab ${cardType === 'team' ? 'active' : ''}`}
                             onClick={() => setCardType('team')}
                         >
                             Team Card
                         </button>
                         <button
+                            role="tab"
+                            aria-selected={cardType === 'pokemon'}
                             className={`tab ${cardType === 'pokemon' ? 'active' : ''}`}
                             onClick={() => setCardType('pokemon')}
                         >

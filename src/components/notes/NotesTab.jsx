@@ -117,14 +117,14 @@ const NotesTab = () => {
             </p>
 
             {/* Tab switcher */}
-            <div className="tabs" style={{ marginBottom: '15px' }}>
-                <button className={`tab ${isCampaign ? 'active' : ''}`} onClick={() => setNoteTab('campaign')}>
+            <div role="tablist" className="tabs" style={{ marginBottom: '15px' }}>
+                <button role="tab" aria-selected={isCampaign} className={`tab ${isCampaign ? 'active' : ''}`} onClick={() => setNoteTab('campaign')}>
                     📖 Campaign
                 </button>
-                <button className={`tab ${isSession ? 'active' : ''}`} onClick={() => setNoteTab('session')}>
+                <button role="tab" aria-selected={isSession} className={`tab ${isSession ? 'active' : ''}`} onClick={() => setNoteTab('session')}>
                     🗒️ Session
                 </button>
-                <button className={`tab ${isQuests ? 'active' : ''}`} onClick={() => setNoteTab('quests')}>
+                <button role="tab" aria-selected={isQuests} className={`tab ${isQuests ? 'active' : ''}`} onClick={() => setNoteTab('quests')}>
                     📋 Quests{activeCount > 0 && ` (${activeCount})`}
                 </button>
             </div>
