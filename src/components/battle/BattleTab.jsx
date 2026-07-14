@@ -490,7 +490,7 @@ const BattleTab = () => {
                     </div>
                     <button
                         onClick={() => setBattleCalloutDismissed(true)}
-                        aria-label="Dismiss"
+                        aria-label="Dismiss welcome message"
                         style={{
                             background: 'none',
                             border: 'none',
@@ -498,7 +498,12 @@ const BattleTab = () => {
                             color: 'var(--text-muted)',
                             fontSize: '16px',
                             lineHeight: 1,
-                            padding: '2px 4px',
+                            padding: '4px',
+                            minWidth: '28px',
+                            minHeight: '28px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
                             flexShrink: 0
                         }}
                     >✕</button>
