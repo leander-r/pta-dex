@@ -2702,6 +2702,20 @@ const PokemonCard = ({
                                     )}
                                 </div>
 
+                                {/* Legend for the N / T add buttons below — hover tooltips alone miss touch devices */}
+                                {filteredMoves.length > 0 && (
+                                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center', fontSize: '11px', color: 'var(--text-muted)', marginBottom: '6px' }}>
+                                        <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                            <span aria-hidden="true" style={{ width: '14px', height: '14px', borderRadius: '50%', background: 'var(--stat-hp)', color: 'white', fontSize: '9px', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>N</span>
+                                            Add as Natural
+                                        </span>
+                                        <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                            <span aria-hidden="true" style={{ width: '14px', height: '14px', borderRadius: '50%', background: 'var(--color-taught)', color: 'white', fontSize: '9px', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>T</span>
+                                            Add as Taught
+                                        </span>
+                                    </div>
+                                )}
+
                                 {/* Move List */}
                                 {showMoveDropdown && (filteredMoves.length > 0 || moveSearch || moveTypeFilter !== 'all' || moveCategoryFilter !== 'all' || moveSourceFilter !== 'all') && (
                                     <div className="move-list-container" style={{

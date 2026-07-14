@@ -108,6 +108,11 @@ const DiscordWebhookConfig = () => {
                             <span>●</span> Connected - rolls will be sent to Discord
                         </div>
                     )}
+                    {discordWebhook?.enabled && !discordWebhook?.url && (
+                        <div style={{ fontSize: '12px', color: '#FAA61A', marginTop: '8px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <span>●</span> ON, but no webhook URL is set — rolls won't be sent until you add one above.
+                        </div>
+                    )}
                 </div>
             )}
         </div>
