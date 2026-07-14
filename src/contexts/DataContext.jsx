@@ -6,6 +6,7 @@
 import React, { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react';
 import { safeLocalStorageGet, safeLocalStorageSet } from '../utils/storageUtils.js';
 import { getActualStats, calculatePokemonHP, getBaseRelationViolations } from '../utils/dataUtils.js';
+import { buildSpeciesUpdateFields } from '../utils/speciesFields.js';
 import { buildEmbed } from '../utils/discordEmbeds.js';
 import toast from '../utils/toast.js';
 import { useUI } from './UIContext.jsx';
@@ -36,7 +37,7 @@ export const DataProvider = ({ children }) => {
     const { triggerSaveIndicator } = useUI();
     const { showConfirm } = useModal();
     const { trainers, setTrainers, activeTrainerId, setActiveTrainerId } = useTrainerContext();
-    const { customSpecies, setCustomSpecies } = useGameData();
+    const { customSpecies, setCustomSpecies, pokedex } = useGameData();
 
     // Inventory owned here; shared with PokemonProvider via useData()
     const [inventory, setInventory] = useState([]);
@@ -310,12 +311,32 @@ export const DataProvider = ({ children }) => {
             confirmLabel: 'Load Example',
             onConfirm: () => {
                 const demo = createDemoTrainer();
+                // Link each demo Pokémon to its real Pokédex entry so the Moves/Skills
+                // tabs show actual data instead of "no species data" messages — the demo
+                // Pokémon are hand-authored and never go through the species picker,
+                // which is what normally populates these fields.
+                if (pokedex?.length > 0) {
+                    demo.party = demo.party.map(p => {
+                        const speciesData = pokedex.find(s => s.species?.toLowerCase() === p.species?.toLowerCase());
+                        if (!speciesData) return p;
+                        const { updates } = buildSpeciesUpdateFields(speciesData, null);
+                        return {
+                            ...p,
+                            pokedexId: updates.pokedexId,
+                            availableAbilities: updates.availableAbilities,
+                            availableLevelUpMoves: updates.availableLevelUpMoves,
+                            availableEggMoves: updates.availableEggMoves,
+                            availableTutorMoves: updates.availableTutorMoves,
+                            pokemonSkills: updates.pokemonSkills,
+                        };
+                    });
+                }
                 setTrainers(prev => [...prev, demo]);
                 setActiveTrainerId(demo.id);
                 toast.success('Example trainer "Red" loaded! Explore the Trainer and Pokémon tabs.');
             }
         });
-    }, [showConfirm, setTrainers, setActiveTrainerId]);
+    }, [showConfirm, setTrainers, setActiveTrainerId, pokedex]);
 
     // ── Save Slot helpers ──────────────────────────────────────
 

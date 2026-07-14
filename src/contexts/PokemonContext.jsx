@@ -8,6 +8,7 @@ import { GAME_DATA } from '../data/configs.js';
 import { MAX_PARTY_SIZE, MAX_NATURAL_MOVES, POKEMON_HP_MULTIPLIER, MAX_POKEMON_LEVEL } from '../data/constants.js';
 import { EVOLUTION_CHAINS } from '../data/evolutionChains.js';
 import { getActualStats, calculatePokemonHP, calculateSTAB as calcSTAB, getBaseRelationViolations } from '../utils/dataUtils.js';
+import { buildSpeciesUpdateFields } from '../utils/speciesFields.js';
 import toast from '../utils/toast.js';
 import { useGameData } from './GameDataContext.jsx';
 import { useUI } from './UIContext.jsx';
@@ -25,68 +26,8 @@ export const usePokemonContext = () => {
     return context;
 };
 
-// Pokédex skill key → display name mappings (shared by apply/evolve/devolve)
-const POKEMON_SKILL_MAPPINGS = [
-    ['overland', 'Overland'], ['surface', 'Surface'], ['sky', 'Sky'],
-    ['burrow', 'Burrow'], ['underwater', 'Underwater'], ['jump', 'Jump'],
-    ['power', 'Power'], ['intelligence', 'Intelligence']
-];
-
-const POKEMON_CAPABILITY_MAPPINGS = [
-    ['phasing', 'Phasing'], ['invisibility', 'Invisibility'], ['zapper', 'Zapper'],
-    ['firestarter', 'Firestarter'], ['gilled', 'Gilled'], ['tracker', 'Tracker'],
-    ['threaded', 'Threaded'], ['mindLock', 'Mind Lock'], ['telepath', 'Telepath'],
-    ['telekinetic', 'Telekinetic'], ['aura', 'Aura'], ['amorphous', 'Amorphous'],
-    ['chilled', 'Chilled'], ['climber', 'Climber'], ['stealth', 'Stealth'],
-    ['fountain', 'Fountain'], ['freezer', 'Freezer'], ['glow', 'Glow'],
-    ['groundshaker', 'Groundshaker'], ['guster', 'Guster'], ['heater', 'Heater'],
-    ['magnetic', 'Magnetic'], ['sprouter', 'Sprouter'], ['sinker', 'Sinker'],
-    ['packMon', 'Pack Mon'], ['empath', 'Telepath'], ['illusionist', 'Invisibility'],
-    ['dreamEater', 'Dream Smoke'], ['warp', 'Phasing'],
-    ['extinguisher', 'Extinguisher'], ['impenetrable', 'Impenetrable'],
-    ['mindslaver', 'Mindslaver'], ['powerOfTheLand', 'Power of the Land']
-];
-
-// Build Pokemon skills array from a Pokédex species.skills object
-export const buildPokemonSkills = (skills) => {
-    const result = [];
-    if (!skills) return result;
-    POKEMON_SKILL_MAPPINGS.forEach(([key, name]) => {
-        if (skills[key] !== undefined && skills[key] !== null) {
-            result.push({ name, value: skills[key] });
-        }
-    });
-    POKEMON_CAPABILITY_MAPPINGS.forEach(([key, name]) => {
-        if (skills[key]) result.push({ name });
-    });
-    if (Array.isArray(skills.naturewalk)) {
-        skills.naturewalk.forEach(terrain => result.push({ name: `Naturewalk (${terrain})` }));
-    }
-    return result;
-};
-
-// Helper: resolve formData and build the common species update fields shared by
-// applySpeciesToPokemon, applyEvolutionToPokemon, and applyDevolutionToPokemon.
-const buildSpeciesUpdateFields = (speciesData, regionalForm) => {
-    const isRegional = regionalForm && !regionalForm.isBase;
-    const formData = isRegional ? regionalForm : null;
-    return {
-        isRegional,
-        formData,
-        updates: {
-            species: speciesData.species,
-            types: formData ? [...formData.types] : [...speciesData.types],
-            baseStats: formData?.baseStats ? { ...formData.baseStats } : { ...speciesData.baseStats },
-            availableAbilities: formData?.abilities ? { ...formData.abilities } : (speciesData.abilities ? { ...speciesData.abilities } : null),
-            pokedexId: speciesData.id,
-            regionalForm: isRegional ? regionalForm.name : null,
-            availableLevelUpMoves: formData?.levelUpMoves || speciesData.levelUpMoves || [],
-            availableEggMoves: formData?.eggMoves || speciesData.eggMoves || [],
-            availableTutorMoves: formData?.tutorMoves || speciesData.tutorMoves || [],
-            pokemonSkills: buildPokemonSkills(speciesData.skills),
-        }
-    };
-};
+// buildPokemonSkills and buildSpeciesUpdateFields live in ../utils/speciesFields.js
+// (dependency-free, so DataContext can also use them without a circular import).
 
 // Helper: build ability updates that preserve currently-held abilities if still valid
 // for the new species. Used during evolution and devolution.

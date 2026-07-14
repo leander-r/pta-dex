@@ -8,7 +8,7 @@ import { getActualStats, calculatePokemonHP, calculateSTAB, getBaseRelationViola
 import { exportSinglePokemon, copyPokemonToClipboard } from '../../utils/exportUtils.js';
 import toast from '../../utils/toast.js';
 import { useGameData, useModal, usePokemonContext, useUI, useData } from '../../contexts/index.js';
-import { buildPokemonSkills } from '../../contexts/PokemonContext.jsx';
+import { buildPokemonSkills } from '../../utils/speciesFields.js';
 import { MAX_NATURAL_MOVES, MAX_TAUGHT_MOVES, MAX_TOTAL_MOVES } from '../../data/constants.js';
 import { getPokemonDisplayImage, getPokemonSprite } from '../../utils/pokemonSprite.js';
 
@@ -50,7 +50,7 @@ const PokemonCard = ({
     const { pokedex, pokedexLoading, GAME_DATA, customSpecies, setCustomSpecies } = useGameData();
     const { showDetail, setShowCustomSpeciesModal, setEditingCustomSpeciesId, setShowMoveLearnModal, setMoveLearnData, showConfirm } = useModal();
     const { getEvolutionOptions } = usePokemonContext();
-    const { showHelp } = useUI();
+    const { showHelp, setActiveTab } = useUI();
     const { inventory } = useData();
     const [editTab, setEditTab] = useState('info');
     const [speciesSearch, setSpeciesSearch] = useState('');
@@ -2406,7 +2406,11 @@ const PokemonCard = ({
                         </div>
 
                         <div style={{ marginTop: '8px', textAlign: 'right' }}>
-                            <button onClick={() => setEditing(false)} style={{ background: 'var(--tint-purple-bg)', border: '1px solid var(--tint-purple-border)', borderRadius: '12px', padding: '4px 12px', fontSize: '12px', color: 'var(--color-purple)', cursor: 'pointer', fontWeight: 'bold' }}>Set current HP in Battle tab →</button>
+                            <button
+                                onClick={() => { setEditing(false); setActiveTab('battle'); }}
+                                title="Track damage and healing for this Pokémon in the Battle tab's HP Tracker"
+                                style={{ background: 'var(--tint-purple-bg)', border: '1px solid var(--tint-purple-border)', borderRadius: '12px', padding: '4px 12px', fontSize: '12px', color: 'var(--color-purple)', cursor: 'pointer', fontWeight: 'bold' }}
+                            >Set current HP in Battle tab →</button>
                         </div>
                     </div>
                 )}
