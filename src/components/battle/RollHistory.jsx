@@ -253,7 +253,7 @@ const RollHistory = ({ rollHistory, setRollHistory, mode, subMode }) => {
                                     <div style={{ fontSize: '12px' }}>
                                         <span style={{ fontWeight: 'bold', fontSize: '18px' }}>{roll.total}</span>
                                         <span> | [{roll.rolls?.join(', ')}]</span>
-                                        {roll.bonus > 0 && <span> +{roll.bonus}</span>}
+                                        {!!roll.bonus && <span> {roll.bonus > 0 ? '+' : ''}{roll.bonus}</span>}
                                     </div>
                                 </>
                             )}

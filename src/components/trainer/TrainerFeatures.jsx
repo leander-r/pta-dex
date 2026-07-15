@@ -52,7 +52,7 @@ const STAT_LABELS = {
  * Uses contexts for state management
  */
 const TrainerFeatures = () => {
-    const { showDetail, showConfirm } = useModal();
+    const { showDetail, showConfirm, setShowCustomFeatureModal } = useModal();
     const { trainer, setTrainer } = useTrainerContext();
     const { GAME_DATA } = useGameData();
     const { showHelp } = useUI();
@@ -498,6 +498,19 @@ const TrainerFeatures = () => {
                             </option>
                         ))}
                     </select>
+                    <button
+                        onClick={() => {
+                            if ((trainer.featPoints || 0) <= 0) {
+                                toast.warning('Not enough feat points!');
+                                return;
+                            }
+                            setShowCustomFeatureModal(true);
+                        }}
+                        title="Create a homebrew feature not in the catalog"
+                        style={{ padding: '8px 12px', borderRadius: '6px', border: '1px dashed var(--color-purple)', background: 'var(--bg-primary)', color: 'var(--color-purple)', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer', whiteSpace: 'nowrap' }}
+                    >
+                        + Custom Feature
+                    </button>
                 </div>
 
                 {/* Quick filter to the trainer's own classes — the 953-entry list mixes

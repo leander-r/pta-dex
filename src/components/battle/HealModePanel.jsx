@@ -2,7 +2,11 @@ import React from 'react';
 import { parseHealFormula } from '../../utils/dataUtils.js';
 import PartyStrip from './PartyStrip.jsx';
 
-const HealModePanel = ({ selectedPokemonId, setSelectedPokemonId, party, healingInventory, onUseItem }) => (
+const HealModePanel = ({ selectedPokemonId, setSelectedPokemonId, party, healingInventory, onUseItem }) => {
+    const selectedPoke = party.find(p => p.id === selectedPokemonId);
+    const isFullHP = selectedPoke && (selectedPoke.currentDamage || 0) <= 0;
+
+    return (
     <div>
         {party.length === 0 && (
             <div style={{ textAlign: 'center', padding: '16px', color: 'var(--text-muted)', fontSize: '13px', marginBottom: '8px' }}>
@@ -29,6 +33,8 @@ const HealModePanel = ({ selectedPokemonId, setSelectedPokemonId, party, healing
                     const formulaLabel = formula.type === 'dice' ? `🎲 ${formula.formula}`
                         : formula.type === 'fraction' ? `📊 ${formula.num}/${formula.denom} Max HP`
                         : '✨ Status';
+                    const healsHP = formula.type === 'dice' || formula.type === 'fraction';
+                    const disabled = !selectedPokemonId || (healsHP && isFullHP);
                     return (
                         <div
                             key={item.name}
@@ -42,12 +48,13 @@ const HealModePanel = ({ selectedPokemonId, setSelectedPokemonId, party, healing
                             </div>
                             <button
                                 onClick={() => onUseItem(item.name)}
-                                disabled={!selectedPokemonId}
+                                disabled={disabled}
+                                title={healsHP && isFullHP ? 'Already at full HP' : undefined}
                                 style={{
                                     padding: '6px 14px',
-                                    background: selectedPokemonId ? '#4caf50' : 'var(--collapsed-btn-bg)',
-                                    color: selectedPokemonId ? 'white' : 'var(--collapsed-btn-text)', border: 'none', borderRadius: '4px',
-                                    cursor: selectedPokemonId ? 'pointer' : 'not-allowed',
+                                    background: !disabled ? '#4caf50' : 'var(--collapsed-btn-bg)',
+                                    color: !disabled ? 'white' : 'var(--collapsed-btn-text)', border: 'none', borderRadius: '4px',
+                                    cursor: !disabled ? 'pointer' : 'not-allowed',
                                     fontSize: '13px', fontWeight: 'bold', whiteSpace: 'nowrap'
                                 }}
                             >
@@ -59,6 +66,7 @@ const HealModePanel = ({ selectedPokemonId, setSelectedPokemonId, party, healing
             </div>
         )}
     </div>
-);
+    );
+};
 
 export default HealModePanel;

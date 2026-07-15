@@ -22,6 +22,11 @@ const FREQUENCY_OPTIONS = [
     'Daily'
 ];
 
+// Mirrors ModalContext's customMove initial state — this modal's form state
+// is never otherwise reset, so reopening it after creating one move shows
+// that move's data still filled in.
+const DEFAULT_CUSTOM_MOVE = { name: '', type: 'Normal', category: 'Physical', frequency: 'At-Will', damage: '', range: 'Melee', effect: '', description: '', source: 'natural' };
+
 /**
  * CustomMoveModal - Modal for creating custom Pokemon moves
  * Uses UIContext for modal state, PokemonContext for pokemon data
@@ -31,7 +36,10 @@ const CustomMoveModal = () => {
     const { showCustomMoveModal, setShowCustomMoveModal, customMove, setCustomMove, customMoveForPokemon } = useModal();
     const { party, reserve, updatePokemon } = usePokemonContext();
 
-    const handleClose = () => setShowCustomMoveModal(false);
+    const handleClose = () => {
+        setShowCustomMoveModal(false);
+        setCustomMove(DEFAULT_CUSTOM_MOVE);
+    };
 
     const { modalRef } = useModalKeyboard(showCustomMoveModal, handleClose);
 
@@ -77,7 +85,7 @@ const CustomMoveModal = () => {
             moves: [...targetPoke.moves, { ...customMove, source }]
         });
 
-        setShowCustomMoveModal(false);
+        handleClose();
     };
 
     return (

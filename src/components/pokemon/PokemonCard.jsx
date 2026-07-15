@@ -48,7 +48,7 @@ const PokemonCard = ({
 }) => {
     // Get shared state from contexts
     const { pokedex, pokedexLoading, GAME_DATA, customSpecies, setCustomSpecies } = useGameData();
-    const { showDetail, setShowCustomSpeciesModal, setEditingCustomSpeciesId, setShowMoveLearnModal, setMoveLearnData, showConfirm } = useModal();
+    const { showDetail, setShowCustomSpeciesModal, setEditingCustomSpeciesId, setShowMoveLearnModal, setMoveLearnData, showConfirm, setShowCustomMoveModal, setCustomMoveForPokemon } = useModal();
     const { getEvolutionOptions } = usePokemonContext();
     const { showHelp, setActiveTab } = useUI();
     const { inventory } = useData();
@@ -2715,6 +2715,22 @@ const PokemonCard = ({
                                         </span>
                                     </div>
                                 )}
+
+                                {/* Homebrew moves aren't in any premade movepool, so they need their own entry point */}
+                                <button
+                                    onClick={() => {
+                                        setCustomMoveForPokemon(pokemon.id);
+                                        setShowCustomMoveModal(true);
+                                    }}
+                                    style={{
+                                        width: '100%', padding: '7px 10px', marginBottom: '10px',
+                                        background: 'var(--bg-primary)', border: '1px dashed var(--color-purple)',
+                                        borderRadius: '6px', color: 'var(--color-purple)', fontSize: '12px',
+                                        fontWeight: 'bold', cursor: 'pointer'
+                                    }}
+                                >
+                                    + Create Custom Move
+                                </button>
 
                                 {/* Move List */}
                                 {showMoveDropdown && (filteredMoves.length > 0 || moveSearch || moveTypeFilter !== 'all' || moveCategoryFilter !== 'all' || moveSourceFilter !== 'all') && (

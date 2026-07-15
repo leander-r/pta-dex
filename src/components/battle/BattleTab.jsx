@@ -414,6 +414,11 @@ const BattleTab = () => {
         if (!invItem) return;
         const formula = parseHealFormula(invItem.effect || '');
         const maxHP = calculatePokemonHP(target);
+        const hpBeforeCheck = maxHP - (target.currentDamage || 0);
+        if ((formula.type === 'dice' || formula.type === 'fraction') && hpBeforeCheck >= maxHP) {
+            toast.warning(`${target.name || target.species} is already at full HP — ${itemName} wasn't used.`);
+            return;
+        }
         let amount = 0, rolls = [], bonus = 0, desc = '';
         if (formula.type === 'dice') {
             const d = parseDice(formula.formula);

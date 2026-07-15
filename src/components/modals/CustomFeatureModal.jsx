@@ -6,6 +6,14 @@
 import React from 'react';
 import useModalKeyboard from '../../hooks/useModalKeyboard.js';
 import { useModal, useTrainerContext } from '../../contexts/index.js';
+import toast from '../../utils/toast.js';
+
+// Mirrors ModalContext's customFeature initial state — this modal's form
+// state is never otherwise reset, so without this, reopening the modal
+// after creating one feature shows that feature's data still filled in
+// (and since there's no duplicate-name guard here, submitting again would
+// silently add an exact duplicate).
+const DEFAULT_CUSTOM_FEATURE = { name: '', category: 'Custom', prerequisites: '', frequency: '', trigger: '', target: '', effect: '' };
 
 /**
  * CustomFeatureModal - Modal for creating custom trainer features
@@ -14,23 +22,29 @@ import { useModal, useTrainerContext } from '../../contexts/index.js';
 const CustomFeatureModal = () => {
     // Get from contexts
     const { showCustomFeatureModal, setShowCustomFeatureModal, customFeature, setCustomFeature } = useModal();
-    const { setTrainer } = useTrainerContext();
+    const { trainer, setTrainer } = useTrainerContext();
 
-    const handleClose = () => setShowCustomFeatureModal(false);
+    const handleClose = () => {
+        setShowCustomFeatureModal(false);
+        setCustomFeature(DEFAULT_CUSTOM_FEATURE);
+    };
 
     const { modalRef } = useModalKeyboard(showCustomFeatureModal, handleClose);
 
     if (!showCustomFeatureModal) return null;
 
     const handleAddFeature = () => {
-        if (customFeature.name && customFeature.effect) {
-            setTrainer(prev => ({
-                ...prev,
-                features: [...prev.features, { ...customFeature }],
-                featPoints: (prev.featPoints || 0) - 1
-            }));
-            setShowCustomFeatureModal(false);
+        if (!customFeature.name || !customFeature.effect) return;
+        if ((trainer.featPoints || 0) <= 0) {
+            toast.warning('Not enough feat points!');
+            return;
         }
+        setTrainer(prev => ({
+            ...prev,
+            features: [...prev.features, { ...customFeature }],
+            featPoints: (prev.featPoints || 0) - 1
+        }));
+        handleClose();
     };
 
     return (

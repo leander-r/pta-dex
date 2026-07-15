@@ -13,7 +13,6 @@ const CustomMoveModal    = lazy(() => import('../modals/CustomMoveModal.jsx'));
 const CustomSpeciesModal = lazy(() => import('../modals/CustomSpeciesModal.jsx'));
 const MoveLearnModal     = lazy(() => import('../modals/MoveLearnModal.jsx'));
 const CardExportModal    = lazy(() => import('../modals/CardExportModal.jsx'));
-const SkillPickerModal   = lazy(() => import('../modals/SkillPickerModal.jsx'));
 const DetailModal        = lazy(() => import('../modals/DetailModal.jsx'));
 const BulkExpModal       = lazy(() => import('../modals/BulkExpModal.jsx'));
 const ConfirmModal       = lazy(() => import('../modals/ConfirmModal.jsx'));
@@ -31,7 +30,6 @@ const ModalsContainer = () => (
         <CustomSpeciesModal />
         <MoveLearnModal />
         <CardExportModal />
-        <SkillPickerModal />
         <DetailModal />
         <BulkExpModal />
         <ComparisonModal />

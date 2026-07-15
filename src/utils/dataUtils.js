@@ -176,12 +176,13 @@ export const calculatePokemonHP = (pokemon) => {
  */
 export const parseDice = (diceStr) => {
     if (!diceStr) return { count: 0, sides: 0, bonus: 0 };
-    const match = diceStr.match(/(\d+)d(\d+)(?:\+(\d+))?/i);
+    const match = diceStr.match(/(\d+)d(\d+)(?:\s*([+-])\s*(\d+))?/i);
     if (!match) return { count: 0, sides: 0, bonus: 0 };
+    const sign = match[3] === '-' ? -1 : 1;
     return {
         count: parseInt(match[1]) || 0,
         sides: parseInt(match[2]) || 0,
-        bonus: parseInt(match[3]) || 0
+        bonus: match[4] ? sign * (parseInt(match[4]) || 0) : 0
     };
 };
 
