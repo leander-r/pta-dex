@@ -591,19 +591,27 @@ const BattleTab = () => {
                                     : (selectedPokemon.types || []);
                                 return (
                                     <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '8px' }}>
-                                        <div style={{
-                                            display: 'flex', justifyContent: 'center', alignItems: 'flex-end',
-                                            width: '100%', maxWidth: '240px',
-                                            padding: '10px', paddingBottom: '23%',
-                                            borderRadius: '12px', overflow: 'hidden',
-                                            background: getTypeTerrainBackground(activeTypes),
-                                            border: `1px solid ${getTypeColor(activeTypes[0])}55`,
-                                        }}>
-                                            <img
-                                                src={img}
-                                                alt={selectedPokemon.name || selectedPokemon.species}
-                                                style={{ width: '96px', height: '96px', objectFit: 'contain', transform: 'translateY(50%)', imageRendering: !selectedPokemon.avatar ? 'pixelated' : 'auto', filter: 'drop-shadow(0 3px 3px rgba(0,0,0,0.35))' }}
-                                            />
+                                        {/* Percentage padding always resolves against the *parent's*
+                                            width, never the element's own (possibly maxWidth-capped)
+                                            width — so the maxWidth cap has to live on this wrapper,
+                                            one level up from paddingBottom, or the seat offset comes
+                                            out wrong (and differently wrong per breakpoint, since it'd
+                                            track this card's full column width instead of the capped
+                                            240px box). */}
+                                        <div style={{ width: '100%', maxWidth: '240px' }}>
+                                            <div style={{
+                                                display: 'flex', justifyContent: 'center', alignItems: 'flex-end',
+                                                padding: '10px', paddingBottom: '23%',
+                                                borderRadius: '12px', overflow: 'hidden',
+                                                background: getTypeTerrainBackground(activeTypes),
+                                                border: `1px solid ${getTypeColor(activeTypes[0])}55`,
+                                            }}>
+                                                <img
+                                                    src={img}
+                                                    alt={selectedPokemon.name || selectedPokemon.species}
+                                                    style={{ width: '96px', height: '96px', objectFit: 'contain', transform: 'translateY(50%)', imageRendering: !selectedPokemon.avatar ? 'pixelated' : 'auto', filter: 'drop-shadow(0 3px 3px rgba(0,0,0,0.35))' }}
+                                                />
+                                            </div>
                                         </div>
                                     </div>
                                 );
