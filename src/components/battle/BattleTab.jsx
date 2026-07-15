@@ -564,11 +564,13 @@ const BattleTab = () => {
                                 onSelect={(id) => { setSelectedPokemonId(id); setSelectedMove(null); resetCombatStages(); }}
                             />
 
-                            {/* Pokémon Sprite — shared by both sub-modes. Background evokes the
-                                Pokémon's type(s) as a little biome (e.g. Fire = scorched ground
-                                over magma, Ground = dusty earth with sparse grass, Rock = stony
-                                terrain), blended for dual-types. Purely decorative CSS gradient,
-                                no image assets. */}
+                            {/* Pokémon Sprite — shared by both sub-modes. Background shows an
+                                illustrated arena for the Pokémon's primary type (e.g. Fire =
+                                magma platform, Water = rippling pool). The bottom padding is a
+                                percentage — CSS resolves vertical padding % against the
+                                container's *width*, which conveniently tracks the same
+                                background-cover scale factor, so the sprite's feet stay roughly
+                                seated on the illustrated ground as the container is resized. */}
                             {selectedPokemon && (() => {
                                 const img = megaEvolved && currentMegaForm
                                     ? getMegaSprite(selectedPokemon, currentMegaForm)
@@ -580,7 +582,7 @@ const BattleTab = () => {
                                 return (
                                     <div style={{
                                         display: 'flex', justifyContent: 'center', alignItems: 'flex-end',
-                                        marginBottom: '8px', padding: '10px',
+                                        marginBottom: '8px', padding: '10px', paddingBottom: '23%',
                                         borderRadius: '12px', overflow: 'hidden',
                                         background: getTypeTerrainBackground(activeTypes),
                                         border: `1px solid ${getTypeColor(activeTypes[0])}55`,

@@ -65,5 +65,5 @@ export const getTypeBackgroundUrl = (type) => {
  * @returns {string} CSS `background` value
  */
 export const getTypeTerrainBackground = (types) => {
-    return `url(${getTypeBackgroundUrl(types?.[0])}) center / cover no-repeat`;
+    return `url(${getTypeBackgroundUrl(types?.[0])}) center bottom / cover no-repeat`;
 };
