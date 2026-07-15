@@ -45,47 +45,31 @@ export const getContrastTextColor = (hexColor) => {
  */
 export const getStatColor = (stat) => STAT_COLORS[stat?.toLowerCase()] || '#666';
 
-// Three-stop "biome" gradients (sky/top → mid → ground) evoking each type's terrain —
-// e.g. Ground is dusty earth with a hint of sparse grass at the base, Fire has a scorched
-// top fading into a glowing magma floor. Used behind Pokémon sprites for flavor.
-const TYPE_TERRAIN = {
-    normal:   ['#dce9c4', '#c3d99e', '#9fbf68'],
-    fire:     ['#3a231a', '#8a2f10', '#ff7a1a'],
-    water:    ['#cdeaf9', '#6fb8e6', '#1f5f9e'],
-    electric: ['#fff8c9', '#ffe066', '#f0b90b'],
-    grass:    ['#cfe8b0', '#7fbf5a', '#265c1a'],
-    ice:      ['#f2fbfd', '#cdeef5', '#8fd3e3'],
-    fighting: ['#f0ddb8', '#c98f4e', '#7a4a20'],
-    poison:   ['#e6c6ec', '#a855b8', '#4a1858'],
-    ground:   ['#f0ddab', '#c99a55', '#8a6a2f'],
-    flying:   ['#e3f2ff', '#b3ddff', '#7fb8f0'],
-    psychic:  ['#fde0ee', '#f291c4', '#c04f92'],
-    bug:      ['#e2eaa8', '#a9bd4f', '#5a6b1f'],
-    rock:     ['#e6dcc0', '#b7a375', '#7d6a44'],
-    ghost:    ['#5a4a80', '#332352', '#140d24'],
-    dragon:   ['#a68af0', '#6a45c9', '#2a1763'],
-    dark:     ['#4a4038', '#2a2320', '#120e0c'],
-    steel:    ['#eef0f5', '#c3c7d6', '#8b8fa3'],
-    fairy:    ['#ffeaf5', '#ffc2e0', '#ec8fc0'],
-};
-
-const terrainGradient = (stops) => `linear-gradient(180deg, ${stops[0]} 0%, ${stops[1]} 55%, ${stops[2]} 100%)`;
+const KNOWN_TYPES = new Set(Object.keys(TYPE_COLORS));
 
 /**
- * CSS background gradient evoking a type-appropriate biome (e.g. Rock → stony terrain,
- * Fire → scorched ground over glowing magma). Dual-types render as a left/right split
- * (each type keeps its own full-saturation gradient) rather than an RGB-averaged blend —
- * averaging washes out contrasting palettes into a muddy gray (e.g. Fire's dark orange
- * against Flying's pale sky). Matches the app's existing dual-type chip convention of
- * showing both types side-by-side instead of merged.
+ * URL for a type's illustrated terrain background (public/backgrounds/<type>.png — cropped
+ * from a hand-provided 18×17 reference sheet of type-vs-type battle scenes, one image per
+ * defending type). BASE_URL-aware so it resolves correctly under the GitHub Pages base path.
+ */
+export const getTypeBackgroundUrl = (type) => {
+    const t = type?.toLowerCase();
+    return `${import.meta.env.BASE_URL}backgrounds/${KNOWN_TYPES.has(t) ? t : 'normal'}.png`;
+};
+
+/**
+ * CSS `background` value showing a type-appropriate illustrated biome behind a Pokémon
+ * sprite (e.g. Rock → stony terrain, Fire → scorched ground over glowing magma). Dual-types
+ * render as a left/right split (each type keeps its own full image) rather than blending —
+ * blending washes contrasting scenes into a muddy mix, and a split matches the app's
+ * existing dual-type chip convention of showing both types side-by-side instead of merged.
  * @param {string[]} types
  * @returns {string} CSS `background` value
  */
 export const getTypeTerrainBackground = (types) => {
-    const t1 = types?.[0]?.toLowerCase();
-    const t2 = types?.[1]?.toLowerCase();
-    const grad1 = terrainGradient(TYPE_TERRAIN[t1] || TYPE_TERRAIN.normal);
-    if (!t2 || !TYPE_TERRAIN[t2]) return grad1;
-    const grad2 = terrainGradient(TYPE_TERRAIN[t2]);
-    return `${grad1} left / 50% 100% no-repeat, ${grad2} right / 50% 100% no-repeat`;
+    const url1 = `url(${getTypeBackgroundUrl(types?.[0])})`;
+    const t2 = types?.[1];
+    if (!t2) return `${url1} center / cover no-repeat`;
+    const url2 = `url(${getTypeBackgroundUrl(t2)})`;
+    return `${url1} left / 50% 100% no-repeat, ${url2} right / 50% 100% no-repeat`;
 };
