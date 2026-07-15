@@ -197,13 +197,25 @@ const GenderBar = ({ genderRatio }) => {
     );
 };
 
-const SpeciesDetail = ({ species }) => {
+const SpeciesDetail = ({ species, evolvedFromMap }) => {
     const { GAME_DATA } = useGameData();
     const { showDetail } = useModal();
     // Same DetailModal every other move/ability click in the app opens (PokemonCard,
     // MoveSelector) — the Pokédex previously showed these as plain, inert chips/text.
     const openMove = (name, extra) => showDetail && name && showDetail('move', name, { ...(GAME_DATA?.moves?.[name]), ...extra });
     const openAbility = (name) => showDetail && name && showDetail('ability', name, GAME_DATA?.abilities?.[name]);
+    const openSkill = (name, value) => {
+        if (!showDetail || !name) return;
+        // Same lookup PokemonCard uses: pokemonSkills keys aren't guaranteed to match a
+        // species' own skill-object casing/spacing exactly, so fall back to a normalized match.
+        let skillData = GAME_DATA?.pokemonSkills?.[name];
+        if (!skillData && GAME_DATA?.pokemonSkills) {
+            const normalized = name.toLowerCase().replace(/\s+/g, '');
+            const matchingKey = Object.keys(GAME_DATA.pokemonSkills).find(key => key.toLowerCase().replace(/\s+/g, '') === normalized);
+            if (matchingKey) skillData = GAME_DATA.pokemonSkills[matchingKey];
+        }
+        showDetail('pokemonSkill', name, { ...skillData, value });
+    };
 
     const {
         baseStats = {},
@@ -212,7 +224,7 @@ const SpeciesDetail = ({ species }) => {
         levelUpMoves = [],
         eggMoves,
         tutorMoves,
-        evolvedFrom,
+        evolvedFrom: ownEvolvedFrom,
         evolutions,
         types = [],
         size,
@@ -225,8 +237,14 @@ const SpeciesDetail = ({ species }) => {
         regionalForms,
     } = species;
 
+    // The species' own evolvedFrom field is never populated in the source data — fall back
+    // to the reverse-lookup map built from every species' own evolutions[].to in PokedexSection.
+    const evolvedFrom = ownEvolvedFrom || evolvedFromMap?.get(species.species);
     const bst = getBST(species);
-    const moveName = (m) => (typeof m === 'string' ? m : m?.name || '');
+    // Real level-up move entries use a "move" field, not "name" (confirmed against the
+    // live pokedex data — e.g. { level: 0, move: "Wing Attack", type: "Flying" }). Missing
+    // the .move fallback here meant every base-species level-up move rendered blank.
+    const moveName = (m) => (typeof m === 'string' ? m : m?.name || m?.move || '');
     const headerSprite = getPokemonDisplayImage(species);
 
     // Accent color from primary type
@@ -438,13 +456,20 @@ const SpeciesDetail = ({ species }) => {
                             const label = name.charAt(0).toUpperCase() + name.slice(1);
                             const isFlag = value === true;
                             return (
-                                <span key={name} style={{
-                                    display: 'inline-flex', alignItems: 'center', gap: '4px',
-                                    padding: '3px 9px', borderRadius: '10px', fontSize: '12px', fontWeight: 600,
-                                    background: isFlag ? 'rgba(245,166,35,0.15)' : 'var(--poke-gray)',
-                                    border: `1px solid ${isFlag ? 'rgba(245,166,35,0.4)' : 'var(--border-light)'}`,
-                                    color: isFlag ? 'var(--poke-orange-dark)' : 'var(--text-primary)'
-                                }}>
+                                <span
+                                    key={name}
+                                    onClick={() => openSkill(label, value)}
+                                    role="button" tabIndex={0}
+                                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openSkill(label, value); } }}
+                                    style={{
+                                        display: 'inline-flex', alignItems: 'center', gap: '4px',
+                                        padding: '3px 9px', borderRadius: '10px', fontSize: '12px', fontWeight: 600,
+                                        background: isFlag ? 'rgba(245,166,35,0.15)' : 'var(--poke-gray)',
+                                        border: `1px solid ${isFlag ? 'rgba(245,166,35,0.4)' : 'var(--border-light)'}`,
+                                        color: isFlag ? 'var(--poke-orange-dark)' : 'var(--text-primary)',
+                                        cursor: 'pointer'
+                                    }}
+                                >
                                     {label}
                                     {!isFlag && (
                                         <span style={{
@@ -541,13 +566,17 @@ const SpeciesDetail = ({ species }) => {
                             </div>
                         )}
                         {evolutions?.length > 0 && evolutions.map((evo, i) => {
-                            const intoName = typeof evo.into === 'string' ? evo.into : (evo.into?.species || evo.into?.name) || evo.species || evo.name || '?';
+                            // Real evolution entries use "to"/"method" (e.g. { to: "Vileplume",
+                            // method: "Leaf Stone" }) — confirmed against the live pokedex data.
+                            // The old "into"/"condition" lookup never matched, so this always
+                            // fell through to the "?" placeholder.
+                            const intoName = typeof evo.to === 'string' ? evo.to : (evo.to?.species || evo.to?.name) || evo.species || evo.name || '?';
                             return (
                                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
                                     <span style={{ fontSize: '13px', color: accentColor, fontWeight: 700 }}>→</span>
                                     <Chip label={intoName} />
                                     {evo.level && <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Lv. {evo.level}</span>}
-                                    {evo.condition && <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>— {evo.condition}</span>}
+                                    {evo.method && <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>— {evo.method}</span>}
                                 </div>
                             );
                         })}
@@ -699,7 +728,7 @@ const inputStyle = {
 // ── Memoized row ─────────────────────────────────────────────
 // Extracted so only the 2 rows whose isExpanded/isHovered changes actually re-render.
 
-const PokedexRow = memo(({ species, idx, isExpanded, isHovered, onRowClick, onMouseEnter, onMouseLeave }) => {
+const PokedexRow = memo(({ species, idx, isExpanded, isHovered, onRowClick, onMouseEnter, onMouseLeave, evolvedFromMap }) => {
     const rowId    = species.id ?? species.species;
     const spriteUrl = getPokemonDisplayImage(species);
     const bst      = getBST(species);
@@ -761,7 +790,7 @@ const PokedexRow = memo(({ species, idx, isExpanded, isHovered, onRowClick, onMo
                     <polyline points="9 18 15 12 9 6" />
                 </svg>
             </button>
-            {isExpanded && <SpeciesDetail species={species} />}
+            {isExpanded && <SpeciesDetail species={species} evolvedFromMap={evolvedFromMap} />}
         </div>
     );
 });
@@ -788,6 +817,20 @@ const PokedexSection = () => {
         [...(pokedex || []), ...(customSpecies || [])],
         [pokedex, customSpecies]
     );
+
+    // The pokedex data never populates a species' own "evolved from" field — each species
+    // only lists what it evolves INTO (evolutions[].to). Derive the reverse mapping once so
+    // the detail view can still show "← from X" instead of omitting it for every species.
+    const evolvedFromMap = useMemo(() => {
+        const map = new Map();
+        allSpecies.forEach(s => {
+            (s.evolutions || []).forEach(evo => {
+                const targetName = typeof evo.to === 'string' ? evo.to : (evo.to?.species || evo.to?.name);
+                if (targetName) map.set(targetName, s.species);
+            });
+        });
+        return map;
+    }, [allSpecies]);
 
     const filtered = useMemo(() => {
         const searchTrimmed = search.trim();
@@ -1073,6 +1116,7 @@ const PokedexSection = () => {
                                 isExpanded={expandedId === rowId}
                                 isHovered={hoveredId === rowId && expandedId !== rowId}
                                 onRowClick={() => handleRowClick(rowId)}
+                                evolvedFromMap={evolvedFromMap}
                                 onMouseEnter={() => setHoveredId(rowId)}
                                 onMouseLeave={() => setHoveredId(null)}
                             />
