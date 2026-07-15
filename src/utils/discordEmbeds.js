@@ -153,9 +153,15 @@ export const buildPokemonEmbed = (roll, trainerName) => {
 };
 
 export const buildTrainerSkillEmbed = (roll, trainerName) => {
-    const modStr     = `${roll.modifier >= 0 ? '+' : ''}${roll.modifier} ${roll.skillStat}`;
-    const trainedStr = roll.hasSkill ? ` · +${roll.bonus} trained` : '';
-    const description = `**Total: ${roll.total}** · [${roll.rolls.join(', ')}] ${modStr}${trainedStr}`;
+    // Untrained skills apply no stat bonus at all (total = plain 1d20) — showing the raw
+    // stat modifier unconditionally implied it was added when it wasn't. And showing it
+    // alongside "+{bonus} trained" double-counted the modifier for every trained roll: the
+    // stored bonus already folds the modifier in (Rank 1 = 2+mod, Rank 2 = 4+2×mod), so
+    // "+2 ATK · +4 trained" read as rollTotal+2+4 when the real total only adds +4.
+    const trainedStr = roll.hasSkill && roll.bonus > 0
+        ? ` · +${roll.bonus} trained (stat ${roll.modifier >= 0 ? '+' : ''}${roll.modifier} ${roll.skillStat})`
+        : '';
+    const description = `**Total: ${roll.total}** · [${roll.rolls.join(', ')}]${trainedStr}`;
 
     const fields = [];
     if (roll.trainerMaxHP > 0) {
