@@ -75,7 +75,12 @@ const DetailModal = () => {
     };
 
     return (
-        <div className="modal-overlay" onClick={closeModal} role="presentation">
+        // DetailModal is a drill-down popup meant to be opened from within any other
+        // already-open modal (ComparisonModal, MoveLearnModal, CustomSpeciesModal,
+        // etc.) — all modals share the same z-index (2000) and stack by DOM order,
+        // so without an explicit bump here DetailModal can render invisibly behind
+        // whichever modal is later in ModalsContainer's JSX order.
+        <div className="modal-overlay" onClick={closeModal} role="presentation" style={{ zIndex: 10001 }}>
             <div
                 ref={modalRef}
                 className="modal"

@@ -135,11 +135,19 @@ const ComparisonModal = () => {
                     <div style={{ marginBottom: '12px' }}>
                         <div style={{ fontSize: '11px', fontWeight: 'bold', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: '4px' }}>Abilities</div>
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
-                            {abilities.map((ab, i) => (
-                                <span key={i} style={{ padding: '3px 8px', borderRadius: '10px', background: 'linear-gradient(135deg, #f093fb, #f5576c)', color: 'white', fontSize: '11px', fontWeight: 'bold' }}>
-                                    {ab}
-                                </span>
-                            ))}
+                            {abilities.map((ab, i) => {
+                                const abilityData = gameData?.abilities?.[ab];
+                                return (
+                                    <span
+                                        key={i}
+                                        onClick={() => { if (showDetail && abilityData) showDetail('ability', ab, abilityData); }}
+                                        title={abilityData ? 'Click to view ability details' : ''}
+                                        style={{ padding: '3px 8px', borderRadius: '10px', background: 'linear-gradient(135deg, #f093fb, #f5576c)', color: 'white', fontSize: '11px', fontWeight: 'bold', cursor: abilityData && showDetail ? 'pointer' : 'default' }}
+                                    >
+                                        {ab}
+                                    </span>
+                                );
+                            })}
                         </div>
                     </div>
                 )}
@@ -149,11 +157,19 @@ const ComparisonModal = () => {
                     <div>
                         <div style={{ fontSize: '11px', fontWeight: 'bold', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: '4px' }}>Moves</div>
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
-                            {(pok.moves || []).map((move, i) => (
-                                <span key={i} style={{ padding: '3px 8px', borderRadius: '10px', background: getTypeColor(move.type || 'Normal'), color: 'white', fontSize: '11px', fontWeight: 'bold' }}>
-                                    {move.name}
-                                </span>
-                            ))}
+                            {(pok.moves || []).map((move, i) => {
+                                const moveData = gameData?.moves?.[move.name];
+                                return (
+                                    <span
+                                        key={i}
+                                        onClick={() => { if (showDetail) showDetail('move', move.name, { ...moveData, type: move.type }); }}
+                                        title="Click to view move details"
+                                        style={{ padding: '3px 8px', borderRadius: '10px', background: getTypeColor(move.type || 'Normal'), color: 'white', fontSize: '11px', fontWeight: 'bold', cursor: showDetail ? 'pointer' : 'default' }}
+                                    >
+                                        {move.name}
+                                    </span>
+                                );
+                            })}
                         </div>
                     </div>
                 )}

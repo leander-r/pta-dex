@@ -82,10 +82,6 @@ export const ModalProvider = ({ children }) => {
     const [showCustomSpeciesModal, setShowCustomSpeciesModal] = useState(false);
     const [editingCustomSpeciesId, setEditingCustomSpeciesId] = useState(null);
 
-    // Regional Form Modal
-    const [showRegionalFormModal, setShowRegionalFormModal] = useState(false);
-    const [regionalFormData, setRegionalFormData] = useState(null);
-
     // Move Learning Modal
     const [showMoveLearnModal, setShowMoveLearnModal] = useState(false);
     const [moveLearnData, setMoveLearnData] = useState(null);
@@ -175,12 +171,6 @@ export const ModalProvider = ({ children }) => {
         setShowCustomSpeciesModal,
         editingCustomSpeciesId,
         setEditingCustomSpeciesId,
-
-        // Regional Form Modal
-        showRegionalFormModal,
-        setShowRegionalFormModal,
-        regionalFormData,
-        setRegionalFormData,
 
         // Move Learning Modal
         showMoveLearnModal,

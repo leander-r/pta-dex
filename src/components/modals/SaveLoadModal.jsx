@@ -8,6 +8,7 @@ import React, { useState, useEffect } from 'react';
 import useModalKeyboard from '../../hooks/useModalKeyboard.js';
 import { useModal, useUI } from '../../contexts/index.js';
 import { useData } from '../../contexts/DataContext.jsx';
+import toast from '../../utils/toast.js';
 
 // ── Helpers ──────────────────────────────────────────────────
 
@@ -57,6 +58,10 @@ const BTN_BASE = {
 const SlotCard = ({ index, slot, onSave, onLoad, onDelete, onRename }) => {
     const [renaming, setRenaming] = useState(false);
     const [nameInput, setNameInput] = useState('');
+    // Empty-slot naming — lets the very first save into this slot capture a
+    // name up front instead of defaulting to "Save N" and requiring a
+    // separate rename step afterward.
+    const [newSlotName, setNewSlotName] = useState(`Save ${index + 1}`);
 
     const startRename = () => {
         setNameInput(slot?.slotName || `Save ${index + 1}`);
@@ -64,7 +69,11 @@ const SlotCard = ({ index, slot, onSave, onLoad, onDelete, onRename }) => {
     };
 
     const commitRename = () => {
-        if (nameInput.trim()) onRename(index, nameInput.trim());
+        if (nameInput.trim()) {
+            onRename(index, nameInput.trim());
+        } else {
+            toast.warning('Name can\'t be empty — kept the old name.');
+        }
         setRenaming(false);
     };
 
@@ -95,12 +104,23 @@ const SlotCard = ({ index, slot, onSave, onLoad, onDelete, onRename }) => {
                         — Empty —
                     </span>
                 </div>
-                <button
-                    onClick={() => onSave(index)}
-                    style={{ ...BTN_BASE, background: 'var(--gradient-purple)', color: 'white' }}
-                >
-                    Save Here
-                </button>
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                    <input
+                        type="text"
+                        value={newSlotName}
+                        onChange={(e) => setNewSlotName(e.target.value)}
+                        onKeyDown={(e) => { if (e.key === 'Enter') onSave(index, newSlotName.trim() || undefined); }}
+                        aria-label={`Name for slot ${index + 1}`}
+                        placeholder={`Save ${index + 1}`}
+                        style={{ flex: 1, minWidth: '120px', padding: '7px 10px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--input-bg)', color: 'var(--text-primary)', fontSize: '13px' }}
+                    />
+                    <button
+                        onClick={() => onSave(index, newSlotName.trim() || undefined)}
+                        style={{ ...BTN_BASE, background: 'var(--gradient-purple)', color: 'white' }}
+                    >
+                        Save Here
+                    </button>
+                </div>
             </div>
         );
     }

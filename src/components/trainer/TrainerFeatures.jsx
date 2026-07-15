@@ -281,6 +281,7 @@ const TrainerFeatures = () => {
                         const featureName = typeof feature === 'object' ? feature.name : feature;
                         const featureData = GAME_DATA.features[featureName];
                         const isBase = featureData?.isBase;
+                        const isFree = featureData?.category === 'General (Free)';
 
                         return (
                             <div
@@ -290,7 +291,11 @@ const TrainerFeatures = () => {
                                     alignItems: 'center',
                                     gap: '6px',
                                     padding: '6px 10px',
-                                    background: isBase ? 'linear-gradient(135deg, var(--poke-orange), var(--poke-orange-dark))' : 'var(--gradient-purple)',
+                                    background: isBase
+                                        ? 'linear-gradient(135deg, var(--poke-orange), var(--poke-orange-dark))'
+                                        : isFree
+                                        ? 'linear-gradient(135deg, var(--poke-green), var(--stat-hp))'
+                                        : 'var(--gradient-purple)',
                                     borderRadius: '15px',
                                     color: 'white',
                                     fontSize: '12px',
