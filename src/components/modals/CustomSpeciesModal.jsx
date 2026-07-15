@@ -70,7 +70,7 @@ const EVOLUTION_STONES = [
 const CustomSpeciesModal = () => {
     // Get state from contexts
     const { showCustomSpeciesModal, setShowCustomSpeciesModal, editingCustomSpeciesId, setEditingCustomSpeciesId, showConfirm } = useModal();
-    const { customSpecies, setCustomSpecies } = useGameData();
+    const { customSpecies, setCustomSpecies, pokedex } = useGameData();
 
     const [species, setSpecies] = useState({ ...DEFAULT_SPECIES });
     const [editingIndex, setEditingIndex] = useState(null);
@@ -231,6 +231,12 @@ const CustomSpeciesModal = () => {
         );
         if (existingIndex !== -1) {
             toast.warning('A custom species with this name already exists!');
+            return;
+        }
+
+        const officialMatch = (pokedex || []).some(s => s.species.toLowerCase() === species.species.toLowerCase());
+        if (officialMatch) {
+            toast.warning(`"${species.species}" is already an official Pokédex species — pick a different name to avoid confusion.`);
             return;
         }
 
@@ -497,7 +503,7 @@ const CustomSpeciesModal = () => {
                         <div className="form-group">
                             <label>Primary Type *</label>
                             <select value={species.types[0]} onChange={(e) => setSpecies(prev => ({ ...prev, types: [e.target.value, prev.types[1]].filter(Boolean) }))}>
-                                {TYPE_LIST.map(type => <option key={type} value={type}>{type}</option>)}
+                                {TYPE_LIST.filter(t => t !== species.types[1]).map(type => <option key={type} value={type}>{type}</option>)}
                             </select>
                         </div>
                         <div className="form-group">
@@ -540,9 +546,10 @@ const CustomSpeciesModal = () => {
                                 const tier = species.abilities.basic.includes(ability) ? 'basic' :
                                              species.abilities.adv.includes(ability) ? 'adv' : 'high';
                                 const tierIdx = species.abilities[tier].indexOf(ability);
+                                const tierLabel = tier === 'basic' ? 'Basic' : tier === 'adv' ? 'Adv' : 'Hidden';
                                 return (
                                     <span key={idx} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '3px 8px', background: '#667eea', color: 'white', borderRadius: '12px', fontSize: '11px' }}>
-                                        {ability}
+                                        {ability} <span style={{ opacity: 0.75, fontSize: '10px' }}>({tierLabel})</span>
                                         <button onClick={() => removeAbility(tier, tierIdx)} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', padding: '0 2px', fontSize: '12px', lineHeight: 1 }} aria-label={`Remove ${ability}`}>×</button>
                                     </span>
                                 );
@@ -552,13 +559,21 @@ const CustomSpeciesModal = () => {
                             )}
                         </div>
 
-                        {/* Add ability button */}
-                        <button onClick={() => { setShowAbilityPicker(showAbilityPicker === 'basic' ? null : 'basic'); setAbilityFilter({ search: '' }); }} style={{ padding: '6px 12px', background: showAbilityPicker === 'basic' ? '#f44336' : '#667eea', color: 'white', border: 'none', borderRadius: '4px', fontSize: '11px', cursor: 'pointer' }}>
-                            {showAbilityPicker === 'basic' ? 'Close' : '+ Add Ability'}
-                        </button>
+                        {/* Add ability buttons — one per tier, since PTA species have Basic/Advanced/Hidden ability pools */}
+                        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                            {[['basic', 'Basic'], ['adv', 'Advanced'], ['high', 'Hidden']].map(([tier, label]) => (
+                                <button
+                                    key={tier}
+                                    onClick={() => { setShowAbilityPicker(showAbilityPicker === tier ? null : tier); setAbilityFilter({ search: '' }); }}
+                                    style={{ padding: '6px 12px', background: showAbilityPicker === tier ? '#f44336' : '#667eea', color: 'white', border: 'none', borderRadius: '4px', fontSize: '11px', cursor: 'pointer' }}
+                                >
+                                    {showAbilityPicker === tier ? 'Close' : `+ ${label}`}
+                                </button>
+                            ))}
+                        </div>
 
                         {/* Ability picker */}
-                        {showAbilityPicker === 'basic' && (
+                        {showAbilityPicker && (
                             <div style={{ marginTop: '8px', padding: '10px', background: 'var(--bg-secondary, #f5f5f5)', borderRadius: '8px' }}>
                                 <input
                                     type="text"
@@ -574,7 +589,7 @@ const CustomSpeciesModal = () => {
                                     {filteredAbilities.slice(0, 100).map(([name, desc]) => (
                                         <div
                                             key={name}
-                                            onClick={() => { addAbility('basic', name); setShowAbilityPicker(null); }}
+                                            onClick={() => { addAbility(showAbilityPicker, name); setShowAbilityPicker(null); }}
                                             style={{ padding: '8px', cursor: 'pointer', borderBottom: '1px solid var(--border-light)', fontSize: '12px' }}
                                             onMouseEnter={(e) => e.currentTarget.style.background = 'var(--hover-bg)'}
                                             onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}

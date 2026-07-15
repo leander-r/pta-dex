@@ -213,6 +213,14 @@ const TrainerSkills = () => {
                                     <div
                                         key={skill.name}
                                         onClick={() => handleCycleRank(skill.name, isHPStat)}
+                                        role="button"
+                                        tabIndex={0}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter' || e.key === ' ') {
+                                                e.preventDefault();
+                                                handleCycleRank(skill.name, isHPStat);
+                                            }
+                                        }}
                                         className={!isTrained ? 'skill-list-item' : ''}
                                         style={{
                                             display: 'flex',
@@ -232,6 +240,7 @@ const TrainerSkills = () => {
                                             transition: 'all 0.2s ease'
                                         }}
                                         title={`${skill.description}\n\nClick to cycle rank (current: ${rank}/${maxRank})`}
+                                        aria-label={`${skill.name}, rank ${rank} of ${maxRank}. Press Enter to cycle rank.`}
                                     >
                                         {/* Rank indicator */}
                                         <span style={{

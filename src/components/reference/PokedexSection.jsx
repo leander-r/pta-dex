@@ -909,13 +909,13 @@ const PokedexSection = () => {
                 <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: 600, flexShrink: 0 }}>Sort:</span>
                 <select
                     value={sortKey}
-                    onChange={e => { setSortKey(e.target.value); setSortDir(e.target.value === 'name' || e.target.value === 'id' ? 'asc' : 'desc'); }}
+                    onChange={e => { setPage(0); setSortKey(e.target.value); setSortDir(e.target.value === 'name' || e.target.value === 'id' ? 'asc' : 'desc'); }}
                     style={{ flex: 1, padding: '6px 8px', borderRadius: '8px', border: '1px solid var(--input-border)', background: 'var(--input-bg)', color: 'var(--text-primary)', fontSize: '13px' }}
                 >
                     {SORT_OPTIONS.map(opt => <option key={opt.key} value={opt.key}>{opt.label}</option>)}
                 </select>
                 <button
-                    onClick={() => setSortDir(d => d === 'asc' ? 'desc' : 'asc')}
+                    onClick={() => { setPage(0); setSortDir(d => d === 'asc' ? 'desc' : 'asc'); }}
                     title="Toggle sort direction"
                     style={{ padding: '6px 10px', borderRadius: '8px', border: '1.5px solid var(--poke-orange)', background: 'rgba(245,166,35,0.12)', color: 'var(--poke-orange-dark)', fontWeight: 700, fontSize: '12px', cursor: 'pointer', flexShrink: 0, display: 'flex', alignItems: 'center', gap: '4px' }}
                 >

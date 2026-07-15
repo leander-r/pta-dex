@@ -556,10 +556,16 @@ export const importSinglePokemon = (jsonData) => {
  * Generate a printable character sheet as a standalone HTML string.
  * Open in a new tab — the page auto-triggers window.print().
  */
+// Escapes free-text fields before they're interpolated into the print sheet's HTML string
+// (built via document.write, not React) — unescaped "<"/">" in a name or note would be parsed
+// as a stray tag and silently swallow the rest of the sheet.
+const escapeHtml = (str) => String(str ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
 export const generatePrintSheetHTML = (trainer, party) => {
     const genderSymbol = trainer.gender === 'male' ? '♂' : trainer.gender === 'female' ? '♀' : '';
-    const classesDisplay = trainer.classes?.length > 0 ? trainer.classes.join(' / ') : 'Trainer';
+    const classesDisplay = trainer.classes?.length > 0 ? escapeHtml(trainer.classes.join(' / ')) : 'Trainer';
     const maxHP = (trainer.stats?.hp ?? 0) * 4 + (trainer.level ?? 0) * 4;
+    const trainerName = escapeHtml(trainer.name || 'Unnamed');
 
     const statTable = (stats) => `
         <table class="stat-table">
@@ -572,27 +578,27 @@ export const generatePrintSheetHTML = (trainer, party) => {
 
     const skillsList = (() => {
         if (!trainer.skills) return '';
-        if (Array.isArray(trainer.skills)) return trainer.skills.join(', ') || '—';
-        return Object.entries(trainer.skills)
+        if (Array.isArray(trainer.skills)) return escapeHtml(trainer.skills.join(', ')) || '—';
+        return escapeHtml(Object.entries(trainer.skills)
             .filter(([, rank]) => rank > 0)
             .map(([name, rank]) => rank === 2 ? `${name} (★★)` : name)
-            .join(', ') || '—';
+            .join(', ')) || '—';
     })();
 
-    const featuresList = (trainer.features || [])
+    const featuresList = escapeHtml((trainer.features || [])
         .map(f => (typeof f === 'object' ? f.name || 'Unknown' : f))
-        .filter(Boolean).join(', ') || '—';
+        .filter(Boolean).join(', ')) || '—';
 
     const badgeCount = trainer.badges?.length || 0;
 
     const notesSummary = (() => {
         const parts = [];
-        if (trainer.notes?.trim()) parts.push(`<h2>Campaign Notes</h2><p style="white-space:pre-wrap;font-size:12px;">${trainer.notes.trim()}</p>`);
-        if (trainer.sessionNotes?.trim()) parts.push(`<h2>Session Notes</h2><p style="white-space:pre-wrap;font-size:12px;">${trainer.sessionNotes.trim()}</p>`);
+        if (trainer.notes?.trim()) parts.push(`<h2>Campaign Notes</h2><p style="white-space:pre-wrap;font-size:12px;">${escapeHtml(trainer.notes.trim())}</p>`);
+        if (trainer.sessionNotes?.trim()) parts.push(`<h2>Session Notes</h2><p style="white-space:pre-wrap;font-size:12px;">${escapeHtml(trainer.sessionNotes.trim())}</p>`);
         const activeQuests = (trainer.quests || []).filter(q => q.status !== 'abandoned');
         if (activeQuests.length > 0) {
             const rows = activeQuests.map(q =>
-                `<tr><td>${q.title}</td><td style="text-transform:capitalize;">${q.status}</td><td style="font-size:11px;white-space:pre-wrap;">${q.notes || ''}</td></tr>`
+                `<tr><td>${escapeHtml(q.title)}</td><td style="text-transform:capitalize;">${escapeHtml(q.status)}</td><td style="font-size:11px;white-space:pre-wrap;">${escapeHtml(q.notes || '')}</td></tr>`
             ).join('');
             parts.push(`<h2>Quest Log</h2><table class="move-table"><thead><tr><th>Quest</th><th>Status</th><th>Notes</th></tr></thead><tbody>${rows}</tbody></table>`);
         }
@@ -600,28 +606,28 @@ export const generatePrintSheetHTML = (trainer, party) => {
     })();
 
     const partyCards = (party || []).map(poke => {
-        const sp = poke.species && poke.species !== poke.name ? ` (${poke.species})` : '';
-        const types = (poke.types || []).join(' / ') || '—';
+        const sp = poke.species && poke.species !== poke.name ? ` (${escapeHtml(poke.species)})` : '';
+        const types = escapeHtml((poke.types || []).join(' / ')) || '—';
         const pokeMaxHP = (poke.baseStats?.hp ?? 0) * 3 + (poke.level ?? 0) * 3;
-        const abilities = [poke.ability, poke.ability2, poke.ability3].filter(Boolean).join(', ') || '—';
+        const abilities = escapeHtml([poke.ability, poke.ability2, poke.ability3].filter(Boolean).join(', ')) || '—';
         const movesRows = (poke.moves || []).map(m =>
-            `<tr><td>${m.name || '?'}</td><td>${m.type || '?'}</td><td>${m.category || '?'}</td><td>${m.damage || '—'}</td><td>${m.frequency || '—'}</td></tr>`
+            `<tr><td>${escapeHtml(m.name) || '?'}</td><td>${escapeHtml(m.type) || '?'}</td><td>${escapeHtml(m.category) || '?'}</td><td>${escapeHtml(m.damage) || '—'}</td><td>${escapeHtml(m.frequency) || '—'}</td></tr>`
         ).join('') || '<tr><td colspan="5" style="color:#999;">No moves</td></tr>';
         const skillsStr = (() => {
             if (!poke.skills) return '—';
-            return Object.entries(poke.skills)
+            return escapeHtml(Object.entries(poke.skills)
                 .filter(([, v]) => v > 0)
                 .map(([k, v]) => `${k} ${v}`)
-                .join(' · ') || '—';
+                .join(' · ')) || '—';
         })();
 
         return `
         <div class="poke-card">
             <div class="poke-header">
-                <strong>${poke.name || poke.species || 'Unknown'}${sp}</strong>
+                <strong>${escapeHtml(poke.name || poke.species || 'Unknown')}${sp}</strong>
                 <span>Lv. ${poke.level ?? 1} · ${types} · Max HP: ${pokeMaxHP}</span>
             </div>
-            <p style="margin:4px 0;font-size:12px;"><strong>Nature:</strong> ${poke.nature || 'Hardy'} &nbsp; <strong>Abilities:</strong> ${abilities}</p>
+            <p style="margin:4px 0;font-size:12px;"><strong>Nature:</strong> ${escapeHtml(poke.nature || 'Hardy')} &nbsp; <strong>Abilities:</strong> ${abilities}</p>
             ${statTable(poke.baseStats)}
             <p style="margin:4px 0 6px;font-size:11px;color:#555;"><strong>Skills:</strong> ${skillsStr}</p>
             <table class="move-table">
@@ -636,7 +642,7 @@ export const generatePrintSheetHTML = (trainer, party) => {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${trainer.name || 'Trainer'} — PTA Character Sheet</title>
+<title>${trainerName} — PTA Character Sheet</title>
 <style>
     *, *::before, *::after { box-sizing: border-box; }
     body {
@@ -709,7 +715,7 @@ export const generatePrintSheetHTML = (trainer, party) => {
 <div class="page">
 
     <div class="trainer-header">
-        <h1>${trainer.name || 'Unnamed'} ${genderSymbol}</h1>
+        <h1>${trainerName} ${genderSymbol}</h1>
         <div class="trainer-meta">Level ${trainer.level ?? 0} ${classesDisplay}</div>
     </div>
 
