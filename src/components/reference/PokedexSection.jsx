@@ -7,7 +7,7 @@ import React, { useState, useMemo, useCallback, memo, useRef } from 'react';
 import { useGameData } from '../../contexts/index.js';
 import { getTypeColor, getContrastTextColor } from '../../utils/typeUtils.js';
 import { getPokemonDisplayImage, getMegaSprite, getPokemonSprite } from '../../utils/pokemonSprite.js';
-import { POKEMON_TYPES } from '../../data/typeChart.js';
+import { POKEMON_TYPES, getCombinedTypeEffectiveness } from '../../data/typeChart.js';
 
 const STAT_LABELS = ['HP', 'ATK', 'DEF', 'SATK', 'SDEF', 'SPD'];
 const STAT_KEYS   = ['hp', 'atk', 'def', 'satk', 'sdef', 'spd'];
@@ -107,6 +107,34 @@ const DetailSection = ({ children, last }) => (
         borderBottom: last ? 'none' : '1px solid var(--border-light)'
     }}>{children}</div>
 );
+
+// Reuses the same getCombinedTypeEffectiveness() already powering TypeMatchupDisplay
+// in the Battle tab — without this, checking a species' weaknesses meant leaving the
+// Pokédex entirely for the separate Type Chart tab and cross-referencing by hand.
+const TypeMatchupRow = ({ heading, headingColor, items }) => items.length === 0 ? null : (
+    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '6px', marginBottom: '5px' }}>
+        <span style={{ fontSize: '12px', fontWeight: 700, color: headingColor, whiteSpace: 'nowrap', minWidth: '70px', paddingTop: '2px' }}>{heading}</span>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+            {items.map(t => <TypeChip key={t} type={t} />)}
+        </div>
+    </div>
+);
+
+const TypeMatchupSection = ({ types }) => {
+    const eff = getCombinedTypeEffectiveness(types);
+    const hasAny = eff.superWeak.length || eff.weak.length || eff.resist.length || eff.superResist.length || eff.immune.length;
+    if (!hasAny) return null;
+    return (
+        <DetailSection>
+            <SectionLabel>Type Matchup</SectionLabel>
+            <TypeMatchupRow heading="Weak ×4"    headingColor="#c62828" items={eff.superWeak} />
+            <TypeMatchupRow heading="Weak ×2"    headingColor="#f44336" items={eff.weak} />
+            <TypeMatchupRow heading="Resists"    headingColor="#388e3c" items={eff.resist} />
+            <TypeMatchupRow heading="Resists ×¼" headingColor="#1b5e20" items={eff.superResist} />
+            <TypeMatchupRow heading="Immune"     headingColor="var(--text-secondary)" items={eff.immune} />
+        </DetailSection>
+    );
+};
 
 // ── Expanded panel ────────────────────────────────────────────
 
@@ -220,6 +248,9 @@ const SpeciesDetail = ({ species }) => {
                     <DualTypeDisplay types={types} />
                 </div>
             </div>
+
+            {/* Type Matchup — weaknesses/resistances derived from types, shown right below the header */}
+            <TypeMatchupSection types={types} />
 
             {/* Pokédex Profile Info */}
             {hasProfileInfo && (
@@ -720,12 +751,20 @@ const PokedexSection = () => {
     );
 
     const filtered = useMemo(() => {
+        const searchTrimmed = search.trim();
         const nameLower    = search.toLowerCase();
         const abilityLower = abilitySearch.toLowerCase();
+        // A purely-numeric search (e.g. "150") matches by Pokédex number instead of name —
+        // the row list and sort options both surface # prominently, so this was a gap.
+        const searchIsId   = /^\d+$/.test(searchTrimmed);
 
         return allSpecies
             .filter(s => {
-                if (search && !s.species?.toLowerCase().includes(nameLower)) return false;
+                if (search) {
+                    const matchesName = s.species?.toLowerCase().includes(nameLower);
+                    const matchesId   = searchIsId && String(s.id) === searchTrimmed;
+                    if (!matchesName && !matchesId) return false;
+                }
                 if (typeFilter && !s.types?.includes(typeFilter)) return false;
                 if (type2Filter && !s.types?.includes(type2Filter)) return false;
                 if (abilitySearch) {
@@ -793,7 +832,8 @@ const PokedexSection = () => {
                 <div style={{ flex: '2 1 160px', position: 'relative', minWidth: '140px' }}>
                     <input
                         type="text"
-                        placeholder="Search species…"
+                        placeholder="Search species or #…"
+                        aria-label="Search species by name or Pokédex number"
                         value={search}
                         onChange={e => setSearch(e.target.value)}
                         style={{ ...inputStyle, paddingRight: search ? '28px' : '10px' }}
@@ -811,7 +851,14 @@ const PokedexSection = () => {
                 <div style={{ flex: '1 1 110px', minWidth: '100px' }}>
                     <select
                         value={typeFilter}
-                        onChange={e => setTypeFilter(e.target.value)}
+                        aria-label="Filter by primary type"
+                        onChange={e => {
+                            const newType = e.target.value;
+                            setTypeFilter(newType);
+                            // Type 2 only makes sense alongside a primary type — clear it if
+                            // Type 1 is cleared, or if it now duplicates the new Type 1 value.
+                            if (!newType || newType === type2Filter) setType2Filter('');
+                        }}
                         style={{
                             ...inputStyle,
                             background: typeFilter ? getTypeColor(typeFilter) : 'var(--input-bg)',
@@ -825,10 +872,15 @@ const PokedexSection = () => {
                     </select>
                 </div>
 
-                {/* Type 2 */}
+                {/* Type 2 — disabled until Type 1 is set, since "2nd Type" alone was
+                    functionally identical to using Type 1 alone (both just filter for
+                    species that include that type anywhere), which was confusing. */}
                 <div style={{ flex: '1 1 110px', minWidth: '100px' }}>
                     <select
                         value={type2Filter}
+                        aria-label="Filter by secondary type"
+                        disabled={!typeFilter}
+                        title={!typeFilter ? 'Select a primary type first' : undefined}
                         onChange={e => setType2Filter(e.target.value)}
                         style={{
                             ...inputStyle,
@@ -836,10 +888,12 @@ const PokedexSection = () => {
                             color: type2Filter ? getContrastTextColor(getTypeColor(type2Filter)) : 'var(--text-primary)',
                             fontWeight: type2Filter ? 700 : undefined,
                             border: type2Filter ? `1px solid ${getTypeColor(type2Filter)}` : '1px solid var(--input-border)',
+                            opacity: typeFilter ? 1 : 0.6,
+                            cursor: typeFilter ? 'pointer' : 'not-allowed',
                         }}
                     >
-                        <option value="">2nd Type</option>
-                        {POKEMON_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
+                        <option value="">{typeFilter ? '2nd Type' : 'Select Type 1 first'}</option>
+                        {POKEMON_TYPES.filter(t => t !== typeFilter).map(t => <option key={t} value={t}>{t}</option>)}
                     </select>
                 </div>
 
@@ -848,6 +902,7 @@ const PokedexSection = () => {
                     <input
                         type="text"
                         placeholder="Ability…"
+                        aria-label="Filter by ability"
                         value={abilitySearch}
                         onChange={e => setAbilitySearch(e.target.value)}
                         style={{ ...inputStyle, paddingRight: abilitySearch ? '28px' : '10px' }}
@@ -884,6 +939,8 @@ const PokedexSection = () => {
                             key={opt.key}
                             onClick={() => handleSort(opt.key)}
                             title={`Sort by ${opt.label}`}
+                            aria-pressed={isActive}
+                            aria-label={`Sort by ${opt.label}${isActive ? `, currently ${sortDir === 'asc' ? 'ascending' : 'descending'}` : ''}`}
                             style={{
                                 padding: '4px 9px', borderRadius: '6px', fontSize: '12px', fontWeight: isActive ? 700 : 500,
                                 border: isActive ? '1.5px solid var(--poke-orange)' : '1px solid var(--border-light)',
@@ -909,6 +966,7 @@ const PokedexSection = () => {
                 <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: 600, flexShrink: 0 }}>Sort:</span>
                 <select
                     value={sortKey}
+                    aria-label="Sort species by"
                     onChange={e => { setPage(0); setSortKey(e.target.value); setSortDir(e.target.value === 'name' || e.target.value === 'id' ? 'asc' : 'desc'); }}
                     style={{ flex: 1, padding: '6px 8px', borderRadius: '8px', border: '1px solid var(--input-border)', background: 'var(--input-bg)', color: 'var(--text-primary)', fontSize: '13px' }}
                 >
@@ -917,6 +975,7 @@ const PokedexSection = () => {
                 <button
                     onClick={() => { setPage(0); setSortDir(d => d === 'asc' ? 'desc' : 'asc'); }}
                     title="Toggle sort direction"
+                    aria-label={`Sort direction: currently ${sortDir === 'asc' ? 'ascending' : 'descending'}, click to toggle`}
                     style={{ padding: '6px 10px', borderRadius: '8px', border: '1.5px solid var(--poke-orange)', background: 'rgba(245,166,35,0.12)', color: 'var(--poke-orange-dark)', fontWeight: 700, fontSize: '12px', cursor: 'pointer', flexShrink: 0, display: 'flex', alignItems: 'center', gap: '4px' }}
                 >
                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" style={{ transition: 'transform 0.15s', transform: sortDir === 'asc' ? 'rotate(-90deg)' : 'rotate(90deg)' }}>
@@ -981,11 +1040,13 @@ const PokedexSection = () => {
                         <button
                             onClick={() => { setPage(0); setExpandedId(null); listRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }}
                             disabled={page === 0}
+                            aria-label="First page"
                             style={{ padding: '7px 12px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--bg-secondary)', cursor: page === 0 ? 'not-allowed' : 'pointer', opacity: page === 0 ? 0.4 : 1, fontSize: '12px' }}
                         >«</button>
                         <button
                             onClick={() => { setPage(p => p - 1); setExpandedId(null); listRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }}
                             disabled={page === 0}
+                            aria-label="Previous page"
                             style={{ padding: '7px 12px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--bg-secondary)', cursor: page === 0 ? 'not-allowed' : 'pointer', opacity: page === 0 ? 0.4 : 1, fontSize: '12px' }}
                         >‹ Prev</button>
                         <span style={{ fontSize: '12px', color: 'var(--text-muted)', padding: '0 4px' }}>
@@ -994,11 +1055,13 @@ const PokedexSection = () => {
                         <button
                             onClick={() => { setPage(p => p + 1); setExpandedId(null); listRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }}
                             disabled={page >= totalPages - 1}
+                            aria-label="Next page"
                             style={{ padding: '7px 12px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--bg-secondary)', cursor: page >= totalPages - 1 ? 'not-allowed' : 'pointer', opacity: page >= totalPages - 1 ? 0.4 : 1, fontSize: '12px' }}
                         >Next ›</button>
                         <button
                             onClick={() => { setPage(totalPages - 1); setExpandedId(null); listRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }}
                             disabled={page >= totalPages - 1}
+                            aria-label="Last page"
                             style={{ padding: '7px 12px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--bg-secondary)', cursor: page >= totalPages - 1 ? 'not-allowed' : 'pointer', opacity: page >= totalPages - 1 ? 0.4 : 1, fontSize: '12px' }}
                         >»</button>
                     </div>
