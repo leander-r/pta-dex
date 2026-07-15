@@ -4,7 +4,7 @@
 // Read-only browser for all species: search, type filter, accordion
 
 import React, { useState, useMemo, useCallback, memo, useRef } from 'react';
-import { useGameData } from '../../contexts/index.js';
+import { useGameData, useModal } from '../../contexts/index.js';
 import { getTypeColor, getContrastTextColor } from '../../utils/typeUtils.js';
 import { getPokemonDisplayImage, getMegaSprite, getPokemonSprite } from '../../utils/pokemonSprite.js';
 import { POKEMON_TYPES, getCombinedTypeEffectiveness } from '../../data/typeChart.js';
@@ -83,15 +83,25 @@ const StatBar = ({ label, statKey, value }) => {
     );
 };
 
-const Chip = ({ label, accent }) => (
-    <span style={{
-        fontSize: '12px',
-        background: accent ? 'rgba(245,166,35,0.12)' : 'var(--poke-gray)',
-        border: `1px solid ${accent ? 'rgba(245,166,35,0.35)' : 'var(--border-light)'}`,
-        color: accent ? 'var(--poke-orange-dark)' : 'var(--text-primary)',
-        borderRadius: '6px', padding: '3px 8px', whiteSpace: 'nowrap',
-        fontWeight: accent ? 700 : 500
-    }}>{label}</span>
+// onClick is optional — used to open the same DetailModal that PokemonCard/MoveSelector
+// use for moves and abilities elsewhere in the app. Chips without a handler (evolution
+// targets, egg groups, etc.) stay plain, inert text.
+const Chip = ({ label, accent, onClick }) => (
+    <span
+        onClick={onClick}
+        role={onClick ? 'button' : undefined}
+        tabIndex={onClick ? 0 : undefined}
+        onKeyDown={onClick ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(); } } : undefined}
+        style={{
+            fontSize: '12px',
+            background: accent ? 'rgba(245,166,35,0.12)' : 'var(--poke-gray)',
+            border: `1px solid ${accent ? 'rgba(245,166,35,0.35)' : 'var(--border-light)'}`,
+            color: onClick ? 'var(--color-purple)' : (accent ? 'var(--poke-orange-dark)' : 'var(--text-primary)'),
+            borderRadius: '6px', padding: '3px 8px', whiteSpace: 'nowrap',
+            fontWeight: accent ? 700 : 500,
+            cursor: onClick ? 'pointer' : 'default'
+        }}
+    >{label}</span>
 );
 
 const SectionLabel = ({ children }) => (
@@ -188,6 +198,13 @@ const GenderBar = ({ genderRatio }) => {
 };
 
 const SpeciesDetail = ({ species }) => {
+    const { GAME_DATA } = useGameData();
+    const { showDetail } = useModal();
+    // Same DetailModal every other move/ability click in the app opens (PokemonCard,
+    // MoveSelector) — the Pokédex previously showed these as plain, inert chips/text.
+    const openMove = (name, extra) => showDetail && name && showDetail('move', name, { ...(GAME_DATA?.moves?.[name]), ...extra });
+    const openAbility = (name) => showDetail && name && showDetail('ability', name, GAME_DATA?.abilities?.[name]);
+
     const {
         baseStats = {},
         abilities = {},
@@ -243,7 +260,11 @@ const SpeciesDetail = ({ species }) => {
                 <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '6px' }}>
                         <span style={{ fontWeight: 700, fontSize: '16px', color: 'var(--text-primary)' }}>{species.species}</span>
-                        {species.id && <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: 600 }}>#{species.id}</span>}
+                        {typeof species.id === 'number' ? (
+                            <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: 600 }}>#{species.id}</span>
+                        ) : species.isCustom && (
+                            <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--color-purple)', background: 'rgba(102,126,234,0.15)', border: '1px solid rgba(102,126,234,0.3)', borderRadius: '4px', padding: '1px 6px' }}>Custom</span>
+                        )}
                     </div>
                     <DualTypeDisplay types={types} />
                 </div>
@@ -342,7 +363,7 @@ const SpeciesDetail = ({ species }) => {
                                             </div>
                                             <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', alignItems: 'center' }}>
                                                 {form.types?.map(t => <TypeChip key={t} type={t} />)}
-                                                {form.ability && <Chip label={form.ability} />}
+                                                {form.ability && <Chip label={form.ability} onClick={() => openAbility(form.ability)} />}
                                                 <span style={{ fontSize: '11px', fontWeight: 700, color: getContrastTextColor(megaAccent), background: megaAccent, padding: '1px 6px', borderRadius: '8px', marginLeft: 'auto' }}>BST {megaBst}</span>
                                             </div>
                                         </div>
@@ -384,7 +405,7 @@ const SpeciesDetail = ({ species }) => {
                             <div style={{ display: 'flex', alignItems: 'flex-start', gap: '6px', flexWrap: 'wrap' }}>
                                 <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '3px', minWidth: '52px', flexShrink: 0 }}>Basic</span>
                                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
-                                    {abilities.basic.map(a => <Chip key={a} label={a} />)}
+                                    {abilities.basic.map(a => <Chip key={a} label={a} onClick={() => openAbility(a)} />)}
                                 </div>
                             </div>
                         )}
@@ -392,7 +413,7 @@ const SpeciesDetail = ({ species }) => {
                             <div style={{ display: 'flex', alignItems: 'flex-start', gap: '6px', flexWrap: 'wrap' }}>
                                 <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '3px', minWidth: '52px', flexShrink: 0 }}>Adv</span>
                                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
-                                    {abilities.adv.map(a => <Chip key={a} label={a} />)}
+                                    {abilities.adv.map(a => <Chip key={a} label={a} onClick={() => openAbility(a)} />)}
                                 </div>
                             </div>
                         )}
@@ -400,7 +421,7 @@ const SpeciesDetail = ({ species }) => {
                             <div style={{ display: 'flex', alignItems: 'flex-start', gap: '6px', flexWrap: 'wrap' }}>
                                 <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '3px', minWidth: '52px', flexShrink: 0 }}>Hidden</span>
                                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
-                                    {abilities.high.map(a => <Chip key={a} accent label={a} />)}
+                                    {abilities.high.map(a => <Chip key={a} accent label={a} onClick={() => openAbility(a)} />)}
                                 </div>
                             </div>
                         )}
@@ -455,7 +476,9 @@ const SpeciesDetail = ({ species }) => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {levelUpMoves.map((move, i) => (
+                                {levelUpMoves.map((move, i) => {
+                                    const name = move.name || moveName(move);
+                                    return (
                                     <tr key={i} style={{
                                         borderBottom: i < levelUpMoves.length - 1 ? '1px solid var(--border-light)' : 'none',
                                         background: i % 2 === 0 ? 'transparent' : 'var(--bg-light)'
@@ -463,14 +486,20 @@ const SpeciesDetail = ({ species }) => {
                                         <td style={{ padding: '5px 8px', color: 'var(--text-muted)', fontWeight: 600, textAlign: 'right' }}>
                                             {move.level ?? '—'}
                                         </td>
-                                        <td style={{ padding: '5px 8px', color: 'var(--text-primary)', fontWeight: 500 }}>
-                                            {move.name || moveName(move)}
+                                        <td style={{ padding: '5px 8px' }}>
+                                            <span
+                                                onClick={() => openMove(name, { type: move.type })}
+                                                role="button" tabIndex={0}
+                                                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openMove(name, { type: move.type }); } }}
+                                                style={{ color: 'var(--color-purple)', fontWeight: 500, cursor: 'pointer' }}
+                                            >{name}</span>
                                         </td>
                                         <td className="lv-moves-type-col" style={{ padding: '5px 8px' }}>
                                             {move.type && <TypeChip type={move.type} />}
                                         </td>
                                     </tr>
-                                ))}
+                                    );
+                                })}
                             </tbody>
                         </table>
                     </div>
@@ -484,7 +513,7 @@ const SpeciesDetail = ({ species }) => {
                         <div style={{ marginBottom: hasTutor ? '10px' : 0 }}>
                             <SectionLabel>Egg Moves</SectionLabel>
                             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
-                                {eggMoves.map((m, i) => <Chip key={i} label={moveName(m)} />)}
+                                {eggMoves.map((m, i) => <Chip key={i} label={moveName(m)} onClick={() => openMove(moveName(m))} />)}
                             </div>
                         </div>
                     )}
@@ -492,7 +521,7 @@ const SpeciesDetail = ({ species }) => {
                         <div>
                             <SectionLabel>Tutor Moves</SectionLabel>
                             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
-                                {tutorMoves.map((m, i) => <Chip key={i} label={moveName(m)} />)}
+                                {tutorMoves.map((m, i) => <Chip key={i} label={moveName(m)} onClick={() => openMove(moveName(m))} />)}
                             </div>
                         </div>
                     )}
@@ -568,7 +597,7 @@ const SpeciesDetail = ({ species }) => {
                                                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: '6px', flexWrap: 'wrap' }}>
                                                     <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '3px', minWidth: '52px', flexShrink: 0 }}>Basic</span>
                                                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
-                                                        {form.abilities.basic.map(a => <Chip key={a} label={a} />)}
+                                                        {form.abilities.basic.map(a => <Chip key={a} label={a} onClick={() => openAbility(a)} />)}
                                                     </div>
                                                 </div>
                                             )}
@@ -576,7 +605,7 @@ const SpeciesDetail = ({ species }) => {
                                                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: '6px', flexWrap: 'wrap' }}>
                                                     <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '3px', minWidth: '52px', flexShrink: 0 }}>Adv</span>
                                                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
-                                                        {form.abilities.adv.map(a => <Chip key={a} label={a} />)}
+                                                        {form.abilities.adv.map(a => <Chip key={a} label={a} onClick={() => openAbility(a)} />)}
                                                     </div>
                                                 </div>
                                             )}
@@ -584,7 +613,7 @@ const SpeciesDetail = ({ species }) => {
                                                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: '6px', flexWrap: 'wrap' }}>
                                                     <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '3px', minWidth: '52px', flexShrink: 0 }}>Hidden</span>
                                                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
-                                                        {form.abilities.high.map(a => <Chip key={a} accent label={a} />)}
+                                                        {form.abilities.high.map(a => <Chip key={a} accent label={a} onClick={() => openAbility(a)} />)}
                                                     </div>
                                                 </div>
                                             )}
@@ -604,13 +633,23 @@ const SpeciesDetail = ({ species }) => {
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        {formMoves.map((move, mi) => (
+                                                        {formMoves.map((move, mi) => {
+                                                            const formMoveName = move.name || move.move || String(move);
+                                                            return (
                                                             <tr key={mi} style={{ borderBottom: mi < formMoves.length - 1 ? '1px solid var(--border-light)' : 'none', background: mi % 2 === 0 ? 'transparent' : 'var(--bg-light)' }}>
                                                                 <td style={{ padding: '4px 8px', color: 'var(--text-muted)', fontWeight: 600, textAlign: 'right' }}>{move.level ?? '—'}</td>
-                                                                <td style={{ padding: '4px 8px', color: 'var(--text-primary)' }}>{move.name || move.move || String(move)}</td>
+                                                                <td style={{ padding: '4px 8px' }}>
+                                                                    <span
+                                                                        onClick={() => openMove(formMoveName, { type: move.type })}
+                                                                        role="button" tabIndex={0}
+                                                                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openMove(formMoveName, { type: move.type }); } }}
+                                                                        style={{ color: 'var(--color-purple)', cursor: 'pointer' }}
+                                                                    >{formMoveName}</span>
+                                                                </td>
                                                                 <td className="lv-moves-type-col" style={{ padding: '4px 8px' }}>{move.type && <TypeChip type={move.type} />}</td>
                                                             </tr>
-                                                        ))}
+                                                            );
+                                                        })}
                                                     </tbody>
                                                 </table>
                                             </div>
@@ -623,7 +662,7 @@ const SpeciesDetail = ({ species }) => {
                                                 <div>
                                                     <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '4px' }}>Egg Moves</div>
                                                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
-                                                        {form.eggMoves.map((m, mi) => <Chip key={mi} label={typeof m === 'string' ? m : m?.name || String(m)} />)}
+                                                        {form.eggMoves.map((m, mi) => { const n = typeof m === 'string' ? m : m?.name || String(m); return <Chip key={mi} label={n} onClick={() => openMove(n)} />; })}
                                                     </div>
                                                 </div>
                                             )}
@@ -631,7 +670,7 @@ const SpeciesDetail = ({ species }) => {
                                                 <div>
                                                     <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '4px' }}>Tutor Moves</div>
                                                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
-                                                        {form.tutorMoves.map((m, mi) => <Chip key={mi} label={typeof m === 'string' ? m : m?.name || String(m)} />)}
+                                                        {form.tutorMoves.map((m, mi) => { const n = typeof m === 'string' ? m : m?.name || String(m); return <Chip key={mi} label={n} onClick={() => openMove(n)} />; })}
                                                     </div>
                                                 </div>
                                             )}
@@ -692,8 +731,8 @@ const PokedexRow = memo(({ species, idx, isExpanded, isHovered, onRowClick, onMo
                         />
                     )}
                 </div>
-                <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: 600, width: '34px', flexShrink: 0, textAlign: 'right' }}>
-                    #{species.id || '?'}
+                <span style={{ fontSize: '12px', color: typeof species.id === 'number' ? 'var(--text-muted)' : 'var(--color-purple)', fontWeight: 600, width: '34px', flexShrink: 0, textAlign: 'right' }}>
+                    {typeof species.id === 'number' ? `#${species.id}` : 'Custom'}
                 </span>
                 <span style={{ fontWeight: 700, fontSize: '14px', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {species.species}
@@ -779,7 +818,17 @@ const PokedexSection = () => {
             })
             .sort((a, b) => {
                 let va, vb;
-                if (sortKey === 'id')   { va = a.id || 0;         vb = b.id || 0; }
+                if (sortKey === 'id') {
+                    // Custom species get a string id ("custom-<timestamp>"), not a real
+                    // dex number — comparing that against a numeric id produced NaN and
+                    // undefined ordering. Pin non-numeric ids to the end regardless of
+                    // sort direction instead of interleaving them unpredictably.
+                    const aIsNum = typeof a.id === 'number';
+                    const bIsNum = typeof b.id === 'number';
+                    if (aIsNum !== bIsNum) return aIsNum ? -1 : 1;
+                    va = aIsNum ? a.id : 0;
+                    vb = bIsNum ? b.id : 0;
+                }
                 else if (sortKey === 'name') { va = a.species || ''; vb = b.species || ''; }
                 else if (sortKey === 'bst') { va = getBST(a);     vb = getBST(b); }
                 else { va = a.baseStats?.[sortKey] || 0; vb = b.baseStats?.[sortKey] || 0; }
