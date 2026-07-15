@@ -196,6 +196,13 @@ const RollHistory = ({ rollHistory, setRollHistory, mode, subMode }) => {
                                             <>
                                                 <span style={{ fontWeight: 'bold', fontSize: '18px', color: 'var(--text-primary)' }}>{roll.total}</span>
                                                 <span> damage | [{roll.rolls?.join(', ')}] = {roll.diceTotal}{(roll.diceBonus ?? 0) > 0 ? ` + ${roll.diceBonus} (base)` : ''}{roll.statBonus > 0 ? ` + ${roll.statBonus} (stat)` : ''}{roll.stabBonus > 0 ? ` + ${roll.stabBonus} (STAB)` : ''}</span>
+                                                {/* PHB2 "Calculating Damage": this total is only steps 1-2 (dice + attack
+                                                    stat + STAB) — the defender still subtracts Defense/Sp.Def and applies
+                                                    Weakness/Resistance (steps 3-4) before it comes off their HP. The app
+                                                    doesn't track an opposing Pokémon's stats, so that's a manual GM step. */}
+                                                <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontStyle: 'italic', marginTop: '2px' }}>
+                                                    Before target's Defense &amp; type effectiveness
+                                                </div>
                                             </>
                                         ) : (
                                             <span style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>Attack missed - no damage</span>
@@ -248,6 +255,9 @@ const RollHistory = ({ rollHistory, setRollHistory, mode, subMode }) => {
                                                 {(roll.diceBonus ?? 0) > 0 && <span> + {roll.diceBonus} (base)</span>}
                                                 {roll.statMod !== 0 && <span> {roll.statMod > 0 ? '+' : ''}{roll.statMod} ({roll.statModLabel})</span>}
                                                 <div className="text-muted" style={{ marginTop: '2px' }}>DB{roll.db} — {roll.dice} · {roll.weaponSource}</div>
+                                                <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontStyle: 'italic', marginTop: '2px' }}>
+                                                    Before target's Defense &amp; type effectiveness
+                                                </div>
                                             </>
                                         ) : (
                                             <span style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>Attack missed — no damage</span>

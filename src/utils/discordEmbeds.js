@@ -145,6 +145,13 @@ export const buildPokemonEmbed = (roll, trainerName) => {
         timestamp: new Date().toISOString(),
     };
 
+    // PHB2's damage steps 3-4 (defender's Defense/Sp.Def, then Weakness/Resistance) aren't
+    // applied here — the app doesn't track an opposing Pokémon's stats/types, so this is
+    // still a manual step for whoever's tracking the target.
+    if (hit && roll.dice) {
+        embed.footer = { text: "Before target's Defense & type effectiveness" };
+    }
+
     if (roll.pokemonSpriteUrl) {
         embed.thumbnail = { url: roll.pokemonSpriteUrl };
     }
@@ -323,6 +330,7 @@ export const buildTrainerAttackEmbed = (roll, trainerName) => {
         fields,
         timestamp: new Date().toISOString(),
     };
+    if (roll.isHit) embed.footer = { text: "Before target's Defense & type effectiveness" };
     if (roll.trainerAvatarUrl) embed.thumbnail = { url: roll.trainerAvatarUrl };
     return embed;
 };

@@ -131,7 +131,6 @@ const BattleTab = () => {
     const [customDice, setCustomDice] = useState('');
     const [rollHistory, setRollHistory] = useState([]);
     const [combatStages, setCombatStages] = useState({ atk: 0, satk: 0, def: 0, sdef: 0, spd: 0, acc: 0, eva: 0 });
-    const [applyStab, setApplyStab] = useState(true);
     const [selectedPokemonId, setSelectedPokemonId] = useState(null);
     const [selectedWeapon, setSelectedWeapon] = useState(null);
     const [acOverride, setAcOverride] = useState('');
@@ -311,7 +310,11 @@ const BattleTab = () => {
             diceCount = isCrit ? diceData.count * 2 : diceData.count;
             rolls = rollDice(diceCount, diceData.sides);
             diceTotal = rolls.reduce((sum, r) => sum + r, 0);
-            if (applyStab && selectedPokemon.types?.includes(selectedMove.type)) {
+            // STAB isn't optional per PHB2 — it applies automatically whenever the move's
+            // type matches one of the Pokémon's own types. (An ability/feature that negates
+            // an opponent's STAB is a rare exception a GM adjusts manually, same as Defense
+            // and type effectiveness — see the "Before target's Defense..." roll note.)
+            if (selectedPokemon.types?.includes(selectedMove.type)) {
                 stabBonus = calculateSTAB(selectedPokemon.level || 1);
             }
             total = diceTotal + (isCrit ? diceData.bonus * 2 : diceData.bonus) + statMod + stabBonus;
@@ -680,22 +683,15 @@ const BattleTab = () => {
                                         statusConditions={selectedPokemon?.statusConditions}
                                     />
 
-                                    {/* STAB Toggle */}
-                                    {selectedPokemon && (
-                                        <div style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                            <label
-                                                style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}
-                                                title="Same Type Attack Bonus - extra damage when using moves that match the Pokémon's type. Scales with level."
-                                            >
-                                                <input type="checkbox" checked={applyStab} onChange={(e) => setApplyStab(e.target.checked)} />
-                                                <span style={{ fontSize: '13px' }}>Apply STAB</span>
-                                            </label>
-                                            <span
-                                                style={{ fontSize: '12px', color: 'var(--text-secondary)' }}
-                                                title="Same Type Attack Bonus (STAB): +1 at Lv.5, +2 at Lv.10, +3 at Lv.15, +4 at Lv.20… (+1 per 5 levels)"
-                                            >
-                                                (+{calculateSTAB(selectedPokemon.level || 1)} for matching type)
-                                            </span>
+                                    {/* STAB — automatic per PHB2 (not optional when the move's type matches one
+                                        of the Pokémon's own), so this is informational only, shown only when
+                                        it's actually about to apply to the currently selected move. */}
+                                    {selectedPokemon && selectedMove && selectedPokemon.types?.includes(selectedMove.type) && (
+                                        <div
+                                            style={{ marginBottom: '8px', fontSize: '12px', color: 'var(--color-success-text)' }}
+                                            title="Same Type Attack Bonus (STAB): +1 at Lv.5, +2 at Lv.10, +3 at Lv.15, +4 at Lv.20… (+1 per 5 levels)"
+                                        >
+                                            ✓ STAB +{calculateSTAB(selectedPokemon.level || 1)} applies ({selectedMove.type} matches this Pokémon's type)
                                         </div>
                                     )}
 
