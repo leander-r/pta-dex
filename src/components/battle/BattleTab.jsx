@@ -3,7 +3,7 @@
 // ============================================================
 
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
-import { getTypeColor } from '../../utils/typeUtils.js';
+import { getTypeColor, getTypeTerrainBackground } from '../../utils/typeUtils.js';
 import { calculateSTAB, getActualStats, calculatePokemonHP, parseDice, applyCombatStage, parseHealFormula, parseCritThreshold, parseACFromFrequency } from '../../utils/dataUtils.js';
 import toast from '../../utils/toast.js';
 import { safeLocalStorageGet, safeLocalStorageSet } from '../../utils/storageUtils.js';
@@ -564,18 +564,31 @@ const BattleTab = () => {
                                 onSelect={(id) => { setSelectedPokemonId(id); setSelectedMove(null); resetCombatStages(); }}
                             />
 
-                            {/* Pokémon Sprite — shared by both sub-modes */}
+                            {/* Pokémon Sprite — shared by both sub-modes. Background evokes the
+                                Pokémon's type(s) as a little biome (e.g. Fire = scorched ground
+                                over magma, Ground = dusty earth with sparse grass, Rock = stony
+                                terrain), blended for dual-types. Purely decorative CSS gradient,
+                                no image assets. */}
                             {selectedPokemon && (() => {
                                 const img = megaEvolved && currentMegaForm
                                     ? getMegaSprite(selectedPokemon, currentMegaForm)
                                     : getPokemonDisplayImage(selectedPokemon);
                                 if (!img) return null;
+                                const activeTypes = megaEvolved && currentMegaForm?.types?.length > 0
+                                    ? currentMegaForm.types
+                                    : (selectedPokemon.types || []);
                                 return (
-                                    <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '8px' }}>
+                                    <div style={{
+                                        display: 'flex', justifyContent: 'center', alignItems: 'flex-end',
+                                        marginBottom: '8px', padding: '10px',
+                                        borderRadius: '12px', overflow: 'hidden',
+                                        background: getTypeTerrainBackground(activeTypes),
+                                        border: `1px solid ${getTypeColor(activeTypes[0])}55`,
+                                    }}>
                                         <img
                                             src={img}
                                             alt={selectedPokemon.name || selectedPokemon.species}
-                                            style={{ width: '96px', height: '96px', objectFit: 'contain', imageRendering: !selectedPokemon.avatar ? 'pixelated' : 'auto' }}
+                                            style={{ width: '96px', height: '96px', objectFit: 'contain', imageRendering: !selectedPokemon.avatar ? 'pixelated' : 'auto', filter: 'drop-shadow(0 3px 3px rgba(0,0,0,0.35))' }}
                                         />
                                     </div>
                                 );
