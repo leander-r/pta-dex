@@ -572,8 +572,15 @@ const BattleTab = () => {
                                 dwarfed the fixed-size sprite. The bottom padding is a percentage —
                                 CSS resolves vertical padding % against the container's *width*,
                                 which conveniently tracks the same background-cover scale factor,
-                                so the sprite's feet stay roughly seated on the illustrated ground
-                                as the container is resized. */}
+                                so the seat point stays aligned with the illustrated ground as the
+                                container is resized. The sprite itself is anchored by its *center*
+                                (translateY(50%) after flex-end placement), not its bottom edge —
+                                these sprite sheets pad each Pokémon into a fixed 96×96 canvas
+                                centered rather than floor-aligned, so the empty margin below a
+                                sprite varies wildly by species (~8px for Charizard vs ~37px for
+                                Geodude); anchoring by center lines up consistently since sprite
+                                art is reliably centered in its frame regardless of the creature's
+                                size. */}
                             {selectedPokemon && (() => {
                                 const img = megaEvolved && currentMegaForm
                                     ? getMegaSprite(selectedPokemon, currentMegaForm)
@@ -595,7 +602,7 @@ const BattleTab = () => {
                                             <img
                                                 src={img}
                                                 alt={selectedPokemon.name || selectedPokemon.species}
-                                                style={{ width: '96px', height: '96px', objectFit: 'contain', imageRendering: !selectedPokemon.avatar ? 'pixelated' : 'auto', filter: 'drop-shadow(0 3px 3px rgba(0,0,0,0.35))' }}
+                                                style={{ width: '96px', height: '96px', objectFit: 'contain', transform: 'translateY(50%)', imageRendering: !selectedPokemon.avatar ? 'pixelated' : 'auto', filter: 'drop-shadow(0 3px 3px rgba(0,0,0,0.35))' }}
                                             />
                                         </div>
                                     </div>
