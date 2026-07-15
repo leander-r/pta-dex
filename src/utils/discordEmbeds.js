@@ -83,6 +83,16 @@ export const buildPokemonEmbed = (roll, trainerName) => {
         fields.push({ name: '✨ Effect', value: 'Applies!', inline: true });
     }
 
+    // Move's rules text — same "Target / Effect" + "Description" split shown in the app's
+    // own move-detail popup (DetailModal.jsx), so Discord readers get the same info without
+    // needing to alt-tab back to the app to see what the move actually does.
+    if (roll.moveEffect) {
+        fields.push({ name: '🎯 Target / Effect', value: roll.moveEffect, inline: false });
+    }
+    if (roll.moveDescription) {
+        fields.push({ name: '📖 Description', value: roll.moveDescription, inline: false });
+    }
+
     // Active combat stages relevant to this roll (non-zero only)
     if (roll.relevantStages?.length > 0) {
         const ordinal = n => {
@@ -228,6 +238,20 @@ export const buildHealEmbed = (roll, trainerName) => {
     return embed;
 };
 
+export const buildStatusCureEmbed = (roll, trainerName) => {
+    const embed = {
+        author: { name: trainerName },
+        title: `✨ ${roll.pokemon} used ${roll.item}`,
+        description: `**Cured:** ${roll.cured}`,
+        color: 0x9C27B0,
+        timestamp: new Date().toISOString(),
+    };
+    if (roll.pokemonSpriteUrl) {
+        embed.thumbnail = { url: roll.pokemonSpriteUrl };
+    }
+    return embed;
+};
+
 const CONTEST_COLORS_INT = { Cool: 0x2196F3, Beauty: 0xE91E63, Cute: 0xFF9800, Smart: 0x4CAF50, Tough: 0x795548 };
 
 export const buildContestEmbed = (roll, trainerName) => {
@@ -351,6 +375,7 @@ export const buildEmbed = (roll, trainerName) => {
     if (roll.type === 'trainer_skill')  return buildTrainerSkillEmbed(roll, trainerName);
     if (roll.type === 'trainer_attack') return buildTrainerAttackEmbed(roll, trainerName);
     if (roll.type === 'heal')           return buildHealEmbed(roll, trainerName);
+    if (roll.type === 'status_cure')    return buildStatusCureEmbed(roll, trainerName);
     if (roll.type === 'custom')        return buildCustomEmbed(roll, trainerName);
     if (roll.type === 'contest')       return buildContestEmbed(roll, trainerName);
     return null;

@@ -164,6 +164,7 @@ const RollHistory = ({ rollHistory, setRollHistory, mode, subMode }) => {
                                     roll.type === 'trainer_skill'   ? '#667eea' :
                                     roll.type === 'trainer_attack'  ? '#e53935' :
                                     roll.type === 'heal'            ? '#4caf50' :
+                                    roll.type === 'status_cure'     ? '#9c27b0' :
                                     roll.type === 'contest'         ? (roll.contestTypeColor || '#e91e63') : '#95a5a6'
                                 }`
                             }}
@@ -311,6 +312,14 @@ const RollHistory = ({ rollHistory, setRollHistory, mode, subMode }) => {
                                         {roll.rolls?.length === 0 && roll.formula && (
                                             <span style={{ color: 'var(--text-muted)', marginLeft: '6px' }}>({roll.formula})</span>
                                         )}
+                                    </div>
+                                </>
+                            )}
+                            {roll.type === 'status_cure' && (
+                                <>
+                                    <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>✨ {roll.pokemon} — {roll.item}</div>
+                                    <div style={{ fontSize: '12px' }}>
+                                        <span style={{ fontWeight: 'bold', color: '#9c27b0' }}>Cured: {roll.cured}</span>
                                     </div>
                                 </>
                             )}

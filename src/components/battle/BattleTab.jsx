@@ -4,11 +4,12 @@
 
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { getTypeColor } from '../../utils/typeUtils.js';
-import { calculateSTAB, getActualStats, calculatePokemonHP, parseDice, applyCombatStage, parseHealFormula, parseCritThreshold, parseACFromFrequency } from '../../utils/dataUtils.js';
+import { calculateSTAB, getActualStats, calculatePokemonHP, parseDice, applyCombatStage, parseHealFormula, parseReviveAmount, parseStatusCure, parseCritThreshold, parseACFromFrequency } from '../../utils/dataUtils.js';
 import toast from '../../utils/toast.js';
 import { safeLocalStorageGet, safeLocalStorageSet } from '../../utils/storageUtils.js';
 import { useGameData, useModal, useTrainerContext, usePokemonContext, useData, useUI } from '../../contexts/index.js';
 import { MAX_ROLL_HISTORY } from '../../data/constants.js';
+import { STATUS_CONDITIONS } from '../../data/statusConditions.js';
 import { getPokemonSprite, getPokemonDisplayImage, getMegaSprite } from '../../utils/pokemonSprite.js';
 import TypeMatchupDisplay from './TypeMatchupDisplay.jsx';
 import StatusConditionUI from './StatusConditionUI.jsx';
@@ -178,9 +179,12 @@ const BattleTab = () => {
 
     const healingInventory = useMemo(() => inventory.filter(item => {
         const t = (item.type || '').toLowerCase();
-        if (t !== 'healing' && t !== 'berry') return false;
+        if (t !== 'healing' && t !== 'berry' && t !== 'status') return false;
         if ((item.quantity ?? 1) <= 0) return false;
-        return parseHealFormula(item.effect || '').type !== 'none';
+        const effect = item.effect || '';
+        return parseHealFormula(effect).type !== 'none'
+            || parseReviveAmount(effect) !== null
+            || parseStatusCure(effect) !== null;
     }), [inventory]);
 
     // Load roll history from per-trainer localStorage key on trainer switch
@@ -276,6 +280,7 @@ const BattleTab = () => {
         const commonFields = {
             pokemon: selectedPokemon.name || selectedPokemon.species,
             move: selectedMove.name, moveType: selectedMove.type, category: selectedMove.category,
+            moveEffect: selectedMove.effect, moveDescription: selectedMove.description,
             accRoll, accModifier, modifiedAccRoll, moveAC, acWasOverridden, isHit, isCrit, critThreshold,
             typeColor, ...ctx,
         };
@@ -423,10 +428,53 @@ const BattleTab = () => {
         if (!target) { toast.warning('Select a Pokémon first.'); return; }
         const invItem = inventory.find(i => i.name.toLowerCase() === itemName.toLowerCase());
         if (!invItem) return;
-        const formula = parseHealFormula(invItem.effect || '');
+        const effect = invItem.effect || '';
         const maxHP = calculatePokemonHP(target);
-        const hpBeforeCheck = maxHP - (target.currentDamage || 0);
-        if ((formula.type === 'dice' || formula.type === 'fraction') && hpBeforeCheck >= maxHP) {
+        const hpBefore = maxHP - (target.currentDamage || 0);
+
+        const consumeItem = () => setInventory(prev => {
+            const idx = prev.findIndex(i => i.name.toLowerCase() === itemName.toLowerCase());
+            if (idx === -1) return prev;
+            const qty = prev[idx].quantity || 1;
+            if (qty <= 1) return prev.filter((_, i) => i !== idx);
+            const next = [...prev];
+            next[idx] = { ...next[idx], quantity: qty - 1 };
+            return next;
+        });
+
+        const reviveHp = parseReviveAmount(effect);
+        if (reviveHp !== null) {
+            if (hpBefore > 0) {
+                toast.warning(`${target.name || target.species} isn't fainted — ${itemName} wasn't used.`);
+                return;
+            }
+            updatePokemon(target.id, { currentDamage: Math.max(0, maxHP - reviveHp) });
+            consumeItem();
+            addToHistory({ type: 'heal', pokemon: target.name || target.species, item: itemName, formula: `Revive to ${reviveHp} HP`, rolls: [], bonus: 0, amount: reviveHp, hpBefore, hpAfter: Math.min(maxHP, reviveHp), hpMax: maxHP, pokemonSpriteUrl: getPokemonSprite(target), timestamp: Date.now() });
+            return;
+        }
+
+        const statusCure = parseStatusCure(effect);
+        if (statusCure !== null) {
+            const conditions = target.statusConditions || {};
+            const keysToClear = statusCure === 'all'
+                ? Object.keys(conditions).filter(k => conditions[k])
+                : statusCure.filter(k => conditions[k]);
+            if (keysToClear.length === 0) {
+                toast.warning(`${target.name || target.species} doesn't have a status ${itemName} cures.`);
+                return;
+            }
+            const newConditions = { ...conditions };
+            keysToClear.forEach(k => { newConditions[k] = false; });
+            updatePokemon(target.id, { statusConditions: newConditions });
+            consumeItem();
+            const label = keysToClear.map(k => STATUS_CONDITIONS.find(c => c.key === k)?.label || k).join(', ');
+            addToHistory({ type: 'status_cure', pokemon: target.name || target.species, item: itemName, cured: label, pokemonSpriteUrl: getPokemonSprite(target), timestamp: Date.now() });
+            return;
+        }
+
+        const formula = parseHealFormula(effect);
+        if ((formula.type === 'dice' || formula.type === 'fraction') && hpBefore >= maxHP) {
             toast.warning(`${target.name || target.species} is already at full HP — ${itemName} wasn't used.`);
             return;
         }
@@ -443,20 +491,11 @@ const BattleTab = () => {
         } else {
             toast.info(`Used ${itemName} (status effect only).`);
         }
-        const hpBefore = maxHP - (target.currentDamage || 0);
         const hpAfter = Math.min(maxHP, hpBefore + amount);
         if (amount > 0) {
             updatePokemon(target.id, { currentDamage: Math.max(0, (target.currentDamage || 0) - amount) });
         }
-        setInventory(prev => {
-            const idx = prev.findIndex(i => i.name.toLowerCase() === itemName.toLowerCase());
-            if (idx === -1) return prev;
-            const qty = prev[idx].quantity || 1;
-            if (qty <= 1) return prev.filter((_, i) => i !== idx);
-            const next = [...prev];
-            next[idx] = { ...next[idx], quantity: qty - 1 };
-            return next;
-        });
+        consumeItem();
         addToHistory({ type: 'heal', pokemon: target.name || target.species, item: itemName, formula: desc, rolls, bonus, amount, hpBefore, hpAfter, hpMax: maxHP, pokemonSpriteUrl: getPokemonSprite(target), timestamp: Date.now() });
     };
 

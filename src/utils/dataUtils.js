@@ -220,6 +220,41 @@ export const parseHealFormula = (effectStr = '') => {
     return { type: 'none' };
 };
 
+/**
+ * Parse an item's effect string for a Revive-style "set HP to N on a fainted Pokémon" effect
+ * (e.g. "Revives fainted Pokémon, sets HP to 20"). Returns the flat HP amount, or null if the
+ * item isn't a revive.
+ */
+export const parseReviveAmount = (effectStr = '') => {
+    const match = effectStr.match(/Revives?.*?HP to (\d+)/i);
+    return match ? parseInt(match[1], 10) : null;
+};
+
+const STATUS_CURE_MAP = {
+    poison: ['poisoned', 'badlyPoisoned'],
+    paralysis: ['paralyzed'],
+    sleep: ['asleep'],
+    burn: ['burned'], burns: ['burned'],
+    freeze: ['frozen'], freezing: ['frozen'],
+    confusion: ['confused'],
+    infatuation: ['infatuated'],
+};
+
+/**
+ * Parse an item's effect string for a status-condition cure (e.g. "Cures Poison", "Heals
+ * Paralysis", "Cures all Status Afflictions"). Returns the array of statusConditions keys it
+ * cures, the string 'all' for a full cure, or null if the item doesn't cure a status.
+ * Only matches the word immediately after "Cures"/"Heals" so it doesn't false-positive on
+ * unrelated text later in the same string (e.g. a Berry's "Confuses if dislikes X" side effect).
+ */
+export const parseStatusCure = (effectStr = '') => {
+    const match = effectStr.match(/(?:Cures?|Heals?)\s+((?:all|any)\s+Status\s+Afflictions?|[A-Za-z]+)/i);
+    if (!match) return null;
+    const phrase = match[1].toLowerCase();
+    if (phrase.includes('status')) return 'all';
+    return STATUS_CURE_MAP[phrase] || null;
+};
+
 const STAT_LABELS = { hp: 'HP', atk: 'ATK', def: 'DEF', satk: 'SATK', sdef: 'SDEF', spd: 'SPD' };
 const STATS = ['hp', 'atk', 'def', 'satk', 'sdef', 'spd'];
 

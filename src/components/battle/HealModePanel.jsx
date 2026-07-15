@@ -1,10 +1,17 @@
 import React from 'react';
-import { parseHealFormula } from '../../utils/dataUtils.js';
+import { parseHealFormula, parseReviveAmount, parseStatusCure, calculatePokemonHP } from '../../utils/dataUtils.js';
+import { STATUS_CONDITIONS } from '../../data/statusConditions.js';
 import PartyStrip from './PartyStrip.jsx';
+
+const statusLabel = (key) => STATUS_CONDITIONS.find(c => c.key === key)?.label || key;
 
 const HealModePanel = ({ selectedPokemonId, setSelectedPokemonId, party, healingInventory, onUseItem }) => {
     const selectedPoke = party.find(p => p.id === selectedPokemonId);
     const isFullHP = selectedPoke && (selectedPoke.currentDamage || 0) <= 0;
+    const maxHP = selectedPoke ? calculatePokemonHP(selectedPoke) : 0;
+    const isFainted = selectedPoke && (maxHP - (selectedPoke.currentDamage || 0)) <= 0;
+    const activeConditions = selectedPoke?.statusConditions || {};
+    const hasAnyStatus = Object.values(activeConditions).some(Boolean);
 
     return (
     <div>
@@ -29,12 +36,30 @@ const HealModePanel = ({ selectedPokemonId, setSelectedPokemonId, party, healing
         ) : (
             <div style={{ display: 'grid', gap: '6px' }}>
                 {healingInventory.map(item => {
-                    const formula = parseHealFormula(item.effect || '');
-                    const formulaLabel = formula.type === 'dice' ? `🎲 ${formula.formula}`
-                        : formula.type === 'fraction' ? `📊 ${formula.num}/${formula.denom} Max HP`
-                        : '✨ Status';
-                    const healsHP = formula.type === 'dice' || formula.type === 'fraction';
-                    const disabled = !selectedPokemonId || (healsHP && isFullHP);
+                    const effect = item.effect || '';
+                    const reviveHp = parseReviveAmount(effect);
+                    const statusCure = parseStatusCure(effect);
+                    const formula = parseHealFormula(effect);
+
+                    let formulaLabel, disabled, disabledReason;
+                    if (reviveHp !== null) {
+                        formulaLabel = `💫 Revive to ${reviveHp} HP`;
+                        disabled = !selectedPokemonId || !isFainted;
+                        disabledReason = !isFainted ? 'Only usable on a fainted Pokémon' : undefined;
+                    } else if (statusCure !== null) {
+                        const applicable = statusCure === 'all' ? hasAnyStatus : statusCure.some(k => activeConditions[k]);
+                        formulaLabel = statusCure === 'all' ? '✨ Cures any status' : `✨ Cures ${statusCure.map(statusLabel).join('/')}`;
+                        disabled = !selectedPokemonId || !applicable;
+                        disabledReason = !applicable ? "Pokémon doesn't have a status this cures" : undefined;
+                    } else {
+                        const healsHP = formula.type === 'dice' || formula.type === 'fraction';
+                        formulaLabel = formula.type === 'dice' ? `🎲 ${formula.formula}`
+                            : formula.type === 'fraction' ? `📊 ${formula.num}/${formula.denom} Max HP`
+                            : '✨ Status';
+                        disabled = !selectedPokemonId || (healsHP && isFullHP);
+                        disabledReason = healsHP && isFullHP ? 'Already at full HP' : undefined;
+                    }
+
                     return (
                         <div
                             key={item.name}
@@ -49,7 +74,7 @@ const HealModePanel = ({ selectedPokemonId, setSelectedPokemonId, party, healing
                             <button
                                 onClick={() => onUseItem(item.name)}
                                 disabled={disabled}
-                                title={healsHP && isFullHP ? 'Already at full HP' : undefined}
+                                title={disabledReason}
                                 style={{
                                     padding: '6px 14px',
                                     background: !disabled ? '#4caf50' : 'var(--collapsed-btn-bg)',
