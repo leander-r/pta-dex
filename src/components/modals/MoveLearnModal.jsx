@@ -7,6 +7,7 @@
 import React from 'react';
 import useModalKeyboard from '../../hooks/useModalKeyboard.js';
 import { useModal, useGameData, usePokemonContext } from '../../contexts/index.js';
+import toast from '../../utils/toast.js';
 
 /**
  * MoveLearnModal - Modal for learning new moves (level-up or manual)
@@ -26,7 +27,7 @@ const MoveLearnModal = () => {
     // Get from contexts
     const { showDetail, showMoveLearnModal, setShowMoveLearnModal, moveLearnData, setMoveLearnData } = useModal();
     const { GAME_DATA } = useGameData();
-    const { learnMove } = usePokemonContext();
+    const { learnMove, updatePokemon, party, reserve } = usePokemonContext();
     const handleClose = () => {
         setShowMoveLearnModal(false);
         setMoveLearnData(null);
@@ -41,6 +42,15 @@ const MoveLearnModal = () => {
     const isNatural = moveSource === 'natural';
 
     const handleForgetMove = (index) => {
+        // Snapshot the current moves so this swap can be undone — forgetting a
+        // move here happens mid level-up flow, at a full-slots moment, exactly
+        // when a mis-tap is most likely and hardest to notice.
+        const list = moveLearnData.inParty ? party : reserve;
+        const currentPokemon = list.find(p => p.id === moveLearnData.pokemonId);
+        const prevMoves = currentPokemon ? [...currentPokemon.moves] : null;
+        const prevMoveHistory = currentPokemon ? [...(currentPokemon.moveHistory || [])] : null;
+        const forgottenMove = moveLearnData.currentMoves?.[index];
+
         learnMove(
             moveLearnData.pokemonId,
             moveLearnData.newMove,
@@ -49,6 +59,16 @@ const MoveLearnModal = () => {
         );
         setShowMoveLearnModal(false);
         setMoveLearnData(null);
+
+        toast.show(
+            `${moveLearnData.pokemonName} forgot ${forgottenMove?.name || 'a move'} to learn ${moveLearnData.newMove.move}.`,
+            'warning',
+            6000,
+            prevMoves ? {
+                label: 'Undo',
+                onClick: () => updatePokemon(moveLearnData.pokemonId, { moves: prevMoves, moveHistory: prevMoveHistory })
+            } : null
+        );
     };
 
     const moveData = GAME_DATA.moves[moveLearnData.newMove.move] || {};
