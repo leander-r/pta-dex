@@ -117,6 +117,7 @@ export const loadGameDataFromGitHub = async () => {
         
         // 3. Merge with GAME_DATA
         if (data.natures) GAME_DATA.natures = data.natures;
+        if (data.skills) GAME_DATA.skills = data.skills;
         if (data.pokemonSkills) GAME_DATA.pokemonSkills = data.pokemonSkills;
         if (data.trainerClasses) GAME_DATA.trainerClasses = data.trainerClasses;
         if (data.features) GAME_DATA.features = data.features;

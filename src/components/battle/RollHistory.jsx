@@ -213,8 +213,15 @@ const RollHistory = ({ rollHistory, setRollHistory, mode, subMode }) => {
                                     <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>{roll.skill} ({roll.skillStat})</div>
                                     <div style={{ fontSize: '12px' }}>
                                         <span style={{ fontWeight: 'bold', fontSize: '18px' }}>{roll.total}</span>
-                                        <span> | [{roll.rolls?.join(', ')}] {roll.modifier >= 0 ? '+' : ''}{roll.modifier} stat</span>
-                                        {roll.hasSkill && <span> +2 trained</span>}
+                                        <span> | [{roll.rolls?.join(', ')}]</span>
+                                        {/* Untrained skills apply no stat bonus at all (plain 1d20) — showing the raw
+                                            stat modifier here regardless of training status implied it was added when
+                                            it wasn't. And the old hardcoded "+2 trained" under-reported Rank 2's real
+                                            bonus (2×modifier+4, not modifier+2) — show the actual computed roll.bonus
+                                            instead of reconstructing it from parts. */}
+                                        {roll.hasSkill && roll.bonus > 0 && (
+                                            <span> +{roll.bonus} trained (stat {roll.modifier >= 0 ? '+' : ''}{roll.modifier})</span>
+                                        )}
                                     </div>
                                 </>
                             )}

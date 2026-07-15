@@ -75,6 +75,22 @@ const ARMS_DB = {
 // Calculate stat modifier (PTA formula)
 const calcStatMod = (stat) => stat >= 10 ? Math.floor((stat - 10) / 2) : -(10 - stat);
 
+// Overland/Surface/Underwater are "movement" type skills (GAME_DATA.skills[x].type ===
+// 'movement') — PHB2 "Shift Actions" (p.~19337) and the dedicated Overland/Surface/
+// Underwater section confirm these are a fixed per-turn movement value, not something you
+// roll 1d20 for like the other (check/opposed/passive) skills. They must NOT be offered in
+// the rollable Skill dropdown below. Exact formulas per the rulebook:
+//   Overland:   5, or 3 + floor(max(SPD,ATK) modifier / 2) if greater
+//   Surface:    4, or 2 + floor(DEF modifier / 2) if greater
+//   Underwater: 3, or 4 if max(ATK,DEF) modifier >= 3
+const getMovementSkillValue = (name, stats) => {
+    const mod = (key) => calcStatMod(stats?.[key] ?? 6);
+    if (name === 'Overland')   return Math.max(5, 3 + Math.floor(Math.max(mod('spd'), mod('atk')) / 2));
+    if (name === 'Surface')    return Math.max(4, 2 + Math.floor(mod('def') / 2));
+    if (name === 'Underwater') return Math.max(mod('atk'), mod('def')) >= 3 ? 4 : 3;
+    return null;
+};
+
 // Build a normalized roll-history entry for a Pokemon attack.
 // Extra fields (typeColor, attackerCurrentHP, etc.) are spread through unchanged.
 const buildPokemonRollEntry = ({
@@ -312,15 +328,14 @@ const BattleTab = () => {
     const rollTrainerSkill = () => {
         if (!selectedSkill) return;
         const skillData = GAME_DATA.skills[selectedSkill];
-        if (!skillData) return;
+        if (!skillData || skillData.type === 'movement') return;
 
+        // Simple stats (e.g. "ATK") map straight to a trainer.stats key; movement skills
+        // are excluded above, so no compound "X/Y" field reaches here.
         const statKey = skillData.stat?.toLowerCase();
-        const baseStat = trainer.stats?.[statKey] || 6;
+        const baseStat = trainer.stats?.[statKey] ?? 6;
         // PH2 p.10: +1 per 2 pts above 10, -1 per pt below 10
-        let modifier;
-        if (baseStat === 10) modifier = 0;
-        else if (baseStat < 10) modifier = -(10 - baseStat);
-        else modifier = Math.floor((baseStat - 10) / 2);
+        const modifier = calcStatMod(baseStat);
 
         const skills = trainer.skills || {};
         const skillRank = Array.isArray(skills)
@@ -810,7 +825,9 @@ const BattleTab = () => {
                                 style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid var(--border-medium)', marginBottom: '8px', background: 'var(--input-bg)', color: 'var(--text-primary)' }}
                             >
                                 <option value="">Choose a skill...</option>
-                                {Object.entries(GAME_DATA.skills || {}).map(([name, data]) => {
+                                {/* Overland/Surface/Underwater are a fixed per-turn movement value per PHB2,
+                                    not something rolled with 1d20 — shown separately below instead. */}
+                                {Object.entries(GAME_DATA.skills || {}).filter(([, data]) => data.type !== 'movement').map(([name, data]) => {
                                     const skills = trainer.skills || {};
                                     const rank = Array.isArray(skills) ? (skills.includes(name) ? 1 : 0) : (skills[name] || 0);
                                     return (
@@ -821,12 +838,21 @@ const BattleTab = () => {
                                 })}
                             </select>
 
+                            {/* Movement Skills — fixed per-turn values (PHB2 "Shift Actions"), always
+                                active, not rolled. Shown for reference alongside the rollable skills. */}
+                            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '12px', padding: '8px 10px', borderRadius: '6px', background: 'var(--bg-secondary)', fontSize: '12px' }}>
+                                {['Overland', 'Surface', 'Underwater'].filter(n => GAME_DATA.skills?.[n]).map(name => (
+                                    <span key={name} title={GAME_DATA.skills[name].description}>
+                                        <strong>{name}:</strong> {getMovementSkillValue(name, trainer.stats)}
+                                    </span>
+                                ))}
+                            </div>
+
                             {/* Selected Skill Info */}
                             {selectedSkill && GAME_DATA.skills?.[selectedSkill] && (() => {
                                 const skillData = GAME_DATA.skills[selectedSkill];
-                                const statKey = skillData.stat?.toLowerCase();
-                                const baseStat = trainer.stats?.[statKey] || 10;
-                                const modifier = baseStat >= 10 ? Math.floor((baseStat - 10) / 2) : -(10 - baseStat);
+                                const baseStat = trainer.stats?.[skillData.stat?.toLowerCase()] ?? 6;
+                                const modifier = calcStatMod(baseStat);
                                 const skills = trainer.skills || {};
                                 const skillRank = Array.isArray(skills) ? (skills.includes(selectedSkill) ? 1 : 0) : (skills[selectedSkill] || 0);
                                 const hasTrained = skillRank > 0;
