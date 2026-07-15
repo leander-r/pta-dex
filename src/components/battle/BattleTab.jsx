@@ -566,11 +566,14 @@ const BattleTab = () => {
 
                             {/* Pokémon Sprite — shared by both sub-modes. Background shows an
                                 illustrated arena for the Pokémon's primary type (e.g. Fire =
-                                magma platform, Water = rippling pool). The bottom padding is a
-                                percentage — CSS resolves vertical padding % against the
-                                container's *width*, which conveniently tracks the same
-                                background-cover scale factor, so the sprite's feet stay roughly
-                                seated on the illustrated ground as the container is resized. */}
+                                magma platform, Water = rippling pool). Capped at maxWidth so the
+                                platform renders close to its native resolution instead of being
+                                stretched to fill the whole card — at full card width the platform
+                                dwarfed the fixed-size sprite. The bottom padding is a percentage —
+                                CSS resolves vertical padding % against the container's *width*,
+                                which conveniently tracks the same background-cover scale factor,
+                                so the sprite's feet stay roughly seated on the illustrated ground
+                                as the container is resized. */}
                             {selectedPokemon && (() => {
                                 const img = megaEvolved && currentMegaForm
                                     ? getMegaSprite(selectedPokemon, currentMegaForm)
@@ -580,18 +583,21 @@ const BattleTab = () => {
                                     ? currentMegaForm.types
                                     : (selectedPokemon.types || []);
                                 return (
-                                    <div style={{
-                                        display: 'flex', justifyContent: 'center', alignItems: 'flex-end',
-                                        marginBottom: '8px', padding: '10px', paddingBottom: '23%',
-                                        borderRadius: '12px', overflow: 'hidden',
-                                        background: getTypeTerrainBackground(activeTypes),
-                                        border: `1px solid ${getTypeColor(activeTypes[0])}55`,
-                                    }}>
-                                        <img
-                                            src={img}
-                                            alt={selectedPokemon.name || selectedPokemon.species}
-                                            style={{ width: '96px', height: '96px', objectFit: 'contain', imageRendering: !selectedPokemon.avatar ? 'pixelated' : 'auto', filter: 'drop-shadow(0 3px 3px rgba(0,0,0,0.35))' }}
-                                        />
+                                    <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '8px' }}>
+                                        <div style={{
+                                            display: 'flex', justifyContent: 'center', alignItems: 'flex-end',
+                                            width: '100%', maxWidth: '240px',
+                                            padding: '10px', paddingBottom: '23%',
+                                            borderRadius: '12px', overflow: 'hidden',
+                                            background: getTypeTerrainBackground(activeTypes),
+                                            border: `1px solid ${getTypeColor(activeTypes[0])}55`,
+                                        }}>
+                                            <img
+                                                src={img}
+                                                alt={selectedPokemon.name || selectedPokemon.species}
+                                                style={{ width: '96px', height: '96px', objectFit: 'contain', imageRendering: !selectedPokemon.avatar ? 'pixelated' : 'auto', filter: 'drop-shadow(0 3px 3px rgba(0,0,0,0.35))' }}
+                                            />
+                                        </div>
                                     </div>
                                 );
                             })()}
