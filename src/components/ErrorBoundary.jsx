@@ -44,21 +44,41 @@ class ErrorBoundary extends React.Component {
                         <p style={{ marginBottom: '12px', fontSize: '15px' }}>
                             ⚠️ This section encountered an error.
                         </p>
-                        <button
-                            onClick={this.reset}
-                            style={{
-                                padding: '8px 18px',
-                                background: 'linear-gradient(135deg, #667eea, #764ba2)',
-                                color: 'white',
-                                border: 'none',
-                                borderRadius: '6px',
-                                cursor: 'pointer',
-                                fontWeight: '600',
-                                fontSize: '14px'
-                            }}
-                        >
-                            Try Again
-                        </button>
+                        <p style={{ marginBottom: '12px', fontSize: '12px' }}>
+                            If "Try Again" keeps failing, the error is likely in stored data, not a one-off glitch — reload instead. Your data should be safe in storage.
+                        </p>
+                        <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                            <button
+                                onClick={this.reset}
+                                style={{
+                                    padding: '8px 18px',
+                                    background: 'linear-gradient(135deg, #667eea, #764ba2)',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '6px',
+                                    cursor: 'pointer',
+                                    fontWeight: '600',
+                                    fontSize: '14px'
+                                }}
+                            >
+                                Try Again
+                            </button>
+                            <button
+                                onClick={() => window.location.reload()}
+                                style={{
+                                    padding: '8px 18px',
+                                    background: 'transparent',
+                                    color: 'var(--text-secondary)',
+                                    border: '1px solid var(--border-medium, #ccc)',
+                                    borderRadius: '6px',
+                                    cursor: 'pointer',
+                                    fontWeight: '600',
+                                    fontSize: '14px'
+                                }}
+                            >
+                                🔄 Reload Page
+                            </button>
+                        </div>
                         <details style={{ marginTop: '16px', textAlign: 'left' }}>
                             <summary style={{ cursor: 'pointer', fontSize: '12px' }}>
                                 Technical Details

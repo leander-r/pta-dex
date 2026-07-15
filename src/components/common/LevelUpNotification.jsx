@@ -15,7 +15,7 @@ const LevelUpNotification = ({ notification }) => {
     // Handle evolution/devolution notifications
     if (notification.type === 'evolution' || notification.type === 'devolution') {
         return (
-            <div className="level-up-notification" style={{
+            <div className="level-up-notification" role="status" aria-live="polite" style={{
                 background: notification.type === 'evolution'
                     ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
                     : 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'
@@ -28,7 +28,7 @@ const LevelUpNotification = ({ notification }) => {
 
     // Handle trainer level up notifications
     return (
-        <div className="level-up-notification">
+        <div className="level-up-notification" role="status" aria-live="polite">
             <h4>Level Up!</h4>
             <p>{notification.name} reached level {notification.level}!</p>
             {notification.statPoints > 0 && (

@@ -1798,6 +1798,7 @@
             display: flex;
             align-items: center;
             gap: 12px;
+            pointer-events: none;
         }
 
         .level-up-notification h4 {

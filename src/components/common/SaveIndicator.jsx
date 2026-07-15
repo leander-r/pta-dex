@@ -18,7 +18,7 @@ const SaveIndicator = ({ show, isAuto = false, saveTime = null }) => {
     };
 
     return (
-        <div className={`save-indicator ${show ? 'show' : ''}`}>
+        <div className={`save-indicator ${show ? 'show' : ''}`} role="status" aria-live="polite">
             {isAuto ? 'Auto-saved' : 'Saved'} {saveTime && `at ${formatTime(saveTime)}`}
         </div>
     );

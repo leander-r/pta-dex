@@ -331,13 +331,15 @@ const InventoryTab = () => {
     };
 
     const handleSetQuantity = (itemName, quantity) => {
-        // Allow empty string while typing — treat as 1 temporarily
+        // Allow empty string while typing — show blank without touching the real
+        // quantity yet. Previously this wrote quantity: 0 straight into state, so
+        // clearing the field and blurring/navigating away before typing a new
+        // number silently collapsed the stock to 1 with no way back.
         const raw = String(quantity).trim();
         if (raw === '') {
-            // User is clearing the field; keep the item but show empty
             setInventory(prev => prev.map(item => {
                 if (item.name.toLowerCase() === itemName.toLowerCase()) {
-                    return { ...item, quantity: 0, _editing: true };
+                    return { ...item, _editing: true };
                 }
                 return item;
             }));
@@ -353,12 +355,13 @@ const InventoryTab = () => {
         }));
     };
 
-    // Commit quantity on blur — if still 0 or empty, reset to 1
+    // Commit quantity on blur — if the field was left blank, the real quantity
+    // was never touched (see handleSetQuantity), so this just clears the
+    // "show blank" flag and restores the display.
     const handleQuantityBlur = (itemName) => {
         setInventory(prev => prev.map(item => {
             if (item.name.toLowerCase() === itemName.toLowerCase()) {
-                const qty = item.quantity || 1;
-                return { ...item, quantity: Math.max(qty, 1), _editing: undefined };
+                return { ...item, quantity: Math.max(item.quantity || 1, 1), _editing: undefined };
             }
             return item;
         }));
