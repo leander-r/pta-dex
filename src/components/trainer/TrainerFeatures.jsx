@@ -500,6 +500,29 @@ const TrainerFeatures = () => {
                     </select>
                 </div>
 
+                {/* Quick filter to the trainer's own classes — the 953-entry list mixes
+                    every class together by default, so surface a shortcut to narrow it. */}
+                {(trainer.classes || []).some(c => categories.includes(c)) && (
+                    <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '10px' }}>
+                        <span style={{ fontSize: '12px', color: 'var(--text-muted)', alignSelf: 'center' }}>My classes:</span>
+                        {trainer.classes.filter(c => categories.includes(c)).map(cls => (
+                            <button
+                                key={cls}
+                                onClick={() => setFeatureFilter(featureFilter === cls ? 'all' : cls)}
+                                style={{
+                                    padding: '4px 10px', borderRadius: '12px', fontSize: '12px', cursor: 'pointer',
+                                    border: `1px solid ${featureFilter === cls ? 'var(--color-purple)' : 'var(--border-medium)'}`,
+                                    background: featureFilter === cls ? 'var(--color-purple)' : 'var(--bg-primary)',
+                                    color: featureFilter === cls ? 'white' : 'var(--text-secondary)',
+                                    fontWeight: featureFilter === cls ? 'bold' : 'normal'
+                                }}
+                            >
+                                {cls}
+                            </button>
+                        ))}
+                    </div>
+                )}
+
                 {/* Feature List */}
                 <div>
                     {availableFeatures.length === 0 ? (
