@@ -33,9 +33,9 @@ const HPTracker = ({ label, currentHP, maxHP, onDamage, onHeal, onFull, level, i
         ? Math.min(18, level || 1)
         : Math.min(90, (level || 1) * 2);
     const deathDice = isTrainer ? '1d20' : '1d100';
-    const lethalNote = isTrainer
-        ? 'Trainers below level 20 cannot deal lethal damage.'
-        : 'Pokémon below level 30 cannot deal lethal damage (HP floors at −90% max).';
+    // This caps the ATTACKER's level, not this tracker's own — the app doesn't model an
+    // external attacker's stats, so it can't auto-enforce this; it's a manual GM reminder.
+    const lethalNote = 'Reminder: a Pokémon below level 30 or a Trainer below level 20 dealing this damage cannot deal lethal damage — cap it at -90% Max HP instead if that\'s the case here.';
 
     const dmgBtnStyle = {
         flex: 1, padding: '8px 4px', background: 'var(--stat-atk, #f44336)', color: 'white',

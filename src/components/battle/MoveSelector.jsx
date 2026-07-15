@@ -1,11 +1,6 @@
 import React from 'react';
 import { getTypeColor, getContrastTextColor } from '../../utils/typeUtils.js';
-
-const parseACFromFrequency = (freq) => {
-    if (!freq) return 2;
-    const match = freq.match(/[-–]\s*(\d+)/);
-    return match ? parseInt(match[1]) : 2;
-};
+import { parseACFromFrequency } from '../../utils/dataUtils.js';
 
 const parseFreqLabel = (freq) => {
     if (!freq) return null;
@@ -111,7 +106,7 @@ const MoveSelector = ({ selectedPokemon, selectedMove, onSelectMove, showDetail,
                                     <span style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>{damage}</span>
                                 )}
 
-                                <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>AC {ac}</span>
+                                <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{ac == null ? 'Auto-hit' : `AC ${ac}`}</span>
 
                                 {freqLabel && (
                                     <span style={{

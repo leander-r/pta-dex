@@ -257,7 +257,11 @@ const ContestPanel = ({ selectedPokemon, gameData, onRoll }) => {
                     {/* Copy button */}
                     <button
                         onClick={copyForGM}
-                        title={`Copies: ${selectedPokemon.name || selectedPokemon.species} | ${selectedMove.name} | ${roll.total}`}
+                        title={(() => {
+                            const parts = [selectedPokemon.name || selectedPokemon.species, selectedMove.name, selectedMove.contestType || '', roll.total];
+                            if (selectedMove.contestEffect) parts.push(selectedMove.contestEffect);
+                            return `Copies: ${parts.join(' | ')}`;
+                        })()}
                         style={{ width: '100%', padding: '7px 8px', borderRadius: 6, border: `1px solid ${color}55`, background: `${color}18`, color, fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
                     >
                         📋 Copy for GM

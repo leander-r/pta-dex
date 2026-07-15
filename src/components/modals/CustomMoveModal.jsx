@@ -14,18 +14,16 @@ const TYPE_LIST = [
     'Rock', 'Ghost', 'Dragon', 'Dark', 'Steel', 'Fairy'
 ];
 
-const FREQUENCY_OPTIONS = [
-    'At-Will', 'At-Will - 2', 'At-Will - 3',
-    'EOT', 'EOT - 2',
-    'Battle', 'Battle - 2',
-    'Center', 'Center - 2',
-    'Daily'
-];
+// The real movepool stores Frequency and Accuracy Check combined into one string
+// (e.g. "Center - 4"), which made picking one out of a list of pre-combined options
+// like "Center - 2" (but not "Center - 4") the only way to set a move's AC here.
+// Split into two plain fields instead and recombine them on submit.
+const FREQUENCY_BASE_OPTIONS = ['At-Will', 'EOT', 'Battle', 'Center', 'Daily'];
 
 // Mirrors ModalContext's customMove initial state — this modal's form state
 // is never otherwise reset, so reopening it after creating one move shows
 // that move's data still filled in.
-const DEFAULT_CUSTOM_MOVE = { name: '', type: 'Normal', category: 'Physical', frequency: 'At-Will', damage: '', range: 'Melee', effect: '', description: '', source: 'natural' };
+const DEFAULT_CUSTOM_MOVE = { name: '', type: 'Normal', category: 'Physical', frequency: 'At-Will', ac: '2', cannotMiss: false, damage: '', range: 'Melee', effect: '', description: '', source: 'natural' };
 
 /**
  * CustomMoveModal - Modal for creating custom Pokemon moves
@@ -81,8 +79,11 @@ const CustomMoveModal = () => {
             return;
         }
 
+        const { ac, cannotMiss, frequency, ...moveFields } = customMove;
+        const combinedFrequency = cannotMiss ? `${frequency} - None` : (ac ? `${frequency} - ${ac}` : frequency);
+
         updatePokemon(customMoveForPokemon, {
-            moves: [...targetPoke.moves, { ...customMove, source }]
+            moves: [...targetPoke.moves, { ...moveFields, frequency: combinedFrequency, source }]
         });
 
         handleClose();
@@ -202,21 +203,31 @@ const CustomMoveModal = () => {
                                 value={customMove.frequency}
                                 onChange={(e) => setCustomMove(prev => ({ ...prev, frequency: e.target.value }))}
                             >
-                                {FREQUENCY_OPTIONS.map(freq => (
+                                {FREQUENCY_BASE_OPTIONS.map(freq => (
                                     <option key={freq} value={freq}>{freq}</option>
                                 ))}
                             </select>
                         </div>
 
                         <div className="form-group">
-                            <label>Move Source</label>
-                            <select
-                                value={customMove.source}
-                                onChange={(e) => setCustomMove(prev => ({ ...prev, source: e.target.value }))}
-                            >
-                                <option value="natural">Natural / Level-Up</option>
-                                <option value="taught">Taught / TM / Tutor</option>
-                            </select>
+                            <label>Accuracy Check</label>
+                            <input
+                                type="number"
+                                min="1"
+                                value={customMove.cannotMiss ? '' : customMove.ac}
+                                disabled={customMove.cannotMiss}
+                                onChange={(e) => setCustomMove(prev => ({ ...prev, ac: e.target.value }))}
+                                placeholder="e.g., 2, 4"
+                                style={{ opacity: customMove.cannotMiss ? 0.5 : 1 }}
+                            />
+                            <label style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '6px', fontSize: '12px', fontWeight: 'normal', cursor: 'pointer' }}>
+                                <input
+                                    type="checkbox"
+                                    checked={customMove.cannotMiss}
+                                    onChange={(e) => setCustomMove(prev => ({ ...prev, cannotMiss: e.target.checked }))}
+                                />
+                                Cannot miss (no Accuracy Check)
+                            </label>
                         </div>
                     </div>
 
@@ -239,6 +250,19 @@ const CustomMoveModal = () => {
                                 onChange={(e) => setCustomMove(prev => ({ ...prev, range: e.target.value }))}
                                 placeholder="e.g., Melee, Ranged 6, Self"
                             />
+                        </div>
+                    </div>
+
+                    <div className="grid-responsive-2 gap-sm">
+                        <div className="form-group">
+                            <label>Move Source</label>
+                            <select
+                                value={customMove.source}
+                                onChange={(e) => setCustomMove(prev => ({ ...prev, source: e.target.value }))}
+                            >
+                                <option value="natural">Natural / Level-Up</option>
+                                <option value="taught">Taught / TM / Tutor</option>
+                            </select>
                         </div>
                     </div>
 

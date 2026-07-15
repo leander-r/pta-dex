@@ -25,7 +25,8 @@ const RollHistory = ({ rollHistory, setRollHistory, mode, subMode }) => {
                 if (!roll.isStatus) {
                     const hit = roll.isHit ? 'HIT' : 'MISS';
                     const crit = roll.isCrit ? ' (CRIT!)' : '';
-                    lines.push(`  Accuracy: ${roll.modifiedAccRoll ?? roll.accRoll ?? '?'} vs AC ${roll.moveAC ?? '?'} → ${hit}${crit}`);
+                    const acLabel = roll.moveAC == null ? 'Auto-hit (no AC)' : `AC ${roll.moveAC}`;
+                    lines.push(`  Accuracy: ${roll.modifiedAccRoll ?? roll.accRoll ?? '?'} vs ${acLabel} → ${hit}${crit}`);
                     if (roll.isHit && roll.dice) {
                         const db = roll.diceBonus ?? 0;
                         const notation = db ? `${roll.dice}+${db}` : roll.dice;
@@ -182,7 +183,7 @@ const RollHistory = ({ rollHistory, setRollHistory, mode, subMode }) => {
                                                 <span className="text-muted">{roll.accModifier > 0 ? '+' : ''}{roll.accModifier}={roll.modifiedAccRoll}</span>
                                             )}
                                         </span>
-                                        <span style={{ color: 'var(--text-secondary)' }}> vs AC {roll.moveAC}</span>
+                                        <span style={{ color: 'var(--text-secondary)' }}> vs {roll.moveAC == null ? 'Auto-hit (no AC)' : `AC ${roll.moveAC}`}</span>
                                         {roll.acWasOverridden && <span style={{ color: '#667eea', marginLeft: '4px' }}>(DM)</span>}
                                         {roll.isCrit && <span style={{ color: '#ff6f00', marginLeft: '4px' }}>(Natural 20!)</span>}
                                     </div>

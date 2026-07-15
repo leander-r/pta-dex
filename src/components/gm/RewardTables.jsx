@@ -15,8 +15,10 @@ const ExpCalculator = () => {
     const [activeParty, setActiveParty] = useState(1);
 
     const multiplier = isTrainer ? 2 : 1;
-    const totalExp   = expDrop * pokeLevel * multiplier;
-    const splitExp   = activeParty > 0 ? Math.floor(totalExp / activeParty) : totalExp;
+    // GM Guide p.18: split the EXP Drop between active Pokémon first, then apply the formula —
+    // NOT the other way around (floor(total/party) can overstate the award on uneven splits).
+    const splitDrop  = activeParty > 0 ? Math.floor(expDrop / activeParty) : expDrop;
+    const splitExp   = splitDrop * pokeLevel * multiplier;
 
     return (
         <div>
@@ -166,14 +168,15 @@ const ExpCalculator = () => {
                         </div>
                         {activeParty > 1 && (
                             <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 4 }}>
-                                EXP Drop per slot: ⌊{expDrop} ÷ {activeParty}⌋ = {Math.floor(expDrop / activeParty)}
+                                EXP Drop per slot: ⌊{expDrop} ÷ {activeParty}⌋ = {splitDrop}
                                 {' → '} × {pokeLevel} × {multiplier} = {splitExp}
                             </div>
                         )}
                         <button
                             onClick={() => {
-                                navigator.clipboard.writeText(String(splitExp)).catch(() => {});
-                                toast.success(`EXP awarded: ${splitExp.toLocaleString()} per active Pokémon`);
+                                navigator.clipboard.writeText(String(splitExp))
+                                    .then(() => toast.success(`EXP awarded: ${splitExp.toLocaleString()} per active Pokémon`))
+                                    .catch(() => toast.error('Could not copy to clipboard'));
                             }}
                             style={{
                                 marginTop: 10, padding: '7px 16px',

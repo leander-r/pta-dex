@@ -4,7 +4,7 @@
 
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { getTypeColor } from '../../utils/typeUtils.js';
-import { calculateSTAB, getActualStats, calculatePokemonHP, parseDice, applyCombatStage, parseHealFormula, parseCritThreshold } from '../../utils/dataUtils.js';
+import { calculateSTAB, getActualStats, calculatePokemonHP, parseDice, applyCombatStage, parseHealFormula, parseCritThreshold, parseACFromFrequency } from '../../utils/dataUtils.js';
 import toast from '../../utils/toast.js';
 import { safeLocalStorageGet, safeLocalStorageSet } from '../../utils/storageUtils.js';
 import { useGameData, useModal, useTrainerContext, usePokemonContext, useData, useUI } from '../../contexts/index.js';
@@ -44,13 +44,6 @@ const BATTLE_FORM_CHANGES = {
             statBoosts: { hp: 11, satk: 1, spd: -1 },
         },
     ],
-};
-
-// Parse the AC number from a move frequency string, e.g. "EOT – 2" → 2
-const parseACFromFrequency = (freq) => {
-    if (!freq) return 2;
-    const match = freq.match(/[-–]\s*(\d+)/);
-    return match ? parseInt(match[1]) : 2;
 };
 
 // Convert a CSS hex color string to a Discord integer color
@@ -258,7 +251,7 @@ const BattleTab = () => {
         const accRoll = Math.floor(Math.random() * 20) + 1;
         const modifiedAccRoll = accRoll + accModifier;
         const isCrit = accRoll >= critThreshold;
-        const isHit = isCrit || modifiedAccRoll >= moveAC + evaStage;
+        const isHit = moveAC === null || isCrit || modifiedAccRoll >= moveAC + evaStage;
         const acWasOverridden = acOverride !== '';
 
         const hp = getPokemonHP(selectedPokemon);
@@ -692,7 +685,10 @@ const BattleTab = () => {
                                     )}
 
                                     {/* AC Override */}
-                                    {selectedPokemon && (
+                                    {selectedPokemon && (() => {
+                                        const defaultAC = selectedMove ? parseACFromFrequency(selectedMove.frequency || selectedMove.freq) : null;
+                                        const defaultACLabel = defaultAC == null ? 'auto-hit' : String(defaultAC);
+                                        return (
                                         <div style={{ marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }} title="Override the move's Accuracy Class (higher = harder to hit)">
                                             <label style={{ fontSize: '13px', fontWeight: 'bold', color: 'var(--text-secondary)' }}>AC Override:</label>
                                             <input
@@ -701,18 +697,19 @@ const BattleTab = () => {
                                                 max="20"
                                                 value={acOverride}
                                                 onChange={(e) => setAcOverride(e.target.value)}
-                                                placeholder={selectedMove ? String(parseACFromFrequency(selectedMove.frequency || selectedMove.freq)) : 'default'}
+                                                placeholder={selectedMove ? defaultACLabel : 'default'}
                                                 style={{ width: '70px', padding: '4px 8px', borderRadius: '4px', border: acOverride !== '' ? '2px solid var(--color-purple)' : '1px solid var(--border-medium)', fontSize: '13px', textAlign: 'center', background: acOverride !== '' ? 'var(--input-bg-hover)' : 'var(--input-bg)', color: 'var(--text-primary)' }}
                                             />
                                             {acOverride !== '' ? (
                                                 <button onClick={() => setAcOverride('')} style={{ padding: '4px 8px', background: 'var(--tint-fail-bg)', color: 'var(--color-danger-text)', border: '1px solid var(--tint-fail-border)', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }} title="Clear AC override" aria-label="Clear AC override">✕ Clear</button>
                                             ) : (
                                                 <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
-                                                    {selectedMove ? `Default: AC ${parseACFromFrequency(selectedMove.frequency || selectedMove.freq)}` : 'Set to override move default'}
+                                                    {selectedMove ? `Default: ${defaultAC == null ? 'Auto-hit (no AC)' : `AC ${defaultAC}`}` : 'Set to override move default'}
                                                 </span>
                                             )}
                                         </div>
-                                    )}
+                                        );
+                                    })()}
 
                                     {/* Section divider */}
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: '10px 0 8px' }}>

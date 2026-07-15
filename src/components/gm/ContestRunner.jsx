@@ -1085,7 +1085,10 @@ const ContestRunner = () => {
                         </button>
                     )}
                 </div>
-                <button onClick={handleReset} style={{ width: '100%', padding: '10px', borderRadius: 8, border: '1px solid var(--border-light)', background: 'var(--surface-bg)', color: 'var(--text-primary)', fontWeight: 700, fontSize: 14, cursor: 'pointer' }}>
+                <button
+                    onClick={() => showConfirm({ title: 'Start New Contest?', message: 'This will discard the final standings and appeal log from this contest. Are you sure?', onConfirm: handleReset })}
+                    style={{ width: '100%', padding: '10px', borderRadius: 8, border: '1px solid var(--border-light)', background: 'var(--surface-bg)', color: 'var(--text-primary)', fontWeight: 700, fontSize: 14, cursor: 'pointer' }}
+                >
                     ↺ New Contest
                 </button>
             </div>

@@ -187,6 +187,18 @@ export const parseDice = (diceStr) => {
 };
 
 /**
+ * Parse the Accuracy Check number out of a move's frequency string (e.g. "Battle - 4" -> 4).
+ * A "- None" suffix (per PHB2, e.g. Magnet Bomb "cannot miss") means no Accuracy Check applies —
+ * returns null so callers can treat the move as an automatic hit instead of defaulting to AC 2.
+ */
+export const parseACFromFrequency = (freq) => {
+    if (!freq) return 2;
+    if (/[-–]\s*None\b/i.test(freq)) return null;
+    const match = freq.match(/[-–]\s*(\d+)/);
+    return match ? parseInt(match[1]) : 2;
+};
+
+/**
  * Parse a move description for an extended crit range (e.g. "Critical Hit on 18-20").
  * Returns the lowest roll that counts as a crit (default 20).
  */
