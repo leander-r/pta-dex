@@ -3,7 +3,7 @@
 // ============================================================
 
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
-import { getTypeColor, getTypeTerrainBackground } from '../../utils/typeUtils.js';
+import { getTypeColor } from '../../utils/typeUtils.js';
 import { calculateSTAB, getActualStats, calculatePokemonHP, parseDice, applyCombatStage, parseHealFormula, parseCritThreshold, parseACFromFrequency } from '../../utils/dataUtils.js';
 import toast from '../../utils/toast.js';
 import { safeLocalStorageGet, safeLocalStorageSet } from '../../utils/storageUtils.js';
@@ -564,55 +564,19 @@ const BattleTab = () => {
                                 onSelect={(id) => { setSelectedPokemonId(id); setSelectedMove(null); resetCombatStages(); }}
                             />
 
-                            {/* Pokémon Sprite — shared by both sub-modes. Background shows an
-                                illustrated arena for the Pokémon's primary type (e.g. Fire =
-                                magma platform, Water = rippling pool). Capped at maxWidth so the
-                                platform renders close to its native resolution instead of being
-                                stretched to fill the whole card — at full card width the platform
-                                dwarfed the fixed-size sprite. The bottom padding is a percentage —
-                                CSS resolves vertical padding % against the container's *width*,
-                                which conveniently tracks the same background-cover scale factor,
-                                so the seat point stays aligned with the illustrated ground as the
-                                container is resized. The sprite itself is anchored by its *center*
-                                (translateY(50%) after flex-end placement), not its bottom edge —
-                                these sprite sheets pad each Pokémon into a fixed 96×96 canvas
-                                centered rather than floor-aligned, so the empty margin below a
-                                sprite varies wildly by species (~8px for Charizard vs ~37px for
-                                Geodude); anchoring by center lines up consistently since sprite
-                                art is reliably centered in its frame regardless of the creature's
-                                size. */}
+                            {/* Pokémon Sprite — shared by both sub-modes */}
                             {selectedPokemon && (() => {
                                 const img = megaEvolved && currentMegaForm
                                     ? getMegaSprite(selectedPokemon, currentMegaForm)
                                     : getPokemonDisplayImage(selectedPokemon);
                                 if (!img) return null;
-                                const activeTypes = megaEvolved && currentMegaForm?.types?.length > 0
-                                    ? currentMegaForm.types
-                                    : (selectedPokemon.types || []);
                                 return (
                                     <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '8px' }}>
-                                        {/* Percentage padding always resolves against the *parent's*
-                                            width, never the element's own (possibly maxWidth-capped)
-                                            width — so the maxWidth cap has to live on this wrapper,
-                                            one level up from paddingBottom, or the seat offset comes
-                                            out wrong (and differently wrong per breakpoint, since it'd
-                                            track this card's full column width instead of the capped
-                                            240px box). */}
-                                        <div style={{ width: '100%', maxWidth: '240px' }}>
-                                            <div style={{
-                                                display: 'flex', justifyContent: 'center', alignItems: 'flex-end',
-                                                padding: '10px', paddingBottom: '23%',
-                                                borderRadius: '12px', overflow: 'hidden',
-                                                background: getTypeTerrainBackground(activeTypes),
-                                                border: `1px solid ${getTypeColor(activeTypes[0])}55`,
-                                            }}>
-                                                <img
-                                                    src={img}
-                                                    alt={selectedPokemon.name || selectedPokemon.species}
-                                                    style={{ width: '96px', height: '96px', objectFit: 'contain', transform: 'translateY(50%)', imageRendering: !selectedPokemon.avatar ? 'pixelated' : 'auto', filter: 'drop-shadow(0 3px 3px rgba(0,0,0,0.35))' }}
-                                                />
-                                            </div>
-                                        </div>
+                                        <img
+                                            src={img}
+                                            alt={selectedPokemon.name || selectedPokemon.species}
+                                            style={{ width: '96px', height: '96px', objectFit: 'contain', imageRendering: !selectedPokemon.avatar ? 'pixelated' : 'auto' }}
+                                        />
                                     </div>
                                 );
                             })()}

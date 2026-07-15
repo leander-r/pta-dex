@@ -44,26 +44,3 @@ export const getContrastTextColor = (hexColor) => {
  * Get stat color for display
  */
 export const getStatColor = (stat) => STAT_COLORS[stat?.toLowerCase()] || '#666';
-
-const KNOWN_TYPES = new Set(Object.keys(TYPE_COLORS));
-
-/**
- * URL for a type's illustrated terrain background (public/backgrounds/<type>.png).
- * BASE_URL-aware so it resolves correctly under the GitHub Pages base path.
- */
-export const getTypeBackgroundUrl = (type) => {
-    const t = type?.toLowerCase();
-    return `${import.meta.env.BASE_URL}backgrounds/${KNOWN_TYPES.has(t) ? t : 'normal'}.png`;
-};
-
-/**
- * CSS `background` value showing a type-appropriate illustrated biome behind a Pokémon
- * sprite (e.g. Rock → stony terrain, Fire → scorched ground over glowing magma).
- * TODO: dual-type Pokémon currently only show their primary type's background — no dual-type
- * art exists yet. Revisit once combined-type images are available.
- * @param {string[]} types
- * @returns {string} CSS `background` value
- */
-export const getTypeTerrainBackground = (types) => {
-    return `url(${getTypeBackgroundUrl(types?.[0])}) center bottom / cover no-repeat`;
-};
