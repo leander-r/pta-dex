@@ -117,6 +117,13 @@ const PokemonCard = ({
     // For backwards compatibility
     const borderColor = primaryColor;
 
+    // Expanded-view header text color, based on primary type only (the header gradient
+    // starts there). White-on-everything looked uniform but 13 of 18 type colors are too
+    // light for white text to clear WCAG contrast even with a text-shadow (Electric 1.49:1,
+    // Ice 1.60:1, Ground 1.76:1, etc. — verified against the WCAG relative-luminance formula).
+    const headerTextColor = getContrastTextColor(primaryColor);
+    const headerMutedColor = headerTextColor === 'white' ? 'rgba(255,255,255,0.75)' : 'rgba(26,26,46,0.7)';
+
     // Pokemon type colors for filter chips
     const pokemonTypes = ['Normal', 'Fire', 'Water', 'Electric', 'Grass', 'Ice', 'Fighting', 'Poison', 'Ground', 'Flying', 'Psychic', 'Bug', 'Rock', 'Ghost', 'Dragon', 'Dark', 'Steel', 'Fairy'];
 
@@ -943,8 +950,8 @@ const PokemonCard = ({
             <div style={{
                 background: `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})`,
                 padding: '15px',
-                color: 'white',
-                textShadow: '0 1px 3px rgba(0,0,0,0.5)'
+                color: headerTextColor,
+                textShadow: headerTextColor === 'white' ? '0 1px 3px rgba(0,0,0,0.5)' : 'none'
             }}>
                 <div className="pokemon-expanded-header">
                     <div className="pokemon-expanded-header-left">
@@ -974,7 +981,7 @@ const PokemonCard = ({
                                     borderBottom: '1px solid rgba(255,255,255,0.45)',
                                     borderRadius: '6px 6px 0 0',
                                     padding: '8px 12px',
-                                    color: 'white',
+                                    color: headerTextColor,
                                     fontSize: '16px',
                                     fontWeight: 'bold',
                                     width: '100%',
@@ -982,7 +989,7 @@ const PokemonCard = ({
                                 }}
                             />
                             {pokemon.species && (
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: 'rgba(255,255,255,0.75)', paddingLeft: '12px', marginTop: '2px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: headerMutedColor, paddingLeft: '12px', marginTop: '2px' }}>
                                     {pokemon.name && pokemon.name !== pokemon.species && (
                                         <span>{pokemon.regionalForm ? `${pokemon.regionalForm} ` : ''}{pokemon.species}</span>
                                     )}
@@ -1004,14 +1011,14 @@ const PokemonCard = ({
                             <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '6px', opacity: 0.9, background: 'rgba(255,255,255,0.12)', borderRadius: '6px', padding: '3px 6px', alignSelf: 'flex-start' }}>
                                 <button
                                     onClick={() => updatePokemon({ level: Math.max(1, (pokemon.level || 1) - 1) })}
-                                    style={{ background: 'rgba(255,255,255,0.2)', border: '1px solid rgba(255,255,255,0.45)', borderRadius: '4px', color: 'white', cursor: 'pointer', width: '26px', height: '26px', fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
+                                    style={{ background: 'rgba(255,255,255,0.2)', border: '1px solid rgba(255,255,255,0.45)', borderRadius: '4px', color: headerTextColor, cursor: 'pointer', width: '26px', height: '26px', fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
                                     title="Level down"
                                     aria-label="Level down"
                                 >−</button>
                                 <span style={{ whiteSpace: 'nowrap', minWidth: '42px', textAlign: 'center', fontSize: '13px', fontWeight: 'bold' }}>Lv.{pokemon.level}</span>
                                 <button
                                     onClick={() => updatePokemon({ level: Math.min(100, (pokemon.level || 1) + 1) })}
-                                    style={{ background: 'rgba(255,255,255,0.2)', border: '1px solid rgba(255,255,255,0.45)', borderRadius: '4px', color: 'white', cursor: 'pointer', width: '26px', height: '26px', fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
+                                    style={{ background: 'rgba(255,255,255,0.2)', border: '1px solid rgba(255,255,255,0.45)', borderRadius: '4px', color: headerTextColor, cursor: 'pointer', width: '26px', height: '26px', fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
                                     title="Level up"
                                     aria-label="Level up"
                                 >+</button>
@@ -1024,7 +1031,7 @@ const PokemonCard = ({
                             onClick={() => exportSinglePokemon(pokemon)}
                             title="Export this Pokémon as a file"
                             aria-label="Export Pokémon"
-                            style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.35)', borderRadius: '6px', padding: '7px 9px', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                            style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.35)', borderRadius: '6px', padding: '7px 9px', color: headerTextColor, cursor: 'pointer', display: 'flex', alignItems: 'center' }}
                         >
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
@@ -1034,7 +1041,7 @@ const PokemonCard = ({
                             onClick={() => copyPokemonToClipboard(pokemon)}
                             title="Copy Pokémon data to clipboard"
                             aria-label="Copy Pokémon"
-                            style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.35)', borderRadius: '6px', padding: '7px 9px', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                            style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.35)', borderRadius: '6px', padding: '7px 9px', color: headerTextColor, cursor: 'pointer', display: 'flex', alignItems: 'center' }}
                         >
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
@@ -1066,7 +1073,7 @@ const PokemonCard = ({
                                 border: '1px solid rgba(255,255,255,0.35)',
                                 borderRadius: '6px',
                                 padding: '8px 14px',
-                                color: 'rgba(255,255,255,0.75)',
+                                color: headerMutedColor,
                                 cursor: 'pointer',
                                 fontSize: '13px'
                             }}
