@@ -50,7 +50,7 @@ const PokemonCard = ({
     const { pokedex, pokedexLoading, GAME_DATA, customSpecies, setCustomSpecies } = useGameData();
     const { showDetail, setShowCustomSpeciesModal, setEditingCustomSpeciesId, setShowMoveLearnModal, setMoveLearnData, showConfirm, setShowCustomMoveModal, setCustomMoveForPokemon } = useModal();
     const { getEvolutionOptions } = usePokemonContext();
-    const { showHelp, setActiveTab } = useUI();
+    const { showHelp, setActiveTab, setPokedexJumpTarget } = useUI();
     const { inventory } = useData();
     const [editTab, setEditTab] = useState('info');
     const [speciesSearch, setSpeciesSearch] = useState('');
@@ -551,6 +551,24 @@ const PokemonCard = ({
                             {pokemon.species && pokemon.species !== pokemon.name && (
                                 <span className="text-muted" style={{ fontSize: '13px' }}>({pokemon.species})</span>
                             )}
+                            {pokemon.species && (
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setPokedexJumpTarget(pokemon.species);
+                                        setActiveTab('reference');
+                                    }}
+                                    title={`View ${pokemon.species} in the Pokédex`}
+                                    aria-label={`View ${pokemon.species} in the Pokédex`}
+                                    style={{
+                                        background: 'none', border: 'none', cursor: 'pointer',
+                                        fontSize: '13px', padding: '2px', lineHeight: 1,
+                                        color: 'var(--text-muted)', flexShrink: 0,
+                                    }}
+                                >
+                                    📖
+                                </button>
+                            )}
                             {customSpecies?.some(cs => cs.species === pokemon.species) && (
                                 <span style={{
                                     fontSize: '12px', fontWeight: 'bold', padding: '1px 6px',
@@ -963,9 +981,23 @@ const PokemonCard = ({
                                     boxSizing: 'border-box',
                                 }}
                             />
-                            {pokemon.species && pokemon.name && pokemon.name !== pokemon.species && (
-                                <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.75)', paddingLeft: '12px', marginTop: '2px' }}>
-                                    {pokemon.regionalForm ? `${pokemon.regionalForm} ` : ''}{pokemon.species}
+                            {pokemon.species && (
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: 'rgba(255,255,255,0.75)', paddingLeft: '12px', marginTop: '2px' }}>
+                                    {pokemon.name && pokemon.name !== pokemon.species && (
+                                        <span>{pokemon.regionalForm ? `${pokemon.regionalForm} ` : ''}{pokemon.species}</span>
+                                    )}
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setPokedexJumpTarget(pokemon.species);
+                                            setActiveTab('reference');
+                                        }}
+                                        title={`View ${pokemon.species} in the Pokédex`}
+                                        aria-label={`View ${pokemon.species} in the Pokédex`}
+                                        style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '12px', padding: 0, lineHeight: 1, color: 'inherit' }}
+                                    >
+                                        📖
+                                    </button>
                                 </div>
                             )}
                             {/* Level controls — inline below nickname */}

@@ -3,8 +3,8 @@
 // ============================================================
 // Read-only browser for all species: search, type filter, accordion
 
-import React, { useState, useMemo, useCallback, memo, useRef } from 'react';
-import { useGameData, useModal } from '../../contexts/index.js';
+import React, { useState, useMemo, useCallback, memo, useRef, useEffect } from 'react';
+import { useGameData, useModal, useUI } from '../../contexts/index.js';
 import { getTypeColor, getContrastTextColor } from '../../utils/typeUtils.js';
 import { getPokemonDisplayImage, getMegaSprite, getPokemonSprite } from '../../utils/pokemonSprite.js';
 import { POKEMON_TYPES, getCombinedTypeEffectiveness } from '../../data/typeChart.js';
@@ -799,6 +799,7 @@ const PokedexRow = memo(({ species, idx, isExpanded, isHovered, onRowClick, onMo
 
 const PokedexSection = () => {
     const { pokedex, customSpecies, pokedexLoading } = useGameData();
+    const { pokedexJumpTarget, setPokedexJumpTarget } = useUI();
 
     const [search,       setSearch]       = useState('');
     const [typeFilter,   setTypeFilter]   = useState('');
@@ -907,6 +908,20 @@ const PokedexSection = () => {
     }
 
     const handleRowClick = useCallback((id) => setExpandedId(prev => prev === id ? null : id), []);
+
+    // Jump to and expand a species requested from elsewhere in the app (e.g. a
+    // "View in Pokédex" link on a team Pokémon's card) — see UIContext's pokedexJumpTarget.
+    useEffect(() => {
+        if (!pokedexJumpTarget || !allSpecies.length) return;
+        const match = allSpecies.find(s => s.species?.toLowerCase() === pokedexJumpTarget.toLowerCase());
+        if (match) {
+            setSearch(pokedexJumpTarget);
+            setExpandedId(match.id ?? match.species);
+            setPage(0);
+            listRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        setPokedexJumpTarget(null);
+    }, [pokedexJumpTarget, allSpecies, setPokedexJumpTarget]);
 
     if (pokedexLoading) {
         return (

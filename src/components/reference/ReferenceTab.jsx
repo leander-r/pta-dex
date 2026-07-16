@@ -3,7 +3,8 @@
 // ============================================================
 // Quick reference section with type chart, moves, abilities, etc.
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { useUI } from '../../contexts/index.js';
 
 // Sub-components for each reference section
 import TypeChartSection from './TypeChartSection.jsx';
@@ -21,6 +22,16 @@ import PokedexSection from './PokedexSection.jsx';
 const ReferenceTab = () => {
     const [activeSection, setActiveSection] = useState('pokedex');
     const visitedRef = useRef(new Set(['pokedex']));
+    const { pokedexJumpTarget } = useUI();
+
+    // A "View in Pokédex" link elsewhere in the app sets pokedexJumpTarget —
+    // switch to the Pokédex sub-section so PokedexSection can pick it up.
+    useEffect(() => {
+        if (pokedexJumpTarget) {
+            visitedRef.current.add('pokedex');
+            setActiveSection('pokedex');
+        }
+    }, [pokedexJumpTarget]);
 
     const sections = [
         { id: 'pokedex', label: 'Pokédex' },

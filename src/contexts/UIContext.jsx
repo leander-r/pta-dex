@@ -55,6 +55,10 @@ export const UIProvider = ({ children }) => {
     const showHelp  = useCallback((topic) => setHelpTopic(topic), []);
     const closeHelp = useCallback(() => setHelpTopic(null), []);
 
+    // Pokédex deep-link — set to a species name to have the Reference tab's
+    // Pokédex section jump to and expand that entry (see PokedexSection.jsx)
+    const [pokedexJumpTarget, setPokedexJumpTarget] = useState(null);
+
     // Save theme to localStorage and apply to document
     useEffect(() => {
         document.documentElement.setAttribute('data-theme', theme);
@@ -112,7 +116,11 @@ export const UIProvider = ({ children }) => {
         // Help Modal
         helpTopic,
         showHelp,
-        closeHelp
+        closeHelp,
+
+        // Pokédex deep-link
+        pokedexJumpTarget,
+        setPokedexJumpTarget
     };
 
     return (
