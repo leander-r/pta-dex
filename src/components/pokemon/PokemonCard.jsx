@@ -1059,21 +1059,11 @@ const PokemonCard = ({
                                     </button>
                                 </div>
                             )}
-                            {/* Level controls — inline below nickname */}
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '6px', opacity: 0.9, background: 'rgba(255,255,255,0.12)', borderRadius: '6px', padding: '3px 6px', alignSelf: 'flex-start' }}>
-                                <button
-                                    onClick={() => updatePokemon({ level: Math.max(1, (pokemon.level || 1) - 1) })}
-                                    style={{ background: 'rgba(255,255,255,0.2)', border: '1px solid rgba(255,255,255,0.45)', borderRadius: '4px', color: headerTextColor, cursor: 'pointer', width: '26px', height: '26px', fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
-                                    title="Level down"
-                                    aria-label="Level down"
-                                >−</button>
-                                <span style={{ whiteSpace: 'nowrap', minWidth: '42px', textAlign: 'center', fontSize: '13px', fontWeight: 'bold' }}>Lv.{pokemon.level}</span>
-                                <button
-                                    onClick={() => updatePokemon({ level: Math.min(100, (pokemon.level || 1) + 1) })}
-                                    style={{ background: 'rgba(255,255,255,0.2)', border: '1px solid rgba(255,255,255,0.45)', borderRadius: '4px', color: headerTextColor, cursor: 'pointer', width: '26px', height: '26px', fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
-                                    title="Level up"
-                                    aria-label="Level up"
-                                >+</button>
+                            {/* Level — read-only display; editing now lives in the Info tab's
+                                "Set Level" field (with Confirm/Cancel), so a second, instantly-
+                                applying control here would be a redundant, inconsistent duplicate. */}
+                            <div style={{ display: 'inline-flex', alignItems: 'center', marginTop: '6px', opacity: 0.9, background: 'rgba(255,255,255,0.12)', borderRadius: '6px', padding: '3px 10px', alignSelf: 'flex-start' }}>
+                                <span style={{ whiteSpace: 'nowrap', fontSize: '13px', fontWeight: 'bold' }}>Lv.{pokemon.level}</span>
                             </div>
                         </div>
                     </div>
@@ -1709,7 +1699,7 @@ const PokemonCard = ({
                             <label style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '4px', display: 'block' }}>
                                 Set Level
                                 <span style={{ fontWeight: 'normal', fontSize: '12px', color: 'var(--text-muted)', marginLeft: '4px' }}>
-                                    (also updates EXP · header ± buttons still nudge by 1)
+                                    (also updates EXP)
                                 </span>
                             </label>
                             <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flexWrap: 'wrap' }}>
