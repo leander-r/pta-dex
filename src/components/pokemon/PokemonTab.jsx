@@ -498,6 +498,22 @@ const PokemonTab = () => {
                 )}
             </div>
 
+            {/* Compare mode guidance — checkboxes appear on every card with no other
+                explanation, so spell out what to do and show live progress. */}
+            {compareMode && (
+                <div style={{
+                    display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '12px',
+                    padding: '8px 12px', borderRadius: '8px',
+                    background: 'var(--tint-purple-bg)', border: '1px solid var(--tint-purple-border)',
+                    fontSize: '13px', color: 'var(--color-purple)', fontWeight: 'bold'
+                }}>
+                    <span aria-hidden="true">☑</span>
+                    {compareSelected.length === 0 && 'Tap two Pokémon below to compare them.'}
+                    {compareSelected.length === 1 && '1 of 2 selected — tap one more Pokémon.'}
+                    {compareSelected.length === 2 && '2 selected — click "View Comparison →" above.'}
+                </div>
+            )}
+
             {/* Tools toolbar — Search / Coverage / Presets */}
             <div style={{ display: 'flex', gap: '6px', marginBottom: '12px', flexWrap: 'wrap' }}>
                 <button
@@ -571,7 +587,7 @@ const PokemonTab = () => {
                         display: 'flex', alignItems: 'center', gap: '5px'
                     }}
                 >
-                    ✨ Custom Species ↗
+                    ✨ Custom Species
                     {customSpecies.length > 0 && (
                         <span style={{ background: 'var(--tint-purple-bg)', color: 'var(--color-purple)', borderRadius: '8px', padding: '0 5px', fontSize: '11px', fontWeight: 'bold', border: '1px solid var(--tint-purple-border)', minWidth: '18px', textAlign: 'center' }}>
                             {customSpecies.length}

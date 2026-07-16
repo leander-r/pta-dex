@@ -55,6 +55,7 @@ const PokemonCard = ({
     const [editTab, setEditTab] = useState('info');
     const [speciesSearch, setSpeciesSearch] = useState('');
     const [speciesTypeFilter, setSpeciesTypeFilter] = useState('all');
+    const [speciesTypeFilter2, setSpeciesTypeFilter2] = useState('all');
     const [speciesSort, setSpeciesSort] = useState('name'); // 'name', 'bst-high', 'bst-low', 'id'
     const [showSpeciesDropdown, setShowSpeciesDropdown] = useState(false);
     // Move selection state
@@ -75,6 +76,16 @@ const PokemonCard = ({
     const [showContestSection, setShowContestSection] = useState(false);
     // Skills tab — zero-value skills hidden by default, toggle to reveal
     const [showZeroValueSkills, setShowZeroValueSkills] = useState(false);
+
+    // Level & Experience — typed as a local draft and only committed on Confirm.
+    // updatePokemon({ exp/level }) triggers the full level-up cascade (stat points,
+    // notifications, move-learn prompts) on every call, so wiring these directly to
+    // onChange fired that cascade once per keystroke, including for intermediate,
+    // not-yet-finished values while typing (e.g. "5" then "50" then "500").
+    const [levelDraft, setLevelDraft] = useState(() => String(pokemon.level ?? 1));
+    const [expDraft, setExpDraft] = useState(() => String(pokemon.exp ?? 0));
+    useEffect(() => { setLevelDraft(String(pokemon.level ?? 1)); }, [pokemon.level]);
+    useEffect(() => { setExpDraft(String(pokemon.exp ?? 0)); }, [pokemon.exp]);
 
     // Snapshot taken when editing opens — used to revert on Cancel.
     // Only captured once per edit session (not updated as the user types).
@@ -158,6 +169,20 @@ const PokemonCard = ({
             });
         }
 
+        // Apply optional 2nd type filter (AND with the first — species must match both)
+        if (speciesTypeFilter2 !== 'all') {
+            results = results.filter(p => {
+                const baseMatch = p.types && p.types.some(t => t.toLowerCase() === speciesTypeFilter2.toLowerCase());
+                if (baseMatch) return true;
+                if (p.regionalForms) {
+                    return p.regionalForms.some(form =>
+                        form.types && form.types.some(t => t.toLowerCase() === speciesTypeFilter2.toLowerCase())
+                    );
+                }
+                return false;
+            });
+        }
+
         // Apply search filter (check species name and regional form names)
         if (speciesSearch) {
             const search = speciesSearch.toLowerCase();
@@ -196,7 +221,7 @@ const PokemonCard = ({
         });
 
         return results;
-    }, [pokedex, customSpecies, speciesSearch, speciesTypeFilter, speciesSort]);
+    }, [pokedex, customSpecies, speciesSearch, speciesTypeFilter, speciesTypeFilter2, speciesSort]);
 
     // Filter held items from inventory for selection
     const filteredHeldItems = useMemo(() => {
@@ -396,6 +421,29 @@ const PokemonCard = ({
         return [];
     }, [pokemon.availableAbilities, pokemon.species, pokedex]);
 
+    // Level/EXP draft helpers — see the draft state declarations above for why
+    // these don't call updatePokemon until the user explicitly confirms.
+    const levelDraftNum = Math.min(100, Math.max(1, parseInt(levelDraft, 10) || 1));
+    const hasLevelChange = levelDraftNum !== (pokemon.level || 1);
+    const handleConfirmLevel = () => updatePokemon({ level: levelDraftNum });
+    const handleCancelLevel = () => setLevelDraft(String(pokemon.level ?? 1));
+
+    const expDraftNum = Math.max(0, parseInt(expDraft, 10) || 0);
+    const hasExpChange = expDraftNum !== (pokemon.exp || 0);
+    const handleConfirmExp = () => updatePokemon({ exp: expDraftNum });
+    const handleCancelExp = () => setExpDraft(String(pokemon.exp ?? 0));
+    // Preview level so Confirm doesn't surprise the player with a level change
+    const previewLevelFromExp = (exp) => {
+        const chart = GAME_DATA?.pokemonExpChart || {};
+        let level = 1;
+        for (const lvl in chart) {
+            if (exp >= chart[lvl]) level = parseInt(lvl, 10);
+            else break;
+        }
+        return level;
+    };
+    const expPreviewLevel = hasExpChange ? previewLevelFromExp(expDraftNum) : null;
+
     const handleSelectSpecies = (speciesData) => {
         const doApply = () => {
             // Check if species has regional forms - let user choose
@@ -474,6 +522,7 @@ const PokemonCard = ({
         setShowRegionalFormSelect(false);
         setPendingSpeciesData(null);
         setSpeciesTypeFilter('all');
+        setSpeciesTypeFilter2('all');
     };
 
     // Collapsed view
@@ -877,7 +926,9 @@ const PokemonCard = ({
                         )}
                     </div>
 
-                    {/* Quick Actions */}
+                    {/* Quick Actions — hidden in Compare mode so they can't be mis-tapped while
+                        selecting checkboxes; Compare mode is meant to be look-only. */}
+                    {!compareMode && (
                     <div style={{ display: 'flex', gap: '4px', flexDirection: 'column', alignItems: 'flex-end' }}>
                         {canMoveUp && (
                             <button onClick={(e) => { e.stopPropagation(); onMoveUp(); }} style={quickBtnLabelStyle} className="quick-action-btn">
@@ -929,6 +980,7 @@ const PokemonCard = ({
                             </button>
                         )}
                     </div>
+                    )}
                 </div>
             </div>
         );
@@ -1026,26 +1078,28 @@ const PokemonCard = ({
                         </div>
                     </div>
                     <div style={{ display: 'flex', gap: '6px', flexShrink: 0, alignItems: 'flex-start', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-                        {/* Export & Copy — icon-only to keep header compact */}
+                        {/* Export & Copy — visible label so touch users don't have to guess (tooltips don't exist on mobile) */}
                         <button
                             onClick={() => exportSinglePokemon(pokemon)}
                             title="Export this Pokémon as a file"
                             aria-label="Export Pokémon"
-                            style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.35)', borderRadius: '6px', padding: '7px 9px', color: headerTextColor, cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                            style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.35)', borderRadius: '6px', padding: '7px 10px', color: headerTextColor, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px', fontSize: '12px', fontWeight: 'bold' }}
                         >
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
                             </svg>
+                            Export
                         </button>
                         <button
                             onClick={() => copyPokemonToClipboard(pokemon)}
                             title="Copy Pokémon data to clipboard"
                             aria-label="Copy Pokémon"
-                            style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.35)', borderRadius: '6px', padding: '7px 9px', color: headerTextColor, cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                            style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.35)', borderRadius: '6px', padding: '7px 10px', color: headerTextColor, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px', fontSize: '12px', fontWeight: 'bold' }}
                         >
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
                             </svg>
+                            Copy
                         </button>
                         {/* Visual separator */}
                         <div style={{ width: '1px', height: '28px', background: 'rgba(255,255,255,0.25)', alignSelf: 'center' }} aria-hidden="true" />
@@ -1152,7 +1206,7 @@ const PokemonCard = ({
                                 {showSpeciesDropdown && (
                                     <div
                                         style={{ position: 'fixed', inset: 0, zIndex: 99 }}
-                                        onClick={() => { setShowSpeciesDropdown(false); setSpeciesSearch(''); setSpeciesTypeFilter('all'); }}
+                                        onClick={() => { setShowSpeciesDropdown(false); setSpeciesSearch(''); setSpeciesTypeFilter('all'); setSpeciesTypeFilter2('all'); }}
                                         aria-hidden="true"
                                     />
                                 )}
@@ -1237,10 +1291,10 @@ const PokemonCard = ({
                                             )}
                                             {/* Type Filter Chips */}
                                             <div style={{ marginBottom: '8px' }}>
-                                                <div style={{ fontSize: '12px', fontWeight: 'bold', color: 'var(--species-label-text)', marginBottom: '4px' }}>Filter by Type:</div>
+                                                <div style={{ fontSize: '12px', fontWeight: 'bold', color: 'var(--species-label-text)', marginBottom: '4px' }}>Filter by Type{speciesTypeFilter !== 'all' ? ' 1' : ''}:</div>
                                                 <div role="group" aria-label="Filter by type" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(58px, 1fr))', gap: '4px', paddingBottom: '3px' }}>
                                                     <button
-                                                        onClick={() => setSpeciesTypeFilter('all')}
+                                                        onClick={() => { setSpeciesTypeFilter('all'); setSpeciesTypeFilter2('all'); }}
                                                         style={{
                                                             padding: '4px 8px',
                                                             borderRadius: '12px',
@@ -1268,6 +1322,28 @@ const PokemonCard = ({
                                                             }}
                                                         >{type}</button>
                                                     ))}
+                                                </div>
+                                                {/* Optional 2nd type — AND-combines with Type 1, same "pick Type 1 first" gating as the Reference tab's Pokédex browser */}
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '6px' }}>
+                                                    <span style={{ fontSize: '12px', color: 'var(--species-label-text)' }}>+ Type 2:</span>
+                                                    <select
+                                                        value={speciesTypeFilter2}
+                                                        onChange={(e) => setSpeciesTypeFilter2(e.target.value)}
+                                                        disabled={speciesTypeFilter === 'all'}
+                                                        style={{
+                                                            padding: '3px 6px', borderRadius: '4px', fontSize: '12px',
+                                                            border: '1px solid var(--species-input-border)',
+                                                            background: speciesTypeFilter === 'all' ? 'var(--species-filter-inactive)' : 'var(--species-dropdown-bg)',
+                                                            color: 'var(--text-primary)',
+                                                            cursor: speciesTypeFilter === 'all' ? 'not-allowed' : 'pointer',
+                                                            opacity: speciesTypeFilter === 'all' ? 0.6 : 1
+                                                        }}
+                                                    >
+                                                        <option value="all">{speciesTypeFilter === 'all' ? 'Select Type 1 first' : 'Any'}</option>
+                                                        {pokemonTypes.filter(t => t !== speciesTypeFilter).map(type => (
+                                                            <option key={type} value={type}>{type}</option>
+                                                        ))}
+                                                    </select>
                                                 </div>
                                             </div>
 
@@ -1457,7 +1533,7 @@ const PokemonCard = ({
                                                 })
                                             ) : (
                                                 <div style={{ padding: '20px', textAlign: 'center', color: 'var(--species-muted-text)' }}>
-                                                    {speciesSearch || speciesTypeFilter !== 'all'
+                                                    {speciesSearch || speciesTypeFilter !== 'all' || speciesTypeFilter2 !== 'all'
                                                         ? 'No Pokémon match your filters — try clearing them'
                                                         : 'Try searching by name or filtering by type'}
                                                 </div>
@@ -1478,6 +1554,7 @@ const PokemonCard = ({
                                                     setShowSpeciesDropdown(false);
                                                     setSpeciesSearch('');
                                                     setSpeciesTypeFilter('all');
+                                                    setSpeciesTypeFilter2('all');
                                                 }}
                                                 style={{
                                                     padding: '6px 16px',
@@ -1626,6 +1703,48 @@ const PokemonCard = ({
                             </div>
                         </div>
 
+                        {/* Section: Level */}
+                        <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '8px', paddingTop: '12px', borderTop: '1px solid var(--border-light)' }}>Level</div>
+                        <div style={{ marginBottom: '15px' }}>
+                            <label style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '4px', display: 'block' }}>
+                                Set Level
+                                <span style={{ fontWeight: 'normal', fontSize: '12px', color: 'var(--text-muted)', marginLeft: '4px' }}>
+                                    (also updates EXP · header ± buttons still nudge by 1)
+                                </span>
+                            </label>
+                            <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flexWrap: 'wrap' }}>
+                                <input
+                                    type="number"
+                                    value={levelDraft}
+                                    onChange={(e) => setLevelDraft(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') handleConfirmLevel();
+                                        if (e.key === 'Escape') handleCancelLevel();
+                                    }}
+                                    min="1"
+                                    max="100"
+                                    aria-label="Set Pokémon level"
+                                    style={{ width: '90px', padding: '10px', borderRadius: '6px', border: `1px solid ${hasLevelChange ? 'var(--color-purple)' : 'var(--border-medium)'}`, background: 'var(--input-bg)', color: 'var(--text-primary)', boxSizing: 'border-box' }}
+                                />
+                                {hasLevelChange && (
+                                    <>
+                                        <button
+                                            onClick={handleConfirmLevel}
+                                            style={{ padding: '9px 14px', borderRadius: '6px', border: 'none', background: 'var(--stat-hp)', color: 'white', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}
+                                        >
+                                            ✓ Confirm → Lv.{levelDraftNum}
+                                        </button>
+                                        <button
+                                            onClick={handleCancelLevel}
+                                            style={{ padding: '9px 14px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--bg-light)', color: 'var(--text-secondary)', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}
+                                        >
+                                            ✕ Cancel
+                                        </button>
+                                    </>
+                                )}
+                            </div>
+                        </div>
+
                         {/* Section: EXP & Nature */}
                         <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '8px', paddingTop: '12px', borderTop: '1px solid var(--border-light)' }}>Experience &amp; Nature</div>
                         <div className="pokemon-info-grid">
@@ -1639,14 +1758,18 @@ const PokemonCard = ({
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                                     <input
                                         type="number"
-                                        value={pokemon.exp || 0}
-                                        onChange={(e) => updatePokemon({ exp: parseInt(e.target.value) || 0 })}
+                                        value={expDraft}
+                                        onChange={(e) => setExpDraft(e.target.value)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') handleConfirmExp();
+                                            if (e.key === 'Escape') handleCancelExp();
+                                        }}
                                         min="0"
-                                        style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--input-bg)', color: 'var(--text-primary)', boxSizing: 'border-box' }}
+                                        style={{ width: '100%', padding: '10px', borderRadius: '6px', border: `1px solid ${hasExpChange ? 'var(--color-purple)' : 'var(--border-medium)'}`, background: 'var(--input-bg)', color: 'var(--text-primary)', boxSizing: 'border-box' }}
                                     />
                                     <div style={{ display: 'flex', gap: '4px' }}>
                                         <button
-                                            onClick={() => updatePokemon({ exp: (pokemon.exp || 0) + 100 })}
+                                            onClick={() => setExpDraft(String(expDraftNum + 100))}
                                             style={{
                                                 flex: 1, padding: '5px 0',
                                                 borderRadius: '4px',
@@ -1657,29 +1780,45 @@ const PokemonCard = ({
                                                 fontSize: '12px',
                                                 fontWeight: 'bold'
                                             }}
-                                            title="Add 100 EXP"
+                                            title="Add 100 EXP (staged — confirm below to apply)"
                                         >
                                             +100
                                         </button>
                                         <button
-                                            onClick={() => updatePokemon({ exp: Math.max(0, (pokemon.exp || 0) - 100) })}
-                                            disabled={!pokemon.exp || pokemon.exp <= 0}
+                                            onClick={() => setExpDraft(String(Math.max(0, expDraftNum - 100)))}
+                                            disabled={expDraftNum <= 0}
                                             style={{
                                                 flex: 1, padding: '5px 0',
                                                 borderRadius: '4px',
                                                 border: '1px solid var(--border-medium)',
                                                 background: 'var(--bg-light)',
                                                 color: 'var(--text-secondary)',
-                                                cursor: (!pokemon.exp || pokemon.exp <= 0) ? 'not-allowed' : 'pointer',
+                                                cursor: expDraftNum <= 0 ? 'not-allowed' : 'pointer',
                                                 fontSize: '12px',
                                                 fontWeight: 'bold',
-                                                opacity: (!pokemon.exp || pokemon.exp <= 0) ? 0.4 : 1
+                                                opacity: expDraftNum <= 0 ? 0.4 : 1
                                             }}
-                                            title="Remove 100 EXP"
+                                            title="Remove 100 EXP (staged — confirm below to apply)"
                                         >
                                             −100
                                         </button>
                                     </div>
+                                    {hasExpChange && (
+                                        <div style={{ display: 'flex', gap: '4px' }}>
+                                            <button
+                                                onClick={handleConfirmExp}
+                                                style={{ flex: 1, padding: '7px 0', borderRadius: '4px', border: 'none', background: 'var(--color-purple)', color: 'white', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}
+                                            >
+                                                ✓ Confirm{expPreviewLevel && expPreviewLevel !== (pokemon.level || 1) ? ` → Lv.${expPreviewLevel}` : ''}
+                                            </button>
+                                            <button
+                                                onClick={handleCancelExp}
+                                                style={{ flex: 1, padding: '7px 0', borderRadius: '4px', border: '1px solid var(--border-medium)', background: 'var(--bg-light)', color: 'var(--text-secondary)', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}
+                                            >
+                                                ✕ Cancel
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                             <div>
