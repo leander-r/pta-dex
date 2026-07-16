@@ -610,12 +610,18 @@ const BattleTab = () => {
                                     : getPokemonDisplayImage(selectedPokemon);
                                 if (!img) return null;
                                 return (
-                                    <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '8px' }}>
+                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '8px' }}>
                                         <img
                                             src={img}
                                             alt={selectedPokemon.name || selectedPokemon.species}
                                             style={{ width: '96px', height: '96px', objectFit: 'contain', imageRendering: !selectedPokemon.avatar ? 'pixelated' : 'auto' }}
                                         />
+                                        <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-primary)' }}>
+                                            {selectedPokemon.name || selectedPokemon.species}
+                                            {selectedPokemon.level != null && (
+                                                <span style={{ fontWeight: 600, color: 'var(--text-muted)' }}> · Lv. {selectedPokemon.level}</span>
+                                            )}
+                                        </div>
                                     </div>
                                 );
                             })()}

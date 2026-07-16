@@ -40,10 +40,23 @@ const PartyStrip = ({ party, selectedPokemonId, onSelect }) => {
                             boxShadow: isSelected ? '0 0 0 1px var(--poke-orange)' : 'none',
                         }}
                     >
-                        {sprite
-                            ? <img src={sprite} alt="" aria-hidden="true" style={{ width: '48px', height: '48px', objectFit: 'contain', imageRendering: !poke.avatar ? 'pixelated' : 'auto' }} />
-                            : <div aria-hidden="true" style={{ width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px' }}>🐾</div>
-                        }
+                        <div style={{ position: 'relative', width: '48px', height: '48px' }}>
+                            {sprite
+                                ? <img src={sprite} alt="" aria-hidden="true" style={{ width: '48px', height: '48px', objectFit: 'contain', imageRendering: !poke.avatar ? 'pixelated' : 'auto' }} />
+                                : <div aria-hidden="true" style={{ width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px' }}>🐾</div>
+                            }
+                            {poke.level != null && (
+                                <span aria-hidden="true" style={{
+                                    position: 'absolute', bottom: '-2px', right: '-2px',
+                                    fontSize: '9px', fontWeight: 700, lineHeight: 1,
+                                    padding: '2px 3px', borderRadius: '4px',
+                                    background: 'var(--surface-bg)', color: 'var(--text-secondary)',
+                                    border: '1px solid var(--border-light)',
+                                }}>
+                                    {poke.level}
+                                </span>
+                            )}
+                        </div>
                         <div style={{ fontSize: '10px', fontWeight: 600, color: isSelected ? 'var(--poke-orange)' : 'var(--text-primary)', marginTop: '2px', width: '100%', textAlign: 'center', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                             {poke.name || poke.species}
                         </div>
