@@ -160,6 +160,22 @@ const WEIGHT_COLORS = {
     Medium: '#ffb74d', Heavy: '#ef9a9a', Superweight: '#ce93d8'
 };
 
+// Display labels for the game version a flavorText entry was sourced from (PokeAPI slug -> name)
+const VERSION_LABELS = {
+    red: 'Red', blue: 'Blue', yellow: 'Yellow',
+    gold: 'Gold', silver: 'Silver', crystal: 'Crystal',
+    ruby: 'Ruby', sapphire: 'Sapphire', emerald: 'Emerald', firered: 'FireRed', leafgreen: 'LeafGreen',
+    diamond: 'Diamond', pearl: 'Pearl', platinum: 'Platinum', heartgold: 'HeartGold', soulsilver: 'SoulSilver',
+    black: 'Black', white: 'White', 'black-2': 'Black 2', 'white-2': 'White 2',
+    x: 'X', y: 'Y', 'omega-ruby': 'Omega Ruby', 'alpha-sapphire': 'Alpha Sapphire',
+    sun: 'Sun', moon: 'Moon', 'ultra-sun': 'Ultra Sun', 'ultra-moon': 'Ultra Moon',
+    'lets-go-pikachu': "Let's Go, Pikachu!", 'lets-go-eevee': "Let's Go, Eevee!",
+    sword: 'Sword', shield: 'Shield',
+    'brilliant-diamond': 'Brilliant Diamond', 'shining-pearl': 'Shining Pearl', 'legends-arceus': 'Legends: Arceus',
+    scarlet: 'Scarlet', violet: 'Violet',
+};
+const versionLabel = (v) => VERSION_LABELS[v] || (v ? v.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : '');
+
 const InfoChip = ({ label, color = 'var(--bg-section)', textColor }) => (
     <span style={{
         display: 'inline-block',
@@ -235,6 +251,8 @@ const SpeciesDetail = ({ species, evolvedFromMap }) => {
         habitat,
         megaForms,
         regionalForms,
+        flavorText,
+        flavorTextVersion,
     } = species;
 
     // The species' own evolvedFrom field is never populated in the source data — fall back
@@ -287,6 +305,20 @@ const SpeciesDetail = ({ species, evolvedFromMap }) => {
                     <DualTypeDisplay types={types} />
                 </div>
             </div>
+
+            {/* Pokédex flavor text — the in-game description blurb, sourced from its most recent appearance */}
+            {flavorText && (
+                <div style={{ padding: '10px 16px', background: 'var(--bg-light)', borderBottom: '1px solid var(--border-light)' }}>
+                    <p style={{ margin: 0, fontSize: '13px', fontStyle: 'italic', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+                        “{flavorText}”
+                    </p>
+                    {flavorTextVersion && (
+                        <div style={{ marginTop: '4px', fontSize: '11px', color: 'var(--text-muted)', textAlign: 'right' }}>
+                            — Pokémon {versionLabel(flavorTextVersion)}
+                        </div>
+                    )}
+                </div>
+            )}
 
             {/* Type Matchup — weaknesses/resistances derived from types, shown right below the header */}
             <TypeMatchupSection types={types} />

@@ -69,7 +69,7 @@ This tool replaces spreadsheets and manual note-taking with a clean, interactive
 - **Contest Runner** — Full contest simulation with judges, voltage bonuses, type relations, move repetition penalties, and 23 effect keywords
 
 ### Quick Reference
-- **Pokédex Browser** — Look up any species' base stats, abilities, skills, level-up / egg / tutor moves, and evolution chain; search by name or filter by type
+- **Pokédex Browser** — Look up any species' base stats, abilities, skills, level-up / egg / tutor moves, evolution chain, and in-game Pokédex description; search by name or filter by type
 - **Type Chart** — Interactive type effectiveness chart
 - **Natures** — Complete nature reference with stat modifiers
 - **Moves Database** — Searchable and filterable database of all moves
@@ -241,6 +241,7 @@ Pokémon, Pokémon character names, Nintendo, Game Freak, and all related marks 
 ## Attribution
 
 - **Pokémon sprites** sourced from the [Pokémon Showdown](https://github.com/smogon/pokemon-showdown-client) open-source project; sprites are the property of Nintendo / Game Freak / The Pokémon Company.
+- **Pokédex flavor text** sourced from [PokéAPI](https://pokeapi.co/); descriptions are the property of Nintendo / Game Freak / The Pokémon Company.
 - **PTA System** — game rules and data from the Pokémon Tabletop Adventures community.
 - **Developer:** [leander_rsr](https://github.com/leander-r)
 - **AI Assistance:** Development aided by Claude (Anthropic) for iteration, refactoring, and UI work.
