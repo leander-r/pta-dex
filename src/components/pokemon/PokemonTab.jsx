@@ -8,7 +8,7 @@ import PokemonCard from './PokemonCard.jsx';
 import { MAX_PARTY_SIZE } from '../../data/constants.js';
 import { importSinglePokemon } from '../../utils/exportUtils.js';
 import { POKEMON_TYPES, getCombinedTypeEffectiveness } from '../../data/typeChart.js';
-import { getTypeColor } from '../../utils/typeUtils.js';
+import { getTypeColor, getContrastTextColor } from '../../utils/typeUtils.js';
 import toast from '../../utils/toast.js';
 import { useGameData, useUI, useModal, useTrainerContext, usePokemonContext } from '../../contexts/index.js';
 import { MAX_POKEMON_IMPORT_BYTES } from '../../data/constants.js';
@@ -608,7 +608,7 @@ const PokemonTab = () => {
                                 padding: '8px 12px', borderRadius: '6px',
                                 border: '1px solid var(--border-medium)', fontSize: '13px',
                                 background: filter.type ? getTypeColor(filter.type) : 'var(--input-bg)',
-                                color: filter.type ? 'white' : 'var(--text-primary)'
+                                color: filter.type ? getContrastTextColor(getTypeColor(filter.type)) : 'var(--text-primary)'
                             }}
                         >
                             <option value="">All Types</option>

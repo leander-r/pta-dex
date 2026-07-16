@@ -7,6 +7,7 @@ import React from 'react';
 import useModalKeyboard from '../../hooks/useModalKeyboard.js';
 import { useModal, usePokemonContext } from '../../contexts/index.js';
 import toast from '../../utils/toast.js';
+import { MAX_NATURAL_MOVES, MAX_TAUGHT_MOVES, MAX_TOTAL_MOVES } from '../../data/constants.js';
 
 const TYPE_LIST = [
     'Normal', 'Fire', 'Water', 'Electric', 'Grass', 'Ice',
@@ -66,16 +67,16 @@ const CustomMoveModal = () => {
         const naturalMoves = targetPoke.moves.filter(m => m.source === 'natural').length;
         const taughtMoves = targetPoke.moves.filter(m => m.source === 'taught').length;
 
-        if (source === 'natural' && naturalMoves >= 4) {
-            toast.warning('This Pokemon already has 4 Natural moves.');
+        if (source === 'natural' && naturalMoves >= MAX_NATURAL_MOVES) {
+            toast.warning(`This Pokemon already has ${MAX_NATURAL_MOVES} Natural moves.`);
             return;
         }
-        if (source === 'taught' && taughtMoves >= 4) {
-            toast.warning('This Pokemon already has 4 Taught moves.');
+        if (source === 'taught' && taughtMoves >= MAX_TAUGHT_MOVES) {
+            toast.warning(`This Pokemon already has ${MAX_TAUGHT_MOVES} Taught moves.`);
             return;
         }
-        if (targetPoke.moves.length >= 8) {
-            toast.warning('This Pokemon already has 8 moves.');
+        if (targetPoke.moves.length >= MAX_TOTAL_MOVES) {
+            toast.warning(`This Pokemon already has ${MAX_TOTAL_MOVES} moves.`);
             return;
         }
 
