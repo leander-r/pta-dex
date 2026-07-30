@@ -521,11 +521,11 @@ const CustomSpeciesModal = () => {
                         <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '8px' }}>
                             PTA base stat values (typically 1-15). These determine the species' natural strengths and are added to when leveling up.
                         </div>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
+                        <div className="custom-species-stat-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '10px' }}>
                             {Object.entries(species.baseStats).map(([stat, value]) => (
-                                <div key={stat} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                    <span style={{ width: '45px', fontWeight: 'bold', fontSize: '11px', color: statColors[stat], textTransform: 'uppercase' }}>{stat}</span>
-                                    <input type="number" min="1" max="30" value={value} onChange={(e) => updateStat(stat, e.target.value)} style={{ width: '60px', padding: '6px', borderRadius: '4px', border: `2px solid ${statColors[stat]}`, textAlign: 'center', fontWeight: 'bold' }} />
+                                <div key={stat} style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
+                                    <span style={{ width: '45px', flexShrink: 0, fontWeight: 'bold', fontSize: '11px', color: statColors[stat], textTransform: 'uppercase' }}>{stat}</span>
+                                    <input type="number" min="1" max="30" value={value} onChange={(e) => updateStat(stat, e.target.value)} style={{ width: '100%', minWidth: 0, maxWidth: '60px', padding: '6px', borderRadius: '4px', border: `2px solid ${statColors[stat]}`, textAlign: 'center', fontWeight: 'bold' }} />
                                 </div>
                             ))}
                         </div>

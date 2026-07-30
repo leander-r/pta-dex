@@ -3453,7 +3453,13 @@
                 width: 28px !important;
                 font-size: 14px !important;
             }
-            
+
+            /* Custom Species base-stats grid: 2 columns on mobile so the
+               label + number input don't get squeezed unreadably thin */
+            .custom-species-stat-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            }
+
             /* ===== MOBILE SECTION CARDS ===== */
             .section-card,
             .section-card-accent,
