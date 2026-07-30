@@ -3188,8 +3188,12 @@
         /* Compact 6-column stats grid */
         .trainer-stats-compact {
             display: grid;
-            grid-template-columns: repeat(6, 1fr);
+            grid-template-columns: repeat(6, minmax(0, 1fr));
             gap: 6px;
+        }
+        /* Stat cells must not overflow their grid column (fixes SPD bleeding past the right edge on narrower desktop widths) */
+        .trainer-stats-compact > div {
+            min-width: 0;
         }
         /* Trainer badge chips — gold in light mode, dark gold in dark mode */
         .trainer-badge-chip {
