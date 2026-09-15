@@ -253,6 +253,7 @@ const SpeciesDetail = ({ species, evolvedFromMap }) => {
         regionalForms,
         flavorText,
         flavorTextVersion,
+        expDrop,
     } = species;
 
     // The species' own evolvedFrom field is never populated in the source data — fall back
@@ -275,7 +276,7 @@ const SpeciesDetail = ({ species, evolvedFromMap }) => {
     const hasEggMoves   = eggMoves?.length > 0;
     const hasTutor      = tutorMoves?.length > 0;
     const hasEvo        = evolvedFrom || evolutions?.length > 0;
-    const hasProfileInfo = size || weight || genderRatio !== undefined || eggGroups?.length || diet?.length || habitat?.length;
+    const hasProfileInfo = size || weight || genderRatio !== undefined || eggGroups?.length || diet?.length || habitat?.length || expDrop != null;
 
     return (
         <div style={{ background: 'var(--bg-section)', borderTop: `2px solid ${accentColor}` }}>
@@ -340,6 +341,13 @@ const SpeciesDetail = ({ species, evolvedFromMap }) => {
                     {weight && (
                         <InfoRow icon="⚖️" label="Weight">
                             <InfoChip label={weight} color={WEIGHT_COLORS[weight] || '#bdbdbd'} textColor="white" />
+                        </InfoRow>
+                    )}
+
+                    {/* EXP Drop — from the GM Guide's alphabetical Capture Rate/EXP Drop list (pp.20-27) */}
+                    {expDrop != null && (
+                        <InfoRow icon="⭐" label="EXP Drop">
+                            <InfoChip label={expDrop} color="rgba(245,166,35,0.15)" />
                         </InfoRow>
                     )}
 
