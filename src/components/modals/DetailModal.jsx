@@ -7,12 +7,13 @@ import React, { useState } from 'react';
 import { getTypeColor } from '../../utils/typeUtils.js';
 import useModalKeyboard from '../../hooks/useModalKeyboard.js';
 import { useModal } from '../../contexts/index.js';
+import { GAME_DATA } from '../../data/configs.js';
 import { parseDice } from '../../utils/dataUtils.js';
 import toast from '../../utils/toast.js';
 
 const DetailModal = () => {
     // Get state from context
-    const { detailModal, setDetailModal } = useModal();
+    const { detailModal, setDetailModal, showDetail } = useModal();
     const closeModal = () => setDetailModal({ show: false, type: '', name: '', data: null });
 
     const { modalRef } = useModalKeyboard(detailModal.show, closeModal);
@@ -25,6 +26,8 @@ const DetailModal = () => {
                 return `linear-gradient(135deg, ${getTypeColor(detailModal.data?.type)}, ${getTypeColor(detailModal.data?.type)}dd)`;
             case 'feature':
                 return 'var(--gradient-purple)';
+            case 'trainerClass':
+                return 'linear-gradient(135deg, #667eea, #4facfe)';
             case 'ability':
                 return 'linear-gradient(135deg, #f093fb, #f5576c)';
             case 'skill':
@@ -42,6 +45,7 @@ const DetailModal = () => {
         switch (detailModal.type) {
             case 'move': return '⚔️';
             case 'feature': return '⚡';
+            case 'trainerClass': return '🎓';
             case 'ability': return '✨';
             case 'skill': return '🎯';
             case 'pokemonSkill': return '🐾';
@@ -161,6 +165,11 @@ const DetailModal = () => {
                     {/* Feature Details */}
                     {detailModal.type === 'feature' && (
                         <FeatureDetails data={detailModal.data} name={detailModal.name} />
+                    )}
+
+                    {/* Trainer Class Details */}
+                    {detailModal.type === 'trainerClass' && (
+                        <ClassDetails data={detailModal.data} name={detailModal.name} showDetail={showDetail} />
                     )}
 
                     {/* Ability Details */}
@@ -475,6 +484,103 @@ const FeatureDetails = ({ data, name }) => {
             {data.description && !data.effect && (
                 <InfoBox label="Description" icon="📖" variant="default">
                     {data.description}
+                </InfoBox>
+            )}
+        </div>
+    );
+};
+
+// Clickable variant of DetailBadge — used to drill into a related class/feature
+const LinkBadge = ({ children, color, onClick }) => (
+    <span onClick={onClick} style={{ cursor: 'pointer' }}>
+        <DetailBadge color={color}>{children} ↗</DetailBadge>
+    </span>
+);
+
+// Trainer Class Details Sub-component
+const ClassDetails = ({ data, name, showDetail }) => {
+    if (!data) {
+        return (
+            <div style={{
+                background: 'var(--bg-section)',
+                padding: '24px',
+                borderRadius: '12px',
+                border: '2px dashed var(--border-medium)',
+                textAlign: 'center'
+            }}>
+                <span style={{ fontSize: '32px', display: 'block', marginBottom: '12px' }}>🎓</span>
+                <div style={{ fontSize: '14px', lineHeight: '1.6', color: 'var(--text-secondary)' }}>
+                    Class data not found in database.
+                </div>
+            </div>
+        );
+    }
+
+    const isBase = data.type === 'base';
+    const featureEntries = Object.entries(GAME_DATA.features || {}).filter(([, f]) => f.category === name);
+    const STAT_LABELS = { hp: 'HP', atk: 'ATK', def: 'DEF', satk: 'SATK', sdef: 'SDEF', spd: 'SPD' };
+
+    return (
+        <div>
+            {/* Badges */}
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '16px' }}>
+                <DetailBadge color={isBase ? '#667eea' : '#9c27b0'}>
+                    {isBase ? '🎓 Base Class' : '⭐ Advanced Class'}
+                </DetailBadge>
+                {isBase && (data.preferredStats || []).map(stat => (
+                    <DetailBadge key={stat} color="#4facfe">{STAT_LABELS[stat] || stat.toUpperCase()}</DetailBadge>
+                ))}
+            </div>
+
+            {data.description && (
+                <InfoBox label="Description" icon="📖" variant="default">
+                    {data.description}
+                </InfoBox>
+            )}
+
+            {!isBase && data.baseClass && (
+                <InfoBox label="Base Class" icon="🔗" variant="purple">
+                    <LinkBadge color="#667eea" onClick={() => showDetail('trainerClass', data.baseClass, GAME_DATA.trainerClasses?.[data.baseClass])}>
+                        {data.baseClass}
+                    </LinkBadge>
+                    <div style={{ marginTop: '8px', fontSize: '13px' }}>
+                        Advanced Classes are normally picked up from this Base Class. They can also be taken via
+                        Cross-Classing without owning the Base Class first, at a higher barrier of entry.
+                    </div>
+                </InfoBox>
+            )}
+
+            {data.skillPool && data.skillPool.length > 0 && (
+                <InfoBox label={`Skill Pool — choose ${data.skillCount || 1}`} icon="🎯" variant="blue">
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                        {data.skillPool.map(skill => (
+                            <DetailBadge key={skill} color="#4facfe">{skill}</DetailBadge>
+                        ))}
+                    </div>
+                </InfoBox>
+            )}
+
+            {isBase && (data.advancedClasses || []).length > 0 && (
+                <InfoBox label="Advanced Classes" icon="🌳" variant="purple">
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                        {data.advancedClasses.map(adv => (
+                            <LinkBadge key={adv} color="#9c27b0" onClick={() => showDetail('trainerClass', adv, GAME_DATA.trainerClasses?.[adv])}>
+                                {adv}
+                            </LinkBadge>
+                        ))}
+                    </div>
+                </InfoBox>
+            )}
+
+            {featureEntries.length > 0 && (
+                <InfoBox label="Class Features" icon="⚡" variant="green">
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                        {featureEntries.map(([fname, fdata]) => (
+                            <LinkBadge key={fname} color={fdata.isBase ? '#ff9800' : '#4caf50'} onClick={() => showDetail('feature', fname, fdata)}>
+                                {fname}{fdata.isBase ? ' (Base)' : ''}
+                            </LinkBadge>
+                        ))}
+                    </div>
                 </InfoBox>
             )}
         </div>

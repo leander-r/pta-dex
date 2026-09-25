@@ -9,3 +9,5 @@ export { default as MovesSection } from './MovesSection.jsx';
 export { default as AbilitiesSection } from './AbilitiesSection.jsx';
 export { default as ExpChartSection } from './ExpChartSection.jsx';
 export { default as GameRulesSection } from './GameRulesSection.jsx';
+export { default as TrainerClassesSection } from './TrainerClassesSection.jsx';
+export { default as TrainerFeaturesSection } from './TrainerFeaturesSection.jsx';

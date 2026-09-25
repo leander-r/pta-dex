@@ -32,6 +32,16 @@ export const FilterProvider = ({ children }) => {
         sortDir: 'asc'
     });
 
+    const [trainerClassesFilter, setTrainerClassesFilter] = useState({
+        search: '',
+        type: 'all'
+    });
+
+    const [trainerFeaturesFilter, setTrainerFeaturesFilter] = useState({
+        search: '',
+        category: 'all'
+    });
+
     const [moveSearchQuery, setMoveSearchQuery] = useState('');
     const [moveTypeFilter, setMoveTypeFilter] = useState('all');
     const [moveCategoryFilter, setMoveCategoryFilter] = useState('all');
@@ -41,6 +51,10 @@ export const FilterProvider = ({ children }) => {
         setMovesFilter,
         abilitiesFilter,
         setAbilitiesFilter,
+        trainerClassesFilter,
+        setTrainerClassesFilter,
+        trainerFeaturesFilter,
+        setTrainerFeaturesFilter,
         moveSearchQuery,
         setMoveSearchQuery,
         moveTypeFilter,

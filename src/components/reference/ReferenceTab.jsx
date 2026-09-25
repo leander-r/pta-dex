@@ -14,6 +14,8 @@ import AbilitiesSection from './AbilitiesSection.jsx';
 import ExpChartSection from './ExpChartSection.jsx';
 import GameRulesSection from './GameRulesSection.jsx';
 import PokedexSection from './PokedexSection.jsx';
+import TrainerClassesSection from './TrainerClassesSection.jsx';
+import TrainerFeaturesSection from './TrainerFeaturesSection.jsx';
 
 /**
  * ReferenceTab - Quick reference database browser
@@ -39,6 +41,8 @@ const ReferenceTab = () => {
         { id: 'natures', label: 'Natures' },
         { id: 'moves', label: 'Moves Database' },
         { id: 'abilities', label: 'Abilities' },
+        { id: 'classes', label: 'Trainer Classes' },
+        { id: 'trainerFeatures', label: 'Trainer Features' },
         { id: 'rules', label: 'Game Rules' },
         { id: 'exp', label: 'EXP Chart' }
     ];
@@ -47,7 +51,7 @@ const ReferenceTab = () => {
         <div>
             <h2 className="section-title">Quick Reference</h2>
             <p className="section-description">
-                Browse the Pokédex, type chart, moves, abilities, natures, and game rules.
+                Browse the Pokédex, type chart, moves, abilities, natures, trainer classes/features, and game rules.
             </p>
 
             {/* Tab Navigation — wraps in a gradient-masked scroll container on mobile */}
@@ -82,6 +86,8 @@ const ReferenceTab = () => {
             {visitedRef.current.has('natures')    && <div style={{ display: activeSection === 'natures'    ? undefined : 'none' }}><NaturesSection /></div>}
             {visitedRef.current.has('moves')      && <div style={{ display: activeSection === 'moves'      ? undefined : 'none' }}><MovesSection /></div>}
             {visitedRef.current.has('abilities')  && <div style={{ display: activeSection === 'abilities'  ? undefined : 'none' }}><AbilitiesSection /></div>}
+            {visitedRef.current.has('classes')    && <div style={{ display: activeSection === 'classes'    ? undefined : 'none' }}><TrainerClassesSection /></div>}
+            {visitedRef.current.has('trainerFeatures') && <div style={{ display: activeSection === 'trainerFeatures' ? undefined : 'none' }}><TrainerFeaturesSection /></div>}
             {visitedRef.current.has('rules')      && <div style={{ display: activeSection === 'rules'      ? undefined : 'none' }}><GameRulesSection /></div>}
             {visitedRef.current.has('exp')        && <div style={{ display: activeSection === 'exp'        ? undefined : 'none' }}><ExpChartSection /></div>}
         </div>
