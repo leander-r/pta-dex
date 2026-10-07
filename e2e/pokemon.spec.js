@@ -92,8 +92,14 @@ test('clicking Done collapses the card', async ({ page }) => {
 });
 
 test.describe('Breeder Bonus (Stats tab)', () => {
-    /** Add a fresh Pokémon and navigate to its Stats tab. */
+    /**
+     * Add a fresh Pokémon and navigate to its Stats tab.
+     * Seeds the "seen" flag first so these tests exercise the steady-state
+     * (collapsed-by-default) behavior rather than the one-time discovery nudge,
+     * which has its own dedicated test below.
+     */
     async function openStatsTab(page) {
+        await page.evaluate(() => localStorage.setItem('pta-seen-breeder-bonus', 'true'));
         await page.getByRole('button', { name: /Add Your First Pokémon/i }).click();
         const card = page.locator('.pokemon-card-expanded');
         await expect(card).toBeVisible();
@@ -101,6 +107,36 @@ test.describe('Breeder Bonus (Stats tab)', () => {
         await expect(card.getByText(/Stat Allocation/i)).toBeVisible();
         return card;
     }
+
+    test('first-ever visit auto-expands the section with a NEW badge; clicking dismisses it for good', async ({ page }) => {
+        const card = await (async () => {
+            await page.getByRole('button', { name: /Add Your First Pokémon/i }).click();
+            const c = page.locator('.pokemon-card-expanded');
+            await expect(c).toBeVisible();
+            await c.locator('.pokemon-card-tabs .tab', { hasText: 'stats' }).click();
+            await expect(c.getByText(/Stat Allocation/i)).toBeVisible();
+            return c;
+        })();
+
+        // Never seen before (no seeded flag) — section starts expanded, badge visible.
+        await expect(card.getByText('NEW')).toBeVisible();
+        await expect(card.getByText(/Permanent base-stat bonus/)).toBeVisible();
+
+        // Collapsing it counts as discovery — badge goes away and stays away.
+        await card.getByText('🧬 Breeder Bonus').click();
+        await expect(card.getByText('NEW')).toHaveCount(0);
+        expect(await page.evaluate(() => localStorage.getItem('pta-seen-breeder-bonus'))).toBe('true');
+
+        // Closing and reopening the card (a fresh PokemonCard mount) must not bring the badge back.
+        await page.getByRole('button', { name: 'Done' }).click();
+        await expect(page.locator('.pokemon-card-collapsed')).toBeVisible();
+        await page.locator('.pokemon-card-collapsed').click();
+        const reopenedCard = page.locator('.pokemon-card-expanded');
+        await reopenedCard.locator('.pokemon-card-tabs .tab', { hasText: 'stats' }).click();
+        await expect(reopenedCard.getByText('🧬 Breeder Bonus')).toBeVisible();
+        await expect(reopenedCard.getByText('NEW')).toHaveCount(0);
+        await expect(reopenedCard.getByText(/Permanent base-stat bonus/)).toHaveCount(0);
+    });
 
     /** The second `.stat-cards-grid` on the tab is the Breeder Bonus grid (first is Stat Allocation). */
     function breederStatCard(card, stat) {

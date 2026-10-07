@@ -15,6 +15,16 @@ import { getPokemonDisplayImage, getPokemonSprite } from '../../utils/pokemonSpr
 import { HELP_BTN_STYLE } from '../common/helpBtnStyle.js';
 import { STATUS_CONDITIONS } from '../../data/statusConditions.js';
 
+// Breeder Bonus — one-time "NEW" nudge so the feature isn't missed on launch.
+// Auto-expands the section and shows a badge until the player has opened or used it once.
+const BREEDER_BONUS_SEEN_KEY = 'pta-seen-breeder-bonus';
+const hasSeenBreederBonus = () => {
+    try { return localStorage.getItem(BREEDER_BONUS_SEEN_KEY) === 'true'; } catch { return true; }
+};
+const markBreederBonusSeen = () => {
+    try { localStorage.setItem(BREEDER_BONUS_SEEN_KEY, 'true'); } catch { /* ignore */ }
+};
+
 const PokemonCard = ({
     // Pokemon-specific props (must be passed per-card)
     pokemon,
@@ -76,8 +86,19 @@ const PokemonCard = ({
     const [showContestSection, setShowContestSection] = useState(false);
     // Skills tab — zero-value skills hidden by default, toggle to reveal
     const [showZeroValueSkills, setShowZeroValueSkills] = useState(false);
-    // Stats tab — Breeder Bonus section collapsed by default
-    const [showBreederBonus, setShowBreederBonus] = useState(false);
+    // Stats tab — Breeder Bonus section: collapsed by default, but auto-expanded
+    // the first time ever (or whenever this Pokémon already has a bonus set)
+    const [breederBonusSeen, setBreederBonusSeen] = useState(() => hasSeenBreederBonus());
+    const [showBreederBonus, setShowBreederBonus] = useState(() => {
+        const hasExistingBonus = ['hp', 'atk', 'def', 'satk', 'sdef', 'spd'].some(s => (pokemon.breederBonus?.[s] || 0) > 0);
+        return hasExistingBonus || !hasSeenBreederBonus();
+    });
+    const markBreederBonusDiscovered = () => {
+        if (!breederBonusSeen) {
+            markBreederBonusSeen();
+            setBreederBonusSeen(true);
+        }
+    };
 
     // Level & Experience — typed as a local draft and only committed on Confirm.
     // updatePokemon({ exp/level }) triggers the full level-up cascade (stat points,
@@ -2560,10 +2581,16 @@ const PokemonCard = ({
                             })()}
                         </div>
 
-                        {/* Breeder Bonus — permanent base-stat bonus from Natural Edge/+ or Natural Progression, collapsed by default */}
-                        <div style={{ marginTop: '10px', background: 'var(--bg-light)', border: '1px solid var(--border-light)', borderRadius: '6px', padding: '6px 10px' }}>
+                        {/* Breeder Bonus — permanent base-stat bonus from Natural Edge/+ or Natural Progression.
+                            Collapsed by default once discovered, but auto-expanded + badged the first time ever. */}
+                        <div style={{
+                            marginTop: '10px', borderRadius: '6px', padding: '6px 10px',
+                            background: !breederBonusSeen ? 'var(--tint-success-bg)' : 'var(--bg-light)',
+                            border: `1px solid ${!breederBonusSeen ? 'var(--stat-hp)' : 'var(--border-light)'}`,
+                            transition: 'background 0.2s, border-color 0.2s'
+                        }}>
                             <button
-                                onClick={() => setShowBreederBonus(v => !v)}
+                                onClick={() => { setShowBreederBonus(v => !v); markBreederBonusDiscovered(); }}
                                 style={{
                                     display: 'flex', alignItems: 'center', gap: '6px', width: '100%',
                                     padding: '4px 0', background: 'none', border: 'none', cursor: 'pointer',
@@ -2576,6 +2603,12 @@ const PokemonCard = ({
                                     style={{ transition: 'transform 0.15s ease', transform: showBreederBonus ? 'rotate(90deg)' : 'rotate(0deg)' }}
                                     aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
                                 🧬 Breeder Bonus
+                                {!breederBonusSeen && (
+                                    <span style={{
+                                        fontSize: '10px', fontWeight: 800, color: 'white', background: 'var(--stat-hp)',
+                                        borderRadius: '10px', padding: '1px 6px', letterSpacing: '0.4px'
+                                    }}>NEW</span>
+                                )}
                                 {!showBreederBonus && (() => {
                                     const bonus = pokemon.breederBonus || {};
                                     const parts = ['hp', 'atk', 'def', 'satk', 'sdef', 'spd']
@@ -2609,6 +2642,7 @@ const PokemonCard = ({
                                             const minusDisabled = bonusVal <= 0;
                                             const plusDisabled = bonusVal >= 6;
                                             const adjust = (delta) => {
+                                                markBreederBonusDiscovered();
                                                 updatePokemon({
                                                     breederBonus: { ...pokemon.breederBonus, [stat]: bonusVal + delta },
                                                     baseStats: { ...pokemon.baseStats, [stat]: (pokemon.baseStats?.[stat] || 10) + delta }
