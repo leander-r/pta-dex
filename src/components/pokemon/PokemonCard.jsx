@@ -76,6 +76,8 @@ const PokemonCard = ({
     const [showContestSection, setShowContestSection] = useState(false);
     // Skills tab — zero-value skills hidden by default, toggle to reveal
     const [showZeroValueSkills, setShowZeroValueSkills] = useState(false);
+    // Stats tab — Breeder Bonus section collapsed by default
+    const [showBreederBonus, setShowBreederBonus] = useState(false);
 
     // Level & Experience — typed as a local draft and only committed on Confirm.
     // updatePokemon({ exp/level }) triggers the full level-up cascade (stat points,
@@ -2556,6 +2558,96 @@ const PokemonCard = ({
                                 );
                             });
                             })()}
+                        </div>
+
+                        {/* Breeder Bonus — permanent base-stat bonus from Natural Edge/+ or Natural Progression, collapsed by default */}
+                        <div style={{ marginTop: '10px', background: 'var(--bg-light)', border: '1px solid var(--border-light)', borderRadius: '6px', padding: '6px 10px' }}>
+                            <button
+                                onClick={() => setShowBreederBonus(v => !v)}
+                                style={{
+                                    display: 'flex', alignItems: 'center', gap: '6px', width: '100%',
+                                    padding: '4px 0', background: 'none', border: 'none', cursor: 'pointer',
+                                    fontSize: '12px', fontWeight: 'bold', color: 'var(--text-secondary)',
+                                    marginBottom: showBreederBonus ? '10px' : '0'
+                                }}
+                                aria-expanded={showBreederBonus}
+                            >
+                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"
+                                    style={{ transition: 'transform 0.15s ease', transform: showBreederBonus ? 'rotate(90deg)' : 'rotate(0deg)' }}
+                                    aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+                                🧬 Breeder Bonus
+                                {!showBreederBonus && (() => {
+                                    const bonus = pokemon.breederBonus || {};
+                                    const parts = ['hp', 'atk', 'def', 'satk', 'sdef', 'spd']
+                                        .filter(s => bonus[s] > 0)
+                                        .map(s => `${s.toUpperCase()} +${bonus[s]}`);
+                                    return (
+                                        <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: 'normal' }}>
+                                            {parts.length ? `(${parts.join(', ')})` : '(none)'}
+                                        </span>
+                                    );
+                                })()}
+                                <span
+                                    role="button"
+                                    tabIndex={0}
+                                    onClick={(e) => { e.stopPropagation(); showHelp('breeder-bonus'); }}
+                                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); showHelp('breeder-bonus'); } }}
+                                    style={{ ...HELP_BTN_STYLE, marginLeft: 'auto' }}
+                                    aria-label="Help: Breeder Bonus"
+                                    title="About the Breeder Bonus"
+                                >?</span>
+                            </button>
+                            {showBreederBonus && (
+                                <>
+                                    <p style={{ margin: '0 0 10px', fontSize: '12px', color: 'var(--text-muted)', lineHeight: 1.5 }}>
+                                        Permanent base-stat bonus from a Breeder's Natural Edge, Natural Edge +, or Natural Progression Feature. Capped at +6 per stat — your GM tracks prerequisites, Daily/Weekly limits, and egg ownership.
+                                    </p>
+                                    <div className="stat-cards-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
+                                        {['hp', 'atk', 'def', 'satk', 'sdef', 'spd'].map(stat => {
+                                            const statColor = `var(--stat-${stat})`;
+                                            const bonusVal = pokemon.breederBonus?.[stat] || 0;
+                                            const minusDisabled = bonusVal <= 0;
+                                            const plusDisabled = bonusVal >= 6;
+                                            const adjust = (delta) => {
+                                                updatePokemon({
+                                                    breederBonus: { ...pokemon.breederBonus, [stat]: bonusVal + delta },
+                                                    baseStats: { ...pokemon.baseStats, [stat]: (pokemon.baseStats?.[stat] || 10) + delta }
+                                                });
+                                            };
+                                            return (
+                                                <div key={stat} className="bg-light" style={{ padding: '10px', paddingBottom: '8px', borderRadius: '8px', textAlign: 'center', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', borderTop: `3px solid ${statColor}`, display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                                    <div style={{ fontSize: '12px', fontWeight: 'bold', color: statColor }}>
+                                                        {stat.toUpperCase()}
+                                                    </div>
+                                                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '4px' }}>
+                                                        <button
+                                                            onClick={() => !minusDisabled && adjust(-1)}
+                                                            disabled={minusDisabled}
+                                                            title={minusDisabled ? 'No Breeder Bonus to remove' : undefined}
+                                                            className="stat-alloc-btn"
+                                                            style={{ ...statBtnStyle, opacity: minusDisabled ? 0.45 : 1, cursor: minusDisabled ? 'not-allowed' : 'pointer', background: minusDisabled ? 'var(--border-light)' : statBtnStyle.background, color: minusDisabled ? 'var(--text-muted)' : statBtnStyle.color }}
+                                                        >
+                                                            −
+                                                        </button>
+                                                        <span style={{ minWidth: '28px', fontSize: '12px', fontWeight: 'bold', color: bonusVal > 0 ? statColor : 'var(--text-muted)', opacity: bonusVal > 0 ? 1 : 0.4 }} title="Permanent bonus added to this Pokémon's base stat">
+                                                            {bonusVal > 0 ? `+${bonusVal}` : '+0'}
+                                                        </span>
+                                                        <button
+                                                            onClick={() => !plusDisabled && adjust(1)}
+                                                            disabled={plusDisabled}
+                                                            title={plusDisabled ? 'Breeder Bonus capped at +6 per stat' : undefined}
+                                                            className="stat-alloc-btn"
+                                                            style={{ ...statBtnStyle, opacity: plusDisabled ? 0.45 : 1, cursor: plusDisabled ? 'not-allowed' : 'pointer', background: plusDisabled ? 'var(--border-light)' : statBtnStyle.background, color: plusDisabled ? 'var(--text-muted)' : statBtnStyle.color }}
+                                                        >
+                                                            +
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </>
+                            )}
                         </div>
 
                         <div style={{ marginTop: '8px', padding: '12px 14px', background: 'var(--bg-light)', borderRadius: '8px', border: '1px solid var(--border-light)', borderTop: '3px solid var(--stat-hp)' }}>

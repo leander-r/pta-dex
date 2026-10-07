@@ -32,6 +32,7 @@ export interface Pokemon {
   ability: string;
   baseStats: BaseStats;
   addedStats: BaseStats;
+  breederBonus?: BaseStats;
   moves: Move[];
   notes: string;
   loyalty: number;

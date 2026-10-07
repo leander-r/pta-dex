@@ -114,11 +114,25 @@ const HELP_CONTENT = {
             <>
                 <p>Each Pokémon stat has two components that add together to form the <strong>total stat</strong> used in battle.</p>
                 <h4 style={{ margin: '14px 0 6px', fontSize: '13px', color: 'var(--text-secondary)' }}>Base Stat</h4>
-                <p>Set by the species (Pokédex entry). This cannot be changed and represents the Pokémon's natural potential.</p>
+                <p>Set by the species (Pokédex entry) and represents the Pokémon's natural potential. It only changes via a Breeder's <strong>Breeder Bonus</strong> (see below).</p>
                 <h4 style={{ margin: '14px 0 6px', fontSize: '13px', color: 'var(--text-secondary)' }}>Added Stat (+)</h4>
                 <p>Points you invest from level-ups. Use the <strong>+</strong> and <strong>−</strong> buttons in each stat box to allocate your available <em>Stat Points</em>. The green number shows how many points have been added.</p>
                 <h4 style={{ margin: '14px 0 6px', fontSize: '13px', color: 'var(--text-secondary)' }}>Stat Points</h4>
                 <p>Your Pokémon gains <strong>stat points when it levels up</strong>. Unspent points are shown at the top of this tab. You can freely reallocate points as long as the Pokémon still has enough added stats to cover what you remove.</p>
+            </>
+        )
+    },
+    'breeder-bonus': {
+        title: 'Breeder Bonus',
+        body: () => (
+            <>
+                <p>Some Breeder Features let a Breeder permanently raise a Pokémon's <strong>base stats</strong> — not the level-up added stats, the base itself.</p>
+                <h4 style={{ margin: '14px 0 6px', fontSize: '13px', color: 'var(--text-secondary)' }}>Natural Edge / Natural Edge +</h4>
+                <p>Applied once, when an egg hatches. Add half (Natural Edge) or all (Natural Edge +) of the Breeder's DEF modifier to one base stat, and the same of their SDEF modifier to a different base stat.</p>
+                <h4 style={{ margin: '14px 0 6px', fontSize: '13px', color: 'var(--text-secondary)' }}>Natural Progression</h4>
+                <p>Add +1 to the same two chosen base stats every time the Pokémon levels up to a multiple of 5. Shares the same cap below with Natural Edge/+.</p>
+                <h4 style={{ margin: '14px 0 6px', fontSize: '13px', color: 'var(--text-secondary)' }}>+6 Cap</h4>
+                <p>The combined bonus from these Features can never exceed <strong>+6 on any single stat</strong>. This app enforces that cap for you — everything else (prerequisites, Daily/Weekly limits, whose egg it was) is tracked by you and your GM, same as any other Trainer Feature.</p>
             </>
         )
     },

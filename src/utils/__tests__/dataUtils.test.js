@@ -214,4 +214,30 @@ describe('Stats tab — Mudbray, Calm nature, level 1', () => {
         const withEqualTotals = { ...mudbray, addedStats: { atk: 2, sdef: 2 } };
         expect(getBaseRelationViolations(withEqualTotals)).toHaveLength(0);
     });
+
+});
+
+describe('Breeder Bonus interaction with Base Relation', () => {
+    // ATK deliberately low relative to the rest, no nature (applyNature is a no-op for an unknown nature key).
+    const baseStats = { hp: 10, atk: 5, def: 10, satk: 10, sdef: 10, spd: 10 };
+
+    it('is legal to invest level-up points into a stat whose base is currently higher', () => {
+        // base(def)=10 > base(atk)=5 requires total(def) > total(atk): 15 > 5. OK.
+        const pokemon = { level: 1, baseStats, addedStats: { def: 5 }, nature: 'none' };
+        expect(getBaseRelationViolations(pokemon)).toHaveLength(0);
+    });
+
+    it('a Breeder Bonus written into baseStats can flip the base order and surface a violation against pre-existing level-up points', () => {
+        // A Breeder applies a +6 Breeder Bonus to ATK's base stat (Natural Edge/Natural Progression).
+        // Because the bonus is folded straight into baseStats ("this becomes the Pokémon's new base
+        // stats" — PHB2), ATK's base jumps from 5 to 11, overtaking DEF's base of 10 — the order flips.
+        // The DEF total (10 base + 5 added = 15) no longer clears the new bar against ATK's total (11).
+        const pokemon = {
+            level: 1,
+            baseStats: { ...baseStats, atk: baseStats.atk + 6 },
+            addedStats: { def: 5 },
+            nature: 'none',
+        };
+        expect(getBaseRelationViolations(pokemon).length).toBeGreaterThan(0);
+    });
 });
