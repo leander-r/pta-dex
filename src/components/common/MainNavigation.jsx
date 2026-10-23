@@ -1,28 +1,52 @@
 // ============================================================
 // Main Navigation Component
 // ============================================================
-// Sidebar navigation extracted from App.jsx
+// Sidebar navigation extracted from App.jsx.
+// Pure navigation only — Save/Load and Export actions live in the
+// Header's menu (one place for actions, reachable on mobile too).
 
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { TABS } from '../../data/constants.js';
-import { useModal, useData } from '../../contexts/index.js';
-import { useTrainerContext } from '../../contexts/TrainerContext.jsx';
 import OnboardingChecklist from './OnboardingChecklist.jsx';
 
+// Primary tabs: always visible, including in the mobile bottom bar
 const NAV_ITEMS = [
-    { tab: TABS.TRAINER,   icon: '👤', label: 'Trainer',        mobileLabel: 'Trainer' },
-    { tab: TABS.POKEMON,   icon: '🐾', label: 'Pokémon Team',   mobileLabel: 'Pokémon' },
-    { tab: TABS.INVENTORY, icon: '🎒', label: 'Inventory',      mobileLabel: 'Items'   },
-    { tab: TABS.BATTLE,    icon: '🎲', label: 'Dice Roller',    mobileLabel: 'Battle'  },
-    { tab: TABS.REFERENCE, icon: '📚', label: 'Quick Reference', mobileLabel: 'Refs'   },
-    { tab: TABS.NOTES,     icon: '📝', label: 'Campaign Notes', mobileLabel: 'Notes'   },
-    { tab: TABS.GM,        icon: '🎮', label: 'GM Tools',       mobileLabel: 'GM'      },
+    { tab: TABS.TRAINER,   icon: '👤', label: 'Trainer',         mobileLabel: 'Trainer' },
+    { tab: TABS.POKEMON,   icon: '🐾', label: 'Pokémon Team',    mobileLabel: 'Pokémon' },
+    { tab: TABS.INVENTORY, icon: '🎒', label: 'Inventory',       mobileLabel: 'Items'   },
+    { tab: TABS.BATTLE,    icon: '🎲', label: 'Dice Roller',     mobileLabel: 'Battle'  },
+    { tab: TABS.REFERENCE, icon: '📚', label: 'Quick Reference', mobileLabel: 'Refs'    },
 ];
 
+// Less-frequently-used tabs: shown inline on desktop, tucked under
+// a "More" popover on the mobile bottom bar so it stays at 6 icons
+const MORE_NAV_ITEMS = [
+    { tab: TABS.NOTES, icon: '📝', label: 'Campaign Notes', mobileLabel: 'Notes' },
+    { tab: TABS.GM,    icon: '🎮', label: 'GM Tools',       mobileLabel: 'GM'    },
+];
 
 const MainNavigation = ({ activeTab, setActiveTab }) => {
-    const { openSaveLoadModal, setShowCardModal, openPrintSheet } = useModal();
-    const { trainer } = useTrainerContext();
+    const [showMore, setShowMore] = useState(false);
+    const moreRef = useRef(null);
+
+    // Close the "More" popover on outside click/touch or Escape
+    useEffect(() => {
+        if (!showMore) return;
+        const handleOutside = (e) => {
+            if (moreRef.current && !moreRef.current.contains(e.target)) setShowMore(false);
+        };
+        const handleKeyDown = (e) => { if (e.key === 'Escape') setShowMore(false); };
+        document.addEventListener('mousedown', handleOutside);
+        document.addEventListener('touchstart', handleOutside, { passive: true });
+        document.addEventListener('keydown', handleKeyDown);
+        return () => {
+            document.removeEventListener('mousedown', handleOutside);
+            document.removeEventListener('touchstart', handleOutside);
+            document.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [showMore]);
+
+    const isMoreActive = MORE_NAV_ITEMS.some(item => item.tab === activeTab);
 
     return (
         <div className="sidebar" role="navigation" aria-label="Main navigation">
@@ -40,50 +64,53 @@ const MainNavigation = ({ activeTab, setActiveTab }) => {
                 </button>
             ))}
 
-            <div className="nav-divider" style={{ height: '1px', background: 'var(--border-light)', margin: '8px 0' }} />
-
-            <button
-                className="nav-button nav-saveload"
-                onClick={openSaveLoadModal}
-                title="Save or load a game state snapshot"
-                aria-label="Open save and load menu"
-            >
-                <span className="nav-icon">💾</span>
-                <span className="nav-label">Save / Load</span>
-                <span className="nav-mobile-label">Save</span>
-            </button>
-
-            {/* Export section — hidden on mobile (bottom bar has no room) */}
-            <div className="nav-checklist" style={{ margin: '8px 0 0' }}>
-                <div style={{ height: '1px', background: 'var(--border-light)', margin: '0 8px 6px' }} />
-                <div style={{
-                    padding: '2px 10px 4px',
-                    fontSize: '10px', fontWeight: 800,
-                    color: 'var(--text-muted)',
-                    textTransform: 'uppercase', letterSpacing: '0.8px'
-                }}>
-                    Share &amp; Export
-                </div>
+            {/* Shown inline on desktop; hidden from the mobile bottom bar (see "More" below) */}
+            {MORE_NAV_ITEMS.map(({ tab, icon, label, mobileLabel }) => (
                 <button
-                    className="nav-button"
-                    onClick={() => setShowCardModal(true)}
-                    title={`Export trainer and Pokémon cards for ${trainer?.name || 'trainer'}`}
-                    style={{ marginBottom: '2px' }}
+                    key={tab}
+                    className={`nav-button nav-overflow-item ${activeTab === tab ? 'active' : ''}`}
+                    onClick={() => setActiveTab(tab)}
+                    aria-current={activeTab === tab ? 'page' : undefined}
+                    aria-label={label}
                 >
-                    <span className="nav-icon">🃏</span>
-                    <span className="nav-label">Export Cards</span>
-                    <span className="nav-mobile-label">Cards</span>
+                    <span className="nav-icon">{icon}</span>
+                    <span className="nav-label">{label}</span>
+                    <span className="nav-mobile-label">{mobileLabel}</span>
                 </button>
+            ))}
+
+            {/* Mobile-only overflow button — CSS-hidden on desktop, where the
+                items above already render inline */}
+            <div className="nav-more-wrapper" ref={moreRef}>
                 <button
-                    className="nav-button"
-                    onClick={openPrintSheet}
-                    title="Print or save a character sheet as PDF"
+                    type="button"
+                    className={`nav-button nav-more-button ${isMoreActive ? 'active' : ''}`}
+                    onClick={() => setShowMore(prev => !prev)}
+                    aria-haspopup="true"
+                    aria-expanded={showMore}
+                    aria-label="More navigation options"
                 >
-                    <span className="nav-icon">🖨️</span>
-                    <span className="nav-label">Print Sheet</span>
-                    <span className="nav-mobile-label">Print</span>
+                    <span className="nav-icon">⋯</span>
+                    <span className="nav-mobile-label">More</span>
                 </button>
+                {showMore && (
+                    <div className="nav-more-popover" role="menu">
+                        {MORE_NAV_ITEMS.map(({ tab, icon, label }) => (
+                            <button
+                                key={tab}
+                                role="menuitem"
+                                className={`nav-button ${activeTab === tab ? 'active' : ''}`}
+                                onClick={() => { setActiveTab(tab); setShowMore(false); }}
+                            >
+                                <span className="nav-icon">{icon}</span>
+                                <span className="nav-label">{label}</span>
+                            </button>
+                        ))}
+                    </div>
+                )}
             </div>
+
+            <div className="nav-divider" style={{ height: '1px', background: 'var(--border-light)', margin: '8px 0' }} />
 
             {/* Onboarding checklist — hidden on mobile (bottom bar has no room);
                 a mobile-visible copy is rendered in AppLayout's main content area instead */}

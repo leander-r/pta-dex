@@ -66,7 +66,7 @@ export const useOnboarding = () => {
         {
             id: 'save',
             label: 'Save your character',
-            hint: 'Use Save / Load in the sidebar to create a named snapshot',
+            hint: 'Use Save / Load in the ☰ menu to create a named snapshot',
             done: hasSaved,
             tab: null,
         },

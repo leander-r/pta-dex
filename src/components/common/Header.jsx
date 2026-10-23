@@ -72,7 +72,7 @@ const Header = () => {
     } = useTrainerContext();
     const { exportSingleTrainer, exportAllData, importData, restoreAutoBackup, loadDemoTrainer } = useData();
     const { theme, setTheme, compactMode, setCompactMode, setEditingPokemon } = useUI();
-    const { showConfirm } = useModal();
+    const { showConfirm, openSaveLoadModal, setShowCardModal, openPrintSheet } = useModal();
 
     // Active (non-archived) and archived trainer lists
     const activeTrainers = trainers.filter(t => !t.archived);
@@ -84,13 +84,17 @@ const Header = () => {
         setEditingPokemon(null);
     };
     const [showCharacterMenu, setShowCharacterMenu] = useState(false);
+    const [showDataMenu, setShowDataMenu] = useState(false);
     const [showArchivedSection, setShowArchivedSection] = useState(false);
     const [hoveredItem, setHoveredItem] = useState(null);
+    const [hoveredDataItem, setHoveredDataItem] = useState(null);
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobile, setIsMobile] = useState(window.innerWidth < 480);
     const [isSmallMobile, setIsSmallMobile] = useState(window.innerWidth < 360);
     const menuRef = useRef(null);
     const dropdownRef = useRef(null);
+    const dataMenuRef = useRef(null);
+    const dataDropdownRef = useRef(null);
 
     const toggleTheme = () => {
         setTheme(theme === 'light' ? 'dark' : 'light');
@@ -137,6 +141,13 @@ const Header = () => {
         }
     }, [showCharacterMenu]);
 
+    useEffect(() => {
+        if (showDataMenu && dataDropdownRef.current) {
+            const firstBtn = dataDropdownRef.current.querySelector('button:not([disabled])');
+            if (firstBtn) setTimeout(() => firstBtn.focus(), 50);
+        }
+    }, [showDataMenu]);
+
     // Close menu when clicking/touching outside, or pressing Escape
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -171,7 +182,42 @@ const Header = () => {
         };
     }, [showCharacterMenu]);
 
+    // Same outside-click / Escape / arrow-key behavior for the Data menu
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dataMenuRef.current && !dataMenuRef.current.contains(event.target)) {
+                setShowDataMenu(false);
+            }
+        };
+        const handleKeyDown = (event) => {
+            if (event.key === 'Escape') {
+                setShowDataMenu(false);
+            } else if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+                event.preventDefault();
+                const buttons = Array.from(dataDropdownRef.current?.querySelectorAll('button:not([disabled])') || []);
+                if (buttons.length === 0) return;
+                const idx = buttons.indexOf(document.activeElement);
+                const next = event.key === 'ArrowDown'
+                    ? buttons[(idx + 1) % buttons.length]
+                    : buttons[(idx - 1 + buttons.length) % buttons.length];
+                next.focus();
+            }
+        };
+
+        if (showDataMenu) {
+            document.addEventListener('mousedown', handleClickOutside);
+            document.addEventListener('touchstart', handleClickOutside, { passive: true });
+            document.addEventListener('keydown', handleKeyDown);
+        }
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+            document.removeEventListener('touchstart', handleClickOutside);
+            document.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [showDataMenu]);
+
     const menuItemProps = { hoveredItem, setHoveredItem };
+    const dataMenuItemProps = { hoveredItem: hoveredDataItem, setHoveredItem: setHoveredDataItem };
 
     return (
         <header style={{
@@ -304,14 +350,253 @@ const Header = () => {
                     </select>
                 </div>
 
-                {/* Menu Button */}
+                {/* Data Menu Button — Save/Load, Export, Import, Backup */}
+                <div style={{ position: 'relative', flexShrink: 0, zIndex: 101 }} ref={dataMenuRef}>
+                    <div
+                        onClick={() => { setShowDataMenu(prev => !prev); setShowCharacterMenu(false); }}
+                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setShowDataMenu(prev => !prev); setShowCharacterMenu(false); } }}
+                        onTouchEnd={(e) => {
+                            e.preventDefault();
+                            setShowDataMenu(prev => !prev);
+                            setShowCharacterMenu(false);
+                        }}
+                        className={`header-menu-button ${showDataMenu ? 'active' : ''}`}
+                        style={{
+                            width: isMobile ? '44px' : (isScrolled ? '40px' : '42px'),
+                            height: isMobile ? '44px' : (isScrolled ? '40px' : '42px'),
+                            borderRadius: isMobile ? '8px' : '12px',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            transition: 'all 0.25s ease',
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                            WebkitTapHighlightColor: 'transparent',
+                            touchAction: 'manipulation',
+                            userSelect: 'none',
+                            WebkitUserSelect: 'none'
+                        }}
+                        role="button"
+                        tabIndex={0}
+                        aria-label="Open data and export menu"
+                        aria-expanded={showDataMenu}
+                    >
+                        <svg
+                            width={isMobile ? "18" : (isScrolled ? "18" : "20")}
+                            height={isMobile ? "18" : (isScrolled ? "18" : "20")}
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke={showDataMenu ? 'var(--poke-orange-dark)' : 'var(--poke-orange)'}
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            style={{ transition: 'all 0.25s ease', pointerEvents: 'none', display: 'block' }}
+                        >
+                            <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+                            <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+                            <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+                        </svg>
+                    </div>
+
+                    {/* Data Dropdown Menu */}
+                    {showDataMenu && (
+                        <div ref={dataDropdownRef} className="header-dropdown-menu" style={{
+                            position: 'absolute',
+                            right: 0,
+                            top: 'calc(100% + 8px)',
+                            borderRadius: '16px',
+                            boxShadow: '0 8px 30px rgba(0,0,0,0.18)',
+                            minWidth: isMobile ? 'min(85vw, 230px)' : '230px',
+                            maxWidth: isMobile ? 'min(95vw, 280px)' : '280px',
+                            maxHeight: 'calc(100vh - 90px)',
+                            zIndex: 1000,
+                            overflowY: 'auto',
+                            overflowX: 'hidden',
+                            animation: 'fadeIn 0.15s ease-out',
+                            border: '2px solid var(--poke-orange, #ffc966)'
+                        }}>
+                            {/* Header */}
+                            <div style={{
+                                padding: '14px 18px',
+                                background: 'linear-gradient(135deg, var(--poke-orange), var(--poke-orange-dark))',
+                                color: 'white',
+                                fontSize: '12px',
+                                fontWeight: 700,
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.5px',
+                                textShadow: '1px 1px 0 rgba(0,0,0,0.15)'
+                            }}>
+                                Data &amp; Export
+                            </div>
+
+                            <div style={{ padding: '8px 0' }}>
+                                <MenuItem {...dataMenuItemProps}
+                                    id="save-load"
+                                    icon={
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                                            <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                                            <polyline points="7 3 7 8 15 8"></polyline>
+                                        </svg>
+                                    }
+                                    label="Save / Load"
+                                    title="Save or load a game state snapshot"
+                                    onClick={() => {
+                                        openSaveLoadModal();
+                                        setShowDataMenu(false);
+                                    }}
+                                />
+                                <MenuItem {...dataMenuItemProps}
+                                    id="export-one"
+                                    icon={
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                            <polyline points="7 10 12 15 17 10"></polyline>
+                                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                                        </svg>
+                                    }
+                                    label="Export Trainer JSON"
+                                    onClick={() => {
+                                        exportSingleTrainer(trainer);
+                                        setShowDataMenu(false);
+                                    }}
+                                />
+                                <MenuItem {...dataMenuItemProps}
+                                    id="export-all"
+                                    icon={
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                            <polyline points="7 10 12 15 17 10"></polyline>
+                                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                                        </svg>
+                                    }
+                                    label="Export All Data"
+                                    onClick={() => {
+                                        exportAllData();
+                                        setShowDataMenu(false);
+                                    }}
+                                />
+                                <MenuItem {...dataMenuItemProps}
+                                    id="export-cards"
+                                    icon={
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                                            <line x1="1" y1="10" x2="23" y2="10"></line>
+                                        </svg>
+                                    }
+                                    label="Export Cards"
+                                    title={`Export trainer and Pokémon cards for ${trainer?.name || 'trainer'}`}
+                                    onClick={() => {
+                                        setShowCardModal(true);
+                                        setShowDataMenu(false);
+                                    }}
+                                />
+                                <MenuItem {...dataMenuItemProps}
+                                    id="print-sheet"
+                                    icon={
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                                            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                                            <rect x="6" y="14" width="12" height="8"></rect>
+                                        </svg>
+                                    }
+                                    label="Print Sheet"
+                                    title="Print or save a character sheet as PDF"
+                                    onClick={() => {
+                                        openPrintSheet();
+                                        setShowDataMenu(false);
+                                    }}
+                                />
+                                <MenuItem {...dataMenuItemProps}
+                                    id="restore-backup"
+                                    icon={
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                            <polyline points="1 4 1 10 7 10"></polyline>
+                                            <path d="M3.51 15a9 9 0 1 0 .49-3.51"></path>
+                                        </svg>
+                                    }
+                                    label="Restore Auto-Backup"
+                                    onClick={() => {
+                                        restoreAutoBackup();
+                                        setShowDataMenu(false);
+                                    }}
+                                />
+                                <MenuItem {...dataMenuItemProps}
+                                    id="demo"
+                                    icon={
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                                        </svg>
+                                    }
+                                    label="Load Example Trainer"
+                                    onClick={() => {
+                                        loadDemoTrainer();
+                                        setShowDataMenu(false);
+                                    }}
+                                />
+                                <label
+                                    onMouseEnter={() => setHoveredDataItem('import')}
+                                    onMouseLeave={() => setHoveredDataItem(null)}
+                                    onTouchStart={() => setHoveredDataItem('import')}
+                                    onTouchEnd={() => setTimeout(() => setHoveredDataItem(null), 150)}
+                                    className={`header-menu-item ${hoveredDataItem === 'import' ? 'hovered' : ''}`}
+                                    style={{
+                                        width: '100%',
+                                        padding: '14px 18px',
+                                        border: 'none',
+                                        textAlign: 'left',
+                                        cursor: 'pointer',
+                                        fontSize: '14px',
+                                        fontWeight: 600,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '12px',
+                                        transition: 'all 0.15s ease',
+                                        boxSizing: 'border-box',
+                                        borderLeft: hoveredDataItem === 'import' ? '3px solid var(--poke-orange)' : '3px solid transparent',
+                                        WebkitTapHighlightColor: 'transparent',
+                                        touchAction: 'manipulation'
+                                    }}
+                                >
+                                    <span style={{
+                                        width: '20px',
+                                        display: 'flex',
+                                        justifyContent: 'center',
+                                        color: hoveredDataItem === 'import' ? 'var(--poke-orange)' : 'inherit'
+                                    }}>
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                            <polyline points="17 8 12 3 7 8"></polyline>
+                                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                                        </svg>
+                                    </span>
+                                    <span>Import Data</span>
+                                    <input
+                                        type="file"
+                                        accept=".json"
+                                        onChange={(e) => {
+                                            if (e.target.files[0]) {
+                                                importData(e.target.files[0]);
+                                                setShowDataMenu(false);
+                                            }
+                                        }}
+                                        style={{ display: 'none' }}
+                                    />
+                                </label>
+                            </div>
+                        </div>
+                    )}
+                </div>
+
+                {/* Character Menu Button */}
                 <div style={{ position: 'relative', flexShrink: 0, zIndex: 101 }} ref={menuRef}>
                     <div
-                        onClick={() => setShowCharacterMenu(prev => !prev)}
-                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setShowCharacterMenu(prev => !prev); } }}
+                        onClick={() => { setShowCharacterMenu(prev => !prev); setShowDataMenu(false); }}
+                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setShowCharacterMenu(prev => !prev); setShowDataMenu(false); } }}
                         onTouchEnd={(e) => {
                             e.preventDefault();
                             setShowCharacterMenu(prev => !prev);
+                            setShowDataMenu(false);
                         }}
                         className={`header-menu-button ${showCharacterMenu ? 'active' : ''}`}
                         style={{
@@ -331,7 +616,7 @@ const Header = () => {
                         }}
                         role="button"
                         tabIndex={0}
-                        aria-label="Open menu"
+                        aria-label="Open character menu"
                         aria-expanded={showCharacterMenu}
                     >
                         <svg
@@ -359,8 +644,10 @@ const Header = () => {
                             boxShadow: '0 8px 30px rgba(0,0,0,0.18)',
                             minWidth: isMobile ? 'min(85vw, 230px)' : '230px',
                             maxWidth: isMobile ? 'min(95vw, 280px)' : '280px',
+                            maxHeight: 'calc(100vh - 90px)',
                             zIndex: 1000,
-                            overflow: 'hidden',
+                            overflowY: 'auto',
+                            overflowX: 'hidden',
                             animation: 'fadeIn 0.15s ease-out',
                             border: '2px solid var(--poke-orange, #ffc966)'
                         }}>
@@ -408,118 +695,6 @@ const Header = () => {
                                         setShowCharacterMenu(false);
                                     }}
                                 />
-                            </div>
-
-                            <hr style={{ margin: '0 12px', border: 'none', borderTop: '1px solid var(--poke-orange, #ffc966)' }} />
-
-                            {/* Data Section */}
-                            <div style={{ padding: '8px 0' }}>
-                                <MenuItem {...menuItemProps}
-                                    id="export-one"
-                                    icon={
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                            <polyline points="7 10 12 15 17 10"></polyline>
-                                            <line x1="12" y1="15" x2="12" y2="3"></line>
-                                        </svg>
-                                    }
-                                    label="Export Trainer JSON"
-                                    onClick={() => {
-                                        exportSingleTrainer(trainer);
-                                        setShowCharacterMenu(false);
-                                    }}
-                                />
-                                <MenuItem {...menuItemProps}
-                                    id="export-all"
-                                    icon={
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                            <polyline points="7 10 12 15 17 10"></polyline>
-                                            <line x1="12" y1="15" x2="12" y2="3"></line>
-                                        </svg>
-                                    }
-                                    label="Export All Data"
-                                    onClick={() => {
-                                        exportAllData();
-                                        setShowCharacterMenu(false);
-                                    }}
-                                />
-                                <MenuItem {...menuItemProps}
-                                    id="restore-backup"
-                                    icon={
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                            <polyline points="1 4 1 10 7 10"></polyline>
-                                            <path d="M3.51 15a9 9 0 1 0 .49-3.51"></path>
-                                        </svg>
-                                    }
-                                    label="Restore Auto-Backup"
-                                    onClick={() => {
-                                        restoreAutoBackup();
-                                        setShowCharacterMenu(false);
-                                    }}
-                                />
-                                <MenuItem {...menuItemProps}
-                                    id="demo"
-                                    icon={
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-                                        </svg>
-                                    }
-                                    label="Load Example Trainer"
-                                    onClick={() => {
-                                        loadDemoTrainer();
-                                        setShowCharacterMenu(false);
-                                    }}
-                                />
-                                <label
-                                    onMouseEnter={() => setHoveredItem('import')}
-                                    onMouseLeave={() => setHoveredItem(null)}
-                                    onTouchStart={() => setHoveredItem('import')}
-                                    onTouchEnd={() => setTimeout(() => setHoveredItem(null), 150)}
-                                    className={`header-menu-item ${hoveredItem === 'import' ? 'hovered' : ''}`}
-                                    style={{
-                                        width: '100%',
-                                        padding: '14px 18px',
-                                        border: 'none',
-                                        textAlign: 'left',
-                                        cursor: 'pointer',
-                                        fontSize: '14px',
-                                        fontWeight: 600,
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '12px',
-                                        transition: 'all 0.15s ease',
-                                        boxSizing: 'border-box',
-                                        borderLeft: hoveredItem === 'import' ? '3px solid var(--poke-orange)' : '3px solid transparent',
-                                        WebkitTapHighlightColor: 'transparent',
-                                        touchAction: 'manipulation'
-                                    }}
-                                >
-                                    <span style={{
-                                        width: '20px',
-                                        display: 'flex',
-                                        justifyContent: 'center',
-                                        color: hoveredItem === 'import' ? 'var(--poke-orange)' : 'inherit'
-                                    }}>
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                            <polyline points="17 8 12 3 7 8"></polyline>
-                                            <line x1="12" y1="3" x2="12" y2="15"></line>
-                                        </svg>
-                                    </span>
-                                    <span>Import Data</span>
-                                    <input
-                                        type="file"
-                                        accept=".json"
-                                        onChange={(e) => {
-                                            if (e.target.files[0]) {
-                                                importData(e.target.files[0]);
-                                                setShowCharacterMenu(false);
-                                            }
-                                        }}
-                                        style={{ display: 'none' }}
-                                    />
-                                </label>
                             </div>
 
                             <hr style={{ margin: '0 12px', border: 'none', borderTop: '1px solid var(--poke-orange, #ffc966)' }} />

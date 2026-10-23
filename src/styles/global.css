@@ -675,6 +675,12 @@
             display: none;
         }
 
+        /* "More" overflow button — mobile-only, shown via media query below.
+           On desktop the Notes/GM items it would hold already render inline. */
+        .nav-more-wrapper {
+            display: none;
+        }
+
         .stat-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -3390,6 +3396,50 @@
             /* Hide onboarding checklist and divider — no room in bottom bar */
             .nav-checklist,
             .nav-divider {
+                display: none;
+            }
+
+            /* Less-frequent tabs (Notes, GM) move into the "More" popover below
+               instead of taking a bottom-bar slot — keeps the bar at 6 icons */
+            .nav-overflow-item {
+                display: none;
+            }
+
+            .nav-more-wrapper {
+                display: flex;
+                flex: 1;
+                position: relative;
+            }
+
+            .nav-more-popover {
+                position: absolute;
+                bottom: calc(100% + 8px);
+                right: 4px;
+                background: var(--poke-white);
+                border: 2px solid var(--poke-orange-light);
+                border-radius: 12px;
+                box-shadow: 0 -4px 20px var(--poke-shadow);
+                padding: 6px;
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+                min-width: 170px;
+                z-index: 250;
+            }
+
+            .nav-more-popover .nav-button {
+                flex-direction: row;
+                justify-content: flex-start;
+                min-height: 44px;
+                font-size: 13px;
+                width: 100%;
+            }
+
+            .nav-more-popover .nav-label {
+                display: inline;
+            }
+
+            .nav-more-popover .nav-mobile-label {
                 display: none;
             }
 
