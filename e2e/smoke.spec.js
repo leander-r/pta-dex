@@ -28,7 +28,7 @@ test.beforeEach(async ({ page }) => {
 test('app shell renders header and navigation', async ({ page }) => {
     await expect(page.locator('h1')).toBeVisible();
     await expect(page.locator('[role="navigation"]')).toBeVisible();
-    await expect(page.locator('.nav-button')).toHaveCount(10); // 7 tabs + Save/Load + Export Cards + Print Sheet (GM Tools tab added)
+    await expect(page.locator('.nav-button')).toHaveCount(8); // 7 tabs + "More" overflow button (Save/Load & Export moved into the header's Data menu)
 });
 
 test('trainer tab is active by default', async ({ page }) => {
@@ -65,15 +65,15 @@ test('theme toggle switches between light and dark', async ({ page }) => {
     const html         = page.locator('html');
     const initialTheme = await html.getAttribute('data-theme');
 
-    // Theme toggle is now inside the hamburger menu
-    await page.locator('[aria-label="Open menu"]').click();
+    // Theme toggle is inside the Character menu
+    await page.locator('[aria-label="Open character menu"]').click();
     await page.locator('.header-menu-item', { hasText: /mode/i }).click();
 
     const newTheme = await html.getAttribute('data-theme');
     expect(newTheme).not.toBe(initialTheme);
 
     // Toggle back
-    await page.locator('[aria-label="Open menu"]').click();
+    await page.locator('[aria-label="Open character menu"]').click();
     await page.locator('.header-menu-item', { hasText: /mode/i }).click();
     await expect(html).toHaveAttribute('data-theme', initialTheme);
 });
