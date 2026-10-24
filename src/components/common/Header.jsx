@@ -626,11 +626,11 @@ const Header = () => {
                             fill="none"
                             strokeWidth="2.5"
                             strokeLinecap="round"
-                            style={{ stroke: showCharacterMenu ? 'var(--poke-orange-dark)' : 'var(--poke-orange)', transition: 'all 0.25s ease', pointerEvents: 'none', display: 'block' }}
+                            strokeLinejoin="round"
+                            style={{ stroke: showCharacterMenu ? 'var(--color-purple-dark)' : 'var(--color-purple)', transition: 'all 0.25s ease', pointerEvents: 'none', display: 'block' }}
                         >
-                            <line x1="3" y1="6" x2="21" y2="6"></line>
-                            <line x1="3" y1="12" x2="21" y2="12"></line>
-                            <line x1="3" y1="18" x2="21" y2="18"></line>
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
                         </svg>
                     </div>
 

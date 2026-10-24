@@ -663,7 +663,16 @@
 
         .nav-button .nav-icon {
             font-size: 1.1em;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             transition: transform var(--transition-normal);
+        }
+
+        .nav-button .nav-icon svg {
+            width: 1em;
+            height: 1em;
+            display: block;
         }
 
         .nav-button:hover .nav-icon {
