@@ -4,7 +4,7 @@
 // Modal for creating custom Pokemon species for homebrew/newer Pokemon
 
 import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
-import { getTypeColor } from '../../utils/typeUtils.js';
+import { getTypeColor, getContrastTextColor } from '../../utils/typeUtils.js';
 import { GAME_DATA } from '../../data/configs.js';
 import { POKEMON_TYPES } from '../../data/typeChart.js';
 import useModalKeyboard from '../../hooks/useModalKeyboard.js';
@@ -500,19 +500,63 @@ const CustomSpeciesModal = () => {
 
                     {/* Types */}
                     <div className="grid-responsive-2 gap-sm">
-                        <div className="form-group">
-                            <label>Primary Type *</label>
-                            <select value={species.types[0]} onChange={(e) => setSpecies(prev => ({ ...prev, types: [e.target.value, prev.types[1]].filter(Boolean) }))}>
-                                {TYPE_LIST.filter(t => t !== species.types[1]).map(type => <option key={type} value={type}>{type}</option>)}
-                            </select>
+                    <div className="form-group">
+                        <label>Primary Type *</label>
+                        <div role="group" aria-label="Primary type" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(58px, 1fr))', gap: '4px' }}>
+                            {TYPE_LIST.filter(t => t !== species.types[1]).map(type => {
+                                const isSelected = species.types[0] === type;
+                                const color = getTypeColor(type);
+                                return (
+                                    <button
+                                        key={type}
+                                        type="button"
+                                        onClick={() => setSpecies(prev => ({ ...prev, types: [type, prev.types[1]].filter(Boolean) }))}
+                                        aria-pressed={isSelected}
+                                        style={{
+                                            padding: '4px 8px', borderRadius: '12px', border: 'none',
+                                            background: isSelected ? color : 'var(--species-filter-inactive)',
+                                            color: isSelected ? getContrastTextColor(color) : 'var(--species-label-text)',
+                                            fontSize: '12px', fontWeight: 'bold', cursor: 'pointer'
+                                        }}
+                                    >{type}</button>
+                                );
+                            })}
                         </div>
-                        <div className="form-group">
-                            <label>Secondary Type</label>
-                            <select value={species.types[1] || ''} onChange={(e) => setSpecies(prev => ({ ...prev, types: e.target.value ? [prev.types[0], e.target.value] : [prev.types[0]] }))}>
-                                <option value="">None</option>
-                                {TYPE_LIST.filter(t => t !== species.types[0]).map(type => <option key={type} value={type}>{type}</option>)}
-                            </select>
+                    </div>
+                    <div className="form-group">
+                        <label>Secondary Type</label>
+                        <div role="group" aria-label="Secondary type" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(58px, 1fr))', gap: '4px' }}>
+                            <button
+                                type="button"
+                                onClick={() => setSpecies(prev => ({ ...prev, types: [prev.types[0]] }))}
+                                aria-pressed={!species.types[1]}
+                                style={{
+                                    padding: '4px 8px', borderRadius: '12px', border: 'none',
+                                    background: !species.types[1] ? 'var(--color-purple)' : 'var(--species-filter-inactive)',
+                                    color: !species.types[1] ? 'white' : 'var(--species-label-text)',
+                                    fontSize: '12px', fontWeight: 'bold', cursor: 'pointer'
+                                }}
+                            >None</button>
+                            {TYPE_LIST.filter(t => t !== species.types[0]).map(type => {
+                                const isSelected = species.types[1] === type;
+                                const color = getTypeColor(type);
+                                return (
+                                    <button
+                                        key={type}
+                                        type="button"
+                                        onClick={() => setSpecies(prev => ({ ...prev, types: [prev.types[0], type] }))}
+                                        aria-pressed={isSelected}
+                                        style={{
+                                            padding: '4px 8px', borderRadius: '12px', border: 'none',
+                                            background: isSelected ? color : 'var(--species-filter-inactive)',
+                                            color: isSelected ? getContrastTextColor(color) : 'var(--species-label-text)',
+                                            fontSize: '12px', fontWeight: 'bold', cursor: 'pointer'
+                                        }}
+                                    >{type}</button>
+                                );
+                            })}
                         </div>
+                    </div>
                     </div>
 
                     {/* Base Stats */}

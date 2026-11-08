@@ -4,6 +4,7 @@
 // Modal for creating custom Pokemon moves
 
 import React from 'react';
+import { getTypeColor, getContrastTextColor } from '../../utils/typeUtils.js';
 import useModalKeyboard from '../../hooks/useModalKeyboard.js';
 import { useModal, usePokemonContext } from '../../contexts/index.js';
 import toast from '../../utils/toast.js';
@@ -174,14 +175,26 @@ const CustomMoveModal = () => {
                     <div className="grid-responsive-2 gap-sm">
                         <div className="form-group">
                             <label>Type</label>
-                            <select
-                                value={customMove.type}
-                                onChange={(e) => setCustomMove(prev => ({ ...prev, type: e.target.value }))}
-                            >
-                                {TYPE_LIST.map(type => (
-                                    <option key={type} value={type}>{type}</option>
-                                ))}
-                            </select>
+                            <div role="group" aria-label="Move type" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(58px, 1fr))', gap: '4px' }}>
+                                {TYPE_LIST.map(type => {
+                                    const isSelected = customMove.type === type;
+                                    const color = getTypeColor(type);
+                                    return (
+                                        <button
+                                            key={type}
+                                            type="button"
+                                            onClick={() => setCustomMove(prev => ({ ...prev, type }))}
+                                            aria-pressed={isSelected}
+                                            style={{
+                                                padding: '4px 8px', borderRadius: '12px', border: 'none',
+                                                background: isSelected ? color : 'var(--species-filter-inactive)',
+                                                color: isSelected ? getContrastTextColor(color) : 'var(--species-label-text)',
+                                                fontSize: '12px', fontWeight: 'bold', cursor: 'pointer'
+                                            }}
+                                        >{type}</button>
+                                    );
+                                })}
+                            </div>
                         </div>
 
                         <div className="form-group">

@@ -68,6 +68,8 @@ const PokemonCard = ({
     const [speciesTypeFilter2, setSpeciesTypeFilter2] = useState('all');
     const [speciesSort, setSpeciesSort] = useState('name'); // 'name', 'bst-high', 'bst-low', 'id'
     const [showSpeciesDropdown, setShowSpeciesDropdown] = useState(false);
+    // Which species tile's Edit/Delete overflow menu is open (custom species only)
+    const [openSpeciesMenuId, setOpenSpeciesMenuId] = useState(null);
     // Move selection state
     const [moveSearch, setMoveSearch] = useState('');
     const [moveTypeFilter, setMoveTypeFilter] = useState('all');
@@ -151,6 +153,18 @@ const PokemonCard = ({
         document.addEventListener('mousedown', handleOutsideClick);
         return () => document.removeEventListener('mousedown', handleOutsideClick);
     }, [showTileMenu]);
+
+    // Close the species-tile Edit/Delete overflow menu on an outside click
+    useEffect(() => {
+        if (!openSpeciesMenuId) return;
+        const handleOutsideClick = (e) => {
+            if (!e.target.closest('.species-tile-menu')) {
+                setOpenSpeciesMenuId(null);
+            }
+        };
+        document.addEventListener('mousedown', handleOutsideClick);
+        return () => document.removeEventListener('mousedown', handleOutsideClick);
+    }, [openSpeciesMenuId]);
 
     const actualStats = useMemo(() => getActualStats(pokemon), [pokemon]);
     const maxHP = useMemo(() => calculatePokemonHP(pokemon), [pokemon]);
@@ -1157,7 +1171,7 @@ const PokemonCard = ({
                                         </div>
 
                                         {/* Species List */}
-                                        <div style={{ maxHeight: '250px', overflowY: 'auto' }}>
+                                        <div style={{ maxHeight: '320px', overflowY: 'auto', padding: '6px' }}>
                                             {pokedexLoading ? (
                                                 <div style={{ padding: '30px', textAlign: 'center', color: 'var(--species-muted-text)' }}>
                                                     <div style={{
@@ -1172,143 +1186,106 @@ const PokemonCard = ({
                                                     <div style={{ fontSize: '12px' }}>Loading Pokédex...</div>
                                                 </div>
                                             ) : filteredSpecies.length > 0 ? (
-                                                filteredSpecies.slice(0, 50).map(sp => {
+                                                <div className="detail-tile-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))' }}>
+                                                {filteredSpecies.slice(0, 50).map(sp => {
                                                     const hasRegionalForms = sp.regionalForms && sp.regionalForms.length > 0;
-                                                    // Get all unique types from regional forms
-                                                    const regionalTypes = hasRegionalForms
-                                                        ? [...new Set(sp.regionalForms.flatMap(f => f.types || []))]
-                                                            .filter(t => !sp.types?.includes(t))
-                                                        : [];
+                                                    const spriteUrl = getPokemonSprite({ species: sp.species });
 
                                                     return (
                                                         <div
                                                             key={sp.id}
                                                             onClick={() => handleSelectSpecies(sp)}
-                                                            className="species-list-item"
-                                                            style={{
-                                                                padding: '10px 12px',
-                                                                cursor: 'pointer',
-                                                                borderBottom: '1px solid var(--species-border)',
-                                                                display: 'flex',
-                                                                justifyContent: 'space-between',
-                                                                alignItems: 'center',
-                                                                transition: 'background 0.15s'
-                                                            }}
-                                                            onMouseEnter={(e) => e.currentTarget.style.background = 'var(--species-hover-bg)'}
-                                                            onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                                                            className="detail-tile species-list-item"
                                                         >
-                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                                                <span style={{ fontWeight: 'bold' }}>{sp.species}</span>
+                                                            {sp.isCustom && setCustomSpecies && (
+                                                                <div className="species-tile-menu" style={{ position: 'absolute', top: '4px', right: '4px', zIndex: 2 }}>
+                                                                    <button
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            setOpenSpeciesMenuId(id => id === sp.id ? null : sp.id);
+                                                                        }}
+                                                                        className="detail-tile-remove"
+                                                                        aria-label={`More actions for ${sp.species}`}
+                                                                        aria-haspopup="true"
+                                                                        aria-expanded={openSpeciesMenuId === sp.id}
+                                                                        title="More actions"
+                                                                    >⋮</button>
+                                                                    {openSpeciesMenuId === sp.id && (
+                                                                        <div style={tileMenuStyle} onClick={(e) => e.stopPropagation()}>
+                                                                            <button
+                                                                                onClick={() => {
+                                                                                    if (setEditingCustomSpeciesId) setEditingCustomSpeciesId(sp.id);
+                                                                                    if (setShowCustomSpeciesModal) setShowCustomSpeciesModal(true);
+                                                                                    setShowSpeciesDropdown(false);
+                                                                                    setOpenSpeciesMenuId(null);
+                                                                                }}
+                                                                                style={tileMenuItemStyle}
+                                                                            >
+                                                                                Edit
+                                                                            </button>
+                                                                            <button
+                                                                                onClick={() => {
+                                                                                    setOpenSpeciesMenuId(null);
+                                                                                    showConfirm({
+                                                                                        title: 'Delete Species',
+                                                                                        message: `Delete custom species "${sp.species}"?`,
+                                                                                        danger: true,
+                                                                                        onConfirm: () => setCustomSpecies(prev => prev.filter(s => s.id !== sp.id))
+                                                                                    });
+                                                                                }}
+                                                                                style={{ ...tileMenuItemStyle, color: 'var(--danger-btn-start)' }}
+                                                                            >
+                                                                                Delete
+                                                                            </button>
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                            )}
+                                                            <img
+                                                                src={spriteUrl}
+                                                                alt=""
+                                                                style={{ width: '44px', height: '44px', imageRendering: 'pixelated' }}
+                                                                onError={e => { e.target.style.visibility = 'hidden'; }}
+                                                            />
+                                                            <span style={{ fontWeight: 'bold', fontSize: '13px', maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                                {sp.species}
+                                                            </span>
+                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                                                                 {sp.isCustom ? (
-                                                                    <span style={{
-                                                                        fontSize: '12px',
-                                                                        color: 'white',
-                                                                        background: 'var(--color-purple)',
-                                                                        padding: '2px 6px',
-                                                                        borderRadius: '4px',
-                                                                        fontWeight: 'bold'
-                                                                    }}>
+                                                                    <span style={{ fontSize: '11px', color: 'white', background: 'var(--color-purple)', padding: '1px 5px', borderRadius: '4px', fontWeight: 'bold' }}>
                                                                         Custom
                                                                     </span>
                                                                 ) : (
-                                                                    <span style={{ fontSize: '12px', color: 'var(--species-muted-text)' }}>
+                                                                    <span style={{ fontSize: '11px', color: 'var(--species-muted-text)' }}>
                                                                         #{sp.id || '???'}
                                                                     </span>
                                                                 )}
                                                                 {hasRegionalForms && (
-                                                                    <span style={{ fontSize: '12px', color: 'var(--stat-satk)' }}>
-                                                                        🌍
-                                                                    </span>
-                                                                )}
-                                                                {/* Edit/Delete buttons for custom species */}
-                                                                {sp.isCustom && setCustomSpecies && (
-                                                                    <>
-                                                                        <button
-                                                                            onClick={(e) => {
-                                                                                e.stopPropagation();
-                                                                                if (setEditingCustomSpeciesId) {
-                                                                                    setEditingCustomSpeciesId(sp.id);
-                                                                                }
-                                                                                if (setShowCustomSpeciesModal) {
-                                                                                    setShowCustomSpeciesModal(true);
-                                                                                }
-                                                                                setShowSpeciesDropdown(false);
-                                                                            }}
-                                                                            style={{
-                                                                                padding: '2px 6px',
-                                                                                background: 'var(--color-purple)',
-                                                                                color: 'white',
-                                                                                border: 'none',
-                                                                                borderRadius: '3px',
-                                                                                fontSize: '12px',
-                                                                                cursor: 'pointer',
-                                                                                marginLeft: '4px'
-                                                                            }}
-                                                                            title={`Edit ${sp.species}`}
-                                                                            aria-label={`Edit ${sp.species}`}
-                                                                        >Edit</button>
-                                                                        <button
-                                                                            onClick={(e) => {
-                                                                                e.stopPropagation();
-                                                                                showConfirm({
-                                                                                    title: 'Delete Species',
-                                                                                    message: `Delete custom species "${sp.species}"?`,
-                                                                                    danger: true,
-                                                                                    onConfirm: () => setCustomSpecies(prev => prev.filter(s => s.id !== sp.id))
-                                                                                });
-                                                                            }}
-                                                                            style={{
-                                                                                padding: '2px 6px',
-                                                                                background: 'var(--danger-btn-start)',
-                                                                                color: 'white',
-                                                                                border: 'none',
-                                                                                borderRadius: '3px',
-                                                                                fontSize: '12px',
-                                                                                cursor: 'pointer'
-                                                                            }}
-                                                                            title={`Delete ${sp.species}`}
-                                                                            aria-label={`Delete ${sp.species}`}
-                                                                        >×</button>
-                                                                    </>
+                                                                    <span style={{ fontSize: '11px', color: 'var(--stat-satk)' }} title="Has regional forms">🌍</span>
                                                                 )}
                                                             </div>
-                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                                                            <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', justifyContent: 'center' }}>
                                                                 {sp.types?.map(t => (
                                                                     <span
                                                                         key={t}
                                                                         style={{
-                                                                            padding: '2px 6px',
+                                                                            padding: '1px 6px',
                                                                             background: getTypeColor(t),
-                                                                            color: 'white',
+                                                                            color: getContrastTextColor(getTypeColor(t)),
                                                                             borderRadius: '8px',
-                                                                            fontSize: '12px',
+                                                                            fontSize: '10px',
                                                                             fontWeight: 'bold'
                                                                         }}
                                                                     >{t}</span>
                                                                 ))}
-                                                                {regionalTypes.map(t => (
-                                                                    <span
-                                                                        key={`regional-${t}`}
-                                                                        style={{
-                                                                            padding: '2px 6px',
-                                                                            background: getTypeColor(t),
-                                                                            color: 'white',
-                                                                            borderRadius: '8px',
-                                                                            fontSize: '12px',
-                                                                            fontWeight: 'bold',
-                                                                            opacity: 0.6,
-                                                                            border: '1px dashed white'
-                                                                        }}
-                                                                        title="Regional form type"
-                                                                    >{t}</span>
-                                                                ))}
-                                                                <span style={{ fontSize: '12px', color: 'var(--species-muted-text)', marginLeft: '4px' }}>
-                                                                    BST: {getBaseStatTotal(sp)}
-                                                                </span>
                                                             </div>
+                                                            <span style={{ fontSize: '11px', color: 'var(--species-muted-text)' }}>
+                                                                BST: {getBaseStatTotal(sp)}
+                                                            </span>
                                                         </div>
                                                     );
-                                                })
+                                                })}
+                                                </div>
                                             ) : (
                                                 <div style={{ padding: '20px', textAlign: 'center', color: 'var(--species-muted-text)' }}>
                                                     {speciesSearch || speciesTypeFilter !== 'all' || speciesTypeFilter2 !== 'all'

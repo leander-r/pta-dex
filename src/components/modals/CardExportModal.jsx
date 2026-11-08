@@ -356,17 +356,40 @@ const CardExportModal = () => {
                     </div>
 
                     {cardType === 'pokemon' && (
-                        <div className="mt-10">
-                            <select
-                                value={selectedCardPokemon?.id || ''}
-                                onChange={(e) => setSelectedCardPokemon(allPokemon.find(p => String(p.id) === e.target.value))}
-                                className="w-full"
-                            >
-                                <option value="">Select a Pokémon...</option>
-                                {allPokemon.map(p => (
-                                    <option key={p.id} value={p.id}>{p.name} (Lv.{p.level})</option>
-                                ))}
-                            </select>
+                        <div className="mt-10 detail-tile-grid" role="group" aria-label="Select a Pokémon" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(110px, 1fr))' }}>
+                            {allPokemon.map(p => {
+                                const isSelected = selectedCardPokemon?.id === p.id;
+                                const primaryColor = getTypeColor(p.types?.[0] || 'Normal');
+                                return (
+                                    <button
+                                        key={p.id}
+                                        type="button"
+                                        onClick={() => setSelectedCardPokemon(p)}
+                                        aria-pressed={isSelected}
+                                        className="detail-tile"
+                                        style={{
+                                            borderTop: `3px solid ${primaryColor}`,
+                                            boxShadow: isSelected ? `0 0 0 2px ${primaryColor}, var(--shadow-sm)` : undefined
+                                        }}
+                                    >
+                                        <img
+                                            src={getPokemonDisplayImage(p)}
+                                            alt=""
+                                            style={{ width: '44px', height: '44px', imageRendering: 'pixelated' }}
+                                            onError={e => { e.target.style.visibility = 'hidden'; }}
+                                        />
+                                        <span style={{ fontWeight: 'bold', fontSize: '13px', maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                            {p.name}
+                                        </span>
+                                        <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Lv.{p.level}</span>
+                                    </button>
+                                );
+                            })}
+                            {allPokemon.length === 0 && (
+                                <div style={{ gridColumn: '1 / -1', padding: '12px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '13px' }}>
+                                    No Pokémon available.
+                                </div>
+                            )}
                         </div>
                     )}
 
