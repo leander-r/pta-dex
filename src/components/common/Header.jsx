@@ -282,6 +282,7 @@ const Header = () => {
                 {/* Money Display */}
                 <div
                     className="header-money-display"
+                    title={`₽${(trainer.money || 0).toLocaleString()}`}
                     style={{
                         padding: isMobile ? '5px 8px' : (isScrolled ? '6px 12px' : '8px 16px'),
                         borderRadius: isMobile ? '8px' : '12px',
@@ -292,11 +293,17 @@ const Header = () => {
                         gap: isMobile ? '4px' : '6px',
                         boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
                         transition: 'all 0.25s ease',
-                        flexShrink: 0
+                        // Defensive cap on narrow phones — a large money value with no limit
+                        // here can crowd the trainer selector next to it out of its share of
+                        // the row (flexShrink:0 means this element never gives width back).
+                        flexShrink: isMobile ? 1 : 0,
+                        maxWidth: isMobile ? '90px' : 'none',
+                        minWidth: 0,
+                        overflow: 'hidden'
                     }}
                 >
-                    <span style={{ color: '#f5a623', fontWeight: 800 }}>₽</span>
-                    <span>{(trainer.money || 0).toLocaleString()}</span>
+                    <span style={{ color: '#f5a623', fontWeight: 800, flexShrink: 0 }}>₽</span>
+                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{(trainer.money || 0).toLocaleString()}</span>
                 </div>
 
                 {/* Trainer Selector */}
