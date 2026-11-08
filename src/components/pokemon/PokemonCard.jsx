@@ -1378,77 +1378,69 @@ const PokemonCard = ({
                                             </div>
                                         </div>
 
-                                        <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
-                                            {/* Normal Form */}
-                                            <div
-                                                onClick={() => applySpeciesForm(pendingSpeciesData, { isBase: true })}
-                                                style={{
-                                                    padding: '12px',
-                                                    cursor: 'pointer',
-                                                    borderBottom: '1px solid var(--species-border)',
-                                                    transition: 'background 0.15s'
-                                                }}
-                                                onMouseEnter={(e) => e.currentTarget.style.background = 'var(--species-hover-bg)'}
-                                                onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-                                            >
-                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                    <div>
-                                                        <span style={{ fontWeight: 'bold' }}>🔵 Normal Form</span>
-                                                    </div>
-                                                    <div style={{ display: 'flex', gap: '4px' }}>
+                                        <div style={{ maxHeight: '320px', overflowY: 'auto', padding: '10px' }}>
+                                            <div className="detail-tile-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(110px, 1fr))' }}>
+                                                {/* Normal Form */}
+                                                <div
+                                                    onClick={() => applySpeciesForm(pendingSpeciesData, { isBase: true })}
+                                                    className="detail-tile"
+                                                >
+                                                    <img
+                                                        src={getPokemonSprite({ species: pendingSpeciesData.species })}
+                                                        alt=""
+                                                        style={{ width: '40px', height: '40px', imageRendering: 'pixelated' }}
+                                                        onError={e => { e.target.style.visibility = 'hidden'; }}
+                                                    />
+                                                    <span style={{ fontWeight: 'bold', fontSize: '12px' }}>Normal Form</span>
+                                                    <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', justifyContent: 'center' }}>
                                                         {pendingSpeciesData.types?.map(t => (
                                                             <span
                                                                 key={t}
                                                                 style={{
-                                                                    padding: '2px 6px',
+                                                                    padding: '1px 6px',
                                                                     background: getTypeColor(t),
-                                                                    color: 'white',
+                                                                    color: getContrastTextColor(getTypeColor(t)),
                                                                     borderRadius: '8px',
-                                                                    fontSize: '12px',
+                                                                    fontSize: '10px',
                                                                     fontWeight: 'bold'
                                                                 }}
                                                             >{t}</span>
                                                         ))}
                                                     </div>
                                                 </div>
-                                            </div>
 
-                                            {/* Regional Forms */}
-                                            {pendingSpeciesData.regionalForms.map((form, idx) => (
-                                                <div
-                                                    key={idx}
-                                                    onClick={() => applySpeciesForm(pendingSpeciesData, form)}
-                                                    style={{
-                                                        padding: '12px',
-                                                        cursor: 'pointer',
-                                                        borderBottom: '1px solid var(--species-border)',
-                                                        transition: 'background 0.15s'
-                                                    }}
-                                                    onMouseEnter={(e) => e.currentTarget.style.background = 'var(--species-regional-hover)'}
-                                                    onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-                                                >
-                                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                        <div>
-                                                            <span style={{ fontWeight: 'bold' }}>🌴 {form.name} Form</span>
-                                                        </div>
-                                                        <div style={{ display: 'flex', gap: '4px' }}>
+                                                {/* Regional Forms */}
+                                                {pendingSpeciesData.regionalForms.map((form, idx) => (
+                                                    <div
+                                                        key={idx}
+                                                        onClick={() => applySpeciesForm(pendingSpeciesData, form)}
+                                                        className="detail-tile"
+                                                    >
+                                                        <img
+                                                            src={getPokemonSprite({ species: pendingSpeciesData.species, regionalForm: form.name })}
+                                                            alt=""
+                                                            style={{ width: '40px', height: '40px', imageRendering: 'pixelated' }}
+                                                            onError={e => { e.target.style.visibility = 'hidden'; }}
+                                                        />
+                                                        <span style={{ fontWeight: 'bold', fontSize: '12px' }}>{form.name} Form</span>
+                                                        <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', justifyContent: 'center' }}>
                                                             {form.types?.map(t => (
                                                                 <span
                                                                     key={t}
                                                                     style={{
-                                                                        padding: '2px 6px',
+                                                                        padding: '1px 6px',
                                                                         background: getTypeColor(t),
-                                                                        color: 'white',
+                                                                        color: getContrastTextColor(getTypeColor(t)),
                                                                         borderRadius: '8px',
-                                                                        fontSize: '12px',
+                                                                        fontSize: '10px',
                                                                         fontWeight: 'bold'
                                                                     }}
                                                                 >{t}</span>
                                                             ))}
                                                         </div>
                                                     </div>
-                                                </div>
-                                            ))}
+                                                ))}
+                                            </div>
                                         </div>
 
                                         {/* Cancel Button */}
@@ -1599,7 +1591,7 @@ const PokemonCard = ({
                                     )}
                                 </div>
                             </div>
-                            <div>
+                            <div className="detail-tile" style={{ alignItems: 'stretch', textAlign: 'left', borderTop: '3px solid var(--color-purple)', cursor: 'default' }}>
                                 {/* P1: Nature with inline modifier hint */}
                                 <label style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '4px', display: 'flex', flexWrap: 'wrap', alignItems: 'baseline', gap: '4px' }}>
                                     <span>Nature</span>
@@ -1618,7 +1610,7 @@ const PokemonCard = ({
                                 <select
                                     value={pokemon.nature || 'Hardy'}
                                     onChange={(e) => updatePokemon({ nature: e.target.value })}
-                                    style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--input-bg)', color: 'var(--text-primary)' }}
+                                    style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--input-bg)', color: 'var(--text-primary)', cursor: 'pointer' }}
                                 >
                                     {Object.keys(GAME_DATA.natures || {}).map(nature => (
                                         <option key={nature} value={nature}>{nature}</option>
@@ -1691,25 +1683,29 @@ const PokemonCard = ({
                                         >?</button>
                                     </div>
                                     <div style={{ display: 'flex', gap: '6px' }}>
-                                        {[0, 1, 2, 3, 4].map(rank => (
-                                            <button
-                                                key={rank}
-                                                onClick={() => updatePokemon({ loyalty: rank })}
-                                                title={`${rank} — ${LOYALTY_LABELS[rank]}`}
-                                                aria-label={`Set loyalty to ${rank} — ${LOYALTY_LABELS[rank]}`}
-                                                style={{
-                                                    flex: 1, padding: '7px 4px', borderRadius: '6px', border: '2px solid',
-                                                    borderColor: currentLoyalty === rank ? LOYALTY_COLORS[rank] : LOYALTY_COLORS[rank] + '55',
-                                                    background: currentLoyalty === rank ? LOYALTY_COLORS[rank] : LOYALTY_COLORS[rank] + '18',
-                                                    color: currentLoyalty === rank ? (rank === 2 ? 'black' : 'white') : 'var(--text-secondary)',
-                                                    cursor: 'pointer', fontWeight: 'bold', transition: 'all 0.15s',
-                                                    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px'
-                                                }}
-                                            >
-                                                <span style={{ fontSize: '14px', lineHeight: 1 }}>{rank}</span>
-                                                <span style={{ fontSize: '10px', fontWeight: currentLoyalty === rank ? 'bold' : 'normal', opacity: currentLoyalty === rank ? 1 : 0.7, lineHeight: 1 }}>{LOYALTY_LABELS[rank]}</span>
-                                            </button>
-                                        ))}
+                                        {[0, 1, 2, 3, 4].map(rank => {
+                                            const isSelected = currentLoyalty === rank;
+                                            return (
+                                                <button
+                                                    key={rank}
+                                                    onClick={() => updatePokemon({ loyalty: rank })}
+                                                    title={`${rank} — ${LOYALTY_LABELS[rank]}`}
+                                                    aria-label={`Set loyalty to ${rank} — ${LOYALTY_LABELS[rank]}`}
+                                                    className="detail-tile-filled"
+                                                    style={{
+                                                        flex: 1, padding: '8px 4px', border: '2px solid',
+                                                        borderColor: isSelected ? LOYALTY_COLORS[rank] : LOYALTY_COLORS[rank] + '55',
+                                                        background: isSelected ? LOYALTY_COLORS[rank] : LOYALTY_COLORS[rank] + '18',
+                                                        color: isSelected ? (rank === 2 ? 'black' : 'white') : 'var(--text-secondary)',
+                                                        boxShadow: isSelected ? `0 0 0 2px ${LOYALTY_COLORS[rank]}66, var(--shadow-sm)` : 'var(--shadow-sm)',
+                                                        gap: '2px'
+                                                    }}
+                                                >
+                                                    <span style={{ fontSize: '14px', lineHeight: 1 }}>{rank}</span>
+                                                    <span style={{ fontSize: '10px', fontWeight: isSelected ? 'bold' : 'normal', opacity: isSelected ? 1 : 0.7, lineHeight: 1 }}>{LOYALTY_LABELS[rank]}</span>
+                                                </button>
+                                            );
+                                        })}
                                     </div>
                                     <div style={{ marginTop: '5px', fontSize: '12px', color: 'var(--text-muted)' }}>
                                         {currentLoyalty === 0 && '⚠ Can use Frustration. May refuse to evolve.'}
