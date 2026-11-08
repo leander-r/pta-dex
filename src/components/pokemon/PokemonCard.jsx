@@ -77,8 +77,9 @@ const PokemonCard = ({
     // Held item selection state
     const [heldItemSearch, setHeldItemSearch] = useState('');
     const [showHeldItemDropdown, setShowHeldItemDropdown] = useState(false);
-    // Collapsed view expanded sections
-    const [expandedSection, setExpandedSection] = useState(null); // 'abilities', 'moves', 'skills', or null
+    // Collapsed tile overflow menu (Move Up/Down/Party/Reserve)
+    const [showTileMenu, setShowTileMenu] = useState(false);
+    const tileMenuRef = useRef(null);
     // Regional form selection state
     const [showRegionalFormSelect, setShowRegionalFormSelect] = useState(false);
     const [pendingSpeciesData, setPendingSpeciesData] = useState(null);
@@ -138,6 +139,18 @@ const PokemonCard = ({
         document.addEventListener('keydown', handleKey);
         return () => document.removeEventListener('keydown', handleKey);
     }, [showRegionalFormSelect]);
+
+    // Close the collapsed-tile overflow menu on an outside click
+    useEffect(() => {
+        if (!showTileMenu) return;
+        const handleOutsideClick = (e) => {
+            if (tileMenuRef.current && !tileMenuRef.current.contains(e.target)) {
+                setShowTileMenu(false);
+            }
+        };
+        document.addEventListener('mousedown', handleOutsideClick);
+        return () => document.removeEventListener('mousedown', handleOutsideClick);
+    }, [showTileMenu]);
 
     const actualStats = useMemo(() => getActualStats(pokemon), [pokemon]);
     const maxHP = useMemo(() => calculatePokemonHP(pokemon), [pokemon]);
@@ -550,23 +563,22 @@ const PokemonCard = ({
 
     // Collapsed view
     if (!isEditing) {
+        const activeStatusConditions = STATUS_CONDITIONS.filter(c => pokemon.statusConditions?.[c.key]);
+        const loyaltyLevel = pokemon.loyalty ?? 1;
+        const hpRatio = currentHP / maxHP;
+        const hpColor = hpRatio > 0.5 ? 'var(--stat-hp)' : hpRatio > 0.25 ? 'var(--poke-orange)' : 'var(--danger-btn-start)';
+
         return (
             <div
-                className="pokemon-card pokemon-card-collapsed"
+                className="detail-tile pokemon-roster-tile"
                 draggable={!compareMode}
                 onDragStart={!compareMode ? (e) => { e.dataTransfer.effectAllowed = 'move'; onDragStart?.(pokemon.id); } : undefined}
                 onDragOver={!compareMode ? (e) => { e.preventDefault(); onDragOver?.(pokemon.id); } : undefined}
                 onDrop={!compareMode ? (e) => { e.preventDefault(); onDrop?.(pokemon.id); } : undefined}
                 onDragEnd={!compareMode ? () => onDragEnd?.() : undefined}
                 style={{
-                    '--type-primary': primaryColor,
-                    '--type-secondary': secondaryColor,
-                    '--type-shadow-color': `${primaryColor}33`,
-                    borderLeft: `4px solid ${primaryColor}`,
-                    borderRight: secondaryType ? `4px solid ${secondaryColor}` : 'none',
-                    backgroundImage: secondaryType
-                        ? `linear-gradient(to right, ${primaryColor}12 0%, transparent 35%, transparent 65%, ${secondaryColor}12 100%)`
-                        : `linear-gradient(to right, ${primaryColor}12 0%, transparent 35%)`,
+                    borderTop: `4px solid ${primaryColor}`,
+                    boxShadow: secondaryType ? `inset 0 3px 0 -1px ${secondaryColor}` : undefined,
                     opacity: isDragging ? 0.5 : 1,
                     transform: isDragging ? 'scale(0.98)' : 'none',
                     outline: isDragOver ? '2px dashed var(--color-purple)' : 'none',
@@ -574,436 +586,189 @@ const PokemonCard = ({
                 }}
                 onClick={() => { if (!compareMode) setEditing(true); }}
             >
-                <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
-                    {/* Drag grip handle or Compare checkbox */}
+                {/* Top-left overlay: drag grip handle or Compare checkbox */}
+                <div style={{ position: 'absolute', top: '6px', left: '6px', zIndex: 2 }}>
                     {compareMode ? (
-                        <div
-                            onClick={(e) => { e.stopPropagation(); onToggleCompare?.(pokemon.id); }}
-                            style={{ flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '28px' }}
-                        >
-                            <input
-                                type="checkbox"
-                                checked={!!isCompareSelected}
-                                onChange={() => onToggleCompare?.(pokemon.id)}
-                                onClick={(e) => e.stopPropagation()}
-                                style={{ width: '18px', height: '18px', cursor: 'pointer' }}
-                            />
-                        </div>
+                        <input
+                            type="checkbox"
+                            checked={!!isCompareSelected}
+                            onChange={() => onToggleCompare?.(pokemon.id)}
+                            onClick={(e) => e.stopPropagation()}
+                            title="Select for comparison"
+                            style={{ width: '16px', height: '16px', cursor: 'pointer' }}
+                        />
                     ) : (
-                        <div
+                        <span
                             role="button"
                             tabIndex={0}
                             aria-label="Drag to reorder"
                             title="Drag to reorder"
-                            style={{ flexShrink: 0, cursor: 'grab', fontSize: '18px', color: 'var(--text-muted)', userSelect: 'none', width: '20px', textAlign: 'center' }}
+                            style={{ cursor: 'grab', fontSize: '14px', color: 'var(--text-muted)', userSelect: 'none' }}
                         >
                             ⠿
-                        </div>
+                        </span>
                     )}
-                    {/* Avatar */}
-                    <div style={{
-                        width: '68px',
-                        height: '68px',
-                        borderRadius: '50%',
-                        background: `radial-gradient(circle at 38% 32%, rgba(255,255,255,0.45) 0%, ${primaryColor}cc 45%, ${secondaryColor}ff 100%)`,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        flexShrink: 0,
-                        overflow: 'hidden',
-                        boxShadow: `0 2px 12px ${primaryColor}88, inset 0 1px 3px rgba(255,255,255,0.3)`
-                    }}>
-                        {(() => {
-                            const img = getPokemonDisplayImage(pokemon);
-                            return img
-                                ? <img src={img} alt={pokemon.name || pokemon.species || 'Pokémon'} style={{ width: '56px', height: '56px', objectFit: 'cover' }} />
-                                : <span style={{ fontSize: '24px', opacity: 0.35 }}>⬤</span>;
-                        })()}
-                    </div>
+                </div>
 
-                    {/* Info */}
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                            <span title={pokemon.name || pokemon.species || 'Unknown'} style={{ fontWeight: 'bold', fontSize: '16px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 'clamp(130px, 28%, 240px)' }}>
-                                {pokemon.name || pokemon.species || 'Unknown'}
-                            </span>
-                            {pokemon.species && pokemon.species !== pokemon.name && (
-                                <span className="text-muted" style={{ fontSize: '13px' }}>({pokemon.species})</span>
-                            )}
-                            {pokemon.species && (
-                                <button
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        setPokedexJumpTarget(pokemon.species);
-                                        setActiveTab('reference');
-                                    }}
-                                    title={`View ${pokemon.species} in the Pokédex`}
-                                    aria-label={`View ${pokemon.species} in the Pokédex`}
-                                    style={{
-                                        background: 'none', border: 'none', cursor: 'pointer',
-                                        fontSize: '13px', padding: '2px', lineHeight: 1,
-                                        color: 'var(--text-muted)', flexShrink: 0,
-                                    }}
-                                >
-                                    📖
-                                </button>
-                            )}
-                            {customSpecies?.some(cs => cs.species === pokemon.species) && (
-                                <span style={{
-                                    fontSize: '12px', fontWeight: 'bold', padding: '1px 6px',
-                                    borderRadius: '8px', background: 'linear-gradient(135deg, var(--poke-orange), var(--poke-orange-dark))',
-                                    color: 'white'
-                                }} title="This Pokémon uses a homebrew species">Homebrew</span>
-                            )}
-                            <span className="text-muted" style={{ fontSize: '13px' }}>Lv.{pokemon.level || 1}</span>
-                            {(() => {
-                                const loy = pokemon.loyalty ?? 1;
-                                return (
-                                    <span style={{
-                                        fontSize: '12px', fontWeight: 'bold', padding: '1px 6px',
-                                        borderRadius: '8px', background: LOYALTY_COLORS[loy],
-                                        color: loy === 2 ? 'black' : 'white'
-                                    }} title={`Loyalty: ${loy} — ${LOYALTY_LABELS[loy]} (GM Guide pp.10–13)`}>
-                                        ❤ {LOYALTY_LABELS[loy]}
-                                    </span>
-                                );
-                            })()}
-                        </div>
-
-                        <div style={{ display: 'flex', gap: '6px', marginTop: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
-                            {pokemon.types?.map(type => (
-                                <span
-                                    key={type}
-                                    className={`type-pill-single type-${type.toLowerCase()}`}
-                                    style={{ color: getContrastTextColor(getTypeColor(type)) }}
-                                >
-                                    {type}
-                                </span>
-                            ))}
-                            {pokemon.heldItem && (() => {
-                                const itemData = GAME_DATA?.items?.[pokemon.heldItem];
-                                return (
-                                    <span
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            if (showDetail && itemData) showDetail('item', pokemon.heldItem, itemData);
-                                        }}
-                                        title={itemData ? 'Click to view item details' : pokemon.heldItem}
+                {/* Top-right overlay: overflow menu (reorder / party / reserve) */}
+                {!compareMode && (
+                    <div ref={tileMenuRef} style={{ position: 'absolute', top: '6px', right: '6px', zIndex: 2 }}>
+                        <button
+                            onClick={(e) => { e.stopPropagation(); setShowTileMenu(v => !v); }}
+                            title="More actions"
+                            className="detail-tile-remove"
+                            aria-label="More actions"
+                            aria-haspopup="true"
+                            aria-expanded={showTileMenu}
+                        >
+                            ⋮
+                        </button>
+                        {showTileMenu && (
+                            <div style={tileMenuStyle} onClick={(e) => e.stopPropagation()}>
+                                {canMoveUp && (
+                                    <button onClick={() => { onMoveUp(); setShowTileMenu(false); }} style={tileMenuItemStyle}>
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                            <polyline points="18 15 12 9 6 15"></polyline>
+                                        </svg>
+                                        Move Up
+                                    </button>
+                                )}
+                                {canMoveDown && (
+                                    <button onClick={() => { onMoveDown(); setShowTileMenu(false); }} style={tileMenuItemStyle}>
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                            <polyline points="6 9 12 15 18 9"></polyline>
+                                        </svg>
+                                        Move Down
+                                    </button>
+                                )}
+                                {isInParty ? (
+                                    <button
+                                        onClick={() => { onMoveToReserve && onMoveToReserve(); setShowTileMenu(false); }}
+                                        style={{ ...tileMenuItemStyle, color: 'var(--poke-orange-dark)' }}
+                                    >
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--poke-orange-dark)" strokeWidth="2">
+                                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                                        </svg>
+                                        Move to Reserve
+                                    </button>
+                                ) : (
+                                    <button
+                                        onClick={() => { if (canMoveToParty) { onMoveToParty && onMoveToParty(); setShowTileMenu(false); } }}
+                                        disabled={!canMoveToParty}
+                                        title={canMoveToParty ? 'Move to Party' : 'Party is full (6/6)'}
                                         style={{
-                                            padding: '2px 8px',
-                                            borderRadius: '10px',
-                                            background: 'var(--tint-blue-bg)',
-                                            color: 'var(--text-primary)',
-                                            fontSize: '12px',
-                                            fontWeight: 'bold',
-                                            border: '1px solid var(--tint-blue-border)',
-                                            cursor: showDetail && itemData ? 'pointer' : 'default'
+                                            ...tileMenuItemStyle,
+                                            color: canMoveToParty ? 'var(--color-success-text)' : 'var(--collapsed-btn-text)',
+                                            cursor: canMoveToParty ? 'pointer' : 'not-allowed',
+                                            opacity: canMoveToParty ? 1 : 0.6
                                         }}
                                     >
-                                        🎒 {pokemon.heldItem}
-                                    </span>
-                                );
-                            })()}
-                        </div>
-
-                        {/* Status Conditions — above HP bar for gameplay visibility */}
-                        {(() => {
-                            const active = STATUS_CONDITIONS.filter(c => pokemon.statusConditions?.[c.key]);
-                            if (!active.length) return null;
-                            return (
-                                <div style={{ display: 'flex', gap: '4px', marginTop: '4px', flexWrap: 'wrap' }}>
-                                    {active.map(c => (
-                                        <span key={c.key} style={{
-                                            padding: '1px 6px', borderRadius: '10px',
-                                            background: c.color, color: 'white',
-                                            fontSize: '12px', fontWeight: 'bold'
-                                        }}>
-                                            {c.icon} {c.label}
-                                        </span>
-                                    ))}
-                                </div>
-                            );
-                        })()}
-
-                        {/* HP Bar */}
-                        <div style={{ marginTop: '6px' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                <div
-                                    role="progressbar"
-                                    aria-valuenow={currentHP}
-                                    aria-valuemin={0}
-                                    aria-valuemax={maxHP}
-                                    aria-label={`HP: ${currentHP} of ${maxHP}`}
-                                    style={{
-                                        flex: 1,
-                                        height: '10px',
-                                        background: 'var(--collapsed-hp-track)',
-                                        borderRadius: '5px',
-                                        overflow: 'hidden'
-                                    }}>
-                                    <div style={{
-                                        width: `${Math.max(0, Math.min(100, (currentHP / maxHP) * 100))}%`,
-                                        height: '100%',
-                                        background: currentHP / maxHP > 0.5 ? 'var(--stat-hp)' : currentHP / maxHP > 0.25 ? 'var(--poke-orange)' : 'var(--danger-btn-start)',
-                                        transition: 'width 0.3s ease'
-                                    }} />
-                                </div>
-                                <span style={{ fontSize: '12px', fontWeight: 'bold', color: currentHP / maxHP > 0.5 ? 'var(--stat-hp)' : currentHP / maxHP > 0.25 ? 'var(--poke-orange)' : 'var(--danger-btn-start)', minWidth: '55px' }}>
-                                    {currentHP}/{maxHP}
-                                </span>
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={canMoveToParty ? 'var(--color-success-text)' : 'var(--collapsed-btn-text)'} strokeWidth="2">
+                                            <path d="M19 12H5M12 19l-7-7 7-7"/>
+                                        </svg>
+                                        Move to Party
+                                    </button>
+                                )}
                             </div>
-                            <span className="text-muted" style={{ fontSize: '12px' }}>
-                                {pokemon.nature || 'Hardy'} Nature
-                            </span>
-                        </div>
+                        )}
+                    </div>
+                )}
 
-                        {/* Expandable Section Buttons */}
-                        {(() => {
-                            const expandBtnStyle = (section) => {
-                                const tints = {
-                                    abilities: { border: 'var(--tint-purple-border)', bg: 'var(--tint-purple-bg)', color: 'var(--color-purple)' },
-                                    moves:     { border: 'var(--stat-hp)',            bg: 'var(--tint-success-bg)', color: 'var(--color-success-text)' },
-                                    skills:    { border: 'var(--stat-satk)',          bg: 'var(--tint-blue-bg)',    color: 'var(--stat-satk)' },
-                                };
-                                const t = tints[section] || {};
-                                const active = expandedSection === section;
-                                return {
-                                    padding: '4px 10px',
-                                    borderRadius: '12px',
-                                    border: active ? '1.5px solid transparent' : `1.5px solid ${t.border || 'var(--border-medium)'}`,
-                                    background: active ? 'var(--gradient-purple)' : (t.bg || 'var(--collapsed-btn-bg)'),
-                                    color: active ? 'white' : (t.color || 'var(--collapsed-btn-text)'),
-                                    fontSize: '12px',
-                                    fontWeight: 'bold',
-                                    cursor: 'pointer',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '4px',
-                                    transition: 'all 0.15s ease'
-                                };
-                            };
-                            const abilities = (pokemon.abilities && pokemon.abilities.length > 0)
-                                ? pokemon.abilities
-                                : (pokemon.ability ? [pokemon.ability] : []);
-                            const moves = pokemon.moves || [];
-                            const natCount = moves.filter(m => m.source === 'natural').length;
-                            const taughtCount = moves.filter(m => m.source === 'taught').length;
-                            const atNatLimit = natCount >= MAX_NATURAL_MOVES;
-                            const atTaughtLimit = taughtCount >= MAX_TAUGHT_MOVES;
-                            const visibleSkills = (pokemon.pokemonSkills || []).filter(s => s.value === undefined || s.value > 0);
-                            return (
-                        <div style={{ display: 'flex', gap: '6px', marginTop: '8px', flexWrap: 'wrap' }}>
-                            {/* Abilities Button */}
-                            {abilities.length > 0 && (
-                                    <button
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            setExpandedSection(expandedSection === 'abilities' ? null : 'abilities');
-                                        }}
-                                        style={expandBtnStyle('abilities')}
-                                    >
-                                        <span>✨</span> Abilities ({abilities.length})
-                                    </button>
-                            )}
-                            {/* Moves Button */}
-                            {moves.length > 0 && (
-                                    <button
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            setExpandedSection(expandedSection === 'moves' ? null : 'moves');
-                                        }}
-                                        title={`Natural: ${natCount}/${MAX_NATURAL_MOVES} | Taught: ${taughtCount}/${MAX_TAUGHT_MOVES}`}
-                                        style={expandBtnStyle('moves')}
-                                    >
-                                        <span>⚔️</span> Moves
-                                        <span style={{ fontSize: '12px', display: 'flex', alignItems: 'center', gap: '3px' }}>
-                                            <span style={{ color: atNatLimit ? (expandedSection === 'moves' ? 'white' : 'var(--color-danger-text)') : 'inherit' }}>
-                                                {natCount}/{MAX_NATURAL_MOVES}
-                                            </span>
-                                            {atNatLimit && <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: expandedSection === 'moves' ? 'white' : 'var(--color-danger-text)', flexShrink: 0, display: 'inline-block' }} />}
-                                        </span>
-                                    </button>
-                            )}
-                            {/* Skills Button */}
-                            {visibleSkills.length > 0 && (
-                                <button
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        setExpandedSection(expandedSection === 'skills' ? null : 'skills');
-                                    }}
-                                    style={expandBtnStyle('skills')}
-                                >
-                                    <span>🎯</span> Skills ({visibleSkills.length})
-                                </button>
-                            )}
-                        </div>
+                {/* Avatar */}
+                <div style={{
+                    width: '48px',
+                    height: '48px',
+                    borderRadius: '50%',
+                    background: `radial-gradient(circle at 38% 32%, rgba(255,255,255,0.45) 0%, ${primaryColor}cc 45%, ${secondaryColor}ff 100%)`,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    overflow: 'hidden',
+                    boxShadow: `0 2px 10px ${primaryColor}88, inset 0 1px 3px rgba(255,255,255,0.3)`,
+                    marginTop: '8px'
+                }}>
+                    {(() => {
+                        const img = getPokemonDisplayImage(pokemon);
+                        return img
+                            ? <img src={img} alt={pokemon.name || pokemon.species || 'Pokémon'} style={{ width: '42px', height: '42px', objectFit: 'cover' }} />
+                            : <span style={{ fontSize: '20px', opacity: 0.35 }}>⬤</span>;
+                    })()}
+                </div>
+
+                {/* Name + level */}
+                <div
+                    title={pokemon.name || pokemon.species || 'Unknown'}
+                    style={{ fontWeight: 'bold', fontSize: '13px', marginTop: '6px', maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+                >
+                    {pokemon.name || pokemon.species || 'Unknown'}
+                </div>
+                <div className="text-muted" style={{ fontSize: '11px' }}>
+                    Lv.{pokemon.level || 1}
+                    {customSpecies?.some(cs => cs.species === pokemon.species) && (
+                        <span style={{ marginLeft: '4px' }} title="This Pokémon uses a homebrew species">🏠</span>
+                    )}
+                </div>
+
+                {/* Type pills */}
+                <div style={{ display: 'flex', gap: '4px', marginTop: '4px', flexWrap: 'wrap', justifyContent: 'center' }}>
+                    {pokemon.types?.map(type => (
+                        <span
+                            key={type}
+                            className={`type-pill-single type-${type.toLowerCase()}`}
+                            style={{ color: getContrastTextColor(getTypeColor(type)), fontSize: '10px' }}
+                        >
+                            {type}
+                        </span>
+                    ))}
+                </div>
+
+                {/* Compact badge row: held item / status / loyalty */}
+                <div style={{ display: 'flex', gap: '5px', marginTop: '4px', flexWrap: 'wrap', justifyContent: 'center', maxWidth: '100%' }}>
+                    {pokemon.heldItem && (() => {
+                        const itemData = GAME_DATA?.items?.[pokemon.heldItem];
+                        return (
+                            <span
+                                onClick={(e) => { e.stopPropagation(); if (showDetail && itemData) showDetail('item', pokemon.heldItem, itemData); }}
+                                title={pokemon.heldItem}
+                                style={{ fontSize: '12px', cursor: showDetail && itemData ? 'pointer' : 'default' }}
+                            >
+                                🎒
+                            </span>
                         );
-                        })()}
+                    })()}
+                    {activeStatusConditions.map(c => (
+                        <span key={c.key} title={c.label} style={{ fontSize: '11px', cursor: 'help' }}>
+                            {c.icon}
+                        </span>
+                    ))}
+                    <span
+                        title={`Loyalty: ${loyaltyLevel} — ${LOYALTY_LABELS[loyaltyLevel]} (GM Guide pp.10–13)`}
+                        style={{ fontSize: '11px', fontWeight: 'bold', color: LOYALTY_COLORS[loyaltyLevel] }}
+                    >
+                        ❤
+                    </span>
+                </div>
 
-                        {/* Expanded Abilities */}
-                        {expandedSection === 'abilities' && (() => {
-                            const abilities = (pokemon.abilities && pokemon.abilities.length > 0)
-                                ? pokemon.abilities
-                                : (pokemon.ability ? [pokemon.ability] : []);
-                            return (
-                                <div style={{ display: 'flex', gap: '4px', marginTop: '8px', flexWrap: 'wrap', padding: '8px', background: 'var(--collapsed-abilities-bg)', borderRadius: '8px' }}>
-                                    {abilities.map((abilityName, idx) => (
-                                        <span
-                                            key={idx}
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                if (showDetail) {
-                                                    const abilityData = GAME_DATA?.abilities?.[abilityName];
-                                                    if (abilityData) showDetail('ability', abilityName, abilityData);
-                                                }
-                                            }}
-                                            style={{
-                                                padding: '4px 10px',
-                                                borderRadius: '12px',
-                                                background: 'var(--gradient-purple)',
-                                                color: 'white',
-                                                fontSize: '12px',
-                                                fontWeight: 'bold',
-                                                cursor: 'pointer'
-                                            }}
-                                        >
-                                            {abilityName}
-                                        </span>
-                                    ))}
-                                </div>
-                            );
-                        })()}
-
-                        {/* Expanded Moves */}
-                        {expandedSection === 'moves' && (
-                            <div style={{ display: 'flex', gap: '4px', marginTop: '8px', flexWrap: 'wrap', padding: '8px', background: 'var(--collapsed-moves-bg)', borderRadius: '8px' }}>
-                                {(pokemon.moves || []).map((move, idx) => (
-                                    <span
-                                        key={idx}
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            if (showDetail) {
-                                                const moveData = GAME_DATA?.moves?.[move.name] || move;
-                                                showDetail('move', move.name, { ...moveData, type: move.type });
-                                            }
-                                        }}
-                                        title={move.source === 'taught' ? 'Taught move' : 'Natural move'}
-                                        style={{
-                                            padding: '4px 10px',
-                                            borderRadius: '12px',
-                                            background: getTypeColor(move.type),
-                                            color: getContrastTextColor(getTypeColor(move.type)),
-                                            fontSize: '12px',
-                                            fontWeight: 'bold',
-                                            cursor: 'pointer',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            gap: '4px'
-                                        }}
-                                    >
-                                        {move.name}
-                                        <span style={{ fontSize: '10px', opacity: 0.75, fontWeight: 'normal' }}>
-                                            {move.source === 'taught' ? 'T' : move.source === 'egg' ? 'E' : 'N'}
-                                        </span>
-                                    </span>
-                                ))}
-                            </div>
-                        )}
-
-                        {/* Expanded Skills */}
-                        {expandedSection === 'skills' && (
-                            <div style={{ display: 'flex', gap: '4px', marginTop: '8px', flexWrap: 'wrap', padding: '8px', background: 'var(--collapsed-skills-bg)', borderRadius: '8px' }}>
-                                {(pokemon.pokemonSkills || []).filter(s => s.value === undefined || s.value > 0).map((skill, idx) => (
-                                    <span
-                                        key={idx}
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            if (showDetail) {
-                                                let skillData = GAME_DATA?.pokemonSkills?.[skill.name];
-                                                if (!skillData && GAME_DATA?.pokemonSkills) {
-                                                    const normalizedName = skill.name.toLowerCase().replace(/\s+/g, '');
-                                                    const matchingKey = Object.keys(GAME_DATA.pokemonSkills).find(key =>
-                                                        key.toLowerCase().replace(/\s+/g, '') === normalizedName
-                                                    );
-                                                    if (matchingKey) skillData = GAME_DATA.pokemonSkills[matchingKey];
-                                                }
-                                                showDetail('pokemonSkill', skill.name, { ...skillData, value: skill.value });
-                                            }
-                                        }}
-                                        style={{
-                                            padding: '4px 10px',
-                                            borderRadius: '12px',
-                                            background: skill.value !== undefined
-                                                ? 'var(--skill-value-color)'
-                                                : 'var(--skill-no-value-color)',
-                                            color: 'white',
-                                            fontSize: '12px',
-                                            fontWeight: 'bold',
-                                            cursor: 'pointer'
-                                        }}
-                                    >
-                                        {skill.name}{skill.value !== undefined ? ` ${skill.value}` : ''}
-                                    </span>
-                                ))}
-                            </div>
-                        )}
+                {/* HP bar */}
+                <div style={{ width: '100%', marginTop: '8px' }}>
+                    <div
+                        role="progressbar"
+                        aria-valuenow={currentHP}
+                        aria-valuemin={0}
+                        aria-valuemax={maxHP}
+                        aria-label={`HP: ${currentHP} of ${maxHP}`}
+                        style={{ height: '6px', background: 'var(--collapsed-hp-track)', borderRadius: '3px', overflow: 'hidden' }}
+                    >
+                        <div style={{
+                            width: `${Math.max(0, Math.min(100, hpRatio * 100))}%`,
+                            height: '100%',
+                            background: hpColor,
+                            transition: 'width 0.3s ease'
+                        }} />
                     </div>
-
-                    {/* Quick Actions — hidden in Compare mode so they can't be mis-tapped while
-                        selecting checkboxes; Compare mode is meant to be look-only. */}
-                    {!compareMode && (
-                    <div style={{ display: 'flex', gap: '4px', flexDirection: 'column', alignItems: 'flex-end' }}>
-                        {canMoveUp && (
-                            <button onClick={(e) => { e.stopPropagation(); onMoveUp(); }} style={quickBtnLabelStyle} className="quick-action-btn">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <polyline points="18 15 12 9 6 15"></polyline>
-                                </svg>
-                                <span>Up</span>
-                            </button>
-                        )}
-                        {canMoveDown && (
-                            <button onClick={(e) => { e.stopPropagation(); onMoveDown(); }} style={quickBtnLabelStyle} className="quick-action-btn">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <polyline points="6 9 12 15 18 9"></polyline>
-                                </svg>
-                                <span>Down</span>
-                            </button>
-                        )}
-                        {/* Move to Party/Reserve Button */}
-                        {isInParty ? (
-                            <button
-                                onClick={(e) => { e.stopPropagation(); onMoveToReserve && onMoveToReserve(); }}
-                                style={{ ...quickBtnLabelStyle, background: 'var(--collapsed-reserve-btn-bg)', borderColor: 'var(--poke-orange)', color: 'var(--poke-orange-dark)' }}
-                                className="quick-action-btn"
-                            >
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--poke-orange-dark)" strokeWidth="2">
-                                    <path d="M5 12h14M12 5l7 7-7 7"/>
-                                </svg>
-                                <span>Reserve</span>
-                            </button>
-                        ) : (
-                            <button
-                                onClick={(e) => { e.stopPropagation(); canMoveToParty && onMoveToParty && onMoveToParty(); }}
-                                disabled={!canMoveToParty}
-                                style={{
-                                    ...quickBtnLabelStyle,
-                                    background: canMoveToParty ? 'var(--collapsed-party-btn-bg)' : 'var(--collapsed-btn-bg)',
-                                    borderColor: canMoveToParty ? 'var(--stat-hp)' : 'var(--collapsed-quick-btn-border)',
-                                    color: canMoveToParty ? 'var(--color-success-text)' : 'var(--collapsed-btn-text)',
-                                    cursor: canMoveToParty ? 'pointer' : 'not-allowed',
-                                    opacity: canMoveToParty ? 1 : 0.7
-                                }}
-                                title={canMoveToParty ? 'Move to Party' : 'Party is full (6/6)'}
-                                className="quick-action-btn"
-                            >
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={canMoveToParty ? 'var(--color-success-text)' : 'var(--collapsed-btn-text)'} strokeWidth="2">
-                                    <path d="M19 12H5M12 19l-7-7 7-7"/>
-                                </svg>
-                                <span>Party</span>
-                            </button>
-                        )}
+                    <div style={{ fontSize: '10px', fontWeight: 'bold', textAlign: 'center', marginTop: '2px', color: hpColor }}>
+                        {currentHP}/{maxHP}
                     </div>
-                    )}
                 </div>
             </div>
         );
@@ -3525,19 +3290,38 @@ const quickBtnStyle = {
     color: 'var(--text-muted)'
 };
 
-const quickBtnLabelStyle = {
-    padding: '6px 10px',
-    border: '1px solid var(--collapsed-quick-btn-border)',
-    borderRadius: '4px',
-    background: 'var(--collapsed-quick-btn-bg)',
+const tileMenuStyle = {
+    position: 'absolute',
+    top: '100%',
+    right: 0,
+    marginTop: '4px',
+    zIndex: 20,
+    background: 'var(--species-dropdown-bg)',
+    border: '1px solid var(--border-medium)',
+    borderRadius: '8px',
+    boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+    padding: '4px',
+    minWidth: '160px',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '2px'
+};
+
+const tileMenuItemStyle = {
+    padding: '7px 10px',
+    border: 'none',
+    borderRadius: '5px',
+    background: 'transparent',
     cursor: 'pointer',
     fontSize: '12px',
     fontWeight: 'bold',
     display: 'flex',
     alignItems: 'center',
-    gap: '4px',
+    gap: '6px',
     color: 'var(--collapsed-btn-text)',
-    whiteSpace: 'nowrap'
+    whiteSpace: 'nowrap',
+    textAlign: 'left',
+    width: '100%'
 };
 
 const statBtnStyle = {

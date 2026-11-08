@@ -55,10 +55,10 @@ test('clicking a collapsed card opens the edit view', async ({ page }) => {
     await expect(page.locator('.pokemon-card-expanded')).toBeVisible();
 
     await page.getByRole('button', { name: 'Done' }).click();
-    await expect(page.locator('.pokemon-card-collapsed')).toBeVisible();
+    await expect(page.locator('.pokemon-roster-tile')).toBeVisible();
 
     // Click the collapsed card to reopen
-    await page.locator('.pokemon-card-collapsed').click();
+    await page.locator('.pokemon-roster-tile').click();
     await expect(page.locator('.pokemon-card-expanded')).toBeVisible();
     await expect(page.locator('.pokemon-card-tabs')).toBeVisible();
 });
@@ -88,7 +88,7 @@ test('clicking Done collapses the card', async ({ page }) => {
 
     // Edit tabs should be gone; collapsed card should appear
     await expect(page.locator('.pokemon-card-tabs')).not.toBeVisible();
-    await expect(page.locator('.pokemon-card-collapsed')).toBeVisible({ timeout: 5_000 });
+    await expect(page.locator('.pokemon-roster-tile')).toBeVisible({ timeout: 5_000 });
 });
 
 test.describe('Breeder Bonus (Stats tab)', () => {
@@ -129,8 +129,8 @@ test.describe('Breeder Bonus (Stats tab)', () => {
 
         // Closing and reopening the card (a fresh PokemonCard mount) must not bring the badge back.
         await page.getByRole('button', { name: 'Done' }).click();
-        await expect(page.locator('.pokemon-card-collapsed')).toBeVisible();
-        await page.locator('.pokemon-card-collapsed').click();
+        await expect(page.locator('.pokemon-roster-tile')).toBeVisible();
+        await page.locator('.pokemon-roster-tile').click();
         const reopenedCard = page.locator('.pokemon-card-expanded');
         await reopenedCard.locator('.pokemon-card-tabs .tab', { hasText: 'stats' }).click();
         await expect(reopenedCard.getByText('🧬 Breeder Bonus')).toBeVisible();

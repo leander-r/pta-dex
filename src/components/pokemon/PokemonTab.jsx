@@ -935,14 +935,16 @@ const PokemonTab = () => {
                         ⠿ Drag the grip handle on any card to reorder
                     </div>
                 )}
-                <div ref={cardListRef} style={{ display: 'grid', gap: '15px' }}>
+                <div ref={cardListRef} className="pokemon-roster-grid">
                     {filteredList.map((pokemon) => {
                         // Use actual position in unfiltered list for move up/down
                         const actualIndex = currentList.findIndex(p => p.id === pokemon.id);
+                        const isEditingThis = editingPokemonId === pokemon.id;
                         return (
                             <div
                                 key={pokemon.id}
                                 className={justAddedId === pokemon.id ? 'pokemon-card-just-added' : undefined}
+                                style={isEditingThis ? { gridColumn: '1 / -1' } : undefined}
                             >
                             <PokemonCard
                                 pokemon={pokemon}

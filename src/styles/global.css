@@ -1338,7 +1338,122 @@
             background: var(--gradient-purple);
             opacity: 1;
         }
-        
+
+        /* ========== COMPACT TILE GRID SYSTEM ========== */
+        /* Shared across the roster, inventory, trainer skills/classes/features,
+           dice roller, and reference lists — a responsive grid of small cards
+           instead of a single-column stacked list. */
+
+        .detail-tile-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 10px;
+        }
+
+        .pokemon-roster-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 12px;
+        }
+
+        .detail-tile,
+        .detail-tile-filled {
+            border-radius: 12px;
+            padding: 10px;
+            box-shadow: var(--shadow-sm);
+            font-family: inherit;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            gap: 4px;
+            position: relative;
+            /* Tiles can escape clipping (corner buttons, overflow popovers) */
+            overflow: visible;
+            cursor: pointer;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            /* Tiles are sometimes rendered as <button> elements — the browser's UA
+               stylesheet gives buttons a near-black default text color that doesn't
+               inherit from the page, which goes invisible on a dark-mode tile without
+               this. Baked in from the start here (pta3-dex added it as a bugfix one
+               commit late). */
+            color: inherit;
+        }
+
+        .detail-tile {
+            background: white;
+            border: 1px solid var(--border-light);
+        }
+
+        /* Same shape as .detail-tile, minus the background + border — for tiles
+           that fill their own color (trained skills, class/feature/equipment chips,
+           a selected move tile) where the inline background must win in both
+           themes, not just light mode. */
+        .detail-tile-filled {
+            /* intentionally no background/border — caller's inline style wins */
+        }
+
+        .detail-tile:hover,
+        .detail-tile-filled:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+        }
+
+        [data-theme="dark"] .detail-tile {
+            background: var(--poke-white) !important;
+        }
+
+        .detail-tile-remove {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            width: 20px;
+            height: 20px;
+            border: none;
+            border-radius: 50%;
+            background: var(--collapsed-btn-bg);
+            color: var(--collapsed-btn-text);
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            padding: 0;
+        }
+
+        .detail-tile-remove:hover {
+            background: var(--danger-btn-start);
+            color: white;
+        }
+
+        [data-compact="true"] .pokemon-roster-tile {
+            padding: 8px;
+        }
+
+        [data-compact="true"] .pokemon-roster-grid {
+            gap: 8px;
+        }
+
+        @media (max-width: 480px) {
+            .detail-tile-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+
+            .pokemon-roster-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 8px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .pokemon-roster-grid {
+                gap: 6px;
+            }
+        }
+
         /* Pokemon list container */
         .pokemon-list {
             display: flex;
