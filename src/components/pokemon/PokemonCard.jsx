@@ -2501,83 +2501,69 @@ const PokemonCard = ({
                             </div>
                         )}
 
-                        {(pokemon.moves || []).map((move, idx) => (
-                            <div
-                                key={idx}
-                                className="move-card"
-                                title={showDetail ? `Click to view ${move.name} details` : undefined}
-                                style={{
-                                    display: 'flex',
-                                    justifyContent: 'space-between',
-                                    alignItems: 'center',
-                                    padding: '10px',
-                                    marginBottom: '6px',
-                                    borderRadius: '6px',
-                                    borderLeft: `4px solid ${getTypeColor(move.type)}`,
-                                    background: `${getTypeColor(move.type)}18`,
-                                    cursor: showDetail ? 'pointer' : 'default'
-                                }}
-                                onClick={() => {
-                                    if (showDetail) {
-                                        const moveData = GAME_DATA?.moves?.[move.name] || move;
-                                        showDetail('move', move.name, { ...moveData, type: move.type });
-                                    }
-                                }}
-                            >
-                                <div style={{ flex: 1 }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '3px' }}>
-                                        <div style={{ fontWeight: 'bold' }}>{move.name}</div>
-                                        <span style={{ padding: '1px 5px', borderRadius: '8px', fontSize: '12px', fontWeight: 'bold', background: getTypeColor(move.type), color: getContrastTextColor(getTypeColor(move.type)) }}>{move.type}</span>
-                                    </div>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap' }}>
-                                        <span style={{
-                                            fontSize: '11px', fontWeight: 'bold', padding: '1px 5px',
-                                            borderRadius: '4px',
-                                            background: move.source === 'taught' ? 'var(--color-taught)'
-                                                : move.source === 'egg' ? 'var(--stat-satk)'
-                                                : move.source === 'custom' ? 'var(--stat-spd)'
-                                                : 'var(--stat-hp)',
-                                            color: 'white'
-                                        }}>{move.source === 'taught' ? 'Taught' : move.source === 'egg' ? 'Egg' : move.source === 'custom' ? 'Custom' : 'Nat'}</span>
-                                        <span style={{ padding: '1px 5px', borderRadius: '8px', fontSize: '11px', fontWeight: 'bold', background: move.category === 'Physical' ? 'var(--move-cat-physical)' : move.category === 'Special' ? 'var(--move-cat-special)' : 'var(--move-cat-status)', color: 'white' }}>{move.category || 'Status'}</span>
+                        {(pokemon.moves || []).length > 0 && (
+                            <div className="detail-tile-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', marginBottom: '10px' }}>
+                                {(pokemon.moves || []).map((move, idx) => (
+                                    <div
+                                        key={idx}
+                                        className="detail-tile-filled move-card"
+                                        title={showDetail ? `Click to view ${move.name} details` : undefined}
+                                        style={{
+                                            borderTop: `3px solid ${getTypeColor(move.type)}`,
+                                            background: `${getTypeColor(move.type)}18`,
+                                            cursor: showDetail ? 'pointer' : 'default'
+                                        }}
+                                        onClick={() => {
+                                            if (showDetail) {
+                                                const moveData = GAME_DATA?.moves?.[move.name] || move;
+                                                showDetail('move', move.name, { ...moveData, type: move.type });
+                                            }
+                                        }}
+                                    >
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                const removedMove = move;
+                                                const removedIdx = idx;
+                                                const newMoves = [...(pokemon.moves || [])];
+                                                newMoves.splice(idx, 1);
+                                                updatePokemon({ moves: newMoves });
+                                                toast.show(`Removed ${removedMove.name}`, 'info', 5000, {
+                                                    label: 'Undo',
+                                                    onClick: () => {
+                                                        const restored = [...(pokemon.moves || [])].filter(m => m.name !== removedMove.name);
+                                                        restored.splice(removedIdx, 0, removedMove);
+                                                        updatePokemon({ moves: restored });
+                                                    }
+                                                });
+                                            }}
+                                            className="detail-tile-remove"
+                                            aria-label={`Remove ${move.name}`}
+                                            title={`Remove ${move.name}`}
+                                        >
+                                            ✕
+                                        </button>
+                                        <div style={{ fontWeight: 'bold', fontSize: '13px' }}>{move.name}</div>
+                                        <span style={{ padding: '1px 8px', borderRadius: '8px', fontSize: '11px', fontWeight: 'bold', background: getTypeColor(move.type), color: getContrastTextColor(getTypeColor(move.type)) }}>{move.type}</span>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap', justifyContent: 'center' }}>
+                                            <span style={{
+                                                fontSize: '10px', fontWeight: 'bold', padding: '1px 5px',
+                                                borderRadius: '4px',
+                                                background: move.source === 'taught' ? 'var(--color-taught)'
+                                                    : move.source === 'egg' ? 'var(--stat-satk)'
+                                                    : move.source === 'custom' ? 'var(--stat-spd)'
+                                                    : 'var(--stat-hp)',
+                                                color: 'white'
+                                            }}>{move.source === 'taught' ? 'Taught' : move.source === 'egg' ? 'Egg' : move.source === 'custom' ? 'Custom' : 'Nat'}</span>
+                                            <span style={{ padding: '1px 5px', borderRadius: '8px', fontSize: '10px', fontWeight: 'bold', background: move.category === 'Physical' ? 'var(--move-cat-physical)' : move.category === 'Special' ? 'var(--move-cat-special)' : 'var(--move-cat-status)', color: 'white' }}>{move.category || 'Status'}</span>
+                                        </div>
                                         <span className="text-muted" style={{ fontSize: '11px' }}>
                                             {move.damage || '—'} · {(() => { const f = GAME_DATA?.moves?.[move.name]?.frequency || move.frequency || 'At-Will'; return f.charAt(0).toUpperCase() + f.slice(1); })()}
                                         </span>
                                     </div>
-                                </div>
-                                <button
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        const removedMove = move;
-                                        const removedIdx = idx;
-                                        const newMoves = [...(pokemon.moves || [])];
-                                        newMoves.splice(idx, 1);
-                                        updatePokemon({ moves: newMoves });
-                                        toast.show(`Removed ${removedMove.name}`, 'info', 5000, {
-                                            label: 'Undo',
-                                            onClick: () => {
-                                                const restored = [...(pokemon.moves || [])].filter(m => m.name !== removedMove.name);
-                                                restored.splice(removedIdx, 0, removedMove);
-                                                updatePokemon({ moves: restored });
-                                            }
-                                        });
-                                    }}
-                                    aria-label={`Remove ${move.name}`}
-                                    title={`Remove ${move.name}`}
-                                    style={{
-                                        background: 'var(--tint-fail-bg)',
-                                        color: 'var(--color-danger-text)',
-                                        border: '1px solid var(--tint-fail-border)',
-                                        borderRadius: '4px',
-                                        padding: '4px 8px',
-                                        cursor: 'pointer',
-                                        fontSize: '12px'
-                                    }}
-                                >
-                                    ✕
-                                </button>
+                                ))}
                             </div>
-                        ))}
+                        )}
 
                         {((pokemon.moves || []).length < MAX_TOTAL_MOVES || naturalMoveCount > 0 || taughtMoveCount > 0) && (
                             <div style={{ marginTop: '14px' }}>
@@ -2933,83 +2919,65 @@ const PokemonCard = ({
                                 <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Skills come from this Pokémon's species. No skill data is available for <strong>{pokemon.species || 'this species'}</strong> in the Pokédex. Set a species in the <button onClick={() => setEditTab('info')} style={{ background: 'none', border: 'none', color: 'var(--color-purple)', cursor: 'pointer', padding: 0, fontSize: '12px', fontWeight: 'bold', textDecoration: 'underline' }}>Info tab</button> to populate skills.</div>
                             </div>
                         ) : (
-                            <div style={{ display: 'grid', gap: '8px' }}>
-                                {(pokemon.pokemonSkills || []).filter(s => showZeroValueSkills || s.value === undefined || s.value > 0).map((skill, idx) => (
-                                    <div
-                                        key={idx}
-                                        onClick={() => {
-                                            if (showDetail) {
-                                                // Try exact match first, then case-insensitive search
-                                                let skillData = GAME_DATA?.pokemonSkills?.[skill.name];
-                                                if (!skillData && GAME_DATA?.pokemonSkills) {
-                                                    // Try to find a matching skill name (handles "Mindlock" vs "Mind Lock", etc.)
-                                                    const normalizedName = skill.name.toLowerCase().replace(/\s+/g, '');
-                                                    const matchingKey = Object.keys(GAME_DATA.pokemonSkills).find(key =>
-                                                        key.toLowerCase().replace(/\s+/g, '') === normalizedName
-                                                    );
-                                                    if (matchingKey) skillData = GAME_DATA.pokemonSkills[matchingKey];
+                            <div className="detail-tile-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))' }}>
+                                {(pokemon.pokemonSkills || []).filter(s => showZeroValueSkills || s.value === undefined || s.value > 0).map((skill, idx) => {
+                                    const hasValue = skill.value !== undefined && skill.value > 0;
+                                    let sd = GAME_DATA?.pokemonSkills?.[skill.name];
+                                    if (!sd && GAME_DATA?.pokemonSkills) {
+                                        const n = skill.name.toLowerCase().replace(/\s+/g, '');
+                                        const k = Object.keys(GAME_DATA.pokemonSkills).find(key => key.toLowerCase().replace(/\s+/g, '') === n);
+                                        if (k) sd = GAME_DATA.pokemonSkills[k];
+                                    }
+                                    return (
+                                        <div
+                                            key={idx}
+                                            onClick={() => {
+                                                if (showDetail) {
+                                                    // Try exact match first, then case-insensitive search
+                                                    let skillData = GAME_DATA?.pokemonSkills?.[skill.name];
+                                                    if (!skillData && GAME_DATA?.pokemonSkills) {
+                                                        // Try to find a matching skill name (handles "Mindlock" vs "Mind Lock", etc.)
+                                                        const normalizedName = skill.name.toLowerCase().replace(/\s+/g, '');
+                                                        const matchingKey = Object.keys(GAME_DATA.pokemonSkills).find(key =>
+                                                            key.toLowerCase().replace(/\s+/g, '') === normalizedName
+                                                        );
+                                                        if (matchingKey) skillData = GAME_DATA.pokemonSkills[matchingKey];
+                                                    }
+                                                    showDetail('pokemonSkill', skill.name, { ...skillData, value: skill.value });
                                                 }
-                                                showDetail('pokemonSkill', skill.name, { ...skillData, value: skill.value });
-                                            }
-                                        }}
-                                        className="skill-display-item"
-                                        style={{
-                                            display: 'flex',
-                                            justifyContent: 'space-between',
-                                            alignItems: 'center',
-                                            padding: '10px 12px',
-                                            background: 'var(--bg-primary)',
-                                            borderRadius: '6px',
-                                            borderLeft: `4px solid ${(skill.value !== undefined && skill.value > 0) ? 'var(--skill-value-color)' : 'var(--border-light)'}`,
-                                            cursor: showDetail ? 'pointer' : 'default',
-                                            transition: 'background 0.2s ease'
-                                        }}
-                                    >
-                                        <div style={{ flex: 1, minWidth: 0, paddingRight: '10px', opacity: (skill.value === undefined || skill.value === 0) ? 0.55 : 1 }}>
-                                            {(() => {
-                                                let sd = GAME_DATA?.pokemonSkills?.[skill.name];
-                                                if (!sd && GAME_DATA?.pokemonSkills) {
-                                                    const n = skill.name.toLowerCase().replace(/\s+/g, '');
-                                                    const k = Object.keys(GAME_DATA.pokemonSkills).find(key => key.toLowerCase().replace(/\s+/g, '') === n);
-                                                    if (k) sd = GAME_DATA.pokemonSkills[k];
-                                                }
-                                                return (
-                                                    <>
-                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', marginBottom: '2px' }}>
-                                                            <span style={{ fontWeight: 'bold', fontSize: '13px' }}>{skill.name}</span>
-                                                            {sd?.type && (
-                                                                <span style={{ fontSize: '11px', color: 'var(--text-muted)', padding: '1px 5px', borderRadius: '4px', background: 'var(--bg-light)', border: '1px solid var(--border-light)', textTransform: 'capitalize' }}>{sd.type}</span>
-                                                            )}
-                                                        </div>
-                                                        {sd?.description && (
-                                                            <div style={{ fontSize: '12px', color: 'var(--text-muted)', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
-                                                                {sd.description}
-                                                            </div>
-                                                        )}
-                                                    </>
-                                                );
-                                            })()}
-                                        </div>
-                                        {(() => {
-                                            const hasValue = skill.value !== undefined && skill.value > 0;
-                                            if (!hasValue) return null;
-                                            return (
+                                            }}
+                                            className="skill-display-item detail-tile"
+                                            style={{
+                                                borderTop: `3px solid ${hasValue ? 'var(--skill-value-color)' : 'var(--border-light)'}`,
+                                                cursor: showDetail ? 'pointer' : 'default',
+                                                opacity: (skill.value === undefined || skill.value === 0) ? 0.65 : 1
+                                            }}
+                                        >
+                                            <span style={{ fontWeight: 'bold', fontSize: '13px' }}>{skill.name}</span>
+                                            {sd?.type && (
+                                                <span style={{ fontSize: '10px', color: 'var(--text-muted)', padding: '1px 5px', borderRadius: '4px', background: 'var(--bg-light)', border: '1px solid var(--border-light)', textTransform: 'capitalize' }}>{sd.type}</span>
+                                            )}
+                                            {hasValue && (
                                                 <div style={{
-                                                    padding: '3px 10px',
+                                                    padding: '2px 8px',
                                                     background: 'var(--skill-value-color)',
                                                     color: 'white',
                                                     borderRadius: '10px',
-                                                    fontSize: '13px',
+                                                    fontSize: '12px',
                                                     fontWeight: 'bold',
-                                                    lineHeight: 1,
-                                                    flexShrink: 0
+                                                    lineHeight: 1
                                                 }}>
                                                     {skill.value}
                                                 </div>
-                                            );
-                                        })()}
-                                    </div>
-                                ))}
+                                            )}
+                                            {sd?.description && (
+                                                <div style={{ fontSize: '11px', color: 'var(--text-muted)', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
+                                                    {sd.description}
+                                                </div>
+                                            )}
+                                        </div>
+                                    );
+                                })}
                             </div>
                         )}
                     </div>
