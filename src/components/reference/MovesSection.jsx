@@ -2,7 +2,7 @@
 // Moves Section Component
 // ============================================================
 
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { GAME_DATA } from '../../data/configs.js';
 import { getTypeColor, getContrastTextColor } from '../../utils/typeUtils.js';
 import { POKEMON_TYPES } from '../../data/typeChart.js';
@@ -15,7 +15,6 @@ import { useModal, useFilter } from '../../contexts/index.js';
 const MovesSection = () => {
     const { showDetail } = useModal();
     const { movesFilter: filter, setMovesFilter: setFilter } = useFilter();
-    const [hoveredMove, setHoveredMove] = useState(null);
 
     const filteredMoves = useMemo(() => {
         return Object.entries(GAME_DATA.moves || {})
@@ -191,22 +190,18 @@ const MovesSection = () => {
                         No moves found matching your filters.
                     </div>
                 ) : (
-                    filteredMoves.map(([move, data]) => (
+                    <div className="detail-tile-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', padding: '2px' }}>
+                    {filteredMoves.map(([move, data]) => (
                         <div
                             key={move}
+                            className="detail-tile"
                             style={{
-                                marginBottom: '10px',
-                                padding: '12px',
-                                background: hoveredMove === move ? 'var(--hover-bg)' : 'var(--moves-card-bg)',
-                                borderRadius: '8px',
-                                borderLeft: `4px solid ${getTypeColor(data.type)}`,
-                                boxShadow: '0 1px 3px var(--moves-card-shadow)',
-                                cursor: 'pointer',
-                                transition: 'background 0.12s'
+                                alignItems: 'stretch',
+                                textAlign: 'left',
+                                background: 'var(--moves-card-bg)',
+                                borderLeft: `4px solid ${getTypeColor(data.type)}`
                             }}
                             onClick={() => showDetail && showDetail('move', move, data)}
-                            onMouseEnter={() => setHoveredMove(move)}
-                            onMouseLeave={() => setHoveredMove(null)}
                         >
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '8px' }}>
 
@@ -253,7 +248,8 @@ const MovesSection = () => {
                                 </div>
                             )}
                         </div>
-                    ))
+                    ))}
+                    </div>
                 )}
             </div>
         </div>

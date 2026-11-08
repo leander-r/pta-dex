@@ -768,70 +768,103 @@ const inputStyle = {
 // ── Memoized row ─────────────────────────────────────────────
 // Extracted so only the 2 rows whose isExpanded/isHovered changes actually re-render.
 
-const PokedexRow = memo(({ species, idx, isExpanded, isHovered, onRowClick, onMouseEnter, onMouseLeave, evolvedFromMap }) => {
-    const rowId    = species.id ?? species.species;
+const PokedexRow = memo(({ species, isExpanded, onRowClick, evolvedFromMap }) => {
     const spriteUrl = getPokemonDisplayImage(species);
     const bst      = getBST(species);
 
+    if (isExpanded) {
+        return (
+            <div className="detail-tile" style={{ gridColumn: '1 / -1', alignItems: 'stretch', textAlign: 'left', padding: 0, cursor: 'default' }}>
+                <button
+                    onClick={onRowClick}
+                    aria-label={`${species.species} — click to collapse`}
+                    aria-expanded={true}
+                    style={{
+                        width: '100%', display: 'flex', alignItems: 'center', gap: '10px',
+                        padding: '10px 12px', border: 'none', cursor: 'pointer',
+                        textAlign: 'left', color: 'var(--text-primary)',
+                        background: 'var(--bg-section)', borderRadius: '12px 12px 0 0'
+                    }}
+                >
+                    <div style={{ width: '40px', height: '40px', flexShrink: 0, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <div style={{ position: 'absolute', inset: 0, borderRadius: '8px', background: 'var(--border-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', color: 'var(--text-muted)', opacity: 0.4 }}>◌</div>
+                        {spriteUrl && (
+                            <img
+                                src={spriteUrl}
+                                alt={species.species}
+                                style={{ width: '40px', height: '40px', imageRendering: 'pixelated', objectFit: 'contain', position: 'relative', zIndex: 1 }}
+                                onError={e => { e.target.style.display = 'none'; }}
+                            />
+                        )}
+                    </div>
+                    <span style={{ fontSize: '12px', color: typeof species.id === 'number' ? 'var(--text-muted)' : 'var(--color-purple)', fontWeight: 600, width: '34px', flexShrink: 0, textAlign: 'right' }}>
+                        {typeof species.id === 'number' ? `#${species.id}` : 'Custom'}
+                    </span>
+                    <span style={{ fontWeight: 700, fontSize: '14px', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {species.species}
+                    </span>
+                    <DualTypeDisplay types={species.types} />
+                    <span
+                        className="pokedex-bst"
+                        title="Base Stat Total"
+                        style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: 600, flexShrink: 0, minWidth: '44px', textAlign: 'right' }}
+                    >
+                        {bst} BST
+                    </span>
+                    <svg
+                        width="13" height="13" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" strokeWidth="2.5"
+                        style={{ flexShrink: 0, color: 'var(--text-muted)', transform: 'rotate(90deg)', transition: 'transform 0.2s' }}
+                    >
+                        <polyline points="9 18 15 12 9 6" />
+                    </svg>
+                </button>
+                <SpeciesDetail species={species} evolvedFromMap={evolvedFromMap} />
+            </div>
+        );
+    }
+
     return (
-        <div style={{ borderTop: idx === 0 ? 'none' : '1px solid var(--border-light)' }}>
-            <button
-                onClick={onRowClick}
-                onMouseEnter={onMouseEnter}
-                onMouseLeave={onMouseLeave}
-                aria-label={`${species.species} — click to ${isExpanded ? 'collapse' : 'expand'}`}
-                aria-expanded={isExpanded}
-                style={{
-                    width: '100%', display: 'flex', alignItems: 'center', gap: '10px',
-                    padding: '7px 12px', border: 'none', cursor: 'pointer',
-                    textAlign: 'left', color: 'var(--text-primary)',
-                    transition: 'background 0.12s',
-                    background: isExpanded ? 'var(--bg-section)' : isHovered ? 'var(--hover-bg)' : 'transparent'
-                }}
-            >
-                <div style={{ width: '40px', height: '40px', flexShrink: 0, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <div style={{ position: 'absolute', inset: 0, borderRadius: '8px', background: 'var(--border-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', color: 'var(--text-muted)', opacity: 0.4 }}>◌</div>
-                    {spriteUrl && (
-                        <img
-                            src={spriteUrl}
-                            alt={species.species}
-                            style={{ width: '40px', height: '40px', imageRendering: 'pixelated', objectFit: 'contain', position: 'relative', zIndex: 1 }}
-                            onError={e => { e.target.style.display = 'none'; }}
-                        />
-                    )}
-                </div>
-                <span style={{ fontSize: '12px', color: typeof species.id === 'number' ? 'var(--text-muted)' : 'var(--color-purple)', fontWeight: 600, width: '34px', flexShrink: 0, textAlign: 'right' }}>
-                    {typeof species.id === 'number' ? `#${species.id}` : 'Custom'}
-                </span>
-                <span style={{ fontWeight: 700, fontSize: '14px', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {species.species}
-                </span>
-                <DualTypeDisplay types={species.types} />
-                <div style={{ display: 'flex', gap: '3px', flexShrink: 0 }}>
+        <button
+            onClick={onRowClick}
+            className="detail-tile"
+            aria-label={`${species.species} — click to expand`}
+            aria-expanded={false}
+        >
+            <div style={{ width: '44px', height: '44px', flexShrink: 0, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ position: 'absolute', inset: 0, borderRadius: '8px', background: 'var(--border-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', color: 'var(--text-muted)', opacity: 0.4 }}>◌</div>
+                {spriteUrl && (
+                    <img
+                        src={spriteUrl}
+                        alt={species.species}
+                        style={{ width: '44px', height: '44px', imageRendering: 'pixelated', objectFit: 'contain', position: 'relative', zIndex: 1 }}
+                        onError={e => { e.target.style.display = 'none'; }}
+                    />
+                )}
+                <div style={{ display: 'flex', gap: '2px', position: 'absolute', top: '-2px', right: '-6px' }}>
                     {species.megaForms?.length > 0 && (
-                        <span title={`${species.megaForms.length} Mega Form${species.megaForms.length > 1 ? 's' : ''}`} style={{ fontSize: '11px', fontWeight: 700, padding: '1px 5px', borderRadius: '4px', background: 'rgba(102,126,234,0.15)', color: 'var(--color-purple)', border: '1px solid rgba(102,126,234,0.3)' }}>M</span>
+                        <span title={`${species.megaForms.length} Mega Form${species.megaForms.length > 1 ? 's' : ''}`} style={{ fontSize: '9px', fontWeight: 700, padding: '0 3px', borderRadius: '3px', background: 'rgba(102,126,234,0.2)', color: 'var(--color-purple)', border: '1px solid rgba(102,126,234,0.4)' }}>M</span>
                     )}
                     {species.regionalForms?.length > 0 && (
-                        <span title={`${species.regionalForms.length} Regional Form${species.regionalForms.length > 1 ? 's' : ''}`} style={{ fontSize: '11px', fontWeight: 700, padding: '1px 5px', borderRadius: '4px', background: 'rgba(255,152,0,0.15)', color: 'var(--poke-orange-dark, #e65100)', border: '1px solid rgba(255,152,0,0.3)' }}>R</span>
+                        <span title={`${species.regionalForms.length} Regional Form${species.regionalForms.length > 1 ? 's' : ''}`} style={{ fontSize: '9px', fontWeight: 700, padding: '0 3px', borderRadius: '3px', background: 'rgba(255,152,0,0.2)', color: 'var(--poke-orange-dark, #e65100)', border: '1px solid rgba(255,152,0,0.4)' }}>R</span>
                     )}
                 </div>
-                <span
-                    className="pokedex-bst"
-                    title="Base Stat Total"
-                    style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: 600, flexShrink: 0, minWidth: '44px', textAlign: 'right' }}
-                >
-                    {bst} BST
-                </span>
-                <svg
-                    width="13" height="13" viewBox="0 0 24 24"
-                    fill="none" stroke="currentColor" strokeWidth="2.5"
-                    style={{ flexShrink: 0, color: 'var(--text-muted)', transform: isExpanded ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s' }}
-                >
-                    <polyline points="9 18 15 12 9 6" />
-                </svg>
-            </button>
-            {isExpanded && <SpeciesDetail species={species} evolvedFromMap={evolvedFromMap} />}
-        </div>
+            </div>
+            <span style={{ fontSize: '11px', color: typeof species.id === 'number' ? 'var(--text-muted)' : 'var(--color-purple)', fontWeight: 600 }}>
+                {typeof species.id === 'number' ? `#${species.id}` : 'Custom'}
+            </span>
+            <span style={{ fontWeight: 700, fontSize: '13px', maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {species.species}
+            </span>
+            <DualTypeDisplay types={species.types} />
+            <span
+                className="pokedex-bst"
+                title="Base Stat Total"
+                style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 600 }}
+            >
+                {bst} BST
+            </span>
+        </button>
     );
 });
 
@@ -848,7 +881,6 @@ const PokedexSection = () => {
     const [sortKey,      setSortKey]      = useState('id');
     const [sortDir,      setSortDir]      = useState('asc');
     const [expandedId,   setExpandedId]   = useState(null);
-    const [hoveredId,    setHoveredId]    = useState(null);
     const [page,         setPage]         = useState(0);
     const listRef = useRef(null);
 
@@ -1152,28 +1184,24 @@ const PokedexSection = () => {
             </div>
 
             {/* ── Species List ── */}
-            <div ref={listRef} style={{ border: '1px solid var(--border-light)', borderRadius: '10px', overflow: 'hidden', background: 'var(--poke-white)' }}>
+            <div ref={listRef} className="detail-tile-grid">
                 {filtered.length === 0 ? (
-                    <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '14px' }}>
+                    <div style={{ gridColumn: '1 / -1', padding: '40px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '14px', border: '1px solid var(--border-light)', borderRadius: '10px' }}>
                         No species found.{' '}
                         <button onClick={resetAll} style={{ background: 'none', border: 'none', color: 'var(--poke-orange)', cursor: 'pointer', fontSize: '14px', fontWeight: 600, padding: 0 }}>
                             Reset filters
                         </button>
                     </div>
                 ) : (
-                    filtered.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE).map((s, idx) => {
+                    filtered.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE).map((s) => {
                         const rowId = s.id ?? s.species;
                         return (
                             <PokedexRow
                                 key={rowId}
                                 species={s}
-                                idx={idx}
                                 isExpanded={expandedId === rowId}
-                                isHovered={hoveredId === rowId && expandedId !== rowId}
                                 onRowClick={() => handleRowClick(rowId)}
                                 evolvedFromMap={evolvedFromMap}
-                                onMouseEnter={() => setHoveredId(rowId)}
-                                onMouseLeave={() => setHoveredId(null)}
                             />
                         );
                     })

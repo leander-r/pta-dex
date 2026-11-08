@@ -2,7 +2,7 @@
 // Trainer Classes Section Component
 // ============================================================
 
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { GAME_DATA } from '../../data/configs.js';
 import { useModal, useFilter } from '../../contexts/index.js';
 
@@ -15,7 +15,6 @@ const STAT_LABELS = { hp: 'HP', atk: 'ATK', def: 'DEF', satk: 'SATK', sdef: 'SDE
 const TrainerClassesSection = () => {
     const { showDetail } = useModal();
     const { trainerClassesFilter: filter, setTrainerClassesFilter: setFilter } = useFilter();
-    const [hoveredClass, setHoveredClass] = useState(null);
 
     const allClasses = useMemo(() => Object.entries(GAME_DATA.trainerClasses || {}), []);
     const baseClasses = useMemo(() =>
@@ -115,25 +114,21 @@ const TrainerClassesSection = () => {
                                 <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px', paddingLeft: '2px' }}>
                                     {baseName} Family
                                 </div>
+                                <div className="detail-tile-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', padding: '2px' }}>
                                 {groupNames.map(name => {
                                     const data = GAME_DATA.trainerClasses[name];
                                     const isBase = data.type === 'base';
                                     return (
                                         <div
                                             key={name}
+                                            className="detail-tile"
                                             style={{
-                                                marginBottom: '8px',
-                                                padding: '12px',
-                                                background: hoveredClass === name ? 'var(--hover-bg)' : 'var(--abilities-card-bg)',
-                                                borderRadius: '8px',
-                                                borderLeft: `4px solid ${isBase ? 'var(--color-purple)' : 'var(--stat-satk)'}`,
-                                                boxShadow: '0 1px 3px var(--abilities-card-shadow)',
-                                                cursor: 'pointer',
-                                                transition: 'background 0.12s'
+                                                alignItems: 'stretch',
+                                                textAlign: 'left',
+                                                background: 'var(--abilities-card-bg)',
+                                                borderLeft: `4px solid ${isBase ? 'var(--color-purple)' : 'var(--stat-satk)'}`
                                             }}
                                             onClick={() => showDetail('trainerClass', name, data)}
-                                            onMouseEnter={() => setHoveredClass(name)}
-                                            onMouseLeave={() => setHoveredClass(null)}
                                         >
                                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px', flexWrap: 'wrap' }}>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
@@ -167,6 +162,7 @@ const TrainerClassesSection = () => {
                                         </div>
                                     );
                                 })}
+                                </div>
                             </div>
                         );
                     })

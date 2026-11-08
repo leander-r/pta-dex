@@ -4,7 +4,7 @@
 // Read-only browse of the full Features catalog. For managing a
 // trainer's own features, see components/trainer/TrainerFeatures.jsx.
 
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { GAME_DATA } from '../../data/configs.js';
 import { useModal, useFilter } from '../../contexts/index.js';
 
@@ -17,7 +17,6 @@ const GENERAL_CATEGORIES = ['General', 'General (Free)', 'Arms'];
 const TrainerFeaturesSection = () => {
     const { showDetail } = useModal();
     const { trainerFeaturesFilter: filter, setTrainerFeaturesFilter: setFilter } = useFilter();
-    const [hoveredFeature, setHoveredFeature] = useState(null);
 
     const allFeatures = useMemo(() => Object.entries(GAME_DATA.features || {}), []);
 
@@ -123,22 +122,18 @@ const TrainerFeaturesSection = () => {
                         No features found matching your search.
                     </div>
                 ) : (
-                    filteredFeatures.map(([name, data]) => (
+                    <div className="detail-tile-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', padding: '2px' }}>
+                    {filteredFeatures.map(([name, data]) => (
                         <div
                             key={name}
+                            className="detail-tile"
                             style={{
-                                marginBottom: '8px',
-                                padding: '12px',
-                                background: hoveredFeature === name ? 'var(--hover-bg)' : 'var(--abilities-card-bg)',
-                                borderRadius: '8px',
-                                borderLeft: `4px solid ${data.category === 'General (Free)' ? 'var(--poke-orange)' : 'var(--color-purple)'}`,
-                                boxShadow: '0 1px 3px var(--abilities-card-shadow)',
-                                cursor: 'pointer',
-                                transition: 'background 0.12s'
+                                alignItems: 'stretch',
+                                textAlign: 'left',
+                                background: 'var(--abilities-card-bg)',
+                                borderLeft: `4px solid ${data.category === 'General (Free)' ? 'var(--poke-orange)' : 'var(--color-purple)'}`
                             }}
                             onClick={() => showDetail('feature', name, data)}
-                            onMouseEnter={() => setHoveredFeature(name)}
-                            onMouseLeave={() => setHoveredFeature(null)}
                         >
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px', flexWrap: 'wrap' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
@@ -173,7 +168,8 @@ const TrainerFeaturesSection = () => {
                                 </div>
                             )}
                         </div>
-                    ))
+                    ))}
+                    </div>
                 )}
             </div>
         </div>
