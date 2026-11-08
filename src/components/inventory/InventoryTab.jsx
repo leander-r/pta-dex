@@ -754,21 +754,21 @@ const InventoryTab = () => {
                         )}
                     </div>
                 ) : (
-                    <div style={{ display: 'grid', gap: '8px' }}>
+                    <div className="detail-tile-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))' }}>
                         {filteredInventory.map((item, index) => {
                             const itemType = (item.type || 'misc').toLowerCase();
                             const showHealPanel = healPanel?.itemName === item.name;
                             return (
                                 <div
                                     key={`${item.name}-${index}`}
-                                    className="inventory-item-card"
+                                    className="detail-tile inventory-item-card"
                                     style={{
-                                        display: 'flex',
-                                        flexDirection: 'column',
+                                        alignItems: 'stretch',
+                                        textAlign: 'left',
+                                        cursor: 'default',
                                         gap: '8px',
-                                        padding: '12px',
-                                        borderRadius: '8px',
-                                        borderLeft: `4px solid ${getTypeColor(itemType)}`
+                                        borderTop: `3px solid ${getTypeColor(itemType)}`,
+                                        gridColumn: showHealPanel ? '1 / -1' : undefined
                                     }}
                                 >
                                     {/* Main row: item info + quantity controls */}

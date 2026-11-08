@@ -203,96 +203,86 @@ const TrainerSkills = () => {
                                 {isHPStat && <span style={{ fontSize: '11px', opacity: 0.7 }}>Max Rank 1</span>}
                             </div>
 
-                            {visibleSkills.map(skill => {
-                                const rank = getSkillRank(currentSkills, skill.name);
-                                const isTrained = rank > 0;
-                                const bonus = isHPStat ? null : calculateSkillBonus(rank, statValue);
-                                const maxRank = isHPStat ? 1 : 2;
+                            <div className="detail-tile-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gap: '6px', marginTop: '4px' }}>
+                                {visibleSkills.map(skill => {
+                                    const rank = getSkillRank(currentSkills, skill.name);
+                                    const isTrained = rank > 0;
+                                    const bonus = isHPStat ? null : calculateSkillBonus(rank, statValue);
+                                    const maxRank = isHPStat ? 1 : 2;
 
-                                return (
-                                    <div
-                                        key={skill.name}
-                                        onClick={() => handleCycleRank(skill.name, isHPStat)}
-                                        role="button"
-                                        tabIndex={0}
-                                        onKeyDown={(e) => {
-                                            if (e.key === 'Enter' || e.key === ' ') {
-                                                e.preventDefault();
-                                                handleCycleRank(skill.name, isHPStat);
-                                            }
-                                        }}
-                                        className={!isTrained ? 'skill-list-item' : ''}
-                                        style={{
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            gap: '8px',
-                                            padding: '6px 8px',
-                                            marginBottom: '4px',
-                                            background: isTrained
-                                                ? rank === 2
-                                                    ? 'linear-gradient(135deg, var(--poke-orange), var(--poke-orange-dark))'
-                                                    : 'var(--gradient-purple)'
-                                                : undefined,
-                                            color: isTrained ? 'white' : undefined,
-                                            borderRadius: '6px',
-                                            cursor: 'pointer',
-                                            fontSize: '12px',
-                                            transition: 'all 0.2s ease'
-                                        }}
-                                        title={`${skill.description}\n\nClick to cycle rank (current: ${rank}/${maxRank})`}
-                                        aria-label={`${skill.name}, rank ${rank} of ${maxRank}. Press Enter to cycle rank.`}
-                                    >
-                                        {/* Rank indicator */}
-                                        <span style={{
-                                            display: 'flex',
-                                            gap: '2px',
-                                            minWidth: isHPStat ? '17px' : '30px'
-                                        }}>
-                                            {[...Array(maxRank)].map((_, i) => (
-                                                <span
-                                                    key={i}
-                                                    style={{
-                                                        width: '13px',
-                                                        height: '13px',
-                                                        borderRadius: '50%',
-                                                        border: isTrained ? 'none' : '2px solid var(--border-medium)',
-                                                        background: i < rank
-                                                            ? 'rgba(255,255,255,0.9)'
-                                                            : isTrained
-                                                                ? 'rgba(255,255,255,0.3)'
-                                                                : 'transparent'
-                                                    }}
-                                                />
-                                            ))}
-                                        </span>
-
-                                        <span style={{ fontWeight: isTrained ? 'bold' : 'normal', flex: 1 }}>
-                                            {skill.name}
-                                        </span>
-
-                                        {/* Bonus display */}
-                                        {isTrained && (
-                                            <span style={{
-                                                fontSize: '12px',
-                                                opacity: 0.9,
-                                                background: 'rgba(255,255,255,0.2)',
-                                                padding: '2px 6px',
-                                                borderRadius: '4px'
-                                            }}>
-                                                {isHPStat ? 'Passive' : (bonus >= 0 ? `+${bonus}` : bonus)}
+                                    return (
+                                        <div
+                                            key={skill.name}
+                                            onClick={() => handleCycleRank(skill.name, isHPStat)}
+                                            role="button"
+                                            tabIndex={0}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter' || e.key === ' ') {
+                                                    e.preventDefault();
+                                                    handleCycleRank(skill.name, isHPStat);
+                                                }
+                                            }}
+                                            className={isTrained ? 'detail-tile-filled' : 'detail-tile skill-list-item'}
+                                            style={{
+                                                background: isTrained
+                                                    ? rank === 2
+                                                        ? 'linear-gradient(135deg, var(--poke-orange), var(--poke-orange-dark))'
+                                                        : 'var(--gradient-purple)'
+                                                    : undefined,
+                                                color: isTrained ? 'white' : undefined,
+                                                fontSize: '12px'
+                                            }}
+                                            title={`${skill.description}\n\nClick to cycle rank (current: ${rank}/${maxRank})`}
+                                            aria-label={`${skill.name}, rank ${rank} of ${maxRank}. Press Enter to cycle rank.`}
+                                        >
+                                            {/* Rank indicator */}
+                                            <span style={{ display: 'flex', gap: '2px' }}>
+                                                {[...Array(maxRank)].map((_, i) => (
+                                                    <span
+                                                        key={i}
+                                                        style={{
+                                                            width: '13px',
+                                                            height: '13px',
+                                                            borderRadius: '50%',
+                                                            border: isTrained ? 'none' : '2px solid var(--border-medium)',
+                                                            background: i < rank
+                                                                ? 'rgba(255,255,255,0.9)'
+                                                                : isTrained
+                                                                    ? 'rgba(255,255,255,0.3)'
+                                                                    : 'transparent'
+                                                        }}
+                                                    />
+                                                ))}
                                             </span>
-                                        )}
-                                        {!isTrained && !isHPStat && (() => {
-                                            const r1 = calculateSkillBonus(1, statValue);
-                                            return (
-                                                <span style={{ fontSize: '11px', color: 'var(--text-muted)', marginLeft: 'auto', opacity: 0.6 }}>
-                                                    {r1 >= 0 ? `+${r1}` : r1}
+
+                                            <span style={{ fontWeight: isTrained ? 'bold' : 'normal' }}>
+                                                {skill.name}
+                                            </span>
+
+                                            {/* Bonus display */}
+                                            {isTrained && (
+                                                <span style={{
+                                                    fontSize: '12px',
+                                                    opacity: 0.9,
+                                                    background: 'rgba(255,255,255,0.2)',
+                                                    padding: '2px 6px',
+                                                    borderRadius: '4px'
+                                                }}>
+                                                    {isHPStat ? 'Passive' : (bonus >= 0 ? `+${bonus}` : bonus)}
                                                 </span>
-                                            );
-                                        })()}
-                                    </div>
-                                );
-                            })}
+                                            )}
+                                            {!isTrained && !isHPStat && (() => {
+                                                const r1 = calculateSkillBonus(1, statValue);
+                                                return (
+                                                    <span style={{ fontSize: '11px', color: 'var(--text-muted)', opacity: 0.6 }}>
+                                                        {r1 >= 0 ? `+${r1}` : r1}
+                                                    </span>
+                                                );
+                                            })()}
+                                        </div>
+                                    );
+                                })}
+                            </div>
                         </div>
                     );
                 })}

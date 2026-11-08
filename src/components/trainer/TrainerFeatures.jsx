@@ -276,7 +276,7 @@ const TrainerFeatures = () => {
 
             {/* Current Features */}
             {currentFeatures.length > 0 && (
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '15px' }}>
+                <div className="detail-tile-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', marginBottom: '15px' }}>
                     {currentFeatures.map((feature, index) => {
                         const featureName = typeof feature === 'object' ? feature.name : feature;
                         const featureData = GAME_DATA.features[featureName];
@@ -286,57 +286,18 @@ const TrainerFeatures = () => {
                         return (
                             <div
                                 key={index}
+                                className="detail-tile-filled"
                                 style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '6px',
-                                    padding: '6px 10px',
                                     background: isBase
                                         ? 'linear-gradient(135deg, var(--poke-orange), var(--poke-orange-dark))'
                                         : isFree
                                         ? 'linear-gradient(135deg, var(--poke-green), var(--stat-hp))'
                                         : 'var(--gradient-purple)',
-                                    borderRadius: '15px',
                                     color: 'white',
-                                    fontSize: '12px',
-                                    cursor: 'pointer'
+                                    fontSize: '12px'
                                 }}
                                 onClick={() => showDetail && showDetail('feature', featureName, featureData)}
                             >
-                                <span>{featureName}</span>
-                                {isBase && <span style={{ fontSize: '11px', opacity: 0.8 }}>(Base)</span>}
-                                {typeof feature === 'object' && feature.weaponType && (
-                                    <span style={{ fontSize: '11px', opacity: 0.9, background: 'rgba(255,255,255,0.2)', padding: '1px 4px', borderRadius: '4px' }}>
-                                        {feature.weaponType}
-                                    </span>
-                                )}
-                                {featureName === 'Weapon of Choice' && (
-                                    <span style={{ fontSize: '11px', opacity: 0.85, background: 'rgba(255,255,255,0.15)', padding: '1px 4px', borderRadius: '4px' }}>
-                                        {getWeaponOfChoiceDamage(trainer.level)}
-                                    </span>
-                                )}
-                                {typeof feature === 'object' && feature.statBoost && feature.statBoost.value > 0 && (
-                                    <span style={{ fontSize: '11px', opacity: 0.9, background: 'rgba(255,255,255,0.2)', padding: '1px 4px', borderRadius: '4px' }}>
-                                        +{feature.statBoost.value} {STAT_LABELS[feature.statBoost.stat]}
-                                    </span>
-                                )}
-                                {typeof feature === 'object' && feature.hpBonus && (() => {
-                                    const atkMod = calculateModifier(trainer.stats.atk || 10);
-                                    const defMod = calculateModifier(trainer.stats.def || 10);
-                                    let hpBonusValue = 0;
-                                    if (feature.hpBonus === 'full') {
-                                        hpBonusValue = (atkMod + defMod) * 5;
-                                    } else if (feature.hpBonus === 'half') {
-                                        hpBonusValue = (Math.floor(atkMod / 2) + Math.floor(defMod / 2)) * 5;
-                                    } else if (feature.hpBonus === 'mystic') {
-                                        hpBonusValue = defMod * 3;
-                                    }
-                                    return hpBonusValue > 0 ? (
-                                        <span style={{ fontSize: '11px', opacity: 0.9, background: 'rgba(255,255,255,0.2)', padding: '1px 4px', borderRadius: '4px' }}>
-                                            +{hpBonusValue} Max HP
-                                        </span>
-                                    ) : null;
-                                })()}
                                 {!isBase && (
                                     <button
                                         onClick={(e) => {
@@ -352,23 +313,49 @@ const TrainerFeatures = () => {
                                                 onConfirm: () => handleRemoveFeature(featureName, index)
                                             });
                                         }}
-                                        style={{
-                                            background: 'rgba(255,255,255,0.2)',
-                                            border: 'none',
-                                            borderRadius: '50%',
-                                            width: '16px',
-                                            height: '16px',
-                                            color: 'white',
-                                            cursor: 'pointer',
-                                            fontSize: '12px',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center'
-                                        }}
+                                        className="detail-tile-remove"
+                                        aria-label={`Remove ${featureName}`}
+                                        title={`Remove ${featureName}`}
                                     >
                                         ×
                                     </button>
                                 )}
+                                <span>{featureName}</span>
+                                {isBase && <span style={{ fontSize: '11px', opacity: 0.8 }}>(Base)</span>}
+                                <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', justifyContent: 'center' }}>
+                                    {typeof feature === 'object' && feature.weaponType && (
+                                        <span style={{ fontSize: '11px', opacity: 0.9, background: 'rgba(255,255,255,0.2)', padding: '1px 4px', borderRadius: '4px' }}>
+                                            {feature.weaponType}
+                                        </span>
+                                    )}
+                                    {featureName === 'Weapon of Choice' && (
+                                        <span style={{ fontSize: '11px', opacity: 0.85, background: 'rgba(255,255,255,0.15)', padding: '1px 4px', borderRadius: '4px' }}>
+                                            {getWeaponOfChoiceDamage(trainer.level)}
+                                        </span>
+                                    )}
+                                    {typeof feature === 'object' && feature.statBoost && feature.statBoost.value > 0 && (
+                                        <span style={{ fontSize: '11px', opacity: 0.9, background: 'rgba(255,255,255,0.2)', padding: '1px 4px', borderRadius: '4px' }}>
+                                            +{feature.statBoost.value} {STAT_LABELS[feature.statBoost.stat]}
+                                        </span>
+                                    )}
+                                    {typeof feature === 'object' && feature.hpBonus && (() => {
+                                        const atkMod = calculateModifier(trainer.stats.atk || 10);
+                                        const defMod = calculateModifier(trainer.stats.def || 10);
+                                        let hpBonusValue = 0;
+                                        if (feature.hpBonus === 'full') {
+                                            hpBonusValue = (atkMod + defMod) * 5;
+                                        } else if (feature.hpBonus === 'half') {
+                                            hpBonusValue = (Math.floor(atkMod / 2) + Math.floor(defMod / 2)) * 5;
+                                        } else if (feature.hpBonus === 'mystic') {
+                                            hpBonusValue = defMod * 3;
+                                        }
+                                        return hpBonusValue > 0 ? (
+                                            <span style={{ fontSize: '11px', opacity: 0.9, background: 'rgba(255,255,255,0.2)', padding: '1px 4px', borderRadius: '4px' }}>
+                                                +{hpBonusValue} Max HP
+                                            </span>
+                                        ) : null;
+                                    })()}
+                                </div>
                             </div>
                         );
                     })}

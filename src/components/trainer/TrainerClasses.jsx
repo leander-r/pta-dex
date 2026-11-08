@@ -275,38 +275,23 @@ const TrainerClasses = () => {
 
             {/* Current Classes */}
             {currentClasses.length > 0 && (
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginBottom: '15px' }}>
+                <div className="detail-tile-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(110px, 1fr))', marginBottom: '15px' }}>
                     {currentClasses.map((cls, index) => (
-                        <div key={index} style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '8px',
-                            padding: '8px 12px',
-                            background: 'var(--gradient-purple)',
-                            borderRadius: '20px',
-                            color: 'white'
-                        }}>
+                        <div key={index} className="detail-tile-filled" style={{ background: 'var(--gradient-purple)', color: 'white' }}>
+                            <button
+                                onClick={() => handleRemoveClass(cls)}
+                                className="detail-tile-remove"
+                                aria-label={`Remove ${cls}`}
+                                title={`Remove ${cls}`}
+                            >
+                                ×
+                            </button>
                             <span className="font-bold">{cls}</span>
                             {GAME_DATA.trainerClasses[cls] && (
                                 <span style={{ background: 'rgba(255,255,255,0.2)', padding: '2px 6px', borderRadius: '10px', fontSize: '11px' }}>
                                     {GAME_DATA.trainerClasses[cls].type === 'base' ? 'Base' : 'Adv'}
                                 </span>
                             )}
-                            <button
-                                onClick={() => handleRemoveClass(cls)}
-                                style={{
-                                    background: 'rgba(255,255,255,0.2)',
-                                    border: 'none',
-                                    borderRadius: '50%',
-                                    width: '20px',
-                                    height: '20px',
-                                    color: 'white',
-                                    cursor: 'pointer',
-                                    fontSize: '12px'
-                                }}
-                            >
-                                ×
-                            </button>
                         </div>
                     ))}
                 </div>
