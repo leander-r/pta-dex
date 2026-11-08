@@ -766,7 +766,7 @@ const inputStyle = {
 };
 
 // ── Memoized row ─────────────────────────────────────────────
-// Extracted so only the 2 rows whose isExpanded/isHovered changes actually re-render.
+// Extracted so only the row whose isExpanded changes actually re-renders.
 
 const PokedexRow = memo(({ species, isExpanded, onRowClick, evolvedFromMap }) => {
     const spriteUrl = getPokemonDisplayImage(species);

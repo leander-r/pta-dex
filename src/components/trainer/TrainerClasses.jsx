@@ -277,7 +277,7 @@ const TrainerClasses = () => {
             {currentClasses.length > 0 && (
                 <div className="detail-tile-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(110px, 1fr))', marginBottom: '15px' }}>
                     {currentClasses.map((cls, index) => (
-                        <div key={index} className="detail-tile-filled" style={{ background: 'var(--gradient-purple)', color: 'white' }}>
+                        <div key={index} className="detail-tile-filled" style={{ background: 'var(--gradient-purple)', color: 'white', cursor: 'default' }}>
                             <button
                                 onClick={() => handleRemoveClass(cls)}
                                 className="detail-tile-remove"
