@@ -859,25 +859,27 @@ const BattleTab = () => {
                             })()}
 
                             {/* Skill Selector */}
-                            <label style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '4px', display: 'block' }}>Select Skill</label>
-                            <select
-                                value={selectedSkill}
-                                onChange={(e) => setSelectedSkill(e.target.value)}
-                                style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid var(--border-medium)', marginBottom: '8px', background: 'var(--input-bg)', color: 'var(--text-primary)' }}
-                            >
-                                <option value="">Choose a skill...</option>
-                                {/* Overland/Surface/Underwater are a fixed per-turn movement value per PHB2,
-                                    not something rolled with 1d20 — shown separately below instead. */}
-                                {Object.entries(GAME_DATA.skills || {}).filter(([, data]) => data.type !== 'movement').map(([name, data]) => {
-                                    const skills = trainer.skills || {};
-                                    const rank = Array.isArray(skills) ? (skills.includes(name) ? 1 : 0) : (skills[name] || 0);
-                                    return (
-                                        <option key={name} value={name}>
-                                            {name} ({data.stat}) {rank > 0 ? (rank === 2 ? '✓✓ Rank 2' : '✓ Trained') : ''}
-                                        </option>
-                                    );
-                                })}
-                            </select>
+                            <div className="detail-tile" style={{ alignItems: 'stretch', textAlign: 'left', borderTop: '3px solid var(--color-purple)', cursor: 'default', marginBottom: '8px' }}>
+                                <label style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '4px', display: 'block' }}>Select Skill</label>
+                                <select
+                                    value={selectedSkill}
+                                    onChange={(e) => setSelectedSkill(e.target.value)}
+                                    style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--input-bg)', color: 'var(--text-primary)', cursor: 'pointer' }}
+                                >
+                                    <option value="">Choose a skill...</option>
+                                    {/* Overland/Surface/Underwater are a fixed per-turn movement value per PHB2,
+                                        not something rolled with 1d20 — shown separately below instead. */}
+                                    {Object.entries(GAME_DATA.skills || {}).filter(([, data]) => data.type !== 'movement').map(([name, data]) => {
+                                        const skills = trainer.skills || {};
+                                        const rank = Array.isArray(skills) ? (skills.includes(name) ? 1 : 0) : (skills[name] || 0);
+                                        return (
+                                            <option key={name} value={name}>
+                                                {name} ({data.stat}) {rank > 0 ? (rank === 2 ? '✓✓ Rank 2' : '✓ Trained') : ''}
+                                            </option>
+                                        );
+                                    })}
+                                </select>
+                            </div>
 
                             {/* Movement Skills — fixed per-turn values (PHB2 "Shift Actions"), always
                                 active, not rolled. Shown for reference alongside the rollable skills. */}
@@ -920,17 +922,19 @@ const BattleTab = () => {
 
                             {/* Arms Attack */}
                             <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid var(--border-light)' }}>
-                                <label style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '4px', display: 'block' }}>Arms Attack</label>
-                                <select
-                                    value={selectedWeapon || ''}
-                                    onChange={e => setSelectedWeapon(e.target.value || null)}
-                                    style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid var(--border-medium)', marginBottom: '8px', background: 'var(--input-bg)', color: 'var(--text-primary)' }}
-                                >
-                                    <option value="">Choose weapon...</option>
-                                    {trainerWeapons.map(w => (
-                                        <option key={w.name} value={w.name}>{w.name} — AC {w.ac} ({w.source})</option>
-                                    ))}
-                                </select>
+                                <div className="detail-tile" style={{ alignItems: 'stretch', textAlign: 'left', borderTop: '3px solid var(--stat-atk)', cursor: 'default', marginBottom: '8px' }}>
+                                    <label style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '4px', display: 'block' }}>Arms Attack</label>
+                                    <select
+                                        value={selectedWeapon || ''}
+                                        onChange={e => setSelectedWeapon(e.target.value || null)}
+                                        style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--input-bg)', color: 'var(--text-primary)', cursor: 'pointer' }}
+                                    >
+                                        <option value="">Choose weapon...</option>
+                                        {trainerWeapons.map(w => (
+                                            <option key={w.name} value={w.name}>{w.name} — AC {w.ac} ({w.source})</option>
+                                        ))}
+                                    </select>
+                                </div>
 
                                 {selectedWeapon && (() => {
                                     const weapon = trainerWeapons.find(w => w.name === selectedWeapon);

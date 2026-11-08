@@ -14,12 +14,12 @@ const parseFreqLabel = (freq) => {
 };
 
 const FREQ_STYLE = {
-    'At-Will': { background: 'rgba(76,175,80,0.15)',  color: '#43a047' },
-    'EOT':     { background: 'rgba(255,152,0,0.15)',  color: '#f57c00' },
-    'Scene ×2':{ background: 'rgba(156,39,176,0.15)', color: '#8e24aa' },
-    'Scene':   { background: 'rgba(156,39,176,0.15)', color: '#8e24aa' },
-    'Daily':   { background: 'rgba(244,67,54,0.15)',  color: '#e53935' },
-    'Shift':   { background: 'rgba(0,188,212,0.15)',  color: '#00838f' },
+    'At-Will': { background: 'var(--freq-at-will-bg)', color: 'var(--freq-at-will-text)' },
+    'EOT':     { background: 'var(--freq-eot-bg)',     color: 'var(--freq-eot-text)' },
+    'Scene ×2':{ background: 'var(--freq-scene-bg)',   color: 'var(--freq-scene-text)' },
+    'Scene':   { background: 'var(--freq-scene-bg)',   color: 'var(--freq-scene-text)' },
+    'Daily':   { background: 'var(--freq-daily-bg)',   color: 'var(--freq-daily-text)' },
+    'Shift':   { background: 'var(--freq-shift-bg)',   color: 'var(--freq-shift-text)' },
 };
 
 const CATEGORY_ICON  = { Physical: '⚔', Special: '✦', Status: '◎' };
@@ -44,7 +44,7 @@ const MoveSelector = ({ selectedPokemon, selectedMove, onSelectMove, showDetail,
     }
 
     return (
-        <div style={{ marginBottom: '12px', display: 'grid', gap: '6px' }}>
+        <div className="detail-tile-grid" style={{ marginBottom: '12px', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '6px' }}>
             {moves.map((move, idx) => {
                 const isSelected = selectedMove?.name === move.name;
                 const typeColor = getTypeColor(move.type);

@@ -77,6 +77,18 @@
             --skill-value-color: #9c27b0;
             --skill-no-value-color: #4caf50;
 
+            /* Move frequency badge colors */
+            --freq-at-will-bg: rgba(76,175,80,0.15);
+            --freq-at-will-text: #43a047;
+            --freq-eot-bg: rgba(255,152,0,0.15);
+            --freq-eot-text: #f57c00;
+            --freq-scene-bg: rgba(156,39,176,0.15);
+            --freq-scene-text: #8e24aa;
+            --freq-daily-bg: rgba(244,67,54,0.15);
+            --freq-daily-text: #e53935;
+            --freq-shift-bg: rgba(0,188,212,0.15);
+            --freq-shift-text: #00838f;
+
             /* Move replacement modal colors */
             --move-replace-hover-bg: rgba(244,67,54,0.1);
             --move-preview-natural-bg: linear-gradient(135deg, rgba(76,175,80,0.1), rgba(76,175,80,0.05));
@@ -309,6 +321,18 @@
             /* Skill display colors - dark mode */
             --skill-value-color: #ce93d8;
             --skill-no-value-color: #81c784;
+
+            /* Move frequency badge colors - dark mode (brighter text, higher-alpha bg for contrast) */
+            --freq-at-will-bg: rgba(76,175,80,0.25);
+            --freq-at-will-text: #81c784;
+            --freq-eot-bg: rgba(255,152,0,0.25);
+            --freq-eot-text: #ffb74d;
+            --freq-scene-bg: rgba(156,39,176,0.28);
+            --freq-scene-text: #ce93d8;
+            --freq-daily-bg: rgba(244,67,54,0.25);
+            --freq-daily-text: #ef5350;
+            --freq-shift-bg: rgba(0,188,212,0.25);
+            --freq-shift-text: #4dd0e1;
 
             /* Move category badge colors - dark mode (slightly lighter for dark backgrounds) */
             --move-cat-physical: #ef6c00;
@@ -5235,6 +5259,18 @@
                 /* Skill display colors - dark mode */
                 --skill-value-color: #ce93d8;
                 --skill-no-value-color: #81c784;
+
+                /* Move frequency badge colors - dark mode */
+                --freq-at-will-bg: rgba(76,175,80,0.25);
+                --freq-at-will-text: #81c784;
+                --freq-eot-bg: rgba(255,152,0,0.25);
+                --freq-eot-text: #ffb74d;
+                --freq-scene-bg: rgba(156,39,176,0.28);
+                --freq-scene-text: #ce93d8;
+                --freq-daily-bg: rgba(244,67,54,0.25);
+                --freq-daily-text: #ef5350;
+                --freq-shift-bg: rgba(0,188,212,0.25);
+                --freq-shift-text: #4dd0e1;
 
                 /* Move replacement modal colors - dark mode */
                 --move-replace-hover-bg: rgba(244,67,54,0.2);

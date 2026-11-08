@@ -63,7 +63,8 @@ const HealModePanel = ({ selectedPokemonId, setSelectedPokemonId, party, healing
                     return (
                         <div
                             key={item.name}
-                            style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 10px', borderRadius: '6px', background: 'var(--input-bg)', border: '1px solid var(--border-medium)' }}
+                            className="detail-tile-filled"
+                            style={{ flexDirection: 'row', alignItems: 'center', textAlign: 'left', cursor: 'default', gap: '10px', background: 'var(--input-bg)', border: '1px solid var(--border-medium)' }}
                         >
                             <div style={{ flex: 1, minWidth: 0 }}>
                                 <div style={{ fontWeight: 'bold', fontSize: '13px' }}>{item.name}</div>
