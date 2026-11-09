@@ -694,7 +694,12 @@ export const DataProvider = ({ children }) => {
         text += `\n`;
         text += `Level ${poke.level} | ${(poke.types || []).join('/')} | ${poke.nature} Nature\n`;
 
-        const abilities = [poke.ability, poke.ability2, poke.ability3].filter(a => a);
+        // abilities[] is the live source of truth the in-app picker reads/writes — the
+        // legacy ability/ability2/ability3 fields are only ever set by evolution, never by
+        // the picker, so they're blank for most Pokémon and can go stale after evolving.
+        const abilities = poke.abilities && poke.abilities.length > 0
+            ? poke.abilities
+            : [poke.ability, poke.ability2, poke.ability3].filter(a => a);
         text += `**Abilities:** ${abilities.length > 0 ? abilities.join(', ') : 'None'}\n`;
 
         const skills = (poke.pokemonSkills || []);

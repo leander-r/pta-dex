@@ -609,7 +609,13 @@ export const generatePrintSheetHTML = (trainer, party) => {
         const sp = poke.species && poke.species !== poke.name ? ` (${escapeHtml(poke.species)})` : '';
         const types = escapeHtml((poke.types || []).join(' / ')) || '—';
         const pokeMaxHP = (poke.baseStats?.hp ?? 0) * 3 + (poke.level ?? 0) * 3;
-        const abilities = escapeHtml([poke.ability, poke.ability2, poke.ability3].filter(Boolean).join(', ')) || '—';
+        // abilities[] is the live source of truth the in-app picker reads/writes — the
+        // legacy ability/ability2/ability3 fields are only ever set by evolution, never by
+        // the picker, so they're blank for most Pokémon and can go stale after evolving.
+        const abilityList = poke.abilities && poke.abilities.length > 0
+            ? poke.abilities
+            : [poke.ability, poke.ability2, poke.ability3].filter(Boolean);
+        const abilities = escapeHtml(abilityList.join(', ')) || '—';
         const movesRows = (poke.moves || []).map(m =>
             `<tr><td>${escapeHtml(m.name) || '?'}</td><td>${escapeHtml(m.type) || '?'}</td><td>${escapeHtml(m.category) || '?'}</td><td>${escapeHtml(m.damage) || '—'}</td><td>${escapeHtml(m.frequency) || '—'}</td></tr>`
         ).join('') || '<tr><td colspan="5" style="color:#999;">No moves</td></tr>';
