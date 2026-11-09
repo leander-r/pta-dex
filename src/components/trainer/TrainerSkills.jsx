@@ -5,6 +5,7 @@
 import React, { useState } from 'react';
 import { useTrainerContext, useGameData, useModal, useUI } from '../../contexts/index.js';
 import { HELP_BTN_STYLE } from '../common/helpBtnStyle.js';
+import toast from '../../utils/toast.js';
 
 const SKILL_STATS = ['HP', 'ATK', 'DEF', 'SATK', 'SDEF', 'SPD'];
 
@@ -57,40 +58,23 @@ const calculateSkillBonus = (rank, statValue) => {
  * Uses contexts for state management
  */
 const TrainerSkills = () => {
-    const { trainer, setTrainer } = useTrainerContext();
+    const { trainer } = useTrainerContext();
     const { GAME_DATA } = useGameData();
     const { showHelp } = useUI();
     const { showDetail } = useModal();
     const currentSkills = trainer.skills || {};
 
-    const handleCycleRank = (skillName, isHPSkill) => {
-        const currentRank = getSkillRank(currentSkills, skillName);
-        let newRank;
-
-        if (isHPSkill) {
-            // HP skills cap at rank 1: 0 → 1 → 0
-            newRank = currentRank === 0 ? 1 : 0;
-        } else {
-            // Other skills: 0 → 1 → 2 → 0
-            newRank = (currentRank + 1) % 3;
+    // Skills are granted only by Trainer Classes (PH2 p.18: a Base Class grants a pick
+    // of 3-of-8 skills, an Advanced Class grants 1-of-2) — there's no standalone way to
+    // train a skill, so this panel is a read-only view of what's been granted. Clicking
+    // a trained skill opens its details; an untrained one points to the Classes section.
+    const handleSkillClick = (skillName, isTrained) => {
+        const skillData = GAME_DATA.skills?.[skillName];
+        if (isTrained) {
+            if (showDetail && skillData) showDetail('skill', skillName, skillData);
+            return;
         }
-
-        setTrainer(prev => {
-            const prevSkills = prev.skills || {};
-            // Handle legacy array format
-            const skillsObj = Array.isArray(prevSkills)
-                ? prevSkills.reduce((acc, s) => ({ ...acc, [s]: 1 }), {})
-                : prevSkills;
-
-            if (newRank === 0) {
-                const { [skillName]: removed, ...rest } = skillsObj;
-                return { ...prev, skills: rest };
-            }
-            return {
-                ...prev,
-                skills: { ...skillsObj, [skillName]: newRank }
-            };
-        });
+        toast.info(`${skillName} is granted by Trainer Classes — pick it when adding or reviewing a class in the Classes section above.`);
     };
 
     // Group skills by stat
@@ -132,7 +116,7 @@ const TrainerSkills = () => {
             </h3>
             {!collapsed && <>
             <p className="section-description">
-                Click skills to cycle ranks (0→1→2). HP skills max at rank 1.
+                Skills are granted by your Trainer Classes above. Click a trained skill for details; HP skills max at rank 1.
                 <br />
                 <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
                     Rank 1: +2 + Stat Mod | Rank 2: +4 + (2×Stat Mod)
@@ -213,13 +197,13 @@ const TrainerSkills = () => {
                                     return (
                                         <div
                                             key={skill.name}
-                                            onClick={() => handleCycleRank(skill.name, isHPStat)}
+                                            onClick={() => handleSkillClick(skill.name, isTrained)}
                                             role="button"
                                             tabIndex={0}
                                             onKeyDown={(e) => {
                                                 if (e.key === 'Enter' || e.key === ' ') {
                                                     e.preventDefault();
-                                                    handleCycleRank(skill.name, isHPStat);
+                                                    handleSkillClick(skill.name, isTrained);
                                                 }
                                             }}
                                             className={isTrained ? 'detail-tile-filled' : 'detail-tile skill-list-item'}
@@ -232,8 +216,12 @@ const TrainerSkills = () => {
                                                 color: isTrained ? 'white' : undefined,
                                                 fontSize: '12px'
                                             }}
-                                            title={`${skill.description}\n\nClick to cycle rank (current: ${rank}/${maxRank})`}
-                                            aria-label={`${skill.name}, rank ${rank} of ${maxRank}. Press Enter to cycle rank.`}
+                                            title={isTrained
+                                                ? `${skill.description}\n\nClick for details (rank ${rank}/${maxRank})`
+                                                : `${skill.description}\n\nGranted by Trainer Classes — not currently trained.`}
+                                            aria-label={isTrained
+                                                ? `${skill.name}, rank ${rank} of ${maxRank}. Press Enter for details.`
+                                                : `${skill.name}, not trained. Granted by Trainer Classes.`}
                                         >
                                             {/* Rank indicator */}
                                             <span style={{ display: 'flex', gap: '2px' }}>

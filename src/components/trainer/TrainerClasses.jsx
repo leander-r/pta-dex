@@ -93,20 +93,24 @@ const TrainerClasses = () => {
     };
 
     const doRemoveClass = (cls) => {
-        const classData = GAME_DATA.trainerClasses[cls];
-        const isBaseClass = classData?.type === 'base';
-        const isFirstClass = currentClasses.indexOf(cls) === 0 && currentClasses.length > 0;
-
         // Find base features for this class that should be removed
         const baseFeaturesToRemove = getClassBaseFeatures(cls);
 
         // Get skills that were granted by this class
         const classSkillsToRemove = (trainer.classSkills || {})[cls] || [];
 
-        // Calculate feat point refund
-        let featPointRefund = 0;
-        if (!isFirstClass && currentClasses.length > 1) {
-            featPointRefund = 1;
+        // Calculate feat point refund — reverse the exact amount this class applied
+        // when it was added (recorded in classFeatCosts), so removing the first
+        // class correctly reclaims its +2 grant instead of only ever refunding the
+        // -1 cost additional classes pay. Classes added before this tracking existed
+        // have no recorded cost; fall back to the old best-effort heuristic for those.
+        const recordedCost = (trainer.classFeatCosts || {})[cls];
+        let featPointRefund;
+        if (recordedCost !== undefined) {
+            featPointRefund = -recordedCost;
+        } else {
+            const isFirstClass = currentClasses.indexOf(cls) === 0 && currentClasses.length > 0;
+            featPointRefund = (!isFirstClass && currentClasses.length > 1) ? 1 : 0;
         }
 
         setTrainer(prev => {
@@ -133,12 +137,16 @@ const TrainerClasses = () => {
             const newClassSkills = { ...(prev.classSkills || {}) };
             delete newClassSkills[cls];
 
+            const newClassFeatCosts = { ...(prev.classFeatCosts || {}) };
+            delete newClassFeatCosts[cls];
+
             return {
                 ...prev,
                 classes: (prev.classes || []).filter(c => c !== cls),
                 features: (prev.features || []).filter(f => !baseFeaturesToRemove.includes(f)),
                 skills: updatedSkills,
                 classSkills: newClassSkills,
+                classFeatCosts: newClassFeatCosts,
                 featPoints: (prev.featPoints || 0) + featPointRefund
             };
         });
@@ -231,6 +239,12 @@ const TrainerClasses = () => {
                 classSkills: {
                     ...(prev.classSkills || {}),
                     [pendingClass]: selectedClassSkills
+                },
+                // Record the exact feat-point delta this class applied, so removal
+                // can reverse it precisely regardless of class order at removal time.
+                classFeatCosts: {
+                    ...(prev.classFeatCosts || {}),
+                    [pendingClass]: featPointChange
                 }
             };
         });
