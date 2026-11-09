@@ -40,12 +40,16 @@ const ToastContainer = () => {
 
     return (
         <div style={{
+            // Bottom-right, not top-right — the header's trainer selector and menu
+            // buttons occupy that corner. column-reverse keeps new toasts anchored at
+            // the bottom edge (closest to where they animate in from) with older ones
+            // stacking upward, matching how a bottom-anchored toast stack should order.
             position: 'fixed',
-            top: '16px',
+            bottom: '16px',
             right: '16px',
             zIndex: 100000,
             display: 'flex',
-            flexDirection: 'column',
+            flexDirection: 'column-reverse',
             gap: '8px',
             maxWidth: '400px',
             width: '90vw',

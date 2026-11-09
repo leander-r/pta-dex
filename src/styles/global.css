@@ -1784,16 +1784,22 @@
         }
         
         .save-indicator {
+            /* Bottom-LEFT, not top-right — top-right is the header's trainer selector
+               and menu buttons (this fires on every autosave, roughly every second
+               while actively typing, so it constantly covered them). Bottom-right is
+               the regular toast stack (ToastContainer) — sharing that corner with an
+               independent stack meant the two collided whenever both were visible,
+               which is common since a toast and an autosave often land together. */
             position: fixed;
-            top: 20px;
-            right: 20px;
+            bottom: 20px;
+            left: 20px;
             background: linear-gradient(135deg, var(--poke-green) 0%, #45a049 100%);
             color: white;
             padding: 12px 20px;
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
             opacity: 0;
-            transform: translateY(-10px) scale(0.95);
+            transform: translateY(10px) scale(0.95);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 99999;
             font-weight: 700;
