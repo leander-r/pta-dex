@@ -1226,6 +1226,41 @@
             padding-bottom: 10px;
             border-bottom: 2px solid rgba(102, 126, 234, 0.2);
         }
+
+        /* Trainer avatar — bigger on desktop where there's room, compact on
+           mobile where it shares a tight header row with the name input. */
+        .trainer-avatar-circle {
+            width: 64px;
+            height: 64px;
+            transition: width 0.2s ease, height 0.2s ease;
+        }
+
+        .trainer-avatar-placeholder-icon {
+            font-size: 30px;
+        }
+
+        .trainer-avatar-photo-badge {
+            width: 24px;
+            height: 24px;
+            font-size: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .trainer-avatar-circle {
+                width: 40px;
+                height: 40px;
+            }
+
+            .trainer-avatar-placeholder-icon {
+                font-size: 20px;
+            }
+
+            .trainer-avatar-photo-badge {
+                width: 18px;
+                height: 18px;
+                font-size: 13px;
+            }
+        }
         
         .section-title-orange {
             margin-bottom: 15px;

@@ -1733,13 +1733,13 @@ const PokemonCard = ({
                             return (
                                 <div style={{ marginBottom: '8px' }}>
                                     <label style={{ fontSize: '12px', fontWeight: 'bold', marginBottom: '6px', display: 'block' }}>Contest Stats</label>
-                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(52px, 1fr))', gap: '4px' }}>
+                                    <div className="detail-tile-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(60px, 1fr))', gap: '4px' }}>
                                         {CONTEST_STATS.map(([stat, icon]) => {
                                             const val = contestStats[stat] || 0;
                                             return (
-                                                <div key={stat} style={{ textAlign: 'center' }}>
-                                                    <div style={{ fontSize: '12px', fontWeight: 'bold', color: 'var(--text-muted)', marginBottom: '4px', textTransform: 'capitalize' }}>{icon}<br/>{stat}</div>
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+                                                <div key={stat} className="detail-tile" style={{ cursor: 'default', padding: '6px 4px' }}>
+                                                    <div style={{ fontSize: '12px', fontWeight: 'bold', color: 'var(--text-muted)', textTransform: 'capitalize' }}>{icon}<br/>{stat}</div>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '2px', width: '100%' }}>
                                                         <button
                                                             onClick={() => updatePokemon({ contestStats: { ...contestStats, [stat]: Math.max(0, val - 1) } })}
                                                             disabled={val === 0}
@@ -1771,13 +1771,13 @@ const PokemonCard = ({
                                         <span>Ribbons</span>
                                         {totalRibbons > 0 && <span style={{ fontSize: '12px', fontWeight: 'normal', color: 'var(--text-muted)' }}>{totalRibbons} total</span>}
                                     </label>
-                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(52px, 1fr))', gap: '4px' }}>
+                                    <div className="detail-tile-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(60px, 1fr))', gap: '4px' }}>
                                         {RIBBON_TYPES.map(([type, icon]) => {
                                             const count = ribbons[type] || 0;
                                             return (
-                                                <div key={type} style={{ textAlign: 'center' }}>
-                                                    <div style={{ fontSize: '12px', fontWeight: 'bold', color: 'var(--text-muted)', marginBottom: '4px', textTransform: 'capitalize' }}>{icon}<br/>{type}</div>
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+                                                <div key={type} className="detail-tile" style={{ cursor: 'default', padding: '6px 4px' }}>
+                                                    <div style={{ fontSize: '12px', fontWeight: 'bold', color: 'var(--text-muted)', textTransform: 'capitalize' }}>{icon}<br/>{type}</div>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '2px', width: '100%' }}>
                                                         <button
                                                             onClick={() => updatePokemon({ ribbons: { ...ribbons, [type]: Math.max(0, count - 1) } })}
                                                             disabled={count === 0}
@@ -1812,35 +1812,28 @@ const PokemonCard = ({
 
                             {/* Selected Abilities */}
                             {(pokemon.abilities || []).length > 0 && (
-                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '10px' }}>
+                                <div className="detail-tile-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(110px, 1fr))', marginBottom: '10px' }}>
                                     {(pokemon.abilities || []).map((abilityName, idx) => {
                                         const abilityData = GAME_DATA.abilities?.[abilityName];
                                         return (
                                             <div
                                                 key={idx}
+                                                onClick={() => {
+                                                    if (showDetail && abilityData) {
+                                                        showDetail('ability', abilityName, abilityData);
+                                                    }
+                                                }}
+                                                className="detail-tile-filled"
                                                 style={{
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    gap: '6px',
-                                                    padding: '6px 10px',
                                                     background: 'var(--gradient-purple)',
                                                     color: 'white',
-                                                    borderRadius: '16px',
-                                                    fontSize: '12px'
+                                                    fontSize: '12px',
+                                                    cursor: showDetail && abilityData ? 'pointer' : 'default'
                                                 }}
                                             >
-                                                <span
-                                                    onClick={() => {
-                                                        if (showDetail && abilityData) {
-                                                            showDetail('ability', abilityName, abilityData);
-                                                        }
-                                                    }}
-                                                    style={{ cursor: showDetail ? 'pointer' : 'default' }}
-                                                >
-                                                    {abilityName}
-                                                </span>
                                                 <button
-                                                    onClick={() => {
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
                                                         const prevAbilities = [...(pokemon.abilities || [])];
                                                         const newAbilities = prevAbilities.filter(a => a !== abilityName);
                                                         updatePokemon({ abilities: newAbilities });
@@ -1851,23 +1844,13 @@ const PokemonCard = ({
                                                             { label: 'Undo', onClick: () => updatePokemon({ abilities: prevAbilities }) }
                                                         );
                                                     }}
-                                                    style={{
-                                                        background: 'rgba(255,255,255,0.25)',
-                                                        border: 'none',
-                                                        borderRadius: '50%',
-                                                        width: '24px',
-                                                        height: '24px',
-                                                        color: 'white',
-                                                        cursor: 'pointer',
-                                                        fontSize: '13px',
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        justifyContent: 'center',
-                                                        flexShrink: 0
-                                                    }}
+                                                    className="detail-tile-remove"
+                                                    title={`Remove ${abilityName}`}
+                                                    aria-label={`Remove ${abilityName}`}
                                                 >
                                                     ×
                                                 </button>
+                                                <span>{abilityName}</span>
                                             </div>
                                         );
                                     })}

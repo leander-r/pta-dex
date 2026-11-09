@@ -101,9 +101,7 @@ const TrainerProfile = () => {
                     onClick={() => document.getElementById('trainerAvatarInput').click()}
                     title="Click to change avatar"
                 >
-                    <div style={{
-                        width: '40px',
-                        height: '40px',
+                    <div className="trainer-avatar-circle" style={{
                         borderRadius: '50%',
                         background: trainer.avatar ? 'transparent' : 'var(--gradient-purple)',
                         display: 'flex',
@@ -114,15 +112,14 @@ const TrainerProfile = () => {
                     }}>
                         {trainer.avatar
                             ? <img src={trainer.avatar} alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                            : <span style={{ fontSize: '20px' }}>👤</span>
+                            : <span className="trainer-avatar-placeholder-icon">👤</span>
                         }
                     </div>
-                    <span style={{
+                    <span className="trainer-avatar-photo-badge" style={{
                         position: 'absolute', bottom: '-2px', right: '-4px',
-                        fontSize: '13px', lineHeight: 1,
+                        lineHeight: 1,
                         background: 'var(--bg-primary)',
                         borderRadius: '50%',
-                        width: '18px', height: '18px',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                         boxShadow: '0 1px 3px rgba(0,0,0,0.25)',
                         border: '1px solid var(--border-light)'
@@ -374,32 +371,24 @@ const TrainerProfile = () => {
                 </div>
 
                 {badges.length > 0 ? (
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                    <div className="detail-tile-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))' }}>
                         {badges.map((badge, index) => {
                             const badgeName = typeof badge === 'string' ? badge : badge.name;
                             const badgeId = typeof badge === 'string' ? index : badge.id;
                             return (
                                 <div
                                     key={badgeId}
-                                    className="trainer-badge-chip"
-                                    style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '4px',
-                                        padding: '4px 8px',
-                                        borderRadius: '12px',
-                                        fontSize: '12px',
-                                        fontWeight: 'bold',
-                                        boxShadow: '0 2px 4px rgba(0,0,0,0.15)'
-                                    }}
+                                    className="trainer-badge-chip detail-tile-filled"
+                                    style={{ fontSize: '12px', fontWeight: 'bold' }}
                                 >
-                                    <span>🏅</span>
-                                    <span>{badgeName}</span>
                                     <button
                                         onClick={() => handleRemoveBadge(badgeId, badgeName, index)}
-                                        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0 2px', fontSize: '11px', color: 'var(--poke-orange-dark)', opacity: 0.7 }}
+                                        className="detail-tile-remove"
                                         title="Remove badge"
+                                        aria-label={`Remove ${badgeName} badge`}
                                     >✕</button>
+                                    <span style={{ fontSize: '18px' }}>🏅</span>
+                                    <span>{badgeName}</span>
                                 </div>
                             );
                         })}
@@ -448,15 +437,15 @@ const TrainerProfile = () => {
                                 🏆 Contest Ribbons {totalRibbons > 0 && `(${totalRibbons})`}
                             </span>
                         </div>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(72px, 1fr))', gap: '6px' }}>
+                        <div className="detail-tile-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(72px, 1fr))', gap: '6px' }}>
                             {RIBBON_TYPES.map(({ key, icon, label }) => {
                                 const count = ribbons[key] || 0;
                                 return (
-                                    <div key={key} style={{ textAlign: 'center' }}>
-                                        <div style={{ fontSize: '12px', fontWeight: 'bold', color: 'var(--text-muted)', marginBottom: '3px' }}>
+                                    <div key={key} className="detail-tile" style={{ cursor: 'default', padding: '8px 6px' }}>
+                                        <div style={{ fontSize: '12px', fontWeight: 'bold', color: 'var(--text-muted)' }}>
                                             {icon} {label}
                                         </div>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '2px', width: '100%' }}>
                                             <button
                                                 onClick={() => updateRibbon(key, -1)}
                                                 disabled={count === 0}
