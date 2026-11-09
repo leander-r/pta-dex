@@ -229,12 +229,12 @@ export const PokemonProvider = ({ children }) => {
         const currentPoke = currentList.find(p => p.id === pokemonId);
         const lostMoveNames = currentPoke
             ? currentPoke.moves
-                .filter(m =>
+                .filter((m, idx) =>
                     m.source === 'natural' &&
                     m.learnedAtLevel &&
                     m.learnedAtLevel > newLevel &&
                     !(currentPoke.moveHistory || []).some(
-                        h => h.replacedAtLevel === m.learnedAtLevel && h.name === m.name
+                        h => h.replacedAtLevel === m.learnedAtLevel && h.slotIndex === idx
                     )
                 )
                 .map(m => m.name)
@@ -258,7 +258,7 @@ export const PokemonProvider = ({ children }) => {
 
                 const historyIdx = newMoveHistory.findIndex(h =>
                     h.replacedAtLevel === moveToForget.learnedAtLevel &&
-                    h.name === moveToForget.name
+                    h.slotIndex === moveIndex
                 );
 
                 if (historyIdx !== -1) {
