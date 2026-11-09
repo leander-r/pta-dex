@@ -933,7 +933,11 @@ const PokemonCard = ({
                                 border: '2px solid rgba(255,255,255,0.8)',
                                 borderRadius: '6px',
                                 padding: '8px 22px',
-                                color: 'var(--bg-primary)',
+                                // Fixed dark text, not a theme var — this button's own background
+                                // is a fixed near-white pill regardless of page theme, so its text
+                                // must contrast against white specifically. var(--bg-primary) is
+                                // white in light mode too, which made this invisible.
+                                color: '#1a1a1a',
                                 cursor: 'pointer',
                                 fontWeight: 'bold',
                                 fontSize: '14px',

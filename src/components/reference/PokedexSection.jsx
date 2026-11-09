@@ -1217,13 +1217,13 @@ const PokedexSection = () => {
                             onClick={() => { setPage(0); setExpandedId(null); listRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }}
                             disabled={page === 0}
                             aria-label="First page"
-                            style={{ padding: '7px 12px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--bg-secondary)', cursor: page === 0 ? 'not-allowed' : 'pointer', opacity: page === 0 ? 0.4 : 1, fontSize: '12px' }}
+                            style={{ padding: '7px 12px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--bg-secondary)', color: 'var(--text-primary)', cursor: page === 0 ? 'not-allowed' : 'pointer', opacity: page === 0 ? 0.4 : 1, fontSize: '12px' }}
                         >«</button>
                         <button
                             onClick={() => { setPage(p => p - 1); setExpandedId(null); listRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }}
                             disabled={page === 0}
                             aria-label="Previous page"
-                            style={{ padding: '7px 12px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--bg-secondary)', cursor: page === 0 ? 'not-allowed' : 'pointer', opacity: page === 0 ? 0.4 : 1, fontSize: '12px' }}
+                            style={{ padding: '7px 12px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--bg-secondary)', color: 'var(--text-primary)', cursor: page === 0 ? 'not-allowed' : 'pointer', opacity: page === 0 ? 0.4 : 1, fontSize: '12px' }}
                         >‹ Prev</button>
                         <span style={{ fontSize: '12px', color: 'var(--text-muted)', padding: '0 4px' }}>
                             Page {page + 1} of {totalPages}
@@ -1232,13 +1232,13 @@ const PokedexSection = () => {
                             onClick={() => { setPage(p => p + 1); setExpandedId(null); listRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }}
                             disabled={page >= totalPages - 1}
                             aria-label="Next page"
-                            style={{ padding: '7px 12px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--bg-secondary)', cursor: page >= totalPages - 1 ? 'not-allowed' : 'pointer', opacity: page >= totalPages - 1 ? 0.4 : 1, fontSize: '12px' }}
+                            style={{ padding: '7px 12px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--bg-secondary)', color: 'var(--text-primary)', cursor: page >= totalPages - 1 ? 'not-allowed' : 'pointer', opacity: page >= totalPages - 1 ? 0.4 : 1, fontSize: '12px' }}
                         >Next ›</button>
                         <button
                             onClick={() => { setPage(totalPages - 1); setExpandedId(null); listRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }}
                             disabled={page >= totalPages - 1}
                             aria-label="Last page"
-                            style={{ padding: '7px 12px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--bg-secondary)', cursor: page >= totalPages - 1 ? 'not-allowed' : 'pointer', opacity: page >= totalPages - 1 ? 0.4 : 1, fontSize: '12px' }}
+                            style={{ padding: '7px 12px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--bg-secondary)', color: 'var(--text-primary)', cursor: page >= totalPages - 1 ? 'not-allowed' : 'pointer', opacity: page >= totalPages - 1 ? 0.4 : 1, fontSize: '12px' }}
                         >»</button>
                     </div>
                 );
