@@ -88,8 +88,10 @@ const PokemonCard = ({
     // Regional form selection state
     const [showRegionalFormSelect, setShowRegionalFormSelect] = useState(false);
     const [pendingSpeciesData, setPendingSpeciesData] = useState(null);
-    // Info tab — contest section collapsed by default
-    const [showContestSection, setShowContestSection] = useState(false);
+    // Info tab — every section collapsed by default so the tab opens compact;
+    // each section shows a one-line summary in its header when collapsed.
+    const [openInfoSections, setOpenInfoSections] = useState({});
+    const toggleInfoSection = (key) => setOpenInfoSections(prev => ({ ...prev, [key]: !prev[key] }));
     // Skills tab — zero-value skills hidden by default, toggle to reveal
     const [showZeroValueSkills, setShowZeroValueSkills] = useState(false);
     // Stats tab — Breeder Bonus section: collapsed by default, but auto-expanded
@@ -1458,7 +1460,9 @@ const PokemonCard = ({
                         </div>
 
                         {/* Section: Level */}
-                        <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '8px', paddingTop: '12px', borderTop: '1px solid var(--border-light)' }}>Level</div>
+                        <div style={{ paddingTop: '12px', borderTop: '1px solid var(--border-light)' }}>
+                        <InfoSectionHeader label="Level" isOpen={!!openInfoSections.level} onToggle={() => toggleInfoSection('level')} summary={`Lv.${pokemon.level || 1}`} />
+                        {openInfoSections.level && (
                         <div style={{ marginBottom: '15px' }}>
                             <label style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '4px', display: 'block' }}>
                                 Set Level
@@ -1498,9 +1502,18 @@ const PokemonCard = ({
                                 )}
                             </div>
                         </div>
+                        )}
+                        </div>
 
                         {/* Section: EXP & Nature */}
-                        <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '8px', paddingTop: '12px', borderTop: '1px solid var(--border-light)' }}>Experience &amp; Nature</div>
+                        <div style={{ paddingTop: '12px', borderTop: '1px solid var(--border-light)' }}>
+                        <InfoSectionHeader
+                            label="Experience & Nature"
+                            isOpen={!!openInfoSections.expNature}
+                            onToggle={() => toggleInfoSection('expNature')}
+                            summary={`${pokemon.exp || 0} EXP · ${pokemon.nature || 'Hardy'}`}
+                        />
+                        {openInfoSections.expNature && (
                         <div className="pokemon-info-grid">
                             <div>
                                 <label style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '4px', display: 'block' }}>
@@ -1602,9 +1615,18 @@ const PokemonCard = ({
                                 </select>
                             </div>
                         </div>
+                        )}
+                        </div>
 
                         {/* Section: Gender & Origin */}
-                        <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '8px', paddingTop: '10px', borderTop: '1px solid var(--border-light)' }}>Gender &amp; Origin</div>
+                        <div style={{ paddingTop: '10px', borderTop: '1px solid var(--border-light)' }}>
+                        <InfoSectionHeader
+                            label="Gender & Origin"
+                            isOpen={!!openInfoSections.genderOrigin}
+                            onToggle={() => toggleInfoSection('genderOrigin')}
+                            summary={`${pokemon.gender === 'male' ? '♂ Male' : pokemon.gender === 'female' ? '♀ Female' : pokemon.gender === 'genderless' ? 'Genderless' : 'Unknown'} · ${((pokemon.origin || 'caught')).replace(/^./, c => c.toUpperCase())}`}
+                        />
+                        {openInfoSections.genderOrigin && (
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '15px' }}>
                             <div>
                                 <label style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '4px', display: 'block' }}>Gender</label>
@@ -1645,12 +1667,21 @@ const PokemonCard = ({
                                 )}
                             </div>
                         </div>
+                        )}
+                        </div>
 
                         {/* Section: Loyalty */}
-                        <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '8px', paddingTop: '10px', borderTop: '1px solid var(--border-light)' }}>Loyalty</div>
                         {(() => {
                             const currentLoyalty = pokemon.loyalty ?? 1;
                             return (
+                                <div style={{ paddingTop: '10px', borderTop: '1px solid var(--border-light)' }}>
+                                <InfoSectionHeader
+                                    label="Loyalty"
+                                    isOpen={!!openInfoSections.loyalty}
+                                    onToggle={() => toggleInfoSection('loyalty')}
+                                    summary={`${currentLoyalty} — ${LOYALTY_LABELS[currentLoyalty]}`}
+                                />
+                                {openInfoSections.loyalty && (
                                 <div style={{ marginBottom: '15px' }}>
                                     <div style={{ marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                                         <span style={{
@@ -1698,36 +1729,27 @@ const PokemonCard = ({
                                         {currentLoyalty >= 3 && '★ Can use Return. Immune to Snagging.'}
                                     </div>
                                 </div>
+                                )}
+                                </div>
                             );
                         })()}
 
-                        {/* P7: Contest Stats & Ribbons — collapsible, fixed wrapper padding */}
-                        <div style={{ marginBottom: '12px', background: 'var(--bg-light)', border: '1px solid var(--border-light)', borderRadius: '6px', padding: '6px 10px' }}>
-                        <button
-                            onClick={() => setShowContestSection(v => !v)}
-                            style={{
-                                display: 'flex', alignItems: 'center', gap: '6px', width: '100%',
-                                padding: '4px 0', background: 'none', border: 'none', cursor: 'pointer',
-                                fontSize: '12px', fontWeight: 'bold', color: 'var(--text-secondary)',
-                                marginBottom: showContestSection ? '10px' : '0'
-                            }}
-                            aria-expanded={showContestSection}
-                        >
-                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"
-                                style={{ transition: 'transform 0.15s ease', transform: showContestSection ? 'rotate(90deg)' : 'rotate(0deg)' }}
-                                aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
-                            🎭 Contest Stats &amp; Ribbons
-                            {!showContestSection && (() => {
+                        {/* Section: Contest Stats & Ribbons */}
+                        <div style={{ paddingTop: '10px', borderTop: '1px solid var(--border-light)' }}>
+                        <InfoSectionHeader
+                            label="Contest Stats & Ribbons"
+                            isOpen={!!openInfoSections.contest}
+                            onToggle={() => toggleInfoSection('contest')}
+                            summary={(() => {
                                 const contestStats = pokemon.contestStats || {};
                                 const ribbons = pokemon.ribbons || {};
                                 const anyContest = Object.values(contestStats).some(v => v > 0);
-                                const anyRibbons = Object.values(ribbons).some(v => v > 0);
-                                if (!anyContest && !anyRibbons) return <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: 'normal' }}>(none)</span>;
                                 const totalRibbons = Object.values(ribbons).reduce((s, v) => s + (v || 0), 0);
-                                return <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: 'normal' }}>{totalRibbons > 0 ? `${totalRibbons} ribbon${totalRibbons !== 1 ? 's' : ''}` : 'stats set'}</span>;
+                                if (!anyContest && totalRibbons === 0) return '(none)';
+                                return totalRibbons > 0 ? `${totalRibbons} ribbon${totalRibbons !== 1 ? 's' : ''}` : 'stats set';
                             })()}
-                        </button>
-                        {showContestSection && (() => {
+                        />
+                        {openInfoSections.contest && (() => {
                             const CONTEST_STATS = [['cool', '😎'], ['beauty', '💎'], ['cute', '🌸'], ['smart', '🔮'], ['tough', '💪']];
                             const contestStats = pokemon.contestStats || {};
                             return (
@@ -1760,7 +1782,7 @@ const PokemonCard = ({
                         })()}
 
                         {/* Ribbons */}
-                        {showContestSection && (() => {
+                        {openInfoSections.contest && (() => {
                             const RIBBON_TYPES = [['cool', '😎'], ['beauty', '💎'], ['cute', '🌸'], ['smart', '🔮'], ['tough', '💪']];
                             const ribbons = pokemon.ribbons || {};
                             const totalRibbons = Object.values(ribbons).reduce((s, v) => s + (v || 0), 0);
@@ -1799,9 +1821,14 @@ const PokemonCard = ({
                         </div>
 
                         {/* Abilities Section - Up to 3 */}
-                        <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '8px', paddingTop: '10px', borderTop: '1px solid var(--border-light)' }}>
-                            Abilities <span style={{ fontWeight: 'normal', fontSize: '12px', letterSpacing: 0, opacity: 0.7 }}>({(pokemon.abilities || []).length}/3)</span>
-                        </div>
+                        <div style={{ paddingTop: '10px', borderTop: '1px solid var(--border-light)' }}>
+                        <InfoSectionHeader
+                            label={`Abilities (${(pokemon.abilities || []).length}/3)`}
+                            isOpen={!!openInfoSections.abilities}
+                            onToggle={() => toggleInfoSection('abilities')}
+                            summary={(pokemon.abilities || []).length > 0 ? (pokemon.abilities || []).join(', ') : 'None added'}
+                        />
+                        {openInfoSections.abilities && (
                         <div style={{ marginBottom: '15px' }}>
                             {/* Empty state when no abilities selected */}
                             {(pokemon.abilities || []).length === 0 && (
@@ -1951,10 +1978,18 @@ const PokemonCard = ({
                                 </div>
                             )}
                         </div>
-
-                        <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-light)' }}>Held Item</div>
+                        )}
+                        </div>
 
                         {/* Held Item */}
+                        <div style={{ paddingTop: '10px', borderTop: '1px solid var(--border-light)' }}>
+                        <InfoSectionHeader
+                            label="Held Item"
+                            isOpen={!!openInfoSections.heldItem}
+                            onToggle={() => toggleInfoSection('heldItem')}
+                            summary={pokemon.heldItem || 'None'}
+                        />
+                        {openInfoSections.heldItem && (
                         <div style={{ marginBottom: '15px' }}>
                             <div style={{ position: 'relative' }}>
                                 <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
@@ -2032,11 +2067,18 @@ const PokemonCard = ({
                                 )}
                             </div>
                         </div>
+                        )}
+                        </div>
 
                         {/* Pokémon Image */}
-                        <div style={{ borderTop: '1px solid var(--border-light)', marginTop: '10px', paddingTop: '10px', marginBottom: '4px' }}>
-                            <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '8px' }}>Appearance <span style={{ fontWeight: 'normal', fontSize: '13px', letterSpacing: 0, opacity: 0.7 }}>(optional)</span></div>
-                        </div>
+                        <div style={{ paddingTop: '10px', borderTop: '1px solid var(--border-light)' }}>
+                        <InfoSectionHeader
+                            label="Appearance"
+                            isOpen={!!openInfoSections.appearance}
+                            onToggle={() => toggleInfoSection('appearance')}
+                            summary={pokemon.avatar ? 'Custom image set (optional)' : 'Default sprite (optional)'}
+                        />
+                        {openInfoSections.appearance && (
                         <div style={{ marginBottom: '15px' }}>
                             <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
                                 {(() => {
@@ -2141,6 +2183,8 @@ const PokemonCard = ({
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                        )}
                         </div>
 
                         {/* Danger zone */}
@@ -3206,6 +3250,34 @@ const PokemonCard = ({
 
 const LOYALTY_COLORS = ['var(--color-danger-text)', 'var(--poke-orange)', 'var(--loyalty-neutral)', 'var(--color-success-text)', 'var(--poke-blue)'];
 const LOYALTY_LABELS = ['Defiant', 'Wary', 'Neutral', 'Friendly', 'Loyal'];
+
+// Collapsible Info-tab section header: chevron + label, with a one-line
+// summary shown only while collapsed (so the value is still glanceable
+// without expanding).
+const InfoSectionHeader = ({ label, isOpen, onToggle, summary }) => (
+    <button
+        type="button"
+        onClick={onToggle}
+        aria-expanded={isOpen}
+        style={{
+            display: 'flex', alignItems: 'center', gap: '6px', width: '100%',
+            padding: '4px 0', background: 'none', border: 'none', cursor: 'pointer',
+            fontSize: '13px', fontWeight: 700, color: 'var(--text-muted)',
+            textTransform: 'uppercase', letterSpacing: '0.6px',
+            marginBottom: isOpen ? '8px' : '0'
+        }}
+    >
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"
+            style={{ transition: 'transform 0.15s ease', transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)', flexShrink: 0 }}
+            aria-hidden="true"><polyline points="9 18 15 12 9 6" /></svg>
+        <span>{label}</span>
+        {!isOpen && summary && (
+            <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: 'normal', textTransform: 'none', letterSpacing: 'normal' }}>
+                {summary}
+            </span>
+        )}
+    </button>
+);
 
 const quickBtnStyle = {
     width: '28px',

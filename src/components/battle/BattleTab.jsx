@@ -680,6 +680,31 @@ const BattleTab = () => {
                                         );
                                     })()}
 
+                                    {/* Abilities */}
+                                    {(selectedPokemon?.abilities || []).length > 0 && (
+                                        <div className="detail-tile-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(110px, 1fr))', marginBottom: '10px' }}>
+                                            {selectedPokemon.abilities.map((abilityName, idx) => {
+                                                const abilityData = GAME_DATA.abilities?.[abilityName];
+                                                return (
+                                                    <div
+                                                        key={idx}
+                                                        onClick={() => { if (showDetail && abilityData) showDetail('ability', abilityName, abilityData); }}
+                                                        className="detail-tile-filled"
+                                                        style={{
+                                                            background: 'var(--gradient-purple)',
+                                                            color: 'white',
+                                                            fontSize: '12px',
+                                                            cursor: showDetail && abilityData ? 'pointer' : 'default'
+                                                        }}
+                                                        title={abilityData ? 'Click to view ability details' : abilityName}
+                                                    >
+                                                        <span>{abilityName}</span>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    )}
+
                                     {/* Pokémon HP Tracker */}
                                     {selectedPokemon && (() => {
                                         const hp = getPokemonHP(selectedPokemon);
