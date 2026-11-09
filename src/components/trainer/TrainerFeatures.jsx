@@ -612,6 +612,11 @@ const TrainerFeatures = () => {
                                             {data.description.length > 100 ? data.description.substring(0, 100) + '...' : data.description}
                                         </div>
                                     )}
+                                    {data.prerequisites && (
+                                        <div style={{ fontSize: '11px', color: 'var(--poke-orange)', marginTop: '2px', fontWeight: 600 }}>
+                                            Requires: {data.prerequisites}
+                                        </div>
+                                    )}
                                 </div>
                                 <button
                                     onClick={(e) => { e.stopPropagation(); handleAddFeature(name); }}
