@@ -3359,24 +3359,4 @@ function getBaseRelationBlockReason(stat, baseStats, addedStats, delta) {
     return null;
 }
 
-// Returns true if applying `delta` (+1 or -1) to `stat` would violate Base Relation.
-// Base Relation rule: for every pair (A, B) where base(A) > base(B), total(A) must > total(B).
-function wouldViolateBaseRelation(stat, baseStats, addedStats, delta) {
-    const STATS = ['hp', 'atk', 'def', 'satk', 'sdef', 'spd'];
-    const base = baseStats || {};
-    const newAdded = { ...addedStats };
-    newAdded[stat] = (newAdded[stat] || 0) + delta;
-    const totals = {};
-    for (const s of STATS) {
-        totals[s] = (base[s] || 0) + (newAdded[s] || 0);
-    }
-    for (const sA of STATS) {
-        for (const sB of STATS) {
-            if (sA === sB) continue;
-            if ((base[sA] || 0) > (base[sB] || 0) && totals[sA] <= totals[sB]) return true;
-        }
-    }
-    return false;
-}
-
 export default PokemonCard;

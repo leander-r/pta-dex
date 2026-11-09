@@ -682,6 +682,8 @@ const BattleTab = () => {
 
                                     {/* Abilities */}
                                     {(selectedPokemon?.abilities || []).length > 0 && (
+                                      <>
+                                        <div style={{ fontSize: '12px', fontWeight: 'bold', color: 'var(--text-muted)', marginBottom: '4px' }}>Abilities</div>
                                         <div className="detail-tile-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(110px, 1fr))', marginBottom: '10px' }}>
                                             {selectedPokemon.abilities.map((abilityName, idx) => {
                                                 const abilityData = GAME_DATA.abilities?.[abilityName];
@@ -703,6 +705,7 @@ const BattleTab = () => {
                                                 );
                                             })}
                                         </div>
+                                      </>
                                     )}
 
                                     {/* Pokémon HP Tracker */}

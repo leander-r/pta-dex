@@ -4175,12 +4175,14 @@
                 grid-template-columns: 1fr !important;
             }
 
-            /* HP tracker custom amount row: stack input above buttons */
+            /* HP tracker custom amount row: stack input above buttons.
+               !important needed — the input carries an inline flex:1 style that
+               otherwise always wins over this stylesheet rule. */
             .hp-custom-row {
                 flex-wrap: wrap;
             }
             .hp-custom-row input {
-                flex: 1 1 100%;
+                flex: 1 1 100% !important;
             }
             .hp-custom-row .hp-btn {
                 flex: 1;
