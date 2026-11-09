@@ -75,7 +75,10 @@ const PokemonCard = ({
     const [moveTypeFilter, setMoveTypeFilter] = useState('all');
     const [moveCategoryFilter, setMoveCategoryFilter] = useState('all');
     const [moveSourceFilter, setMoveSourceFilter] = useState('all'); // 'all'|'levelup'|'tutor'|'egg'
-    const [showMoveDropdown, setShowMoveDropdown] = useState(true);
+    // Collapsed by default once a Pokémon already has moves (Browse is a lookup
+    // tool at that point, not the main thing to look at); auto-expanded for a
+    // fresh Pokémon with no moves yet, where Browse is the obvious next step.
+    const [showMoveDropdown, setShowMoveDropdown] = useState(() => (pokemon.moves || []).length === 0);
     // Held item selection state
     const [heldItemSearch, setHeldItemSearch] = useState('');
     const [showHeldItemDropdown, setShowHeldItemDropdown] = useState(false);
