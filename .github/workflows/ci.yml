@@ -45,7 +45,19 @@ jobs:
           key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
 
       - name: Install Chromium
-        run: npx playwright install chromium --with-deps
+        timeout-minutes: 8
+        run: |
+          for attempt in 1 2 3; do
+            echo "Attempt $attempt/3: installing Chromium..."
+            if timeout 150 npx playwright install chromium --with-deps; then
+              echo "Chromium install succeeded."
+              exit 0
+            fi
+            echo "Attempt $attempt failed — clearing browser cache (may be corrupt/partial) before retrying."
+            rm -rf ~/.cache/ms-playwright
+          done
+          echo "All 3 attempts to install Chromium failed."
+          exit 1
 
       - name: Run Playwright
         run: npm run test:e2e
