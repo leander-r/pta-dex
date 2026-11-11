@@ -5,8 +5,11 @@
 import React, { useState, useMemo, useRef, useCallback } from 'react';
 import { GAME_DATA } from '../../data/configs.js';
 import { useData, useModal, useTrainerContext, usePokemonContext } from '../../contexts/index.js';
-import { calculatePokemonHP, parseDice, parseHealFormula } from '../../utils/dataUtils.js';
+import { calculatePokemonHP, parseDice, parseHealFormula, parseReviveAmount, parseStatusCure } from '../../utils/dataUtils.js';
+import { STATUS_CONDITIONS } from '../../data/statusConditions.js';
 import toast from '../../utils/toast.js';
+
+const statusLabel = (key) => STATUS_CONDITIONS.find(c => c.key === key)?.label || key;
 
 // Roll a heal formula and return { amount, desc }
 const rollHealFormula = (formula, maxHP) => {
@@ -267,14 +270,17 @@ const InventoryTab = () => {
     const handleUseItem = (itemName) => {
         const invItem = inventory.find(i => i.name.toLowerCase() === itemName.toLowerCase());
         const itemType = (invItem?.type || '').toLowerCase();
-        if (itemType === 'healing' || itemType === 'berry') {
-            const formula = parseHealFormula(invItem?.effect || '');
-            if (formula.type !== 'none') {
+        if (itemType === 'healing' || itemType === 'berry' || itemType === 'status') {
+            const effect = invItem?.effect || '';
+            const hasEffect = parseHealFormula(effect).type !== 'none'
+                || parseReviveAmount(effect) !== null
+                || parseStatusCure(effect) !== null;
+            if (hasEffect) {
                 setHealPanel({ itemName });
                 setHealTargetId('');
                 return;
             }
-            // Status-only item (no HP formula) — consume directly
+            // No recognized effect text — consume directly
         }
         setInventory(prev => {
             const idx = prev.findIndex(item =>
@@ -293,6 +299,18 @@ const InventoryTab = () => {
         });
     };
 
+    const consumeHealItem = (itemName) => {
+        setInventory(prev => {
+            const idx = prev.findIndex(item => item.name.toLowerCase() === itemName.toLowerCase());
+            if (idx === -1) return prev;
+            const currentQty = prev[idx].quantity || 1;
+            if (currentQty <= 1) return prev.filter((_, i) => i !== idx);
+            const newInventory = [...prev];
+            newInventory[idx] = { ...newInventory[idx], quantity: currentQty - 1 };
+            return newInventory;
+        });
+    };
+
     const handleApplyHeal = () => {
         if (!healTargetId) {
             toast.warning('Select a Pokémon first.');
@@ -300,30 +318,69 @@ const InventoryTab = () => {
         }
         const target = party.find(p => String(p.id) === healTargetId);
         if (!target) return;
-        const invItem = inventory.find(i => i.name.toLowerCase() === healPanel.itemName.toLowerCase());
-        const formula = parseHealFormula(invItem?.effect || '');
+        const itemName = healPanel.itemName;
+        const invItem = inventory.find(i => i.name.toLowerCase() === itemName.toLowerCase());
+        const effect = invItem?.effect || '';
         const maxHP = calculatePokemonHP(target);
+        const name = target.name || target.species;
+
+        const reviveHp = parseReviveAmount(effect);
+        if (reviveHp !== null) {
+            const isFainted = maxHP - (target.currentDamage || 0) <= 0;
+            if (!isFainted) {
+                toast.warning(`${name} isn't fainted — ${itemName} wasn't used.`);
+                return;
+            }
+            updatePokemon(target.id, { currentDamage: Math.max(0, maxHP - reviveHp) });
+            consumeHealItem(itemName);
+            toast.success(`${name} revived to ${reviveHp} HP! — ${itemName} used`);
+            setHealPanel(null);
+            setHealTargetId('');
+            return;
+        }
+
+        const statusCure = parseStatusCure(effect);
+        if (statusCure !== null) {
+            const conditions = target.statusConditions || {};
+            const keysToClear = statusCure === 'all'
+                ? Object.keys(conditions).filter(k => conditions[k])
+                : statusCure.filter(k => conditions[k]);
+            if (keysToClear.length === 0) {
+                toast.warning(`${name} doesn't have a status ${itemName} cures.`);
+                return;
+            }
+            const newConditions = { ...conditions };
+            keysToClear.forEach(k => { newConditions[k] = false; });
+            updatePokemon(target.id, { statusConditions: newConditions });
+            consumeHealItem(itemName);
+            const label = keysToClear.map(statusLabel).join(', ');
+            toast.success(`${name} cured of ${label}! — ${itemName} used`);
+            setHealPanel(null);
+            setHealTargetId('');
+            return;
+        }
+
+        const formula = parseHealFormula(effect);
         const { amount, desc } = rollHealFormula(formula, maxHP);
         if (amount === 0 && !desc) {
-            toast.warning(`${healPanel.itemName} has no HP formula — cannot determine heal amount.`);
+            toast.warning(`${itemName} has no HP formula — cannot determine heal amount.`);
             setHealPanel(null);
             setHealTargetId('');
             return;
         }
         const newDamage = Math.max(0, (target.currentDamage || 0) - amount);
         updatePokemon(target.id, { currentDamage: newDamage });
-        const itemName = healPanel.itemName;
         setInventory(prev => {
             const idx = prev.findIndex(item => item.name.toLowerCase() === itemName.toLowerCase());
             if (idx === -1) return prev;
             const currentQty = prev[idx].quantity || 1;
             if (currentQty <= 1) {
-                toast.success(`${target.name || target.species} healed ${amount} HP! (${desc}) — ${itemName} used up`);
+                toast.success(`${name} healed ${amount} HP! (${desc}) — ${itemName} used up`);
                 return prev.filter((_, i) => i !== idx);
             }
             const newInventory = [...prev];
             newInventory[idx] = { ...newInventory[idx], quantity: currentQty - 1 };
-            toast.success(`${target.name || target.species} healed ${amount} HP! (${desc}) — ${currentQty - 1} left`);
+            toast.success(`${name} healed ${amount} HP! (${desc}) — ${currentQty - 1} left`);
             return newInventory;
         });
         setHealPanel(null);
@@ -959,42 +1016,74 @@ const InventoryTab = () => {
                                             )}
                                             {party.length > 0 && (() => {
                                                 const invItem = inventory.find(i => i.name.toLowerCase() === healPanel.itemName.toLowerCase());
-                                                const formula = parseHealFormula(invItem?.effect || '');
-                                                const label = formula.type === 'dice' ? `🎲 ${formula.formula}`
-                                                    : formula.type === 'fraction' ? `📊 ${formula.num}/${formula.denom} Max HP`
-                                                    : '✨ Status';
+                                                const effect = invItem?.effect || '';
+                                                const reviveHp = parseReviveAmount(effect);
+                                                const statusCure = parseStatusCure(effect);
+                                                const formula = parseHealFormula(effect);
+                                                const target = party.find(p => String(p.id) === healTargetId);
+                                                const targetMaxHP = target ? calculatePokemonHP(target) : 0;
+                                                const targetConditions = target?.statusConditions || {};
+
+                                                let label, applyLabel, disabled, disabledReason;
+                                                if (reviveHp !== null) {
+                                                    label = `💫 Revive to ${reviveHp} HP`;
+                                                    applyLabel = 'Apply';
+                                                    const isFainted = target && targetMaxHP - (target.currentDamage || 0) <= 0;
+                                                    disabled = !target || !isFainted;
+                                                    disabledReason = target && !isFainted ? 'Only usable on a fainted Pokémon' : undefined;
+                                                } else if (statusCure !== null) {
+                                                    const applicable = target && (statusCure === 'all'
+                                                        ? Object.values(targetConditions).some(Boolean)
+                                                        : statusCure.some(k => targetConditions[k]));
+                                                    label = statusCure === 'all' ? '✨ Cures any status' : `✨ Cures ${statusCure.map(statusLabel).join('/')}`;
+                                                    applyLabel = 'Apply';
+                                                    disabled = !target || !applicable;
+                                                    disabledReason = target && !applicable ? "Pokémon doesn't have a status this cures" : undefined;
+                                                } else {
+                                                    const healsHP = formula.type === 'dice' || formula.type === 'fraction';
+                                                    label = formula.type === 'dice' ? `🎲 ${formula.formula}`
+                                                        : formula.type === 'fraction' ? `📊 ${formula.num}/${formula.denom} Max HP`
+                                                        : '✨ Status';
+                                                    applyLabel = 'Roll & Apply';
+                                                    const isFullHP = target && (target.currentDamage || 0) <= 0;
+                                                    disabled = !target || (healsHP && isFullHP);
+                                                    disabledReason = target && healsHP && isFullHP ? 'Already at full HP' : undefined;
+                                                }
+
                                                 return (
-                                                    <span style={{
-                                                        padding: '6px 8px',
-                                                        borderRadius: '4px',
-                                                        border: '1px solid var(--border-medium)',
-                                                        background: 'var(--input-bg)',
-                                                        color: 'var(--text-primary)',
-                                                        fontSize: '13px',
-                                                        fontWeight: 'bold',
-                                                        whiteSpace: 'nowrap'
-                                                    }}>
-                                                        {label}
-                                                    </span>
+                                                    <>
+                                                        <span style={{
+                                                            padding: '6px 8px',
+                                                            borderRadius: '4px',
+                                                            border: '1px solid var(--border-medium)',
+                                                            background: 'var(--input-bg)',
+                                                            color: 'var(--text-primary)',
+                                                            fontSize: '13px',
+                                                            fontWeight: 'bold',
+                                                            whiteSpace: 'nowrap'
+                                                        }}>
+                                                            {label}
+                                                        </span>
+                                                        <button
+                                                            onClick={handleApplyHeal}
+                                                            disabled={disabled}
+                                                            title={disabledReason}
+                                                            style={{
+                                                                padding: '6px 12px',
+                                                                background: !disabled ? 'var(--stat-hp)' : 'var(--collapsed-btn-bg)',
+                                                                color: !disabled ? 'white' : 'var(--collapsed-btn-text)',
+                                                                border: 'none',
+                                                                borderRadius: '4px',
+                                                                cursor: !disabled ? 'pointer' : 'not-allowed',
+                                                                fontSize: '12px',
+                                                                fontWeight: 'bold'
+                                                            }}
+                                                        >
+                                                            {applyLabel}
+                                                        </button>
+                                                    </>
                                                 );
                                             })()}
-                                            {party.length > 0 && (
-                                            <button
-                                                onClick={handleApplyHeal}
-                                                style={{
-                                                    padding: '6px 12px',
-                                                    background: 'var(--stat-hp)',
-                                                    color: 'white',
-                                                    border: 'none',
-                                                    borderRadius: '4px',
-                                                    cursor: 'pointer',
-                                                    fontSize: '12px',
-                                                    fontWeight: 'bold'
-                                                }}
-                                            >
-                                                Roll & Apply
-                                            </button>
-                                            )}
                                             <button
                                                 onClick={() => setHealPanel(null)}
                                                 style={{
