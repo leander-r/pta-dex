@@ -31,6 +31,14 @@ jobs:
   e2e:
     name: E2E Tests
     runs-on: ubuntu-24.04
+    # Run inside Playwright's official image instead of `playwright install
+    # --with-deps`: that apt-get call kept failing on a flaky DNS path to
+    # Ubuntu's package mirror (azure.archive.ubuntu.com), repeatedly breaking
+    # this job. The image ships Chromium + all OS deps pre-installed, so no
+    # apt-get happens at all. Tag must match the @playwright/test version in
+    # package-lock.json exactly — bump both together.
+    container:
+      image: mcr.microsoft.com/playwright:v1.65.0-noble
     steps:
       - uses: actions/checkout@v4
 
@@ -41,33 +49,6 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-
-      - name: Cache Playwright browsers
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
-
-      - name: Install Chromium
-        timeout-minutes: 8
-        run: |
-          for attempt in 1 2 3; do
-            echo "Attempt $attempt/3: installing Chromium..."
-            if timeout 150 npx playwright install chromium --with-deps; then
-              echo "Chromium install succeeded."
-              exit 0
-            fi
-            echo "Attempt $attempt failed — cleaning up before retrying."
-            # timeout above sends SIGTERM to a hung apt-get, which can leave its
-            # lock files held by the now-dead process — without this, every
-            # subsequent retry fails instantly on "Could not get lock" instead
-            # of getting a real second shot at the network.
-            sudo pkill -9 -f apt-get || true
-            sudo rm -f /var/lib/apt/lists/lock /var/cache/apt/archives/lock /var/lib/dpkg/lock /var/lib/dpkg/lock-frontend
-            rm -rf ~/.cache/ms-playwright
-          done
-          echo "All 3 attempts to install Chromium failed."
-          exit 1
 
       - name: Run Playwright
         run: npm run test:e2e
