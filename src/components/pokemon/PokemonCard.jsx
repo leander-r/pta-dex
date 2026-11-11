@@ -807,7 +807,8 @@ const PokemonCard = ({
         >
             {/* Header */}
             <div style={{
-                background: `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})`,
+                background: `repeating-linear-gradient(135deg, rgba(255,255,255,0.09) 0px, rgba(255,255,255,0.09) 2px, transparent 2px, transparent 14px), linear-gradient(135deg, ${primaryColor} 0%, ${primaryColor} 45%, ${secondaryColor} 100%)`,
+                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.35), inset 0 -1px 0 rgba(0,0,0,0.1)',
                 padding: '15px',
                 color: headerTextColor,
                 textShadow: headerTextColor === 'white' ? '0 1px 3px rgba(0,0,0,0.5)' : 'none'
