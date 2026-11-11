@@ -57,7 +57,13 @@ jobs:
               echo "Chromium install succeeded."
               exit 0
             fi
-            echo "Attempt $attempt failed — clearing browser cache (may be corrupt/partial) before retrying."
+            echo "Attempt $attempt failed — cleaning up before retrying."
+            # timeout above sends SIGTERM to a hung apt-get, which can leave its
+            # lock files held by the now-dead process — without this, every
+            # subsequent retry fails instantly on "Could not get lock" instead
+            # of getting a real second shot at the network.
+            sudo pkill -9 -f apt-get || true
+            sudo rm -f /var/lib/apt/lists/lock /var/cache/apt/archives/lock /var/lib/dpkg/lock /var/lib/dpkg/lock-frontend
             rm -rf ~/.cache/ms-playwright
           done
           echo "All 3 attempts to install Chromium failed."
