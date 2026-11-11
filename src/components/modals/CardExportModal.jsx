@@ -781,10 +781,10 @@ const TeamPokemonSlot = ({ poke, idx }) => {
         ? `linear-gradient(145deg, ${getTypeColor(primaryType)}cc, ${getTypeColor(secondaryType)}cc)`
         : `linear-gradient(145deg, ${getTypeColor(primaryType)}cc, ${getTypeColor(primaryType)}66)`;
 
-    // All abilities
+    // All abilities — legacy pre-refactor saves store extras in ability2/ability3
     const abilities = poke.abilities && poke.abilities.length > 0
         ? poke.abilities
-        : poke.ability ? [poke.ability] : [];
+        : [poke.ability, poke.ability2, poke.ability3].filter(Boolean);
 
     return (
         <div style={{
@@ -975,6 +975,11 @@ const PokemonCard = ({ poke }) => {
         ? `linear-gradient(145deg, ${getTypeColor(primaryType)} 0%, ${getTypeColor(secondaryType)} 100%)`
         : `linear-gradient(145deg, ${getTypeColor(primaryType)} 0%, ${getTypeColor(primaryType)}bb 100%)`;
 
+    // All abilities — legacy pre-refactor saves store extras in ability2/ability3
+    const abilities = poke.abilities && poke.abilities.length > 0
+        ? poke.abilities
+        : [poke.ability, poke.ability2, poke.ability3].filter(Boolean);
+
     // Build nature display with buff/nerf
     const natureData = poke.nature && GAME_DATA?.natures ? GAME_DATA.natures[poke.nature] : null;
     const natureDisplay = poke.nature ? (
@@ -1108,7 +1113,7 @@ const PokemonCard = ({ poke }) => {
             </div>
 
             {/* Abilities - Prominent glass panel */}
-            {((poke.abilities && poke.abilities.length > 0) || poke.ability) && (
+            {abilities.length > 0 && (
                 <div style={{
                     background: 'rgba(0,0,0,0.2)',
                     borderRadius: '12px',
@@ -1119,31 +1124,18 @@ const PokemonCard = ({ poke }) => {
                     border: '1px solid rgba(255,255,255,0.1)'
                 }}>
                     <SectionHeader label="Abilities" />
-                    {poke.abilities && poke.abilities.length > 0
-                        ? poke.abilities.map((ability, i) => (
-                            <div key={i} style={{
-                                fontSize: '12px',
-                                fontWeight: 600,
-                                padding: '4px 10px',
-                                background: 'rgba(255,255,255,0.08)',
-                                borderRadius: '8px',
-                                marginBottom: i < poke.abilities.length - 1 ? '4px' : 0
-                            }}>
-                                {ability}
-                            </div>
-                        ))
-                        : (
-                            <div style={{
-                                fontSize: '12px',
-                                fontWeight: 600,
-                                padding: '4px 10px',
-                                background: 'rgba(255,255,255,0.08)',
-                                borderRadius: '8px'
-                            }}>
-                                {poke.ability}
-                            </div>
-                        )
-                    }
+                    {abilities.map((ability, i) => (
+                        <div key={i} style={{
+                            fontSize: '12px',
+                            fontWeight: 600,
+                            padding: '4px 10px',
+                            background: 'rgba(255,255,255,0.08)',
+                            borderRadius: '8px',
+                            marginBottom: i < abilities.length - 1 ? '4px' : 0
+                        }}>
+                            {ability}
+                        </div>
+                    ))}
                 </div>
             )}
 

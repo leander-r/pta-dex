@@ -524,6 +524,18 @@ export const DataProvider = ({ children }) => {
                     return skills;
                 };
 
+                // Whether there's anything meaningful to lose if we overwrite current data.
+                // Deliberately NOT gated on trainer name — naming a trainer is optional, so an
+                // unnamed trainer can still have a full party, spent stat points, and inventory.
+                const hasExistingProgress = trainers.some(t =>
+                    (t.party?.length || 0) > 0 ||
+                    (t.reserve?.length || 0) > 0 ||
+                    (t.level || 0) > 0 ||
+                    (t.statPoints ?? 30) < 30 ||
+                    (t.classes?.length || 0) > 0 ||
+                    (t.money || 0) > 0
+                ) || inventory.length > 0;
+
                 if (data.trainers) {
                     const migratedTrainers = data.trainers.map(t => ({
                         ...t,
@@ -545,7 +557,7 @@ export const DataProvider = ({ children }) => {
                         toast.success(`Data imported successfully!\n${migratedTrainers.length} trainer(s), ${totalPokemon} Pokemon, ${inventoryCount} item(s)`);
                     };
 
-                    if (trainers.length > 0 && trainers[0].name) {
+                    if (hasExistingProgress) {
                         showConfirm({
                             title: 'Replace All Data?',
                             message: `This backup file contains ${migratedTrainers.length} trainer(s). Importing it will replace all ${trainers.length} of your current trainer(s), including their Pokémon, inventory, and custom species.\n\nThis cannot be undone. Continue?`,
@@ -609,7 +621,7 @@ export const DataProvider = ({ children }) => {
                     const pokemonCount = (trainerData.party?.length || 0) + (trainerData.reserve?.length || 0);
                     toast.success(`Trainer "${trainerData.name || 'Unnamed'}" imported! (Lv ${trainerData.level || 0}, ${pokemonCount} Pokemon)`);
 
-                    if (trainers.length > 0 && trainers[0].name) {
+                    if (hasExistingProgress) {
                         showConfirm({
                             title: 'Import Trainers',
                             message: `You have existing trainers. How would you like to import "${trainerData.name || 'Imported Trainer'}"?`,
