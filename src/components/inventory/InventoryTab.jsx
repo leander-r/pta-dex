@@ -754,7 +754,7 @@ const InventoryTab = () => {
                         )}
                     </div>
                 ) : (
-                    <div className="detail-tile-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))' }}>
+                    <div className="detail-tile-grid inventory-tile-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))' }}>
                         {filteredInventory.map((item, index) => {
                             const itemType = (item.type || 'misc').toLowerCase();
                             const showHealPanel = healPanel?.itemName === item.name;
