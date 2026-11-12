@@ -3,45 +3,27 @@
 // ============================================================
 // Shared logic for building rich Discord embeds from roll data.
 
-import { DISCORD_COLORS, CONTEST_COLORS_INT } from './discordColors.js';
-import { getOffensiveEffectiveness } from '../data/typeChart.js';
-
-// Pokémon-game-style coloured HP bar using square emoji — unlike the ANSI
-// escape codes this used to rely on, emoji render identically on every
-// Discord client (desktop, mobile, web), so there's no code-block fallback
-// to worry about.
-// Green ≥ 66 %  |  Yellow ≥ 33 %  |  Red > 0 %  |  Empty at 0 %
+// Pokémon-game-style coloured HP bar using Discord's ANSI code block support.
+// Green ≥ 66 %  |  Orange ≥ 33 %  |  Red > 0 %  |  Empty at 0 %
+const ANSI_RESET  = '\u001b[0m';
 const hpBar = (current, max, blocks = 10) => {
     const pct    = max > 0 ? Math.max(0, Math.min(1, current / max)) : 0;
     const filled = Math.round(pct * blocks);
-    const fillEmoji = pct > 0.66 ? '🟩' : pct > 0.33 ? '🟨' : pct > 0 ? '🟥' : '⬛';
-    return `${fillEmoji.repeat(filled)}${'⬛'.repeat(blocks - filled)}`;
+    const color  = pct > 0.66 ? '\u001b[1;32m'   // bright green
+                 : pct > 0.33 ? '\u001b[0;33m'   // yellow-orange
+                 : pct > 0    ? '\u001b[1;31m'   // bright red
+                 :              '';               // no color at 0 HP
+    const reset  = color ? ANSI_RESET : '';
+    return `${color}${'█'.repeat(filled)}${reset}${'░'.repeat(blocks - filled)}`;
 };
 
-// HP bar + "current/max" label, flagging a low-HP warning at/below 25%.
-const hpFieldValue = (current, max) => {
-    const pct = max > 0 ? current / max : 0;
-    const warning = pct > 0 && pct <= 0.25 ? ' ⚠️ Critical!' : '';
-    return `${hpBar(current, max)} ${current}/${max}${warning}`;
-};
+// Wraps an hpBar + "current/max" label in a Discord ANSI code block.
+const hpFieldValue = (current, max) =>
+    `\`\`\`ansi\n${hpBar(current, max)} ${current}/${max}\n\`\`\``;
 
 const STATUS_EMOJI = {
     burned: '🔥', frozen: '🧊', paralyzed: '⚡', poisoned: '☠️',
     asleep: '💤', confused: '💫', flinched: '😵', fainted: '✖️',
-};
-
-// Summarizes a move's offensive type chart as a compact field — turns the
-// "apply type effectiveness yourself" disclaimer into actual usable info.
-const typeMatchupField = (moveType) => {
-    const { superEffective, notVeryEffective, noEffect } = getOffensiveEffectiveness(moveType);
-    if (!superEffective.length && !notVeryEffective.length && !noEffect.length) return null;
-
-    const lines = [];
-    if (superEffective.length)   lines.push(`⬆️ Super: ${superEffective.join(', ')}`);
-    if (notVeryEffective.length) lines.push(`⬇️ Weak: ${notVeryEffective.join(', ')}`);
-    if (noEffect.length)         lines.push(`🚫 No effect: ${noEffect.join(', ')}`);
-
-    return { name: '🧭 Type Matchup', value: lines.join('\n'), inline: true };
 };
 
 export const buildPokemonEmbed = (roll, trainerName) => {
@@ -52,7 +34,7 @@ export const buildPokemonEmbed = (roll, trainerName) => {
     const icon   = miss ? '❌' : crit ? '💥' : roll.isStatus ? '✨' : '⚔️';
     const suffix = crit ? ' — CRITICAL HIT!' : '';
     const title  = `${icon} ${roll.pokemon} used ${roll.move}!${suffix}`;
-    const color  = miss ? DISCORD_COLORS.MISS : crit ? DISCORD_COLORS.CRIT : (roll.typeColor || DISCORD_COLORS.DEFAULT_MOVE);
+    const color  = miss ? 0x95A5A6 : crit ? 0xFF6F00 : (roll.typeColor || 0xF5A623);
 
     // One-line battle summary as description
     const acOverride = roll.acWasOverridden ? ' *(DM)*' : '';
@@ -91,7 +73,7 @@ export const buildPokemonEmbed = (roll, trainerName) => {
         const notation = diceBonus ? `${roll.dice}+${diceBonus}` : roll.dice;
         fields.push({
             name: crit ? '🎲 Damage (Crit — double dice)' : '🎲 Damage',
-            value: `\`${notation}: ${formula} = ${roll.total}\``,
+            value: `${notation}: ${formula} = **${roll.total}**`,
             inline: false,
         });
     }
@@ -141,12 +123,6 @@ export const buildPokemonEmbed = (roll, trainerName) => {
         });
     }
 
-    // Type matchup chart for the move (only meaningful once it's landed/dealt damage)
-    if (hit && roll.dice && roll.moveType) {
-        const matchup = typeMatchupField(roll.moveType);
-        if (matchup) fields.push(matchup);
-    }
-
     // Status conditions
     if (roll.activeStatuses?.length > 0) {
         fields.push({
@@ -181,17 +157,13 @@ export const buildPokemonEmbed = (roll, trainerName) => {
 
     // PHB2's damage steps 3-4 (defender's Defense/Sp.Def, then Weakness/Resistance) aren't
     // applied here — the app doesn't track an opposing Pokémon's stats/types, so this is
-    // still a manual step for whoever's tracking the target. Now that the move's own type
-    // chart is a field above, this just needs to flag the missing Defense step.
+    // still a manual step for whoever's tracking the target.
     if (hit && roll.dice) {
-        embed.footer = { text: "⚠ Before target's Defense" };
+        embed.footer = { text: "Before target's Defense & type effectiveness" };
     }
 
-    // On a crit, promote the sprite from a small thumbnail to a large image so the
-    // moment actually stands out instead of just getting a different title/color.
     if (roll.pokemonSpriteUrl) {
-        if (crit) embed.image = { url: roll.pokemonSpriteUrl };
-        else embed.thumbnail = { url: roll.pokemonSpriteUrl };
+        embed.thumbnail = { url: roll.pokemonSpriteUrl };
     }
 
     return embed;
@@ -221,7 +193,7 @@ export const buildTrainerSkillEmbed = (roll, trainerName) => {
         author: { name: trainerName },
         title: `📚 ${roll.skill} Check`,
         description,
-        color: DISCORD_COLORS.SKILL,
+        color: 0x667EEA,
         fields,
         timestamp: new Date().toISOString(),
     };
@@ -245,7 +217,7 @@ export const buildHealEmbed = (roll, trainerName) => {
         const fullMark  = roll.hpAfter >= roll.hpMax ? ' ✨ Full!' : '';
         fields.push({
             name: `${roll.pokemon} HP`,
-            value: `Before ${barBefore} ${roll.hpBefore}/${roll.hpMax}\nAfter  ${barAfter} ${roll.hpAfter}/${roll.hpMax}${fullMark}`,
+            value: `\`\`\`ansi\nBefore ${barBefore} ${roll.hpBefore}/${roll.hpMax}\nAfter  ${barAfter} ${roll.hpAfter}/${roll.hpMax}${fullMark}\n\`\`\``,
             inline: false,
         });
     }
@@ -254,7 +226,7 @@ export const buildHealEmbed = (roll, trainerName) => {
         author: { name: trainerName },
         title: `🩹 ${roll.pokemon} used ${roll.item}`,
         description,
-        color: DISCORD_COLORS.HEAL,
+        color: 0x4CAF50,
         fields,
         timestamp: new Date().toISOString(),
     };
@@ -271,7 +243,7 @@ export const buildStatusCureEmbed = (roll, trainerName) => {
         author: { name: trainerName },
         title: `✨ ${roll.pokemon} used ${roll.item}`,
         description: `**Cured:** ${roll.cured}`,
-        color: DISCORD_COLORS.STATUS_CURE,
+        color: 0x9C27B0,
         timestamp: new Date().toISOString(),
     };
     if (roll.pokemonSpriteUrl) {
@@ -280,9 +252,11 @@ export const buildStatusCureEmbed = (roll, trainerName) => {
     return embed;
 };
 
+const CONTEST_COLORS_INT = { Cool: 0x2196F3, Beauty: 0xE91E63, Cute: 0xFF9800, Smart: 0x4CAF50, Tough: 0x795548 };
+
 export const buildContestEmbed = (roll, trainerName) => {
     const bonusStr = roll.bonus ? ` ${roll.bonus > 0 ? '+' : ''}${roll.bonus}` : '';
-    const color = CONTEST_COLORS_INT[roll.contestType] || DISCORD_COLORS.SKILL;
+    const color = CONTEST_COLORS_INT[roll.contestType] || 0x667EEA;
     let description = `🎲 [${(roll.rolls || []).join(', ')}]${bonusStr} = **${roll.total}**`;
     if (roll.contestEffect) description += `\n*${roll.contestEffect}*`;
     return {
@@ -297,7 +271,7 @@ export const buildContestEmbed = (roll, trainerName) => {
 
 // Posted by GM after each appeal turn in ContestRunner
 export const buildContestTurnEmbed = ({ contestType, round, participantName, moveName, appeal, judgeIdx, voltageChange, newVoltage, isSameMove, isMaxVoltage, effect }) => {
-    const color = CONTEST_COLORS_INT[contestType] || DISCORD_COLORS.SKILL;
+    const color = CONTEST_COLORS_INT[contestType] || 0x667EEA;
     const CONTEST_ICONS = { Cool: '😎', Beauty: '💎', Cute: '🌸', Smart: '🔮', Tough: '💪' };
     const icon = CONTEST_ICONS[contestType] || '🎭';
 
@@ -330,7 +304,7 @@ export const buildContestTurnEmbed = ({ contestType, round, participantName, mov
 
 // Posted by GM at the end of a contest
 export const buildContestResultsEmbed = ({ contestType, participants, getTotal }) => {
-    const color = CONTEST_COLORS_INT[contestType] || DISCORD_COLORS.SKILL;
+    const color = CONTEST_COLORS_INT[contestType] || 0x667EEA;
     const CONTEST_ICONS = { Cool: '😎', Beauty: '💎', Cute: '🌸', Smart: '🔮', Tough: '💪' };
     const icon = CONTEST_ICONS[contestType] || '🎭';
     const sorted = [...participants].sort((a, b) => getTotal(b) - getTotal(a));
@@ -376,11 +350,11 @@ export const buildTrainerAttackEmbed = (roll, trainerName) => {
         author: { name: trainerName },
         title: `⚔ ${roll.trainer} — ${roll.weapon}`,
         description,
-        color: DISCORD_COLORS.TRAINER_ATTACK,
+        color: 0xE53935,
         fields,
         timestamp: new Date().toISOString(),
     };
-    if (roll.isHit) embed.footer = { text: "⚠ Before target's Defense" };
+    if (roll.isHit) embed.footer = { text: "Before target's Defense & type effectiveness" };
     if (roll.trainerAvatarUrl) embed.thumbnail = { url: roll.trainerAvatarUrl };
     return embed;
 };
@@ -391,7 +365,7 @@ export const buildCustomEmbed = (roll, trainerName) => {
         author: { name: trainerName },
         title: `🎲 Custom Roll: ${roll.dice}`,
         description: `[${roll.rolls.join(', ')}]${bonusStr} = **${roll.total}**`,
-        color: DISCORD_COLORS.CUSTOM,
+        color: 0x95A5A6,
         timestamp: new Date().toISOString(),
     };
 };

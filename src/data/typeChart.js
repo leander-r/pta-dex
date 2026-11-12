@@ -43,28 +43,6 @@ export const getTypeEffectiveness = (type) => {
 };
 
 /**
- * Get offensive type effectiveness: given an attacking type, which defending
- * types does it hit super effectively / not very effectively / not at all.
- * Inverse lookup over the (defender-keyed) TYPE_CHART.
- * @param {string} attackType - The attacking type
- * @returns {Object} - { superEffective: [], notVeryEffective: [], noEffect: [] }
- */
-export const getOffensiveEffectiveness = (attackType) => {
-    const result = { superEffective: [], notVeryEffective: [], noEffect: [] };
-    if (!attackType) return result;
-
-    POKEMON_TYPES.forEach(defendType => {
-        const defense = TYPE_CHART[defendType];
-        if (!defense) return;
-        if (defense.immune.includes(attackType))      result.noEffect.push(defendType);
-        else if (defense.weak.includes(attackType))    result.superEffective.push(defendType);
-        else if (defense.resist.includes(attackType))  result.notVeryEffective.push(defendType);
-    });
-
-    return result;
-};
-
-/**
  * Get combined type effectiveness for dual-types
  * @param {string[]} types - Array of types (1 or 2)
  * @returns {Object} - { superWeak: [], weak: [], resist: [], superResist: [], immune: [] }

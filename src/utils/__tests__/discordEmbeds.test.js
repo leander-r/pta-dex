@@ -111,7 +111,7 @@ describe('buildPokemonEmbed — hit', () => {
         expect(dmgField).toBeTruthy();
         expect(dmgField.value).toContain('14 (stat)');
         expect(dmgField.value).toContain('4 (STAB)');
-        expect(dmgField.value).toContain('= 71');
+        expect(dmgField.value).toContain('= **71**');
     });
 
     it('shows HP bar field', () => {
@@ -120,17 +120,10 @@ describe('buildPokemonEmbed — hit', () => {
         expect(hpField.value).toContain('35/50');
     });
 
-    it('HP bar uses colored square emoji', () => {
+    it('HP bar uses block characters', () => {
         const hpField = embed.fields.find(f => f.name === 'Rowdy HP');
-        expect(hpField.value).toMatch(/🟩|🟨|🟥/);
-        expect(hpField.value).toMatch(/⬛/);
-    });
-
-    it('shows type matchup field', () => {
-        const matchupField = embed.fields.find(f => f.name === '🧭 Type Matchup');
-        expect(matchupField).toBeTruthy();
-        expect(matchupField.value).toContain('Electric');
-        expect(matchupField.value).toContain('Flying');
+        expect(hpField.value).toMatch(/█/);
+        expect(hpField.value).toMatch(/░/);
     });
 
     it('no status field when no active statuses', () => {
@@ -297,7 +290,7 @@ describe('buildTrainerSkillEmbed', () => {
         const hpField = embed.fields.find(f => f.name === 'Trainer HP');
         expect(hpField).toBeTruthy();
         expect(hpField.value).toContain('45/50');
-        expect(hpField.value).toMatch(/🟩|🟨|🟥/);
+        expect(hpField.value).toMatch(/█/);
     });
 });
 

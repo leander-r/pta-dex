@@ -4,7 +4,6 @@
 
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { getTypeColor } from '../../utils/typeUtils.js';
-import { hexToDiscordColor } from '../../utils/discordColors.js';
 import { calculateSTAB, getActualStats, calculatePokemonHP, parseDice, applyCombatStage, parseHealFormula, parseReviveAmount, parseStatusCure, parseCritThreshold, parseACFromFrequency } from '../../utils/dataUtils.js';
 import toast from '../../utils/toast.js';
 import { safeLocalStorageGet, safeLocalStorageSet } from '../../utils/storageUtils.js';
@@ -47,6 +46,10 @@ const BATTLE_FORM_CHANGES = {
         },
     ],
 };
+
+// Convert a CSS hex color string to a Discord integer color
+const hexToDiscordColor = (hex) => parseInt((hex || '#667eea').replace('#', ''), 16);
+
 
 // Collect live battle context to attach to roll entries
 const battleContext = (pokemon, hp, megaEvolved, currentMegaForm) => ({
