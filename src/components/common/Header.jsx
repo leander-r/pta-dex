@@ -9,9 +9,11 @@ import toast from '../../utils/toast.js';
 
 const MenuItem = ({ id, icon, label, onClick, danger, disabled, hoveredItem, setHoveredItem, title }) => (
     <button
+        role="menuitem"
         onClick={onClick}
         disabled={disabled}
         title={title}
+        aria-describedby={disabled && title ? `${id}-reason` : undefined}
         onMouseEnter={() => setHoveredItem(id)}
         onMouseLeave={() => setHoveredItem(null)}
         onTouchStart={() => setHoveredItem(id)}
@@ -45,7 +47,7 @@ const MenuItem = ({ id, icon, label, onClick, danger, disabled, hoveredItem, set
             <span>{label}</span>
             {/* Disabled reason as visible text, not just a title tooltip — invisible on touch devices */}
             {disabled && title && (
-                <span style={{ fontSize: '11px', fontWeight: 400, color: 'var(--text-muted)', whiteSpace: 'normal', lineHeight: 1.3 }}>
+                <span id={`${id}-reason`} style={{ fontSize: '11px', fontWeight: 400, color: 'var(--text-muted)', whiteSpace: 'normal', lineHeight: 1.3 }}>
                     {title}
                 </span>
             )}
@@ -221,9 +223,7 @@ const Header = () => {
 
     return (
         <header style={{
-            background: isScrolled
-                ? 'linear-gradient(135deg, rgba(245, 166, 35, 0.97) 0%, rgba(232, 148, 28, 0.97) 100%)'
-                : 'linear-gradient(135deg, #f5a623 0%, #e8941c 100%)',
+            background: 'linear-gradient(135deg, var(--poke-orange) 0%, var(--poke-orange-dark) 100%)',
             padding: isMobile
                 ? (isScrolled ? '8px 10px' : '10px 12px')
                 : (isScrolled ? '10px 20px' : '14px 20px'),
@@ -236,7 +236,7 @@ const Header = () => {
             position: 'sticky',
             top: 0,
             zIndex: 100,
-            borderBottom: isScrolled ? '2px solid #e8941c' : '3px solid #e8941c',
+            borderBottom: isScrolled ? '2px solid var(--poke-orange-dark)' : '3px solid var(--poke-orange-dark)',
             backdropFilter: isScrolled ? 'blur(10px)' : 'none',
             WebkitBackdropFilter: isScrolled ? 'blur(10px)' : 'none',
             transition: 'all 0.25s ease',
@@ -267,7 +267,7 @@ const Header = () => {
                     <line x1="2" y1="12" x2="8" y2="12" stroke="white" strokeWidth="2.5"/>
                     <line x1="16" y1="12" x2="22" y2="12" stroke="white" strokeWidth="2.5"/>
                 </svg>
-                {!isSmallMobile && <span>PTA Dex</span>}
+                <span>{isSmallMobile ? 'PTA' : 'PTA Dex'}</span>
             </h1>
 
             {/* Right Section */}
@@ -283,6 +283,7 @@ const Header = () => {
                 <div
                     className="header-money-display"
                     title={`₽${(trainer.money || 0).toLocaleString()}`}
+                    aria-label={`₽${(trainer.money || 0).toLocaleString()}`}
                     style={{
                         padding: isMobile ? '5px 8px' : (isScrolled ? '6px 12px' : '8px 16px'),
                         borderRadius: isMobile ? '8px' : '12px',
@@ -293,12 +294,14 @@ const Header = () => {
                         gap: isMobile ? '4px' : '6px',
                         boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
                         transition: 'all 0.25s ease',
-                        // Defensive cap on narrow phones — a large money value with no limit
-                        // here can crowd the trainer selector next to it out of its share of
-                        // the row (flexShrink:0 means this element never gives width back).
-                        flexShrink: isMobile ? 1 : 0,
-                        maxWidth: isMobile ? '90px' : 'none',
-                        minWidth: 0,
+                        // Defensive cap — a large money value with no limit here can crowd
+                        // the trainer selector next to it out of its share of the row.
+                        // Always shrinkable (not just on mobile): at the ~480px boundary
+                        // the three header icon buttons alone leave little slack, so the
+                        // money pill must be willing to give width back there too.
+                        flexShrink: 1,
+                        maxWidth: isMobile ? '90px' : '130px',
+                        minWidth: '36px',
                         overflow: 'hidden'
                     }}
                 >
@@ -317,7 +320,9 @@ const Header = () => {
                         boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
                         transition: 'all 0.25s ease',
                         flexShrink: 1,
-                        minWidth: 0,
+                        // Floor so the trainer name stays legible — the money pill (above)
+                        // shrinks first since it already has a tooltip + full-value label.
+                        minWidth: isMobile ? '60px' : '80px',
                         maxWidth: isMobile ? '150px' : 'none'
                     }}
                 >
@@ -325,6 +330,7 @@ const Header = () => {
                         value={activeTrainerId || ''}
                         onChange={(e) => handleTrainerChange(parseInt(e.target.value, 10))}
                         title={trainer ? `${trainer.name || 'Unnamed'} (Lv.${trainer.level})` : undefined}
+                        aria-label="Select active trainer"
                         className="header-trainer-select"
                         style={{
                             paddingTop: isMobile ? '5px' : (isScrolled ? '6px' : '8px'),
@@ -357,21 +363,81 @@ const Header = () => {
                     </select>
                 </div>
 
+                {/* Theme Toggle Button */}
+                <button
+                    type="button"
+                    onClick={toggleTheme}
+                    className="header-menu-button"
+                    style={{
+                        width: isMobile ? '44px' : (isScrolled ? '40px' : '42px'),
+                        height: isMobile ? '44px' : (isScrolled ? '40px' : '42px'),
+                        borderRadius: isMobile ? '8px' : '12px',
+                        border: 'none',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        transition: 'all 0.25s ease',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                        WebkitTapHighlightColor: 'transparent',
+                        touchAction: 'manipulation',
+                        userSelect: 'none',
+                        WebkitUserSelect: 'none',
+                        flexShrink: 0
+                    }}
+                    title={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
+                    aria-label={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
+                >
+                    {theme === 'light' ? (
+                        <svg
+                            width={isMobile ? "18" : (isScrolled ? "18" : "20")}
+                            height={isMobile ? "18" : (isScrolled ? "18" : "20")}
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="var(--poke-orange)"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            style={{ transition: 'all 0.25s ease', pointerEvents: 'none', display: 'block' }}
+                        >
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                        </svg>
+                    ) : (
+                        <svg
+                            width={isMobile ? "18" : (isScrolled ? "18" : "20")}
+                            height={isMobile ? "18" : (isScrolled ? "18" : "20")}
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="var(--poke-orange)"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            style={{ transition: 'all 0.25s ease', pointerEvents: 'none', display: 'block' }}
+                        >
+                            <circle cx="12" cy="12" r="5"></circle>
+                            <line x1="12" y1="1" x2="12" y2="3"></line>
+                            <line x1="12" y1="21" x2="12" y2="23"></line>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                            <line x1="1" y1="12" x2="3" y2="12"></line>
+                            <line x1="21" y1="12" x2="23" y2="12"></line>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                        </svg>
+                    )}
+                </button>
+
                 {/* Data Menu Button — Save/Load, Export, Import, Backup */}
                 <div style={{ position: 'relative', flexShrink: 0, zIndex: 101 }} ref={dataMenuRef}>
-                    <div
+                    <button
+                        type="button"
                         onClick={() => { setShowDataMenu(prev => !prev); setShowCharacterMenu(false); }}
-                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setShowDataMenu(prev => !prev); setShowCharacterMenu(false); } }}
-                        onTouchEnd={(e) => {
-                            e.preventDefault();
-                            setShowDataMenu(prev => !prev);
-                            setShowCharacterMenu(false);
-                        }}
                         className={`header-menu-button ${showDataMenu ? 'active' : ''}`}
                         style={{
                             width: isMobile ? '44px' : (isScrolled ? '40px' : '42px'),
                             height: isMobile ? '44px' : (isScrolled ? '40px' : '42px'),
                             borderRadius: isMobile ? '8px' : '12px',
+                            border: 'none',
                             cursor: 'pointer',
                             display: 'flex',
                             alignItems: 'center',
@@ -383,9 +449,10 @@ const Header = () => {
                             userSelect: 'none',
                             WebkitUserSelect: 'none'
                         }}
-                        role="button"
-                        tabIndex={0}
+                        title="Data & Export"
                         aria-label="Open data and export menu"
+                        aria-haspopup="true"
+                        aria-controls="data-menu-dropdown"
                         aria-expanded={showDataMenu}
                     >
                         <svg
@@ -403,11 +470,11 @@ const Header = () => {
                             <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
                             <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
                         </svg>
-                    </div>
+                    </button>
 
                     {/* Data Dropdown Menu */}
                     {showDataMenu && (
-                        <div ref={dataDropdownRef} className="header-dropdown-menu" style={{
+                        <div ref={dataDropdownRef} id="data-menu-dropdown" role="menu" className="header-dropdown-menu" style={{
                             position: 'absolute',
                             right: 0,
                             top: 'calc(100% + 8px)',
@@ -542,6 +609,7 @@ const Header = () => {
                                     }}
                                 />
                                 <label
+                                    role="menuitem"
                                     onMouseEnter={() => setHoveredDataItem('import')}
                                     onMouseLeave={() => setHoveredDataItem(null)}
                                     onTouchStart={() => setHoveredDataItem('import')}
@@ -597,19 +665,15 @@ const Header = () => {
 
                 {/* Character Menu Button */}
                 <div style={{ position: 'relative', flexShrink: 0, zIndex: 101 }} ref={menuRef}>
-                    <div
+                    <button
+                        type="button"
                         onClick={() => { setShowCharacterMenu(prev => !prev); setShowDataMenu(false); }}
-                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setShowCharacterMenu(prev => !prev); setShowDataMenu(false); } }}
-                        onTouchEnd={(e) => {
-                            e.preventDefault();
-                            setShowCharacterMenu(prev => !prev);
-                            setShowDataMenu(false);
-                        }}
                         className={`header-menu-button ${showCharacterMenu ? 'active' : ''}`}
                         style={{
                             width: isMobile ? '44px' : (isScrolled ? '40px' : '42px'),
                             height: isMobile ? '44px' : (isScrolled ? '40px' : '42px'),
                             borderRadius: isMobile ? '8px' : '12px',
+                            border: 'none',
                             cursor: 'pointer',
                             display: 'flex',
                             alignItems: 'center',
@@ -621,9 +685,10 @@ const Header = () => {
                             userSelect: 'none',
                             WebkitUserSelect: 'none'
                         }}
-                        role="button"
-                        tabIndex={0}
+                        title="Character Menu"
                         aria-label="Open character menu"
+                        aria-haspopup="true"
+                        aria-controls="character-menu-dropdown"
                         aria-expanded={showCharacterMenu}
                     >
                         <svg
@@ -639,11 +704,11 @@ const Header = () => {
                             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                             <circle cx="12" cy="7" r="4"></circle>
                         </svg>
-                    </div>
+                    </button>
 
                     {/* Dropdown Menu */}
                     {showCharacterMenu && (
-                        <div ref={dropdownRef} className="header-dropdown-menu" style={{
+                        <div ref={dropdownRef} id="character-menu-dropdown" role="menu" className="header-dropdown-menu" style={{
                             position: 'absolute',
                             right: 0,
                             top: 'calc(100% + 8px)',
@@ -708,31 +773,6 @@ const Header = () => {
 
                             {/* Preferences */}
                             <div style={{ padding: '8px 0' }}>
-                                <MenuItem {...menuItemProps}
-                                    id="theme"
-                                    icon={theme === 'light' ? (
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                                        </svg>
-                                    ) : (
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                            <circle cx="12" cy="12" r="5"></circle>
-                                            <line x1="12" y1="1" x2="12" y2="3"></line>
-                                            <line x1="12" y1="21" x2="12" y2="23"></line>
-                                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                                            <line x1="1" y1="12" x2="3" y2="12"></line>
-                                            <line x1="21" y1="12" x2="23" y2="12"></line>
-                                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                                        </svg>
-                                    )}
-                                    label={`Switch to ${theme === 'light' ? 'Dark' : 'Light'} Mode`}
-                                    onClick={() => {
-                                        toggleTheme();
-                                        setShowCharacterMenu(false);
-                                    }}
-                                />
                                 <MenuItem {...menuItemProps}
                                     id="compact"
                                     icon={
@@ -805,6 +845,7 @@ const Header = () => {
                                     <div style={{ padding: '4px 0' }}>
                                         <button
                                             onClick={() => setShowArchivedSection(p => !p)}
+                                            aria-expanded={showArchivedSection}
                                             style={{
                                                 width: '100%',
                                                 padding: '10px 18px',
@@ -839,6 +880,7 @@ const Header = () => {
                                                     {t.name || 'Unnamed'} (Lv.{t.level})
                                                 </span>
                                                 <button
+                                                    role="menuitem"
                                                     onClick={() => {
                                                         unarchiveTrainer(t.id);
                                                         setShowCharacterMenu(false);

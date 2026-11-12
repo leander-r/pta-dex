@@ -93,9 +93,8 @@ test.describe('Trainer tab — fresh state', () => {
         const html = page.locator('html');
         const before = await html.getAttribute('data-theme');
 
-        // Toggle theme
-        await page.locator('[aria-label="Open character menu"]').click();
-        await page.locator('.header-menu-item', { hasText: /mode/i }).click();
+        // Toggle theme via the standalone header button
+        await page.getByRole('button', { name: /switch to (dark|light) mode/i }).click();
 
         const toggled = await html.getAttribute('data-theme');
         expect(toggled).not.toBe(before);

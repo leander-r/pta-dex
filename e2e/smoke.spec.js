@@ -65,15 +65,14 @@ test('theme toggle switches between light and dark', async ({ page }) => {
     const html         = page.locator('html');
     const initialTheme = await html.getAttribute('data-theme');
 
-    // Theme toggle is inside the Character menu
-    await page.locator('[aria-label="Open character menu"]').click();
-    await page.locator('.header-menu-item', { hasText: /mode/i }).click();
+    // Theme toggle is a standalone header button
+    const themeButton = page.getByRole('button', { name: /switch to (dark|light) mode/i });
+    await themeButton.click();
 
     const newTheme = await html.getAttribute('data-theme');
     expect(newTheme).not.toBe(initialTheme);
 
     // Toggle back
-    await page.locator('[aria-label="Open character menu"]').click();
-    await page.locator('.header-menu-item', { hasText: /mode/i }).click();
+    await themeButton.click();
     await expect(html).toHaveAttribute('data-theme', initialTheme);
 });
