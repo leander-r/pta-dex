@@ -1,5 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { buildEmbed, buildPokemonEmbed, buildTrainerSkillEmbed, buildHealEmbed, buildCustomEmbed } from '../discordEmbeds.js';
+import {
+    buildEmbed, buildPokemonEmbed, buildTrainerSkillEmbed, buildHealEmbed, buildCustomEmbed,
+    buildStatusCureEmbed, buildContestEmbed, buildContestTurnEmbed, buildContestResultsEmbed,
+    buildTrainerAttackEmbed,
+} from '../discordEmbeds.js';
 
 // ── Shared roll fixtures ──────────────────────────────────────
 
@@ -86,16 +90,12 @@ describe('buildPokemonEmbed — hit', () => {
         expect(embed.title).toContain('High Horsepower');
     });
 
-    it('title has hit icon', () => {
-        expect(embed.title).toMatch(/^⚔️/);
-    });
-
     it('uses type color', () => {
         expect(embed.color).toBe(0xE2BF65);
     });
 
     it('description shows hit accuracy and type', () => {
-        expect(embed.description).toContain('✅ Hit');
+        expect(embed.description).toContain('Hit');
         expect(embed.description).toContain('6');
         expect(embed.description).toContain('AC 2');
         expect(embed.description).toContain('Ground');
@@ -120,14 +120,14 @@ describe('buildPokemonEmbed — hit', () => {
         expect(hpField.value).toContain('35/50');
     });
 
-    it('HP bar uses colored square emoji', () => {
+    it('HP bar uses monospace block characters', () => {
         const hpField = embed.fields.find(f => f.name === 'Rowdy HP');
-        expect(hpField.value).toMatch(/🟩|🟨|🟥/);
-        expect(hpField.value).toMatch(/⬛/);
+        expect(hpField.value).toMatch(/█/);
+        expect(hpField.value).toMatch(/░/);
     });
 
     it('shows type matchup field', () => {
-        const matchupField = embed.fields.find(f => f.name === '🧭 Type Matchup');
+        const matchupField = embed.fields.find(f => f.name === 'Type Matchup');
         expect(matchupField).toBeTruthy();
         expect(matchupField.value).toContain('Electric');
         expect(matchupField.value).toContain('Flying');
@@ -160,17 +160,20 @@ describe('buildPokemonEmbed — with sprite URL', () => {
         expect(embed.thumbnail).toBeDefined();
         expect(embed.thumbnail.url).toBe('https://example.com/1.png');
     });
+
+    // DataContext.sendToDiscord strips this thumbnail + the HP field only after a
+    // composed battle-screen image successfully renders — buildPokemonEmbed itself
+    // must always produce both, as the complete fallback when that image fails.
+    it('still includes the HP field alongside the thumbnail (fallback contract)', () => {
+        expect(embed.fields.find(f => f.name === 'Rowdy HP')).toBeTruthy();
+    });
 });
 
 describe('buildPokemonEmbed — miss', () => {
     const embed = buildPokemonEmbed(BASE_POKEMON_MISS, 'Ash');
 
-    it('title has miss icon', () => {
-        expect(embed.title).toMatch(/^❌/);
-    });
-
     it('description shows miss', () => {
-        expect(embed.description).toContain('✗ Miss');
+        expect(embed.description).toContain('Miss');
     });
 
     it('uses gray color', () => {
@@ -189,8 +192,7 @@ describe('buildPokemonEmbed — miss', () => {
 describe('buildPokemonEmbed — crit', () => {
     const embed = buildPokemonEmbed(BASE_POKEMON_CRIT, 'Ash');
 
-    it('title has crit icon and suffix', () => {
-        expect(embed.title).toMatch(/^💥/);
+    it('title has crit suffix', () => {
         expect(embed.title).toContain('CRITICAL HIT');
     });
 
@@ -212,10 +214,6 @@ describe('buildPokemonEmbed — status move hit', () => {
     const roll  = { ...BASE_POKEMON_HIT, isStatus: true, dice: null, rolls: [], diceTotal: 0, statBonus: 0, stabBonus: 0, total: 0 };
     const embed = buildPokemonEmbed(roll, 'Ash');
 
-    it('title has status icon', () => {
-        expect(embed.title).toMatch(/^✨/);
-    });
-
     it('description shows effect applies', () => {
         expect(embed.description).toContain('applies');
     });
@@ -232,8 +230,8 @@ describe('buildPokemonEmbed — with active statuses', () => {
     it('shows status field', () => {
         const sf = embed.fields.find(f => f.name === 'Status');
         expect(sf).toBeTruthy();
-        expect(sf.value).toContain('burned');
-        expect(sf.value).toContain('paralyzed');
+        expect(sf.value).toContain('Burned');
+        expect(sf.value).toContain('Paralyzed');
     });
 });
 
@@ -297,7 +295,7 @@ describe('buildTrainerSkillEmbed', () => {
         const hpField = embed.fields.find(f => f.name === 'Trainer HP');
         expect(hpField).toBeTruthy();
         expect(hpField.value).toContain('45/50');
-        expect(hpField.value).toMatch(/🟩|🟨|🟥/);
+        expect(hpField.value).toMatch(/█/);
     });
 });
 
@@ -371,5 +369,62 @@ describe('buildCustomEmbed', () => {
     it('no bonus in description when bonus is 0', () => {
         const e = buildCustomEmbed({ ...BASE_CUSTOM, bonus: 0 }, 'Ash');
         expect(e.description).not.toContain('+');
+    });
+});
+
+// ── No-emoji regression guard ─────────────────────────────────
+// Encodes the actual goal: embed text should read like plain battle-style
+// copy (what the games themselves print), not emoji-decorated UI chrome.
+
+describe('build*Embed — no decorative emoji', () => {
+    // Deliberately excludes plain arrow/dash/dot punctuation (e.g. '→', '—', '·') that
+    // the embeds use legitimately as text separators, not as emoji decoration.
+    const EMOJI_RANGE = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}]/u;
+
+    const BASE_STATUS_CURE = { type: 'status_cure', pokemon: 'Rowdy', item: 'Antidote', cured: 'Poisoned' };
+
+    const BASE_CONTEST = {
+        type: 'contest', pokemon: 'Rowdy', moveName: 'Tail Whip', contestType: 'Cute',
+        rolls: [4, 5], bonus: 2, total: 11, contestDice: '2d6', contestEffect: 'Crowd cheers!',
+    };
+
+    const BASE_CONTEST_TURN = {
+        contestType: 'Cool', round: 2, participantName: 'Rowdy', moveName: 'Flamethrower',
+        appeal: 7, judgeIdx: 0, voltageChange: 1, newVoltage: 3, isSameMove: false, isMaxVoltage: false, effect: 'Nice!',
+    };
+
+    const BASE_CONTEST_RESULTS = {
+        contestType: 'Smart',
+        participants: [
+            { name: 'Rowdy', rounds: [{ appeal: 7 }, { appeal: 8 }] },
+            { name: 'Sparky', rounds: [{ appeal: 5 }, { appeal: 6 }] },
+        ],
+        getTotal: (p) => p.rounds.reduce((sum, r) => sum + r.appeal, 0),
+    };
+
+    const BASE_TRAINER_ATTACK = {
+        type: 'trainer_attack', trainer: 'Ash', weapon: 'Poké Ball', weaponSource: 'thrown', db: 2,
+        dice: '2d8+6', rolls: [5, 6], diceTotal: 11, diceBonus: 6, statMod: 2, statModLabel: 'ATK',
+        isHit: true, isCrit: false, accRoll: 15, weaponAC: 10, total: 19,
+        trainerCurrentHP: 40, trainerMaxHP: 50,
+    };
+
+    const fixtures = [
+        ['buildPokemonEmbed (hit)', buildPokemonEmbed(BASE_POKEMON_HIT, 'Ash')],
+        ['buildPokemonEmbed (miss)', buildPokemonEmbed(BASE_POKEMON_MISS, 'Ash')],
+        ['buildPokemonEmbed (crit)', buildPokemonEmbed(BASE_POKEMON_CRIT, 'Ash')],
+        ['buildPokemonEmbed (with status)', buildPokemonEmbed({ ...BASE_POKEMON_HIT, activeStatuses: ['burned', 'badlyPoisoned'] }, 'Ash')],
+        ['buildTrainerSkillEmbed', buildTrainerSkillEmbed(BASE_TRAINER_SKILL, 'Ash')],
+        ['buildHealEmbed', buildHealEmbed(BASE_HEAL, 'Ash')],
+        ['buildStatusCureEmbed', buildStatusCureEmbed(BASE_STATUS_CURE, 'Ash')],
+        ['buildCustomEmbed', buildCustomEmbed(BASE_CUSTOM, 'Ash')],
+        ['buildContestEmbed', buildContestEmbed(BASE_CONTEST, 'Ash')],
+        ['buildContestTurnEmbed', buildContestTurnEmbed(BASE_CONTEST_TURN)],
+        ['buildContestResultsEmbed', buildContestResultsEmbed(BASE_CONTEST_RESULTS)],
+        ['buildTrainerAttackEmbed', buildTrainerAttackEmbed(BASE_TRAINER_ATTACK, 'Ash')],
+    ];
+
+    it.each(fixtures)('%s contains no emoji characters', (_name, embed) => {
+        expect(JSON.stringify(embed)).not.toMatch(EMOJI_RANGE);
     });
 });

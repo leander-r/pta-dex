@@ -3,6 +3,7 @@
 // ============================================================
 
 import { getActualStats, calculatePokemonHP } from './dataUtils.js';
+import { fetchPokemonSpriteAsDataURL } from './imageLoad.js';
 import toast from './toast.js';
 
 
@@ -57,27 +58,6 @@ export const downloadCardAsImage = async (cardId, filename) => {
 };
 
 /**
- * Fetch a cross-origin image as a data URL using the Fetch API.
- * fetch() with cache:'no-store' bypasses any cached non-CORS response.
- * Resolves to null if the request fails (e.g. server blocks CORS).
- */
-const imgToDataURL = async (src) => {
-    try {
-        const resp = await fetch(src, { mode: 'cors', cache: 'no-store' });
-        if (!resp.ok) return null;
-        const blob = await resp.blob();
-        return await new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.onload  = (e) => resolve(e.target.result);
-            reader.onerror = ()  => resolve(null);
-            reader.readAsDataURL(blob);
-        });
-    } catch {
-        return null; // CORS blocked or network error
-    }
-};
-
-/**
  * Helper function to capture card as image
  */
 const captureCard = async (card, filename) => {
@@ -89,23 +69,7 @@ const captureCard = async (card, filename) => {
 
     const swapped = [];
     await Promise.all(externalImgs.map(async (img) => {
-        let dataUrl = await imgToDataURL(img.src);
-        if (!dataUrl) {
-            // Pokémon Showdown CDN has no CORS headers.
-            // Extract the species slug from the Showdown URL and look up the sprite
-            // via the PokeAPI REST endpoint (by name, so IDs never mismatch).
-            const slug = img.src.match(/play\.pokemonshowdown\.com\/sprites\/gen5\/([^.]+)\.png/)?.[1];
-            if (slug) {
-                try {
-                    const apiResp = await fetch(`https://pokeapi.co/api/v2/pokemon/${slug}`, { cache: 'no-store' });
-                    if (apiResp.ok) {
-                        const apiData = await apiResp.json();
-                        const spriteSrc = apiData.sprites?.front_default;
-                        if (spriteSrc) dataUrl = await imgToDataURL(spriteSrc);
-                    }
-                } catch { /* ignore — custom/homebrew species won't be in PokeAPI */ }
-            }
-        }
+        const dataUrl = await fetchPokemonSpriteAsDataURL(img.src);
         if (dataUrl) {
             swapped.push({ img, original: img.src });
             img.src = dataUrl;
