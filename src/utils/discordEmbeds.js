@@ -5,24 +5,29 @@
 
 import { DISCORD_COLORS, CONTEST_COLORS_INT } from './discordColors.js';
 import { getOffensiveEffectiveness } from '../data/typeChart.js';
-import { STATUS_META } from './statusMeta.js';
 
-// Plain monospace block-character HP bar — renders identically on every Discord
-// client without relying on emoji for the visual. Used by every embed that still
-// shows a text HP line (the flagship Pokémon move-roll embed gets a composed
-// battle-screen image instead — see DataContext.sendToDiscord).
+// Pokémon-game-style coloured HP bar using square emoji — unlike the ANSI
+// escape codes this used to rely on, emoji render identically on every
+// Discord client (desktop, mobile, web), so there's no code-block fallback
+// to worry about.
 // Green ≥ 66 %  |  Yellow ≥ 33 %  |  Red > 0 %  |  Empty at 0 %
 const hpBar = (current, max, blocks = 10) => {
     const pct    = max > 0 ? Math.max(0, Math.min(1, current / max)) : 0;
     const filled = Math.round(pct * blocks);
-    return `\`${'█'.repeat(filled)}${'░'.repeat(blocks - filled)}\``;
+    const fillEmoji = pct > 0.66 ? '🟩' : pct > 0.33 ? '🟨' : pct > 0 ? '🟥' : '⬛';
+    return `${fillEmoji.repeat(filled)}${'⬛'.repeat(blocks - filled)}`;
 };
 
 // HP bar + "current/max" label, flagging a low-HP warning at/below 25%.
 const hpFieldValue = (current, max) => {
     const pct = max > 0 ? current / max : 0;
-    const warning = pct > 0 && pct <= 0.25 ? ' (Critical!)' : '';
+    const warning = pct > 0 && pct <= 0.25 ? ' ⚠️ Critical!' : '';
     return `${hpBar(current, max)} ${current}/${max}${warning}`;
+};
+
+const STATUS_EMOJI = {
+    burned: '🔥', frozen: '🧊', paralyzed: '⚡', poisoned: '☠️',
+    asleep: '💤', confused: '💫', flinched: '😵', fainted: '✖️',
 };
 
 // Summarizes a move's offensive type chart as a compact field — turns the
@@ -32,11 +37,11 @@ const typeMatchupField = (moveType) => {
     if (!superEffective.length && !notVeryEffective.length && !noEffect.length) return null;
 
     const lines = [];
-    if (superEffective.length)   lines.push(`Super effective: ${superEffective.join(', ')}`);
-    if (notVeryEffective.length) lines.push(`Not very effective: ${notVeryEffective.join(', ')}`);
-    if (noEffect.length)         lines.push(`No effect: ${noEffect.join(', ')}`);
+    if (superEffective.length)   lines.push(`⬆️ Super: ${superEffective.join(', ')}`);
+    if (notVeryEffective.length) lines.push(`⬇️ Weak: ${notVeryEffective.join(', ')}`);
+    if (noEffect.length)         lines.push(`🚫 No effect: ${noEffect.join(', ')}`);
 
-    return { name: 'Type Matchup', value: lines.join('\n'), inline: true };
+    return { name: '🧭 Type Matchup', value: lines.join('\n'), inline: true };
 };
 
 export const buildPokemonEmbed = (roll, trainerName) => {
@@ -44,8 +49,9 @@ export const buildPokemonEmbed = (roll, trainerName) => {
     const crit = roll.isCrit;
     const miss = !hit;
 
+    const icon   = miss ? '❌' : crit ? '💥' : roll.isStatus ? '✨' : '⚔️';
     const suffix = crit ? ' — CRITICAL HIT!' : '';
-    const title  = `${roll.pokemon} used ${roll.move}!${suffix}`;
+    const title  = `${icon} ${roll.pokemon} used ${roll.move}!${suffix}`;
     const color  = miss ? DISCORD_COLORS.MISS : crit ? DISCORD_COLORS.CRIT : (roll.typeColor || DISCORD_COLORS.DEFAULT_MOVE);
 
     // One-line battle summary as description
@@ -62,14 +68,14 @@ export const buildPokemonEmbed = (roll, trainerName) => {
     let description;
     if (crit) {
         const dmgStr = roll.total ? ` · **${roll.total} damage**` : '';
-        description = `${critLabel} vs AC ${roll.moveAC}${acOverride} · ${typeStr}${dmgStr}`;
+        description = `🎯 ${critLabel} vs AC ${roll.moveAC}${acOverride} · ${typeStr}${dmgStr}`;
     } else if (roll.isStatus) {
-        description = `${hit ? 'Hit' : 'Miss'} · Roll ${roll.accRoll}${modStr} vs AC ${roll.moveAC}${acOverride} · ${typeStr} · ${hit ? 'Effect applies!' : 'No effect'}`;
+        description = `${hit ? '✅ Hit' : '✗ Miss'} · Roll ${roll.accRoll}${modStr} vs AC ${roll.moveAC}${acOverride} · ${typeStr} · ${hit ? 'Effect applies!' : 'No effect'}`;
     } else if (miss) {
-        description = `Miss · Roll ${roll.accRoll}${modStr} vs AC ${roll.moveAC}${acOverride} · ${typeStr}`;
+        description = `✗ Miss · Roll ${roll.accRoll}${modStr} vs AC ${roll.moveAC}${acOverride} · ${typeStr}`;
     } else {
         const dmgStr = roll.total ? ` · **${roll.total} damage**` : '';
-        description = `Hit · Roll ${roll.accRoll}${modStr} vs AC ${roll.moveAC}${acOverride} · ${typeStr}${dmgStr}`;
+        description = `✅ Hit · Roll ${roll.accRoll}${modStr} vs AC ${roll.moveAC}${acOverride} · ${typeStr}${dmgStr}`;
     }
 
     const fields = [];
@@ -84,7 +90,7 @@ export const buildPokemonEmbed = (roll, trainerName) => {
         const formula = parts.join(' + ');
         const notation = diceBonus ? `${roll.dice}+${diceBonus}` : roll.dice;
         fields.push({
-            name: crit ? 'Damage (Crit — double dice)' : 'Damage',
+            name: crit ? '🎲 Damage (Crit — double dice)' : '🎲 Damage',
             value: `\`${notation}: ${formula} = ${roll.total}\``,
             inline: false,
         });
@@ -92,17 +98,17 @@ export const buildPokemonEmbed = (roll, trainerName) => {
 
     // Effect field for status-category moves that also deal damage
     if (hit && roll.category === 'Status' && roll.dice) {
-        fields.push({ name: 'Effect', value: 'Applies!', inline: true });
+        fields.push({ name: '✨ Effect', value: 'Applies!', inline: true });
     }
 
     // Move's rules text — same "Target / Effect" + "Description" split shown in the app's
     // own move-detail popup (DetailModal.jsx), so Discord readers get the same info without
     // needing to alt-tab back to the app to see what the move actually does.
     if (roll.moveEffect) {
-        fields.push({ name: 'Target / Effect', value: roll.moveEffect, inline: false });
+        fields.push({ name: '🎯 Target / Effect', value: roll.moveEffect, inline: false });
     }
     if (roll.moveDescription) {
-        fields.push({ name: 'Description', value: roll.moveDescription, inline: false });
+        fields.push({ name: '📖 Description', value: roll.moveDescription, inline: false });
     }
 
     // Active combat stages relevant to this roll (non-zero only)
@@ -123,7 +129,7 @@ export const buildPokemonEmbed = (roll, trainerName) => {
             }
             return `**${label}** ${sign}${ordinal(abs)} Combat Stage = ${base} ${bonusSign} ${bonusAbs} = **${boosted}**`;
         }).join('\n');
-        fields.push({ name: 'Combat Stages', value: stageStr, inline: false });
+        fields.push({ name: '📊 Combat Stages', value: stageStr, inline: false });
     }
 
     // Attacker HP bar
@@ -145,7 +151,7 @@ export const buildPokemonEmbed = (roll, trainerName) => {
     if (roll.activeStatuses?.length > 0) {
         fields.push({
             name: 'Status',
-            value: roll.activeStatuses.map(s => STATUS_META[s]?.label || s).join(', '),
+            value: roll.activeStatuses.map(s => `${STATUS_EMOJI[s] || '•'} ${s}`).join('  '),
             inline: true,
         });
     }
@@ -153,7 +159,7 @@ export const buildPokemonEmbed = (roll, trainerName) => {
     // Status penalties (burn/poison/paralysis stat modifiers)
     if (roll.statusPenalties?.length > 0) {
         fields.push({
-            name: 'Status Penalties',
+            name: '⚠️ Status Penalties',
             value: roll.statusPenalties.map(p => `**${p.status}**: ${p.penalty}`).join('\n'),
             inline: true,
         });
@@ -178,15 +184,14 @@ export const buildPokemonEmbed = (roll, trainerName) => {
     // still a manual step for whoever's tracking the target. Now that the move's own type
     // chart is a field above, this just needs to flag the missing Defense step.
     if (hit && roll.dice) {
-        embed.footer = { text: "Before target's Defense" };
+        embed.footer = { text: "⚠ Before target's Defense" };
     }
 
-    // Synchronous fallback — always set, even though DataContext.sendToDiscord
-    // normally replaces this with a composed battle-screen image (and strips this
-    // thumbnail + the HP field above) once that async render succeeds. If the
-    // image composition fails or isn't applicable, this keeps the embed complete.
+    // On a crit, promote the sprite from a small thumbnail to a large image so the
+    // moment actually stands out instead of just getting a different title/color.
     if (roll.pokemonSpriteUrl) {
-        embed.thumbnail = { url: roll.pokemonSpriteUrl };
+        if (crit) embed.image = { url: roll.pokemonSpriteUrl };
+        else embed.thumbnail = { url: roll.pokemonSpriteUrl };
     }
 
     return embed;
@@ -214,7 +219,7 @@ export const buildTrainerSkillEmbed = (roll, trainerName) => {
 
     const embed = {
         author: { name: trainerName },
-        title: `${roll.skill} Check`,
+        title: `📚 ${roll.skill} Check`,
         description,
         color: DISCORD_COLORS.SKILL,
         fields,
@@ -237,7 +242,7 @@ export const buildHealEmbed = (roll, trainerName) => {
     if (roll.hpMax > 0) {
         const barBefore = hpBar(roll.hpBefore ?? roll.hpAfter, roll.hpMax);
         const barAfter  = hpBar(roll.hpAfter  ?? roll.hpBefore, roll.hpMax);
-        const fullMark  = roll.hpAfter >= roll.hpMax ? ' (Full HP!)' : '';
+        const fullMark  = roll.hpAfter >= roll.hpMax ? ' ✨ Full!' : '';
         fields.push({
             name: `${roll.pokemon} HP`,
             value: `Before ${barBefore} ${roll.hpBefore}/${roll.hpMax}\nAfter  ${barAfter} ${roll.hpAfter}/${roll.hpMax}${fullMark}`,
@@ -247,7 +252,7 @@ export const buildHealEmbed = (roll, trainerName) => {
 
     const embed = {
         author: { name: trainerName },
-        title: `${roll.pokemon} used ${roll.item}!`,
+        title: `🩹 ${roll.pokemon} used ${roll.item}`,
         description,
         color: DISCORD_COLORS.HEAL,
         fields,
@@ -264,7 +269,7 @@ export const buildHealEmbed = (roll, trainerName) => {
 export const buildStatusCureEmbed = (roll, trainerName) => {
     const embed = {
         author: { name: trainerName },
-        title: `${roll.pokemon} used ${roll.item}!`,
+        title: `✨ ${roll.pokemon} used ${roll.item}`,
         description: `**Cured:** ${roll.cured}`,
         color: DISCORD_COLORS.STATUS_CURE,
         timestamp: new Date().toISOString(),
@@ -278,11 +283,11 @@ export const buildStatusCureEmbed = (roll, trainerName) => {
 export const buildContestEmbed = (roll, trainerName) => {
     const bonusStr = roll.bonus ? ` ${roll.bonus > 0 ? '+' : ''}${roll.bonus}` : '';
     const color = CONTEST_COLORS_INT[roll.contestType] || DISCORD_COLORS.SKILL;
-    let description = `[${(roll.rolls || []).join(', ')}]${bonusStr} = **${roll.total}**`;
+    let description = `🎲 [${(roll.rolls || []).join(', ')}]${bonusStr} = **${roll.total}**`;
     if (roll.contestEffect) description += `\n*${roll.contestEffect}*`;
     return {
         author: { name: trainerName },
-        title: `${roll.pokemon} — ${roll.moveName}`,
+        title: `🎭 ${roll.pokemon} — ${roll.moveName}`,
         description,
         color,
         footer: roll.contestType ? { text: `${roll.contestType} Appeal · ${roll.contestDice}` } : undefined,
@@ -293,6 +298,8 @@ export const buildContestEmbed = (roll, trainerName) => {
 // Posted by GM after each appeal turn in ContestRunner
 export const buildContestTurnEmbed = ({ contestType, round, participantName, moveName, appeal, judgeIdx, voltageChange, newVoltage, isSameMove, isMaxVoltage, effect }) => {
     const color = CONTEST_COLORS_INT[contestType] || DISCORD_COLORS.SKILL;
+    const CONTEST_ICONS = { Cool: '😎', Beauty: '💎', Cute: '🌸', Smart: '🔮', Tough: '💪' };
+    const icon = CONTEST_ICONS[contestType] || '🎭';
 
     let description;
     if (isSameMove) {
@@ -305,14 +312,14 @@ export const buildContestTurnEmbed = ({ contestType, round, participantName, mov
     const fields = [];
     if (judgeIdx != null) {
         let judgeVal = `Judge ${judgeIdx + 1} · Voltage now **${newVoltage}**`;
-        if (voltageChange > 0) judgeVal += ' (voltage up)';
-        if (voltageChange < 0) judgeVal += ' (voltage down)';
-        if (isMaxVoltage) judgeVal += ' MAX VOLTAGE!';
+        if (voltageChange > 0) judgeVal += ' ⚡▲';
+        if (voltageChange < 0) judgeVal += ' ⚡▼';
+        if (isMaxVoltage) judgeVal += ' 🔥 MAX VOLTAGE!';
         fields.push({ name: 'Judge', value: judgeVal, inline: true });
     }
 
     return {
-        title: `Round ${round} Appeal`,
+        title: `${icon} Round ${round} Appeal`,
         description,
         color,
         fields,
@@ -324,19 +331,22 @@ export const buildContestTurnEmbed = ({ contestType, round, participantName, mov
 // Posted by GM at the end of a contest
 export const buildContestResultsEmbed = ({ contestType, participants, getTotal }) => {
     const color = CONTEST_COLORS_INT[contestType] || DISCORD_COLORS.SKILL;
+    const CONTEST_ICONS = { Cool: '😎', Beauty: '💎', Cute: '🌸', Smart: '🔮', Tough: '💪' };
+    const icon = CONTEST_ICONS[contestType] || '🎭';
     const sorted = [...participants].sort((a, b) => getTotal(b) - getTotal(a));
+    const medals = ['🥇', '🥈', '🥉'];
 
     const fields = sorted.map((p, idx) => {
         const rounds = p.rounds.map((r, i) => `R${i + 1}:${r.appeal}`).join('  ');
         return {
-            name: `#${idx + 1} ${p.name}`,
+            name: `${medals[idx] || `#${idx + 1}`} ${p.name}`,
             value: `**${getTotal(p)} total** · ${rounds}`,
             inline: false,
         };
     });
 
     return {
-        title: `${contestType} Contest — Final Results`,
+        title: `🏆 ${icon} ${contestType} Contest — Final Results`,
         description: `Winner: **${sorted[0]?.name}** with **${getTotal(sorted[0] || {})} appeal**!`,
         color,
         fields,
@@ -345,7 +355,7 @@ export const buildContestResultsEmbed = ({ contestType, participants, getTotal }
 };
 
 export const buildTrainerAttackEmbed = (roll, trainerName) => {
-    const hitStr = roll.isCrit ? 'Critical hit!' : roll.isHit ? 'Hit!' : 'Miss!';
+    const hitStr = roll.isCrit ? '⚡ CRITICAL HIT!' : roll.isHit ? 'Hit!' : 'Miss!';
     let description;
     if (roll.isHit) {
         const parts = [`[${roll.rolls.join(', ')}] = ${roll.diceTotal}`];
@@ -364,13 +374,13 @@ export const buildTrainerAttackEmbed = (roll, trainerName) => {
 
     const embed = {
         author: { name: trainerName },
-        title: `${roll.trainer} — ${roll.weapon}`,
+        title: `⚔ ${roll.trainer} — ${roll.weapon}`,
         description,
         color: DISCORD_COLORS.TRAINER_ATTACK,
         fields,
         timestamp: new Date().toISOString(),
     };
-    if (roll.isHit) embed.footer = { text: "Before target's Defense" };
+    if (roll.isHit) embed.footer = { text: "⚠ Before target's Defense" };
     if (roll.trainerAvatarUrl) embed.thumbnail = { url: roll.trainerAvatarUrl };
     return embed;
 };
@@ -379,7 +389,7 @@ export const buildCustomEmbed = (roll, trainerName) => {
     const bonusStr = roll.bonus ? ` + ${roll.bonus}` : '';
     return {
         author: { name: trainerName },
-        title: `Custom Roll: ${roll.dice}`,
+        title: `🎲 Custom Roll: ${roll.dice}`,
         description: `[${roll.rolls.join(', ')}]${bonusStr} = **${roll.total}**`,
         color: DISCORD_COLORS.CUSTOM,
         timestamp: new Date().toISOString(),

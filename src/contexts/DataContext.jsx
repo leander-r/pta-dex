@@ -8,7 +8,6 @@ import { safeLocalStorageGet, safeLocalStorageSet } from '../utils/storageUtils.
 import { getActualStats, calculatePokemonHP, getBaseRelationViolations } from '../utils/dataUtils.js';
 import { buildSpeciesUpdateFields } from '../utils/speciesFields.js';
 import { buildEmbed } from '../utils/discordEmbeds.js';
-import { renderBattleScreenImage } from '../utils/battleScreenCanvas.js';
 import toast from '../utils/toast.js';
 import { useUI } from './UIContext.jsx';
 import { useModal } from './ModalContext.jsx';
@@ -807,33 +806,11 @@ export const DataProvider = ({ children }) => {
                 embeds: [embed],
             };
 
-            // For Pokémon move rolls, compose a battle-screen-style HUD image (sprite on a
-            // platform + nameplate + HP bar) so the embed looks like an actual game screen
-            // instead of relying on emoji decoration. Never blocks the send on failure —
-            // renderBattleScreenImage always resolves (null on failure), and the embed's
-            // own thumbnail/HP field (from buildPokemonEmbed) are left untouched as a
-            // complete fallback when no image is produced.
-            let battleImageBlob = null;
-            if (roll.type === 'pokemon' && !roll._rawEmbed) {
-                try { battleImageBlob = await renderBattleScreenImage(roll); } catch { battleImageBlob = null; }
-            }
-
+            // If the embed thumbnail is a data URL (e.g. trainer avatar uploaded as base64),
+            // convert it to a file attachment and reference via attachment:// so Discord can display it.
             let fetchOptions;
             const thumbnailUrl = embed.thumbnail?.url;
-            if (battleImageBlob) {
-                const strippedEmbed = {
-                    ...embed,
-                    thumbnail: undefined,
-                    fields: (embed.fields || []).filter(f => f.name !== `${roll.pokemon} HP`),
-                    image: { url: 'attachment://battle.png' },
-                };
-                const formData = new FormData();
-                formData.append('payload_json', JSON.stringify({ ...payload, embeds: [strippedEmbed] }));
-                formData.append('files[0]', battleImageBlob, 'battle.png');
-                fetchOptions = { method: 'POST', body: formData };
-            } else if (thumbnailUrl?.startsWith('data:')) {
-                // Embed thumbnail is a data URL (e.g. trainer avatar uploaded as base64) —
-                // convert it to a file attachment and reference via attachment:// so Discord can display it.
+            if (thumbnailUrl?.startsWith('data:')) {
                 const dataRes = await fetch(thumbnailUrl);
                 const blob = await dataRes.blob();
                 const ext = blob.type.includes('png') ? 'png' : 'jpg';
