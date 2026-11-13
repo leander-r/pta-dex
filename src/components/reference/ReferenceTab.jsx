@@ -54,9 +54,11 @@ const ReferenceTab = () => {
                 Browse the Pokédex, type chart, moves, abilities, natures, trainer classes/features, and game rules.
             </p>
 
-            {/* Tab Navigation — wraps in a gradient-masked scroll container on mobile */}
-            <div style={{ position: 'relative', marginBottom: '16px' }}>
-            <div role="tablist" className="tabs" style={{ display: 'flex', overflowX: 'auto', flexWrap: 'nowrap', WebkitOverflowScrolling: 'touch', gap: '4px', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+            {/* Tab Navigation — wraps into as many rows as needed, never scrolls or overflows.
+                Flex-wrap (not CSS Grid) deliberately: a grid with equal-width columns forces every
+                chip as wide as the widest, over-packing short labels into unreadable fixed columns
+                on wide screens — flex lets each chip size to its own label and simply wrap. */}
+            <div role="tablist" className="tabs" style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginBottom: '16px' }}>
                 {sections.map(section => (
                     <button
                         key={section.id}
@@ -64,8 +66,18 @@ const ReferenceTab = () => {
                         aria-selected={activeSection === section.id}
                         className={`tab ${activeSection === section.id ? 'active' : ''}`}
                         onClick={() => { visitedRef.current.add(section.id); setActiveSection(section.id); }}
+                        title={section.label}
                         style={{
+                            // Overrides the shared .tab class's `flex:1; min-width:80px` (set at
+                            // ≤1024px for other tab bars that want equal-width columns) — these
+                            // chips need to size to their own label instead, or they all get
+                            // stretched to an identical width too narrow for the longer labels.
+                            flexGrow: 0,
                             flexShrink: 0,
+                            flexBasis: 'auto',
+                            minWidth: 0,
+                            maxWidth: '100%',
+                            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                             background: activeSection === section.id ? 'var(--poke-orange)' : 'transparent',
                             color: activeSection === section.id ? 'white' : 'var(--poke-orange)',
                             border: activeSection === section.id ? 'none' : '1px solid var(--poke-orange)',
@@ -75,9 +87,6 @@ const ReferenceTab = () => {
                         {section.label}
                     </button>
                 ))}
-            </div>
-            {/* Right-edge fade hint — only visible when content overflows (mobile) */}
-            <div style={{ pointerEvents: 'none', position: 'absolute', top: 0, right: 0, bottom: 0, width: '32px', borderRadius: '0 10px 10px 0', background: 'linear-gradient(to right, transparent, var(--card-bg, var(--surface-bg)))' }} aria-hidden="true" />
             </div>
 
             {/* Content Sections — kept mounted after first visit to preserve filter/scroll state */}

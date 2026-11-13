@@ -3993,9 +3993,8 @@
             }
         }
 
-        /* GM Tools tab strip — icon-only on small screens */
+        /* GM Tools tab strip — tighter padding on small screens (labels stay visible, the grid wraps) */
         @media (max-width: 480px) {
-            .gm-tab-label { display: none; }
             .tabs .tab { padding: 8px 10px !important; }
         }
 

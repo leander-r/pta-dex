@@ -52,23 +52,22 @@ const GMTab = () => {
                 🎮 GM Tools
             </h2>
 
-            {/* Sub-tab navigation — wraps in a gradient-masked scroll container on mobile */}
-            <div style={{ position: 'relative', marginBottom: '20px' }}>
+            {/* Sub-tab navigation — wraps into as many rows as needed, never scrolls or overflows.
+                Flex-wrap (not CSS Grid) deliberately: a grid with equal-width columns forces every
+                chip as wide as the widest, over-packing short labels into unreadable fixed columns
+                on wide screens — flex lets each chip size to its own label and simply wrap. */}
             <div
                 role="tablist"
                 className="tabs"
                 style={{
                     display: 'flex',
+                    flexWrap: 'wrap',
                     gap: '4px',
                     padding: '4px',
+                    marginBottom: '20px',
                     background: 'var(--surface-bg)',
                     borderRadius: '10px',
                     border: '1px solid var(--border-light)',
-                    overflowX: 'auto',
-                    WebkitOverflowScrolling: 'touch',
-                    flexShrink: 0,
-                    scrollbarWidth: 'none',
-                    msOverflowStyle: 'none',
                 }}
             >
                 {SECTIONS.map(({ id, icon, label }) => (
@@ -91,17 +90,21 @@ const GMTab = () => {
                             fontSize: '13px',
                             cursor: 'pointer',
                             transition: 'all 0.15s ease',
+                            // Overrides the shared .tab class's `flex:1; min-width:80px` (set at
+                            // ≤1024px for other tab bars that want equal-width columns) — these
+                            // chips need to size to their own label instead, or they all get
+                            // stretched to an identical width too narrow for the longer labels.
+                            flexGrow: 0,
                             flexShrink: 0,
-                            whiteSpace: 'nowrap',
+                            flexBasis: 'auto',
+                            minWidth: 0,
+                            maxWidth: '100%',
                         }}
                     >
-                        <span aria-hidden="true">{icon}</span>
-                        <span className="gm-tab-label">{label}</span>
+                        <span aria-hidden="true" style={{ flexShrink: 0 }}>{icon}</span>
+                        <span className="gm-tab-label" style={{ whiteSpace: 'nowrap' }}>{label}</span>
                     </button>
                 ))}
-            </div>
-            {/* Right-edge fade hint — only visible when content overflows (mobile) */}
-            <div style={{ pointerEvents: 'none', position: 'absolute', top: 0, right: 0, bottom: 0, width: '32px', borderRadius: '0 10px 10px 0', background: 'linear-gradient(to right, transparent, var(--surface-bg))' }} aria-hidden="true" />
             </div>
 
             {/* Mount all visited sections, hide non-active — preserves state on tab switch */}

@@ -148,8 +148,8 @@ const ContestPanel = ({ selectedPokemon, gameData, onRoll }) => {
                                     key={idx}
                                     onClick={() => { setSelectedMove(move); setRoll(null); }}
                                     style={{
-                                        display: 'flex', alignItems: 'center', gap: 10,
-                                        padding: '8px 12px', borderRadius: 7, cursor: 'pointer',
+                                        display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 10,
+                                        padding: '8px 12px', borderRadius: 7, cursor: 'pointer', minWidth: 0,
                                         border: isSelected ? `2px solid ${c}` : '1px dashed var(--border-medium)',
                                         background: isSelected ? `${c}22` : 'var(--surface-bg)',
                                         color: 'var(--text-primary)',
@@ -179,8 +179,8 @@ const ContestPanel = ({ selectedPokemon, gameData, onRoll }) => {
                                 key={idx}
                                 onClick={() => { setSelectedMove(move); setRoll(null); }}
                                 style={{
-                                    display: 'flex', alignItems: 'center', gap: 10,
-                                    padding: '8px 12px', borderRadius: 7, cursor: 'pointer',
+                                    display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 10,
+                                    padding: '8px 12px', borderRadius: 7, cursor: 'pointer', minWidth: 0,
                                     border: isSelected ? `2px solid ${c}` : '1px solid var(--border-light)',
                                     background: isSelected ? `${c}22` : 'var(--surface-bg)',
                                     color: 'var(--text-primary)',
