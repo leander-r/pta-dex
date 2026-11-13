@@ -29,7 +29,7 @@ export const useOnboarding = () => {
         {
             id: 'name',
             label: 'Name your trainer',
-            hint: 'Enter a name in the Trainer tab → header field',
+            hint: 'Enter a name at the top of the Trainer tab',
             done: !!(trainer?.name?.trim()),
             tab: 'trainer',
         },
@@ -66,13 +66,13 @@ export const useOnboarding = () => {
         {
             id: 'save',
             label: 'Save your character',
-            hint: 'Use Save / Load in the ☰ menu to create a named snapshot',
+            hint: 'Open "Data & Export" in the header → Save / Load',
             done: hasSaved,
             tab: null,
         },
         {
             id: 'battle',
-            label: 'Try the Battle tab',
+            label: 'Try the Dice Roller tab',
             hint: 'Track HP, roll dice, manage combat stages',
             done: battleVisited,
             tab: 'battle',

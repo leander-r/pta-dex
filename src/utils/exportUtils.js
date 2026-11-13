@@ -36,18 +36,11 @@ export const downloadCardAsImage = async (cardId, filename) => {
     }
 
     try {
-        // Use html2canvas library loaded from CDN
-        if (typeof html2canvas === 'undefined') {
-            // Load html2canvas dynamically
-            await new Promise((resolve, reject) => {
-                const script = document.createElement('script');
-                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
-                script.onload = resolve;
-                script.onerror = () => reject(new Error('Failed to load html2canvas'));
-                document.head.appendChild(script);
-            });
-        }
-        await captureCard(card, filename);
+        // Dynamic import of the installed package — keeps html2canvas out of the main
+        // bundle (only loaded when a card export is actually triggered) without fetching
+        // an unpinned copy from a CDN with no integrity check.
+        const { default: html2canvas } = await import('html2canvas');
+        await captureCard(card, filename, html2canvas);
     } catch (err) {
         console.error('Error loading html2canvas:', err);
         const exportErr = new Error('Image export failed.');
@@ -80,7 +73,7 @@ const imgToDataURL = async (src) => {
 /**
  * Helper function to capture card as image
  */
-const captureCard = async (card, filename) => {
+const captureCard = async (card, filename, html2canvas) => {
     // Pre-convert any external <img> srcs to data URLs before html2canvas runs.
     // html2canvas cannot read cross-origin images (e.g. Pokémon Showdown sprites)
     // due to browser CORS restrictions, so we do the fetch ourselves first.
@@ -643,6 +636,10 @@ export const generatePrintSheetHTML = (trainer, party) => {
         </div>`;
     }).join('');
 
+    /* eslint-disable no-useless-escape -- deliberate: a literal </script> inside this JS
+       source would prematurely close an outer <script> tag if this file were ever parsed
+       as inline HTML (bundlers/minifiers sometimes do); escaping the slash below prevents
+       that. Disabled for this template literal only, re-enabled right after it. */
     return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -753,6 +750,7 @@ export const generatePrintSheetHTML = (trainer, party) => {
 <script>window.onload = function() { window.print(); };<\/script>
 </body>
 </html>`;
+    /* eslint-enable no-useless-escape */
 };
 
 /**

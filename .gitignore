@@ -34,6 +34,9 @@ npm-debug.log*
 test-results/
 playwright-report/
 
+# Vitest coverage output
+coverage/
+
 # Reference material extraction artifacts
 *.txt
 nul

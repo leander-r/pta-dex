@@ -56,7 +56,15 @@ test('navigate to Dice Roller tab', async ({ page }) => {
 });
 
 test('navigate to Campaign Notes tab', async ({ page }) => {
-    await page.locator('.nav-button', { hasText: 'Campaign Notes' }).click();
+    // Campaign Notes lives in MainNavigation's MORE_NAV_ITEMS — shown inline on
+    // desktop, but only reachable via the "More" overflow button on mobile viewports.
+    const navButton = page.locator('.nav-button', { hasText: 'Campaign Notes' });
+    if (await navButton.first().isVisible()) {
+        await navButton.first().click();
+    } else {
+        await page.locator('.nav-button', { hasText: 'More' }).click();
+        await page.getByRole('menuitem', { name: 'Campaign Notes' }).click();
+    }
     await expect(page.locator('.nav-button[aria-current="page"]')).toContainText('Campaign Notes');
     await expect(page.locator(ACTIVE_H2)).toBeVisible({ timeout: 10_000 });
 });

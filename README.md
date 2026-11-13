@@ -163,9 +163,9 @@ npm run test:e2e:ui     # end-to-end tests with Playwright UI debugger
 4. Add moves from the species' move pool (natural or taught)
 5. Collapse the card when done; it stays in your party
 
-### Battle & Dice Roller
+### Dice Roller
 
-1. Go to the **Battle** tab
+1. Go to the **Dice Roller** tab
 2. Select **Pokémon** mode to roll move damage for a party member, or **Trainer** mode for skill checks
 3. Adjust combat stages with the ± buttons; they apply to displayed stats automatically
 4. Track HP damage directly on each Pokémon's combat row
@@ -176,24 +176,24 @@ All changes are saved automatically to your browser's localStorage — no Save b
 
 For peace of mind:
 
-- **Save Slots** (sidebar → *Save / Load*) — create up to 3 named snapshots; ideal for session checkpoints and quick restores
-- **Export JSON** (header *☰ menu → Export Trainer / Export All Data*) — downloads a `.json` file to your device; use this for backups, sharing characters, or moving data to another browser or device
-- **Import** (header *☰ menu → Import*) — restore any previously exported JSON file
+- **Save Slots** (header's *Data & Export* menu → *Save / Load*) — create up to 3 named snapshots; ideal for session checkpoints and quick restores
+- **Export JSON** (header's *Data & Export* menu → *Export Trainer / Export All Data*) — downloads a `.json` file to your device; use this for backups, sharing characters, or moving data to another browser or device
+- **Import** (header's *Data & Export* menu → *Import*) — restore any previously exported JSON file
 
 > **Tip:** Export a full backup at the end of each session and keep Save Slots for mid-session checkpoints.
 
 ### Exporting & Printing
 
-Export actions live in the **Share & Export** section at the bottom of the sidebar:
+Export actions live in the header's **Data & Export** menu:
 
 - **Export Cards** — generate image cards for your trainer or Pokémon
 - **Print Sheet** — opens a print-ready page; choose *Save as PDF* in the browser print dialog
 
-JSON backups and the Import option are available via the **☰ menu** in the header.
+JSON backups and the Import option are available in that same menu.
 
 ### Multiple Trainers
 
-- **☰ menu → New Trainer** to create another character
+- Header's **Character menu → New Trainer** to create another character
 - Use the **trainer dropdown** in the header to switch
 - **Clone Trainer** duplicates the active trainer
 - **Archive Trainer** hides a trainer without deleting them

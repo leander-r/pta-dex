@@ -1,7 +1,7 @@
 // ============================================================
 // PTA MANAGER - MAIN APPLICATION COMPONENT
 // ============================================================
-// Created by: leander_rsr | All Rights Reserved
+// Created by: leander_rsr | Licensed under MIT
 //
 // LEGAL DISCLAIMER & COPYRIGHT NOTICE
 // This is an UNOFFICIAL, NON-COMMERCIAL fan-made tool created for personal use

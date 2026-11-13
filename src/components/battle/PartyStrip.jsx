@@ -1,6 +1,26 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { calculatePokemonHP } from '../../utils/dataUtils.js';
 import { getPokemonDisplayImage } from '../../utils/pokemonSprite.js';
+
+// Separate component (not inline JSX) so each party member tracks its own failed-load
+// state — a blocked/unreachable sprite host (e.g. a school/work network blocking
+// Showdown's CDN) falls back to the same 🐾 placeholder used when there's no sprite
+// at all, instead of the browser's broken-image icon.
+const PartySprite = ({ sprite, pixelated }) => {
+    const [failed, setFailed] = useState(false);
+    if (!sprite || failed) {
+        return <div aria-hidden="true" style={{ width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px' }}>🐾</div>;
+    }
+    return (
+        <img
+            src={sprite}
+            alt=""
+            aria-hidden="true"
+            onError={() => setFailed(true)}
+            style={{ width: '48px', height: '48px', objectFit: 'contain', imageRendering: pixelated ? 'pixelated' : 'auto' }}
+        />
+    );
+};
 
 /**
  * PartyStrip — horizontal scrollable sprite strip for selecting a party member.
@@ -41,10 +61,7 @@ const PartyStrip = ({ party, selectedPokemonId, onSelect }) => {
                         }}
                     >
                         <div style={{ position: 'relative', width: '48px', height: '48px' }}>
-                            {sprite
-                                ? <img src={sprite} alt="" aria-hidden="true" style={{ width: '48px', height: '48px', objectFit: 'contain', imageRendering: !poke.avatar ? 'pixelated' : 'auto' }} />
-                                : <div aria-hidden="true" style={{ width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px' }}>🐾</div>
-                            }
+                            <PartySprite sprite={sprite} pixelated={!poke.avatar} />
                             {poke.level != null && (
                                 <span aria-hidden="true" style={{
                                     position: 'absolute', bottom: '-2px', right: '-2px',

@@ -50,7 +50,7 @@ const NaturesSection = () => {
 
         // Sorting
         entries.sort((a, b) => {
-            let cmp = 0;
+            let cmp;
             switch (filter.sortBy) {
                 case 'buff':
                     cmp = (a[1].buff || 'zzz').localeCompare(b[1].buff || 'zzz');

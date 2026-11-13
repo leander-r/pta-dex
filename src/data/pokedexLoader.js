@@ -156,7 +156,7 @@ export const loadPokedexFromGitHub = async (setPokedex, setPokedexLoading, setPo
         try {
             data = JSON.parse(responseText);
         } catch (parseError) {
-            throw new Error('Failed to parse Pokédex JSON');
+            throw new Error('Failed to parse Pokédex JSON', { cause: parseError });
         }
         
         const pokemonList = data.pokemon || data;

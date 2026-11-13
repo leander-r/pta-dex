@@ -1,12 +1,15 @@
 // ============================================================
-// DATA CONFIGURATION - GitHub-hosted JSON files
+// DATA CONFIGURATION - bundled JSON files (shipped in public/)
 // ============================================================
 // [lndr_rsr:0x6c65616e6465725f727372] Application Core
+// Previously fetched from raw.githubusercontent.com/main at runtime — that let a
+// bad JSON push reach users instantly (no CI gate) and left the app dependent on
+// a host not meant for serving a website. Bundling means data is versioned with
+// the code and ships atomically with each deploy.
 export const DATA_CONFIG = {
-    // GitHub raw URLs for data files
-    pokedexUrl: 'https://raw.githubusercontent.com/leander-r/pta-dex/main/pokedex.min.json',
-    gameDataUrl: 'https://raw.githubusercontent.com/leander-r/pta-dex/main/pta-game-data.min.json',
-    
+    pokedexUrl: `${import.meta.env.BASE_URL}pokedex.min.json`,
+    gameDataUrl: `${import.meta.env.BASE_URL}pta-game-data.min.json`,
+
     // IndexedDB configuration
     dbName: 'PTAData',
     dbVersion: 2,

@@ -211,7 +211,7 @@ const BattleTab = () => {
         setAcOverride('');
         // Combat stages reset on switch per PTA rules (PH2 p.256)
         resetCombatStages();
-    // eslint-disable-next-line react-hooks/exhaustive-deps — intentional: reset on pokemon switch only; resetCombatStages is stable (useCallback with no deps)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: reset on pokemon switch only; resetCombatStages is stable (useCallback with no deps)
     }, [selectedPokemonId]);
 
     // Apply mega stat boosts to actual stats
@@ -521,7 +521,7 @@ const BattleTab = () => {
                     <span style={{ fontSize: '20px', flexShrink: 0, lineHeight: 1.2 }}>🎲</span>
                     <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ fontWeight: 700, fontSize: '13px', marginBottom: '4px', color: 'var(--text-color)' }}>
-                            Welcome to the Battle tab
+                            Welcome to the Dice Roller tab
                         </div>
                         <ul style={{ margin: '0 0 6px', paddingLeft: '16px', fontSize: '12px', color: 'var(--text-secondary)', lineHeight: '1.7' }}>
                             <li><strong>HP Tracker</strong> — apply damage and healing during battle</li>
@@ -579,7 +579,7 @@ const BattleTab = () => {
                     <h3 className="section-title-purple">
                         <span>{mode === 'heal' ? '🩹' : (mode === 'pokemon' && subMode === 'contest') ? '🎭' : '🎲'}</span>{' '}
                         {mode === 'pokemon' && subMode === 'contest' ? 'Contest Appeal'
-                            : mode === 'pokemon' ? 'Pokemon Attack'
+                            : mode === 'pokemon' ? 'Pokémon Attack'
                             : mode === 'trainer' ? 'Trainer Skill'
                             : mode === 'heal' ? 'Use Healing Item'
                             : 'Custom Roll'}

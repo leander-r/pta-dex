@@ -110,7 +110,7 @@ export const TrainerProvider = ({ children }) => {
                 `Consider using Respec to rebuild.`
             );
         }
-    }, [trainer?.id]); // eslint-disable-line react-hooks/exhaustive-deps — intentional: re-check only on trainer switch, not on every field update (GAME_DATA is module-level constant)
+    }, [trainer?.id]); // eslint-disable-line react-hooks/exhaustive-deps -- intentional: re-check only on trainer switch, not on every field update (GAME_DATA is module-level constant)
 
     // Helper to update current trainer
     const setTrainer = useCallback((updater) => {
@@ -545,7 +545,7 @@ export const TrainerProvider = ({ children }) => {
         const setList = isParty ? setParty : setReserve;
         setList(prev => {
             const sorted = [...prev].sort((a, b) => {
-                let cmp = 0;
+                let cmp;
                 switch (sortBy) {
                     case 'level':
                         cmp = (b.level || 1) - (a.level || 1);

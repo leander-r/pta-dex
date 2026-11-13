@@ -112,7 +112,7 @@ export const loadGameDataFromGitHub = async () => {
         try {
             data = JSON.parse(responseText);
         } catch (parseError) {
-            throw new Error('Failed to parse game data JSON');
+            throw new Error('Failed to parse game data JSON', { cause: parseError });
         }
         
         // 3. Merge with GAME_DATA

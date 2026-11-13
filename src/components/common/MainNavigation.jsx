@@ -113,13 +113,16 @@ const MainNavigation = ({ activeTab, setActiveTab }) => {
 
     return (
         <div className="sidebar" role="navigation" aria-label="Main navigation">
+            {/* No aria-label here — the accessible name is computed from whichever
+                label span is actually visible (.nav-label on desktop, .nav-mobile-label
+                on mobile; CSS display:none excludes the other from the a11y tree), so
+                voice control / screen readers always match what's on screen at any width. */}
             {NAV_ITEMS.map(({ tab, icon, label, mobileLabel }) => (
                 <button
                     key={tab}
                     className={`nav-button ${activeTab === tab ? 'active' : ''}`}
                     onClick={() => setActiveTab(tab)}
                     aria-current={activeTab === tab ? 'page' : undefined}
-                    aria-label={label}
                 >
                     <span className="nav-icon">{icon}</span>
                     <span className="nav-label">{label}</span>
@@ -134,7 +137,6 @@ const MainNavigation = ({ activeTab, setActiveTab }) => {
                     className={`nav-button nav-overflow-item ${activeTab === tab ? 'active' : ''}`}
                     onClick={() => setActiveTab(tab)}
                     aria-current={activeTab === tab ? 'page' : undefined}
-                    aria-label={label}
                 >
                     <span className="nav-icon">{icon}</span>
                     <span className="nav-label">{label}</span>

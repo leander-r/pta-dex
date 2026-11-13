@@ -411,7 +411,7 @@ const TrainerClasses = () => {
             )}
             {!pendingClass && currentClasses.length < maxClasses && (
                 <div className="input-row input-row-purple">
-                    <select id="classSelectCombined">
+                    <select id="classSelectCombined" aria-label="Add a class">
                         <option value="">Add a class...</option>
                         <optgroup label="━━ Base Classes ━━">
                             {Object.entries(GAME_DATA.trainerClasses || {})

@@ -53,8 +53,11 @@ const CaptureCalculator = () => {
     // succeed on roll 1..(target-1) out of 1-100
     const successPct = Math.max(0, Math.min(100, target - 1));
 
-    const barColor = successPct <= 0  ? '#e53935'
-                   : successPct < 25  ? '#e53935'
+    // #e53935 (the original red) measured 4:1 as text on this card's background — just
+    // under the 4.5:1 minimum. Darkened for the two "low chance" breakpoints only (the
+    // only ones confirmed failing); the other severity colors are unconfirmed, untouched.
+    const barColor = successPct <= 0  ? '#c62828'
+                   : successPct < 25  ? '#c62828'
                    : successPct < 50  ? '#ff9800'
                    : successPct < 75  ? '#fdd835'
                    : successPct < 100 ? '#43a047'
@@ -91,6 +94,7 @@ const CaptureCalculator = () => {
                     </p>
                     <input
                         type="number" min={0} max={100}
+                        aria-label="Species Capture Rate"
                         value={baseRate}
                         onChange={e => { setBaseRate(Number(e.target.value)); setRollResult(null); }}
                         style={{
@@ -109,6 +113,7 @@ const CaptureCalculator = () => {
                         HP Condition <span style={{ fontWeight: 400, color: 'var(--text-muted)' }}>({sign(hpMod)})</span>
                     </div>
                     <select
+                        aria-label="HP Condition modifier"
                         value={hpMod}
                         onChange={e => { setHpMod(Number(e.target.value)); setRollResult(null); }}
                         style={{
@@ -130,6 +135,7 @@ const CaptureCalculator = () => {
                         Status Condition <span style={{ fontWeight: 400, color: 'var(--text-muted)' }}>({sign(statMod)})</span>
                     </div>
                     <select
+                        aria-label="Status Condition modifier"
                         value={statMod}
                         onChange={e => { setStatMod(Number(e.target.value)); setRollResult(null); }}
                         style={{
@@ -151,6 +157,7 @@ const CaptureCalculator = () => {
                         Wild Pokémon Level <span style={{ fontWeight: 400, color: 'var(--text-muted)' }}>({sign(levelMod)})</span>
                     </div>
                     <select
+                        aria-label="Wild Pokémon Level modifier"
                         value={levelMod}
                         onChange={e => { setLevelMod(Number(e.target.value)); setRollResult(null); }}
                         style={{

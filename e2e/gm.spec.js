@@ -16,8 +16,16 @@ async function setupPage(page) {
         { state: 'detached', timeout: 15_000 });
 }
 
+// GM Tools lives in MainNavigation's MORE_NAV_ITEMS — shown inline on desktop, but
+// only reachable via the "More" overflow button on mobile viewports.
 async function goToGMTab(page) {
-    await page.locator('.nav-button', { hasText: 'GM Tools' }).click();
+    const navButton = page.locator('.nav-button', { hasText: 'GM Tools' });
+    if (await navButton.first().isVisible()) {
+        await navButton.first().click();
+    } else {
+        await page.locator('.nav-button', { hasText: 'More' }).click();
+        await page.getByRole('menuitem', { name: 'GM Tools' }).click();
+    }
     await expect(
         page.locator('.nav-button[aria-current="page"]')
     ).toContainText('GM Tools', { timeout: 10_000 });

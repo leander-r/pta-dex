@@ -24,7 +24,9 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
+    # Pinned to match ci.yml's rationale — see that workflow's header comment
+    # (ubuntu-latest's migration to 26.04 broke things unpredictably mid-rollout).
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4

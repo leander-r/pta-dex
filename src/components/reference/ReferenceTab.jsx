@@ -78,8 +78,13 @@ const ReferenceTab = () => {
                             minWidth: 0,
                             maxWidth: '100%',
                             overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                            background: activeSection === section.id ? 'var(--poke-orange)' : 'transparent',
-                            color: activeSection === section.id ? 'white' : 'var(--poke-orange)',
+                            // Inline styles here override the shared .tab/.tab.active CSS (which
+                            // is darkened for contrast) — var(--poke-orange) alone only gives
+                            // white text ~2:1, and as text on transparent/cream ~1.9:1. Using
+                            // the same darkened values directly since this component sets its
+                            // own background/color explicitly.
+                            background: activeSection === section.id ? '#a65d00' : 'transparent',
+                            color: activeSection === section.id ? 'white' : 'var(--poke-orange-text)',
                             border: activeSection === section.id ? 'none' : '1px solid var(--poke-orange)',
                             fontWeight: activeSection === section.id ? 700 : 500
                         }}

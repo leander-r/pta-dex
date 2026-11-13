@@ -9,6 +9,12 @@
             --poke-orange: #f5a623;
             --poke-orange-dark: #e8941c;
             --poke-orange-light: #ffc966;
+            /* For actual readable TEXT on light/white/cream surfaces — plain --poke-orange
+               and --poke-orange-dark both measure well under 4.5:1 there (the brand orange
+               is tuned to work as a background/border/icon color, not body text). Keep using
+               --poke-orange itself for anything that isn't text (borders, icon fills, button
+               backgrounds with white text on top, etc). */
+            --poke-orange-text: #8f5000;
             --poke-cream: #fff8e7;
             --poke-white: #ffffff;
             --poke-gray: #f0f0f0;
@@ -27,6 +33,11 @@
             --gradient-blue: linear-gradient(135deg, #2196f3, #1565c0);
             --color-purple: #667eea;
             --color-purple-dark: #764ba2;
+            /* For readable TEXT on light surfaces — plain --color-purple measures ~3.4:1
+               there, under the 4.5:1 minimum. --color-purple-dark isn't a substitute (it's
+               a different, magenta-leaning hue for the purple gradient's far stop, not a
+               darker version of --color-purple). */
+            --color-purple-text: #4338ca;
 
             /* Stat colors */
             --stat-hp: #4caf50;
@@ -36,6 +47,11 @@
             --stat-sdef: #ff9800;
             --stat-spd: #00bcd4;
             --color-taught: #2196f3;
+            /* Speed Evasion text needs its own darker shade — plain --stat-spd (#00bcd4)
+               on the pale .evasion-box-spd background (#e0f7fa) measures ~2:1 contrast,
+               well under the 4.5:1 minimum. Dark mode's box background is dark enough
+               that --stat-spd itself already passes there (see override below). */
+            --evasion-spd-text: #006978;
 
             /* Inventory item type colors */
             --item-ball: #f44336;
@@ -56,7 +72,11 @@
             --hover-bg: #e8e8e8;
             --text-primary: #1a1a2e;
             --text-secondary: #4a4a5a;
-            --text-muted: #6b7280;
+            /* #6b7280 measured 4.43:1 on this app's light surfaces — just under the 4.5:1
+               minimum. Darkened slightly (imperceptible visually, same gray family) since
+               this is a purely functional "secondary text" color with no brand identity
+               tied to the exact shade, unlike --poke-orange/--stat-spd/--color-purple. */
+            --text-muted: #4b5563;
             --text-light: #9ca3af;
 
             /* Status colors */
@@ -272,6 +292,10 @@
             --poke-gray: #2d2d3d;
             --poke-dark: #e8e8e8;
             --poke-shadow: rgba(0, 0, 0, 0.4);
+            /* Dark mode's surfaces are dark enough that the plain brand colors already
+               pass as text — no need for the light-mode-only darkened text variants. */
+            --poke-orange-text: var(--poke-orange);
+            --color-purple-text: var(--color-purple);
 
             /* UI colors - dark mode optimized */
             --border-light: #3d3d4d;
@@ -393,6 +417,9 @@
             /* Semantic text colors - dark mode */
             --color-success-text: #81c784;
             --color-danger-text: #ef9a9a;
+            /* Dark mode's evasion box background (#1a3d3d) is dark enough that the
+               plain --stat-spd cyan already passes 4.5:1 against it. */
+            --evasion-spd-text: var(--stat-spd);
 
             /* Surface hover - dark mode */
             --surface-hover: rgba(255, 255, 255, 0.06);
@@ -751,7 +778,11 @@
 
         /* Stat box color variants */
         .stat-box.stat-box-hp {
-            background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
+            /* Darkened from #4caf50→#388e3c — the lighter green only gave white text
+               ~2.77:1 contrast, below the 4.5:1 minimum (the other stat-box variants'
+               colors are saturated/dark enough to already pass). #388e3c alone still only
+               measures ~4.1:1, so both stops are now #2e7d32+ to clear 4.5:1 throughout. */
+            background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
             box-shadow: 0 3px 10px rgba(76, 175, 80, 0.3), inset 0 2px 0 rgba(255,255,255,0.2);
         }
 
@@ -2041,7 +2072,10 @@
         }
 
         .tab.active {
-            background: linear-gradient(135deg, var(--poke-orange) 0%, var(--poke-orange-dark) 100%);
+            /* var(--poke-orange) alone only gives white text ~2:1 contrast (and even
+               --poke-orange-dark only ~2.4:1) — darkened to a shade that clears 4.5:1
+               at both gradient stops, confirmed by direct WCAG contrast calculation. */
+            background: linear-gradient(135deg, #a65d00 0%, #7a4500 100%);
             color: white;
             box-shadow: 0 2px 8px rgba(245, 166, 35, 0.4);
         }
@@ -3543,7 +3577,11 @@
                 background: rgba(245, 166, 35, 0.12);
                 border-top: 3px solid var(--poke-orange);
                 box-shadow: none;
-                color: var(--poke-orange-dark);
+                /* --poke-orange-dark (#e8941c) on this pale tint measures ~2.22:1 —
+                   darkened just for this mobile active-label rule rather than the
+                   shared variable, which is also used elsewhere at full saturation
+                   where it already has adequate contrast. */
+                color: #a65d00;
             }
 
             /* Bigger emoji in bottom bar */
@@ -5124,7 +5162,11 @@
         }
 
         .pokemon-action-btn.import {
-            background: var(--stat-hp);
+            /* var(--stat-hp) (#4caf50) only gives white text ~2.77:1 — same underlying
+               issue as .stat-box-hp, fixed the same way (darken, don't touch the shared
+               --stat-hp variable itself since it's used widely elsewhere as a non-text
+               HP/health indicator color where this contrast rule doesn't apply). */
+            background: #2e7d32;
             color: white;
         }
 

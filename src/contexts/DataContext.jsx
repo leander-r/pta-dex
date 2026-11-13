@@ -83,7 +83,10 @@ export const DataProvider = ({ children }) => {
     // Note: dataLoadedRef is now set in loadData after data is actually loaded
 
     // Save data to storage
-    const saveData = useCallback(async (isAuto = false) => {
+    // `silent` suppresses the SaveIndicator — used for the one autosave that fires
+    // immediately after loadData populates state, so the indicator never appears
+    // before the user has actually made a change.
+    const saveData = useCallback(async (isAuto = false, silent = false) => {
         try {
             // Auto-backup: snapshot the previous save before overwriting
             try {
@@ -109,7 +112,7 @@ export const DataProvider = ({ children }) => {
                 saveSuccess = safeLocalStorageSet('pta-enhanced-save-data', savePayload);
             }
 
-            if (saveSuccess) {
+            if (saveSuccess && !silent) {
                 triggerSaveIndicator(isAuto);
             }
         } catch (error) {
@@ -851,21 +854,41 @@ export const DataProvider = ({ children }) => {
         loadData();
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-    // Debounced auto-save on data changes (1 second delay)
+    // Ask the browser not to evict this origin's storage under pressure (e.g. Safari's
+    // ~7-day no-visit eviction). Best-effort — browsers decide silently either way, and
+    // may show their own permission prompt; nothing in the UI depends on the result.
+    useEffect(() => {
+        navigator.storage?.persist?.().catch(() => {});
+    }, []);
+
+    // Debounced auto-save on data changes (1 second delay). The very first run fires
+    // right after loadData() populates state — silence just that one so the SaveIndicator
+    // never appears before the user has actually made a change.
+    const hasSavedOnceRef = useRef(false);
     useEffect(() => {
         if (!dataLoadedRef.current) return;
 
+        const isInitialSave = !hasSavedOnceRef.current;
         const saveTimeout = setTimeout(() => {
-            saveDataRef.current?.();
+            saveDataRef.current?.(false, isInitialSave);
+            hasSavedOnceRef.current = true;
         }, AUTOSAVE_DEBOUNCE_MS);
 
         return () => clearTimeout(saveTimeout);
     }, [trainers, inventory, activeTrainerId, customSpecies]);
 
-    // Flush any pending debounced save on unmount so data changed just before
-    // the component tears down (e.g. rapid tab close) is not silently dropped.
+    // Flush any pending debounced save immediately on tab close. Unmount alone does NOT
+    // cover this — React only unmounts when the component tree tears down, which doesn't
+    // happen when a browser tab is closed (the page is simply discarded). `pagehide` fires
+    // reliably in that case (including mobile Safari / bfcache), so it's the real fix;
+    // the unmount cleanup below is a bonus for in-app teardown (e.g. tests), not tab close.
     useEffect(() => {
-        return () => { saveDataRef.current?.(); };
+        const flush = () => { saveDataRef.current?.(); };
+        window.addEventListener('pagehide', flush);
+        return () => {
+            window.removeEventListener('pagehide', flush);
+            flush();
+        };
     }, []);
 
     // Interval-based auto-save (every 2 minutes, only if changed)

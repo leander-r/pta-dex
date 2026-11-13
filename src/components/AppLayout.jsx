@@ -305,7 +305,7 @@ const AppLayout = () => {
                     maxWidth: '600px',
                     margin: '0 auto 20px auto'
                 }}>
-                    <div style={{ fontWeight: 'bold', marginBottom: '10px', color: 'var(--color-purple)', fontSize: '12px' }}>
+                    <div style={{ fontWeight: 'bold', marginBottom: '10px', color: 'var(--color-purple-text)', fontSize: '12px' }}>
                         📊 Data Management
                     </div>
                     <div style={{
@@ -316,10 +316,10 @@ const AppLayout = () => {
                         flexWrap: 'wrap',
                         marginBottom: '10px'
                     }}>
-                        <span style={{ color: pokedex.length > 0 ? 'var(--color-success-text)' : 'var(--poke-orange)' }}>
+                        <span style={{ color: pokedex.length > 0 ? 'var(--color-success-text)' : 'var(--poke-orange-text)' }}>
                             {pokedex.length > 0 ? `✓ Pokédex: ${pokedex.length} species` : '⏳ Loading Pokédex...'}
                         </span>
-                        <span style={{ color: gameDataLoaded ? 'var(--color-success-text)' : 'var(--poke-orange)' }}>
+                        <span style={{ color: gameDataLoaded ? 'var(--color-success-text)' : 'var(--poke-orange-text)' }}>
                             {gameDataLoaded
                                 ? `✓ Game Data: ${Object.keys(GAME_DATA.moves || {}).length} moves, ${Object.keys(GAME_DATA.features || {}).length} features`
                                 : '⏳ Loading Game Data...'}
@@ -339,7 +339,7 @@ const AppLayout = () => {
                     maxWidth: '800px',
                     margin: '0 auto'
                 }}>
-                    <div style={{ fontWeight: 'bold', marginBottom: '8px', color: 'var(--poke-orange)' }}>
+                    <div style={{ fontWeight: 'bold', marginBottom: '8px', color: 'var(--poke-orange-text)' }}>
                         ⚠️ LEGAL DISCLAIMER
                     </div>
                     <p className="mb-8">

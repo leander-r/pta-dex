@@ -181,8 +181,8 @@ const CombatStagesPanel = ({ selectedPokemon, combatStages, getStatsWithMega, up
                                         <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>SDEF÷5</div>
                                     </div>
                                     <div title="Speed Evasion = SPD stat ÷ 10, max 6 (PH2 p.255)">
-                                        <div style={{ fontSize: '10px', color: 'var(--stat-spd, #00bcd4)' }}>Spd Eva</div>
-                                        <div style={{ fontSize: '14px', fontWeight: 'bold', color: 'var(--stat-spd, #00bcd4)' }}>
+                                        <div style={{ fontSize: '10px', color: 'var(--evasion-spd-text, #006978)' }}>Spd Eva</div>
+                                        <div style={{ fontSize: '14px', fontWeight: 'bold', color: 'var(--evasion-spd-text, #006978)' }}>
                                             +{Math.min(6, Math.floor((actualStats.spd || 0) / 10))}
                                         </div>
                                         <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>SPD÷10</div>

@@ -25,6 +25,26 @@ const markBreederBonusSeen = () => {
     try { localStorage.setItem(BREEDER_BONUS_SEEN_KEY, 'true'); } catch { /* ignore */ }
 };
 
+// Collapsed-card avatar sprite with a load-failure fallback — without this, a blocked
+// or unreachable sprite host (e.g. Showdown's CDN on a school/work network) rendered
+// the browser's native broken-image icon with the Pokémon's name as visible alt text.
+// `key={src}` on the caller remounts this when the sprite URL changes, so a species
+// change doesn't get stuck showing a stale failure state.
+const CollapsedAvatar = ({ src, alt }) => {
+    const [failed, setFailed] = useState(false);
+    if (!src || failed) {
+        return <span style={{ fontSize: '20px', opacity: 0.35 }}>⬤</span>;
+    }
+    return (
+        <img
+            src={src}
+            alt={alt}
+            onError={() => setFailed(true)}
+            style={{ width: '42px', height: '42px', objectFit: 'cover' }}
+        />
+    );
+};
+
 const PokemonCard = ({
     // Pokemon-specific props (must be passed per-card)
     pokemon,
@@ -708,9 +728,7 @@ const PokemonCard = ({
                 }}>
                     {(() => {
                         const img = getPokemonDisplayImage(pokemon);
-                        return img
-                            ? <img src={img} alt={pokemon.name || pokemon.species || 'Pokémon'} style={{ width: '42px', height: '42px', objectFit: 'cover' }} />
-                            : <span style={{ fontSize: '20px', opacity: 0.35 }}>⬤</span>;
+                        return <CollapsedAvatar key={img} src={img} alt={pokemon.name || pokemon.species || 'Pokémon'} />;
                     })()}
                 </div>
 
@@ -2477,9 +2495,9 @@ const PokemonCard = ({
                         <div style={{ marginTop: '8px', textAlign: 'right' }}>
                             <button
                                 onClick={() => { setEditing(false); setActiveTab('battle'); }}
-                                title="Track damage and healing for this Pokémon in the Battle tab's HP Tracker"
+                                title="Track damage and healing for this Pokémon in the Dice Roller tab's HP Tracker"
                                 style={{ background: 'var(--tint-purple-bg)', border: '1px solid var(--tint-purple-border)', borderRadius: '12px', padding: '4px 12px', fontSize: '12px', color: 'var(--color-purple)', cursor: 'pointer', fontWeight: 'bold' }}
-                            >Set current HP in Battle tab →</button>
+                            >Set current HP in Dice Roller tab →</button>
                         </div>
                     </div>
                 )}

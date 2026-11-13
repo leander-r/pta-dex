@@ -76,7 +76,10 @@ const OnboardingChecklist = ({ setActiveTab, layout = 'sidebar', className }) =>
                                     fontWeight: 600
                                 }}>
                                     <span style={{ flexShrink: 0 }}>✓</span>
-                                    <span style={{ textDecoration: 'line-through', opacity: 0.7 }}>{step.label}</span>
+                                    {/* No opacity dimming — it was taking --color-success-text's
+                                        already-fine contrast down to ~2.8:1. Strikethrough alone
+                                        clearly conveys "done". */}
+                                    <span style={{ textDecoration: 'line-through' }}>{step.label}</span>
                                 </div>
                             ) : (
                                 <button
@@ -190,7 +193,7 @@ const OnboardingChecklist = ({ setActiveTab, layout = 'sidebar', className }) =>
                             <li>Add more Pokémon to your party</li>
                             <li>Browse the Inventory tab for items</li>
                             <li>Set abilities &amp; held items per Pokémon</li>
-                            <li>Roll dice in the Battle tab</li>
+                            <li>Roll dice in the Dice Roller tab</li>
                         </ul>
                     </div>
                 </div>

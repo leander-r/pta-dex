@@ -153,10 +153,13 @@ test.describe('with a party Pokémon', () => {
     test('Battle/Contest toggle switches the active sub-panel', async ({ page }) => {
         await expect(page.getByRole('button', { name: /Select a Pokémon & move/ })).toBeVisible();
 
-        await page.getByRole('button', { name: /Contest/ }).click();
+        // Exact text (with emoji) to disambiguate from the "Battle" nav button — on
+        // mobile its accessible name is also just "Battle" (it follows whichever
+        // label is actually visible there), colliding with a loose /Battle/ regex.
+        await page.getByRole('button', { name: '🎭 Contest', exact: true }).click();
         await expect(page.getByRole('button', { name: /Select a Pokémon & move/ })).not.toBeVisible();
 
-        await page.getByRole('button', { name: /Battle/ }).click();
+        await page.getByRole('button', { name: '⚔️ Battle', exact: true }).click();
         await expect(page.getByRole('button', { name: /Select a Pokémon & move/ })).toBeVisible();
     });
 });

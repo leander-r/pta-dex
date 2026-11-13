@@ -46,4 +46,4 @@ Colocate in `__tests__/` next to the module, follow the existing `describe`/`it`
 
 ## Known gap
 
-`src/hooks/useInventory.js` has unit test coverage but is **dead code** — `InventoryTab.jsx` implements its own inventory logic inline (`handleAddItem`, `decrementQty`, etc.) and does not use this hook. New inventory coverage should target `InventoryTab.jsx`'s actual behavior via e2e, not the unused hook. (Worth deleting `useInventory.js` and its tests in a future cleanup pass — flagging here rather than doing it unprompted.)
+`InventoryTab.jsx` implements its own inventory logic inline (`handleAddItem`, `decrementQty`, etc.) rather than via a shared hook. New inventory coverage should target `InventoryTab.jsx`'s actual behavior via e2e. (`src/hooks/useInventory.js` was a dead, unused alternative implementation with its own unit tests — both deleted.)

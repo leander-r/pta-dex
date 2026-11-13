@@ -31,7 +31,7 @@ const MovesSection = () => {
                 return matchesSearch && matchesType && matchesCategory && matchesFrequency;
             })
             .sort((a, b) => {
-                let cmp = 0;
+                let cmp;
                 switch (filter.sortBy) {
                     case 'type':
                         cmp = a[1].type.localeCompare(b[1].type);
@@ -39,7 +39,7 @@ const MovesSection = () => {
                     case 'category':
                         cmp = a[1].category.localeCompare(b[1].category);
                         break;
-                    case 'damage':
+                    case 'damage': {
                         const getDamageValue = (d) => {
                             if (!d) return 0;
                             const match = d.match(/(\d+)d(\d+)/);
@@ -47,6 +47,7 @@ const MovesSection = () => {
                         };
                         cmp = getDamageValue(b[1].damage) - getDamageValue(a[1].damage);
                         break;
+                    }
                     default:
                         cmp = a[0].localeCompare(b[0]);
                 }

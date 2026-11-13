@@ -1,7 +1,7 @@
 // ============================================================
 // PTA MANAGER - ENTRY POINT
 // ============================================================
-// Created by: leander_rsr | All Rights Reserved
+// Created by: leander_rsr | Licensed under MIT
 
 import React from 'react';
 import ReactDOM from 'react-dom/client';

@@ -111,7 +111,7 @@ export const usePersistentStorage = (key, initialValue) => {
 
             // Fallback to localStorage
             if (!saveSuccess) {
-                saveSuccess = safeLocalStorageSet(key, value);
+                safeLocalStorageSet(key, value);
             }
 
             setTimeout(() => setIsSaving(false), 500);

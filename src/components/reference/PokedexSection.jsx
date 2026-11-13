@@ -1155,7 +1155,10 @@ const PokedexSection = () => {
                     onClick={() => { setPage(0); setSortDir(d => d === 'asc' ? 'desc' : 'asc'); }}
                     title="Toggle sort direction"
                     aria-label={`Sort direction: currently ${sortDir === 'asc' ? 'ascending' : 'descending'}, click to toggle`}
-                    style={{ padding: '6px 10px', borderRadius: '8px', border: '1.5px solid var(--poke-orange)', background: 'rgba(245,166,35,0.12)', color: 'var(--poke-orange-dark)', fontWeight: 700, fontSize: '12px', cursor: 'pointer', flexShrink: 0, display: 'flex', alignItems: 'center', gap: '4px' }}
+                    // var(--poke-orange-dark) only measures ~2.1:1 on this pale tint — same
+                    // "brand orange isn't dark enough for text" issue fixed elsewhere; use
+                    // the dedicated text-safe variable instead.
+                    style={{ padding: '6px 10px', borderRadius: '8px', border: '1.5px solid var(--poke-orange)', background: 'rgba(245,166,35,0.12)', color: 'var(--poke-orange-text)', fontWeight: 700, fontSize: '12px', cursor: 'pointer', flexShrink: 0, display: 'flex', alignItems: 'center', gap: '4px' }}
                 >
                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" style={{ transition: 'transform 0.15s', transform: sortDir === 'asc' ? 'rotate(-90deg)' : 'rotate(90deg)' }}>
                         <polyline points="9 18 15 12 9 6" />
