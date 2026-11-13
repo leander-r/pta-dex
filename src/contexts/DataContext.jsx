@@ -322,6 +322,8 @@ export const DataProvider = ({ children }) => {
                         const { updates } = buildSpeciesUpdateFields(speciesData, null);
                         return {
                             ...p,
+                            types: updates.types,
+                            baseStats: updates.baseStats,
                             pokedexId: updates.pokedexId,
                             availableAbilities: updates.availableAbilities,
                             availableLevelUpMoves: updates.availableLevelUpMoves,
