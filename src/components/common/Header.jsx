@@ -221,153 +221,201 @@ const Header = () => {
     const menuItemProps = { hoveredItem, setHoveredItem };
     const dataMenuItemProps = { hoveredItem: hoveredDataItem, setHoveredItem: setHoveredDataItem };
 
-    return (
-        <header style={{
-            background: 'linear-gradient(135deg, var(--poke-orange) 0%, var(--poke-orange-dark) 100%)',
-            padding: isMobile
-                ? (isScrolled ? '8px 10px' : '10px 12px')
-                : (isScrolled ? '10px 20px' : '14px 20px'),
+    // Money + trainer selector share markup between the desktop single row and the
+    // mobile identity row — only their container's sizing constraints differ.
+    const moneyDisplay = (
+        <div
+            className="header-money-display"
+            title={`₽${(trainer.money || 0).toLocaleString()}`}
+            aria-label={`₽${(trainer.money || 0).toLocaleString()}`}
+            style={{
+                padding: isMobile ? '6px 10px' : (isScrolled ? '6px 12px' : '8px 16px'),
+                borderRadius: isMobile ? '8px' : '12px',
+                fontWeight: 700,
+                fontSize: isMobile ? '13px' : (isScrolled ? '13px' : '14px'),
+                display: 'flex',
+                alignItems: 'center',
+                gap: isMobile ? '4px' : '6px',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                transition: 'all 0.25s ease',
+                // On mobile this pill now has its own dedicated row (no icon buttons
+                // competing for space), so it only needs to shrink enough to leave the
+                // trainer selector room, not clamp down to an illegible sliver.
+                flexShrink: isMobile ? 0 : 1,
+                maxWidth: isMobile ? '45%' : '130px',
+                minWidth: isMobile ? 'auto' : '36px',
+                overflow: 'hidden'
+            }}
+        >
+            <span style={{ color: '#f5a623', fontWeight: 800, flexShrink: 0 }}>₽</span>
+            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{(trainer.money || 0).toLocaleString()}</span>
+        </div>
+    );
+
+    const trainerSelector = (
+        <div
+            className="header-trainer-selector"
+            style={{
+                borderRadius: isMobile ? '8px' : '12px',
+                padding: '2px',
+                display: 'flex',
+                alignItems: 'center',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                transition: 'all 0.25s ease',
+                // Mobile: grow to fill the rest of the identity row instead of being
+                // capped — that's what actually keeps the trainer name legible.
+                flex: isMobile ? '1 1 auto' : '0 1 auto',
+                minWidth: isMobile ? 0 : '80px',
+                maxWidth: 'none'
+            }}
+        >
+            <select
+                value={activeTrainerId || ''}
+                onChange={(e) => handleTrainerChange(parseInt(e.target.value, 10))}
+                title={trainer ? `${trainer.name || 'Unnamed'} (Lv.${trainer.level})` : undefined}
+                aria-label="Select active trainer"
+                className="header-trainer-select"
+                style={{
+                    paddingTop: isMobile ? '6px' : (isScrolled ? '6px' : '8px'),
+                    paddingBottom: isMobile ? '6px' : (isScrolled ? '6px' : '8px'),
+                    paddingLeft: isMobile ? '10px' : (isScrolled ? '10px' : '12px'),
+                    paddingRight: isMobile ? '26px' : '32px',
+                    borderRadius: '10px',
+                    border: 'none',
+                    background: 'transparent',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    fontSize: isMobile ? '13px' : (isScrolled ? '13px' : '14px'),
+                    minWidth: 0,
+                    width: '100%',
+                    appearance: 'none',
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23f5a623' stroke-width='3'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`,
+                    backgroundRepeat: 'no-repeat',
+                    backgroundPosition: isMobile ? 'right 8px center' : 'right 10px center',
+                    transition: 'all 0.25s ease',
+                    textOverflow: 'ellipsis',
+                    overflow: 'hidden',
+                    whiteSpace: 'nowrap'
+                }}
+            >
+                {activeTrainers.map(t => (
+                    <option key={t.id} value={t.id}>
+                        {t.name || 'Unnamed'} (Lv.{t.level})
+                    </option>
+                ))}
+            </select>
+        </div>
+    );
+
+    const appTitle = (
+        <h1 style={{
+            margin: 0,
+            fontSize: isMobile ? '16px' : (isScrolled ? '18px' : '22px'),
+            fontWeight: 800,
+            color: 'white',
             display: 'flex',
-            justifyContent: 'space-between',
             alignItems: 'center',
-            boxShadow: isScrolled
-                ? '0 4px 20px rgba(0,0,0,0.25), 0 2px 8px rgba(245, 166, 35, 0.3)'
-                : '0 4px 15px rgba(0,0,0,0.15), inset 0 2px 0 rgba(255,255,255,0.3)',
-            position: 'sticky',
-            top: 0,
-            zIndex: 100,
-            borderBottom: isScrolled ? '2px solid var(--poke-orange-dark)' : '3px solid var(--poke-orange-dark)',
-            backdropFilter: isScrolled ? 'blur(10px)' : 'none',
-            WebkitBackdropFilter: isScrolled ? 'blur(10px)' : 'none',
+            gap: isMobile ? '6px' : (isScrolled ? '8px' : '10px'),
+            textShadow: '1px 1px 0 rgba(0,0,0,0.2)',
             transition: 'all 0.25s ease',
-            gap: isMobile ? '8px' : '12px'
+            flexShrink: 0
         }}>
-            {/* App Title */}
-            <h1 style={{
-                margin: 0,
-                fontSize: isMobile ? '16px' : (isScrolled ? '18px' : '22px'),
-                fontWeight: 800,
-                color: 'white',
-                display: 'flex',
-                alignItems: 'center',
-                gap: isMobile ? '6px' : (isScrolled ? '8px' : '10px'),
-                textShadow: '1px 1px 0 rgba(0,0,0,0.2)',
-                transition: 'all 0.25s ease',
-                flexShrink: 0
-            }}>
-                <svg
-                    width={isMobile ? "20" : (isScrolled ? "22" : "26")}
-                    height={isMobile ? "20" : (isScrolled ? "22" : "26")}
-                    viewBox="0 0 24 24"
-                    fill="white"
-                    style={{ transition: 'all 0.25s ease', flexShrink: 0 }}
-                >
-                    <circle cx="12" cy="12" r="10" fill="none" stroke="white" strokeWidth="2.5"/>
-                    <circle cx="12" cy="12" r="4" fill="white"/>
-                    <line x1="2" y1="12" x2="8" y2="12" stroke="white" strokeWidth="2.5"/>
-                    <line x1="16" y1="12" x2="22" y2="12" stroke="white" strokeWidth="2.5"/>
-                </svg>
-                <span>{isSmallMobile ? 'PTA' : 'PTA Dex'}</span>
-            </h1>
+            <svg
+                width={isMobile ? "20" : (isScrolled ? "22" : "26")}
+                height={isMobile ? "20" : (isScrolled ? "22" : "26")}
+                viewBox="0 0 24 24"
+                fill="white"
+                style={{ transition: 'all 0.25s ease', flexShrink: 0 }}
+            >
+                <circle cx="12" cy="12" r="10" fill="none" stroke="white" strokeWidth="2.5"/>
+                <circle cx="12" cy="12" r="4" fill="white"/>
+                <line x1="2" y1="12" x2="8" y2="12" stroke="white" strokeWidth="2.5"/>
+                <line x1="16" y1="12" x2="22" y2="12" stroke="white" strokeWidth="2.5"/>
+            </svg>
+            <span>{isSmallMobile ? 'PTA' : 'PTA Dex'}</span>
+        </h1>
+    );
 
-            {/* Right Section */}
-            <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: isMobile ? '6px' : (isScrolled ? '8px' : '12px'),
-                transition: 'all 0.25s ease',
-                flexShrink: 1,
-                minWidth: 0
-            }}>
-                {/* Money Display */}
-                <div
-                    className="header-money-display"
-                    title={`₽${(trainer.money || 0).toLocaleString()}`}
-                    aria-label={`₽${(trainer.money || 0).toLocaleString()}`}
-                    style={{
-                        padding: isMobile ? '5px 8px' : (isScrolled ? '6px 12px' : '8px 16px'),
-                        borderRadius: isMobile ? '8px' : '12px',
-                        fontWeight: 700,
-                        fontSize: isMobile ? '12px' : (isScrolled ? '13px' : '14px'),
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: isMobile ? '4px' : '6px',
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                        transition: 'all 0.25s ease',
-                        // Defensive cap — a large money value with no limit here can crowd
-                        // the trainer selector next to it out of its share of the row.
-                        // Always shrinkable (not just on mobile): at the ~480px boundary
-                        // the three header icon buttons alone leave little slack, so the
-                        // money pill must be willing to give width back there too.
-                        flexShrink: 1,
-                        maxWidth: isMobile ? '90px' : '130px',
-                        minWidth: '36px',
-                        overflow: 'hidden'
-                    }}
-                >
-                    <span style={{ color: '#f5a623', fontWeight: 800, flexShrink: 0 }}>₽</span>
-                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{(trainer.money || 0).toLocaleString()}</span>
-                </div>
-
-                {/* Trainer Selector */}
-                <div
-                    className="header-trainer-selector"
-                    style={{
-                        borderRadius: isMobile ? '8px' : '12px',
-                        padding: '2px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                        transition: 'all 0.25s ease',
-                        flexShrink: 1,
-                        // Floor so the trainer name stays legible — the money pill (above)
-                        // shrinks first since it already has a tooltip + full-value label.
-                        minWidth: isMobile ? '60px' : '80px',
-                        maxWidth: isMobile ? '150px' : 'none'
-                    }}
-                >
-                    <select
-                        value={activeTrainerId || ''}
-                        onChange={(e) => handleTrainerChange(parseInt(e.target.value, 10))}
-                        title={trainer ? `${trainer.name || 'Unnamed'} (Lv.${trainer.level})` : undefined}
-                        aria-label="Select active trainer"
-                        className="header-trainer-select"
-                        style={{
-                            paddingTop: isMobile ? '5px' : (isScrolled ? '6px' : '8px'),
-                            paddingBottom: isMobile ? '5px' : (isScrolled ? '6px' : '8px'),
-                            paddingLeft: isMobile ? '8px' : (isScrolled ? '10px' : '12px'),
-                            paddingRight: isMobile ? '24px' : '32px',
-                            borderRadius: '10px',
-                            border: 'none',
-                            background: 'transparent',
-                            fontWeight: 700,
-                            cursor: 'pointer',
-                            fontSize: isMobile ? '12px' : (isScrolled ? '13px' : '14px'),
-                            minWidth: 0,
-                            width: '100%',
-                            appearance: 'none',
-                            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23f5a623' stroke-width='3'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`,
-                            backgroundRepeat: 'no-repeat',
-                            backgroundPosition: isMobile ? 'right 6px center' : 'right 10px center',
-                            transition: 'all 0.25s ease',
-                            textOverflow: 'ellipsis',
-                            overflow: 'hidden',
-                            whiteSpace: 'nowrap'
-                        }}
+    // Theme toggle, data menu, and character menu buttons — grouped so they can be
+    // placed next to the title on mobile (row 1) but after the trainer selector on
+    // desktop (single row), without duplicating this markup.
+    const iconButtons = (
+        <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: isMobile ? '6px' : (isScrolled ? '8px' : '12px'),
+            flexShrink: 0
+        }}>
+            {/* Theme Toggle Button */}
+            <button
+                type="button"
+                onClick={toggleTheme}
+                className="header-menu-button"
+                style={{
+                    width: isMobile ? '44px' : (isScrolled ? '40px' : '42px'),
+                    height: isMobile ? '44px' : (isScrolled ? '40px' : '42px'),
+                    borderRadius: isMobile ? '8px' : '12px',
+                    border: 'none',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transition: 'all 0.25s ease',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                    WebkitTapHighlightColor: 'transparent',
+                    touchAction: 'manipulation',
+                    userSelect: 'none',
+                    WebkitUserSelect: 'none',
+                    flexShrink: 0
+                }}
+                title={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
+                aria-label={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
+            >
+                {theme === 'light' ? (
+                    <svg
+                        width={isMobile ? "18" : (isScrolled ? "18" : "20")}
+                        height={isMobile ? "18" : (isScrolled ? "18" : "20")}
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="var(--poke-orange)"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        style={{ transition: 'all 0.25s ease', pointerEvents: 'none', display: 'block' }}
                     >
-                        {activeTrainers.map(t => (
-                            <option key={t.id} value={t.id}>
-                                {t.name || 'Unnamed'} (Lv.{t.level})
-                            </option>
-                        ))}
-                    </select>
-                </div>
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                ) : (
+                    <svg
+                        width={isMobile ? "18" : (isScrolled ? "18" : "20")}
+                        height={isMobile ? "18" : (isScrolled ? "18" : "20")}
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="var(--poke-orange)"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        style={{ transition: 'all 0.25s ease', pointerEvents: 'none', display: 'block' }}
+                    >
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                )}
+            </button>
 
-                {/* Theme Toggle Button */}
+            {/* Data Menu Button — Save/Load, Export, Import, Backup */}
+            <div style={{ position: 'relative', flexShrink: 0, zIndex: 101 }} ref={dataMenuRef}>
                 <button
                     type="button"
-                    onClick={toggleTheme}
-                    className="header-menu-button"
+                    onClick={() => { setShowDataMenu(prev => !prev); setShowCharacterMenu(false); }}
+                    className={`header-menu-button ${showDataMenu ? 'active' : ''}`}
                     style={{
                         width: isMobile ? '44px' : (isScrolled ? '40px' : '42px'),
                         height: isMobile ? '44px' : (isScrolled ? '40px' : '42px'),
@@ -382,532 +430,521 @@ const Header = () => {
                         WebkitTapHighlightColor: 'transparent',
                         touchAction: 'manipulation',
                         userSelect: 'none',
-                        WebkitUserSelect: 'none',
-                        flexShrink: 0
+                        WebkitUserSelect: 'none'
                     }}
-                    title={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
-                    aria-label={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
+                    title="Data & Export"
+                    aria-label="Open data and export menu"
+                    aria-haspopup="true"
+                    aria-controls="data-menu-dropdown"
+                    aria-expanded={showDataMenu}
                 >
-                    {theme === 'light' ? (
-                        <svg
-                            width={isMobile ? "18" : (isScrolled ? "18" : "20")}
-                            height={isMobile ? "18" : (isScrolled ? "18" : "20")}
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="var(--poke-orange)"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            style={{ transition: 'all 0.25s ease', pointerEvents: 'none', display: 'block' }}
-                        >
-                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                        </svg>
-                    ) : (
-                        <svg
-                            width={isMobile ? "18" : (isScrolled ? "18" : "20")}
-                            height={isMobile ? "18" : (isScrolled ? "18" : "20")}
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="var(--poke-orange)"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            style={{ transition: 'all 0.25s ease', pointerEvents: 'none', display: 'block' }}
-                        >
-                            <circle cx="12" cy="12" r="5"></circle>
-                            <line x1="12" y1="1" x2="12" y2="3"></line>
-                            <line x1="12" y1="21" x2="12" y2="23"></line>
-                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                            <line x1="1" y1="12" x2="3" y2="12"></line>
-                            <line x1="21" y1="12" x2="23" y2="12"></line>
-                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                        </svg>
-                    )}
+                    <svg
+                        width={isMobile ? "18" : (isScrolled ? "18" : "20")}
+                        height={isMobile ? "18" : (isScrolled ? "18" : "20")}
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke={showDataMenu ? 'var(--poke-orange-dark)' : 'var(--poke-orange)'}
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        style={{ transition: 'all 0.25s ease', pointerEvents: 'none', display: 'block' }}
+                    >
+                        <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+                        <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+                        <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+                    </svg>
                 </button>
 
-                {/* Data Menu Button — Save/Load, Export, Import, Backup */}
-                <div style={{ position: 'relative', flexShrink: 0, zIndex: 101 }} ref={dataMenuRef}>
-                    <button
-                        type="button"
-                        onClick={() => { setShowDataMenu(prev => !prev); setShowCharacterMenu(false); }}
-                        className={`header-menu-button ${showDataMenu ? 'active' : ''}`}
-                        style={{
-                            width: isMobile ? '44px' : (isScrolled ? '40px' : '42px'),
-                            height: isMobile ? '44px' : (isScrolled ? '40px' : '42px'),
-                            borderRadius: isMobile ? '8px' : '12px',
-                            border: 'none',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            transition: 'all 0.25s ease',
-                            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                            WebkitTapHighlightColor: 'transparent',
-                            touchAction: 'manipulation',
-                            userSelect: 'none',
-                            WebkitUserSelect: 'none'
-                        }}
-                        title="Data & Export"
-                        aria-label="Open data and export menu"
-                        aria-haspopup="true"
-                        aria-controls="data-menu-dropdown"
-                        aria-expanded={showDataMenu}
-                    >
-                        <svg
-                            width={isMobile ? "18" : (isScrolled ? "18" : "20")}
-                            height={isMobile ? "18" : (isScrolled ? "18" : "20")}
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke={showDataMenu ? 'var(--poke-orange-dark)' : 'var(--poke-orange)'}
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            style={{ transition: 'all 0.25s ease', pointerEvents: 'none', display: 'block' }}
-                        >
-                            <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
-                            <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
-                            <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
-                        </svg>
-                    </button>
-
-                    {/* Data Dropdown Menu */}
-                    {showDataMenu && (
-                        <div ref={dataDropdownRef} id="data-menu-dropdown" role="menu" className="header-dropdown-menu" style={{
-                            position: 'absolute',
-                            right: 0,
-                            top: 'calc(100% + 8px)',
-                            borderRadius: '16px',
-                            boxShadow: '0 8px 30px rgba(0,0,0,0.18)',
-                            minWidth: isMobile ? 'min(85vw, 230px)' : '230px',
-                            maxWidth: isMobile ? 'min(95vw, 280px)' : '280px',
-                            maxHeight: 'calc(100vh - 90px)',
-                            zIndex: 1000,
-                            overflowY: 'auto',
-                            overflowX: 'hidden',
-                            animation: 'fadeIn 0.15s ease-out',
-                            border: '2px solid var(--poke-orange, #ffc966)'
+                {/* Data Dropdown Menu */}
+                {showDataMenu && (
+                    <div ref={dataDropdownRef} id="data-menu-dropdown" role="menu" className="header-dropdown-menu" style={{
+                        position: 'absolute',
+                        right: 0,
+                        top: 'calc(100% + 8px)',
+                        borderRadius: '16px',
+                        boxShadow: '0 8px 30px rgba(0,0,0,0.18)',
+                        minWidth: isMobile ? 'min(85vw, 230px)' : '230px',
+                        maxWidth: isMobile ? 'min(95vw, 280px)' : '280px',
+                        maxHeight: 'calc(100vh - 90px)',
+                        zIndex: 1000,
+                        overflowY: 'auto',
+                        overflowX: 'hidden',
+                        animation: 'fadeIn 0.15s ease-out',
+                        border: '2px solid var(--poke-orange, #ffc966)'
+                    }}>
+                        {/* Header */}
+                        <div style={{
+                            padding: '14px 18px',
+                            background: 'linear-gradient(135deg, var(--poke-orange), var(--poke-orange-dark))',
+                            color: 'white',
+                            fontSize: '12px',
+                            fontWeight: 700,
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.5px',
+                            textShadow: '1px 1px 0 rgba(0,0,0,0.15)'
                         }}>
-                            {/* Header */}
-                            <div style={{
-                                padding: '14px 18px',
-                                background: 'linear-gradient(135deg, var(--poke-orange), var(--poke-orange-dark))',
-                                color: 'white',
-                                fontSize: '12px',
-                                fontWeight: 700,
-                                textTransform: 'uppercase',
-                                letterSpacing: '0.5px',
-                                textShadow: '1px 1px 0 rgba(0,0,0,0.15)'
-                            }}>
-                                Data &amp; Export
-                            </div>
-
-                            <div style={{ padding: '8px 0' }}>
-                                <MenuItem {...dataMenuItemProps}
-                                    id="save-load"
-                                    icon={
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-                                            <polyline points="17 21 17 13 7 13 7 21"></polyline>
-                                            <polyline points="7 3 7 8 15 8"></polyline>
-                                        </svg>
-                                    }
-                                    label="Save / Load"
-                                    title="Save or load a game state snapshot"
-                                    onClick={() => {
-                                        openSaveLoadModal();
-                                        setShowDataMenu(false);
-                                    }}
-                                />
-                                <MenuItem {...dataMenuItemProps}
-                                    id="export-one"
-                                    icon={
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                            <polyline points="7 10 12 15 17 10"></polyline>
-                                            <line x1="12" y1="15" x2="12" y2="3"></line>
-                                        </svg>
-                                    }
-                                    label="Export Trainer JSON"
-                                    onClick={() => {
-                                        exportSingleTrainer(trainer);
-                                        setShowDataMenu(false);
-                                    }}
-                                />
-                                <MenuItem {...dataMenuItemProps}
-                                    id="export-all"
-                                    icon={
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                            <polyline points="7 10 12 15 17 10"></polyline>
-                                            <line x1="12" y1="15" x2="12" y2="3"></line>
-                                        </svg>
-                                    }
-                                    label="Export All Data"
-                                    onClick={() => {
-                                        exportAllData();
-                                        setShowDataMenu(false);
-                                    }}
-                                />
-                                <MenuItem {...dataMenuItemProps}
-                                    id="export-cards"
-                                    icon={
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                            <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
-                                            <line x1="1" y1="10" x2="23" y2="10"></line>
-                                        </svg>
-                                    }
-                                    label="Export Cards"
-                                    title={`Export trainer and Pokémon cards for ${trainer?.name || 'trainer'}`}
-                                    onClick={() => {
-                                        setShowCardModal(true);
-                                        setShowDataMenu(false);
-                                    }}
-                                />
-                                <MenuItem {...dataMenuItemProps}
-                                    id="print-sheet"
-                                    icon={
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                            <polyline points="6 9 6 2 18 2 18 9"></polyline>
-                                            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
-                                            <rect x="6" y="14" width="12" height="8"></rect>
-                                        </svg>
-                                    }
-                                    label="Print Sheet"
-                                    title="Print or save a character sheet as PDF"
-                                    onClick={() => {
-                                        openPrintSheet();
-                                        setShowDataMenu(false);
-                                    }}
-                                />
-                                <MenuItem {...dataMenuItemProps}
-                                    id="restore-backup"
-                                    icon={
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                            <polyline points="1 4 1 10 7 10"></polyline>
-                                            <path d="M3.51 15a9 9 0 1 0 .49-3.51"></path>
-                                        </svg>
-                                    }
-                                    label="Restore Auto-Backup"
-                                    onClick={() => {
-                                        restoreAutoBackup();
-                                        setShowDataMenu(false);
-                                    }}
-                                />
-                                <MenuItem {...dataMenuItemProps}
-                                    id="demo"
-                                    icon={
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-                                        </svg>
-                                    }
-                                    label="Load Example Trainer"
-                                    onClick={() => {
-                                        loadDemoTrainer();
-                                        setShowDataMenu(false);
-                                    }}
-                                />
-                                <label
-                                    role="menuitem"
-                                    onMouseEnter={() => setHoveredDataItem('import')}
-                                    onMouseLeave={() => setHoveredDataItem(null)}
-                                    onTouchStart={() => setHoveredDataItem('import')}
-                                    onTouchEnd={() => setTimeout(() => setHoveredDataItem(null), 150)}
-                                    className={`header-menu-item ${hoveredDataItem === 'import' ? 'hovered' : ''}`}
-                                    style={{
-                                        width: '100%',
-                                        padding: '14px 18px',
-                                        border: 'none',
-                                        textAlign: 'left',
-                                        cursor: 'pointer',
-                                        fontSize: '14px',
-                                        fontWeight: 600,
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '12px',
-                                        transition: 'all 0.15s ease',
-                                        boxSizing: 'border-box',
-                                        borderLeft: hoveredDataItem === 'import' ? '3px solid var(--poke-orange)' : '3px solid transparent',
-                                        WebkitTapHighlightColor: 'transparent',
-                                        touchAction: 'manipulation'
-                                    }}
-                                >
-                                    <span style={{
-                                        width: '20px',
-                                        display: 'flex',
-                                        justifyContent: 'center',
-                                        color: hoveredDataItem === 'import' ? 'var(--poke-orange)' : 'inherit'
-                                    }}>
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                            <polyline points="17 8 12 3 7 8"></polyline>
-                                            <line x1="12" y1="3" x2="12" y2="15"></line>
-                                        </svg>
-                                    </span>
-                                    <span>Import Data</span>
-                                    <input
-                                        type="file"
-                                        accept=".json"
-                                        onChange={(e) => {
-                                            if (e.target.files[0]) {
-                                                importData(e.target.files[0]);
-                                                setShowDataMenu(false);
-                                            }
-                                        }}
-                                        style={{ display: 'none' }}
-                                    />
-                                </label>
-                            </div>
+                            Data &amp; Export
                         </div>
-                    )}
-                </div>
 
-                {/* Character Menu Button */}
-                <div style={{ position: 'relative', flexShrink: 0, zIndex: 101 }} ref={menuRef}>
-                    <button
-                        type="button"
-                        onClick={() => { setShowCharacterMenu(prev => !prev); setShowDataMenu(false); }}
-                        className={`header-menu-button ${showCharacterMenu ? 'active' : ''}`}
-                        style={{
-                            width: isMobile ? '44px' : (isScrolled ? '40px' : '42px'),
-                            height: isMobile ? '44px' : (isScrolled ? '40px' : '42px'),
-                            borderRadius: isMobile ? '8px' : '12px',
-                            border: 'none',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            transition: 'all 0.25s ease',
-                            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                            WebkitTapHighlightColor: 'transparent',
-                            touchAction: 'manipulation',
-                            userSelect: 'none',
-                            WebkitUserSelect: 'none'
-                        }}
-                        title="Character Menu"
-                        aria-label="Open character menu"
-                        aria-haspopup="true"
-                        aria-controls="character-menu-dropdown"
-                        aria-expanded={showCharacterMenu}
-                    >
-                        <svg
-                            width={isMobile ? "18" : (isScrolled ? "18" : "20")}
-                            height={isMobile ? "18" : (isScrolled ? "18" : "20")}
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            strokeWidth="2.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            style={{ stroke: showCharacterMenu ? 'var(--color-purple-dark)' : 'var(--color-purple)', transition: 'all 0.25s ease', pointerEvents: 'none', display: 'block' }}
-                        >
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="12" cy="7" r="4"></circle>
-                        </svg>
-                    </button>
-
-                    {/* Dropdown Menu */}
-                    {showCharacterMenu && (
-                        <div ref={dropdownRef} id="character-menu-dropdown" role="menu" className="header-dropdown-menu" style={{
-                            position: 'absolute',
-                            right: 0,
-                            top: 'calc(100% + 8px)',
-                            borderRadius: '16px',
-                            boxShadow: '0 8px 30px rgba(0,0,0,0.18)',
-                            minWidth: isMobile ? 'min(85vw, 230px)' : '230px',
-                            maxWidth: isMobile ? 'min(95vw, 280px)' : '280px',
-                            maxHeight: 'calc(100vh - 90px)',
-                            zIndex: 1000,
-                            overflowY: 'auto',
-                            overflowX: 'hidden',
-                            animation: 'fadeIn 0.15s ease-out',
-                            border: '2px solid var(--poke-orange, #ffc966)'
-                        }}>
-                            {/* Header */}
-                            <div style={{
-                                padding: '14px 18px',
-                                background: 'linear-gradient(135deg, var(--poke-orange), var(--poke-orange-dark))',
-                                color: 'white',
-                                fontSize: '12px',
-                                fontWeight: 700,
-                                textTransform: 'uppercase',
-                                letterSpacing: '0.5px',
-                                textShadow: '1px 1px 0 rgba(0,0,0,0.15)'
-                            }}>
-                                Character Menu
-                            </div>
-
-                            {/* Trainer Section */}
-                            <div style={{ padding: '8px 0' }}>
-                                <MenuItem {...menuItemProps}
-                                    id="new"
-                                    icon={
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                            <line x1="12" y1="5" x2="12" y2="19"></line>
-                                            <line x1="5" y1="12" x2="19" y2="12"></line>
-                                        </svg>
-                                    }
-                                    label="New Trainer"
-                                    onClick={() => {
-                                        addNewTrainer();
-                                        setShowCharacterMenu(false);
+                        <div style={{ padding: '8px 0' }}>
+                            <MenuItem {...dataMenuItemProps}
+                                id="save-load"
+                                icon={
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                                        <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                                        <polyline points="7 3 7 8 15 8"></polyline>
+                                    </svg>
+                                }
+                                label="Save / Load"
+                                title="Save or load a game state snapshot"
+                                onClick={() => {
+                                    openSaveLoadModal();
+                                    setShowDataMenu(false);
+                                }}
+                            />
+                            <MenuItem {...dataMenuItemProps}
+                                id="export-one"
+                                icon={
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                        <polyline points="7 10 12 15 17 10"></polyline>
+                                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                                    </svg>
+                                }
+                                label="Export Trainer JSON"
+                                onClick={() => {
+                                    exportSingleTrainer(trainer);
+                                    setShowDataMenu(false);
+                                }}
+                            />
+                            <MenuItem {...dataMenuItemProps}
+                                id="export-all"
+                                icon={
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                        <polyline points="7 10 12 15 17 10"></polyline>
+                                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                                    </svg>
+                                }
+                                label="Export All Data"
+                                onClick={() => {
+                                    exportAllData();
+                                    setShowDataMenu(false);
+                                }}
+                            />
+                            <MenuItem {...dataMenuItemProps}
+                                id="export-cards"
+                                icon={
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                                        <line x1="1" y1="10" x2="23" y2="10"></line>
+                                    </svg>
+                                }
+                                label="Export Cards"
+                                title={`Export trainer and Pokémon cards for ${trainer?.name || 'trainer'}`}
+                                onClick={() => {
+                                    setShowCardModal(true);
+                                    setShowDataMenu(false);
+                                }}
+                            />
+                            <MenuItem {...dataMenuItemProps}
+                                id="print-sheet"
+                                icon={
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                                        <rect x="6" y="14" width="12" height="8"></rect>
+                                    </svg>
+                                }
+                                label="Print Sheet"
+                                title="Print or save a character sheet as PDF"
+                                onClick={() => {
+                                    openPrintSheet();
+                                    setShowDataMenu(false);
+                                }}
+                            />
+                            <MenuItem {...dataMenuItemProps}
+                                id="restore-backup"
+                                icon={
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <polyline points="1 4 1 10 7 10"></polyline>
+                                        <path d="M3.51 15a9 9 0 1 0 .49-3.51"></path>
+                                    </svg>
+                                }
+                                label="Restore Auto-Backup"
+                                onClick={() => {
+                                    restoreAutoBackup();
+                                    setShowDataMenu(false);
+                                }}
+                            />
+                            <MenuItem {...dataMenuItemProps}
+                                id="demo"
+                                icon={
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                                    </svg>
+                                }
+                                label="Load Example Trainer"
+                                onClick={() => {
+                                    loadDemoTrainer();
+                                    setShowDataMenu(false);
+                                }}
+                            />
+                            <label
+                                role="menuitem"
+                                onMouseEnter={() => setHoveredDataItem('import')}
+                                onMouseLeave={() => setHoveredDataItem(null)}
+                                onTouchStart={() => setHoveredDataItem('import')}
+                                onTouchEnd={() => setTimeout(() => setHoveredDataItem(null), 150)}
+                                className={`header-menu-item ${hoveredDataItem === 'import' ? 'hovered' : ''}`}
+                                style={{
+                                    width: '100%',
+                                    padding: '14px 18px',
+                                    border: 'none',
+                                    textAlign: 'left',
+                                    cursor: 'pointer',
+                                    fontSize: '14px',
+                                    fontWeight: 600,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '12px',
+                                    transition: 'all 0.15s ease',
+                                    boxSizing: 'border-box',
+                                    borderLeft: hoveredDataItem === 'import' ? '3px solid var(--poke-orange)' : '3px solid transparent',
+                                    WebkitTapHighlightColor: 'transparent',
+                                    touchAction: 'manipulation'
+                                }}
+                            >
+                                <span style={{
+                                    width: '20px',
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    color: hoveredDataItem === 'import' ? 'var(--poke-orange)' : 'inherit'
+                                }}>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                        <polyline points="17 8 12 3 7 8"></polyline>
+                                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                                    </svg>
+                                </span>
+                                <span>Import Data</span>
+                                <input
+                                    type="file"
+                                    accept=".json"
+                                    onChange={(e) => {
+                                        if (e.target.files[0]) {
+                                            importData(e.target.files[0]);
+                                            setShowDataMenu(false);
+                                        }
                                     }}
+                                    style={{ display: 'none' }}
                                 />
-                                <MenuItem {...menuItemProps}
-                                    id="clone"
-                                    icon={
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                                        </svg>
-                                    }
-                                    label="Clone Trainer"
-                                    onClick={() => {
-                                        duplicateTrainer(activeTrainerId);
-                                        setShowCharacterMenu(false);
-                                    }}
-                                />
-                            </div>
-
-                            <hr style={{ margin: '0 12px', border: 'none', borderTop: '1px solid var(--poke-orange, #ffc966)' }} />
-
-                            {/* Preferences */}
-                            <div style={{ padding: '8px 0' }}>
-                                <MenuItem {...menuItemProps}
-                                    id="compact"
-                                    icon={
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                                            <line x1="3" y1="6" x2="21" y2="6"/>
-                                            <line x1="3" y1="10" x2="21" y2="10"/>
-                                            <line x1="3" y1="14" x2="21" y2="14"/>
-                                            <line x1="3" y1="18" x2="21" y2="18"/>
-                                        </svg>
-                                    }
-                                    label={compactMode ? 'Comfortable View' : 'Compact View'}
-                                    onClick={() => {
-                                        setCompactMode(m => !m);
-                                        setShowCharacterMenu(false);
-                                    }}
-                                />
-                            </div>
-
-                            <hr style={{ margin: '0 12px', border: 'none', borderTop: '1px solid var(--poke-orange, #ffc966)' }} />
-
-                            {/* Danger Zone */}
-                            <div style={{ padding: '8px 0' }}>
-                                <MenuItem {...menuItemProps}
-                                    id="archive"
-                                    icon={
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                            <polyline points="21 8 21 21 3 21 3 8"></polyline>
-                                            <rect x="1" y="3" width="22" height="5"></rect>
-                                            <line x1="10" y1="12" x2="14" y2="12"></line>
-                                        </svg>
-                                    }
-                                    label="Archive Trainer"
-                                    disabled={activeTrainers.length <= 1}
-                                    title={activeTrainers.length <= 1 ? 'Need at least 2 active trainers to archive one' : 'Move this trainer to the archived list'}
-                                    onClick={() => {
-                                        showConfirm({
-                                            title: 'Archive Trainer?',
-                                            message: `Archive "${trainer.name || 'Unnamed'}"? They'll move to the Archived section and can be restored later.`,
-                                            confirmLabel: 'Archive',
-                                            onConfirm: () => {
-                                                archiveTrainer(activeTrainerId);
-                                                setShowCharacterMenu(false);
-                                            }
-                                        });
-                                    }}
-                                />
-                                <MenuItem {...menuItemProps}
-                                    id="delete"
-                                    icon={
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                            <polyline points="3 6 5 6 21 6"></polyline>
-                                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                                        </svg>
-                                    }
-                                    label="Delete Trainer"
-                                    danger
-                                    disabled={activeTrainers.length <= 1 && archivedTrainers.length === 0}
-                                    title={activeTrainers.length <= 1 && archivedTrainers.length === 0 ? 'Cannot delete the only trainer' : 'Permanently delete this trainer'}
-                                    onClick={() => {
-                                        deleteTrainer(activeTrainerId);
-                                        setShowCharacterMenu(false);
-                                    }}
-                                />
-                            </div>
-
-                            {/* Archived Trainers Section */}
-                            {archivedTrainers.length > 0 && (
-                                <>
-                                    <hr style={{ margin: '0 12px', border: 'none', borderTop: '1px solid var(--poke-orange, #ffc966)' }} />
-                                    <div style={{ padding: '4px 0' }}>
-                                        <button
-                                            onClick={() => setShowArchivedSection(p => !p)}
-                                            aria-expanded={showArchivedSection}
-                                            style={{
-                                                width: '100%',
-                                                padding: '10px 18px',
-                                                border: 'none',
-                                                background: 'none',
-                                                cursor: 'pointer',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                gap: '8px',
-                                                fontSize: '12px',
-                                                fontWeight: 700,
-                                                color: 'var(--text-muted)',
-                                                textTransform: 'uppercase',
-                                                letterSpacing: '0.5px'
-                                            }}
-                                        >
-                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-                                                style={{ transform: showArchivedSection ? 'rotate(90deg)' : 'none', transition: 'transform 0.15s' }}>
-                                                <polyline points="9 18 15 12 9 6"></polyline>
-                                            </svg>
-                                            Archived ({archivedTrainers.length})
-                                        </button>
-                                        {showArchivedSection && archivedTrainers.map(t => (
-                                            <div key={t.id} style={{
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'space-between',
-                                                padding: '6px 18px',
-                                                gap: '8px'
-                                            }}>
-                                                <span style={{ fontSize: '13px', color: 'var(--text-muted)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                                    {t.name || 'Unnamed'} (Lv.{t.level})
-                                                </span>
-                                                <button
-                                                    role="menuitem"
-                                                    onClick={() => {
-                                                        unarchiveTrainer(t.id);
-                                                        setShowCharacterMenu(false);
-                                                    }}
-                                                    style={{
-                                                        padding: '3px 10px',
-                                                        fontSize: '11px',
-                                                        fontWeight: 700,
-                                                        background: 'var(--poke-orange)',
-                                                        color: 'white',
-                                                        border: 'none',
-                                                        borderRadius: '4px',
-                                                        cursor: 'pointer',
-                                                        flexShrink: 0
-                                                    }}
-                                                >
-                                                    Restore
-                                                </button>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </>
-                            )}
+                            </label>
                         </div>
-                    )}
-                </div>
+                    </div>
+                )}
             </div>
+
+            {/* Character Menu Button */}
+            <div style={{ position: 'relative', flexShrink: 0, zIndex: 101 }} ref={menuRef}>
+                <button
+                    type="button"
+                    onClick={() => { setShowCharacterMenu(prev => !prev); setShowDataMenu(false); }}
+                    className={`header-menu-button ${showCharacterMenu ? 'active' : ''}`}
+                    style={{
+                        width: isMobile ? '44px' : (isScrolled ? '40px' : '42px'),
+                        height: isMobile ? '44px' : (isScrolled ? '40px' : '42px'),
+                        borderRadius: isMobile ? '8px' : '12px',
+                        border: 'none',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        transition: 'all 0.25s ease',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                        WebkitTapHighlightColor: 'transparent',
+                        touchAction: 'manipulation',
+                        userSelect: 'none',
+                        WebkitUserSelect: 'none'
+                    }}
+                    title="Character Menu"
+                    aria-label="Open character menu"
+                    aria-haspopup="true"
+                    aria-controls="character-menu-dropdown"
+                    aria-expanded={showCharacterMenu}
+                >
+                    <svg
+                        width={isMobile ? "18" : (isScrolled ? "18" : "20")}
+                        height={isMobile ? "18" : (isScrolled ? "18" : "20")}
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        style={{ stroke: showCharacterMenu ? 'var(--color-purple-dark)' : 'var(--color-purple)', transition: 'all 0.25s ease', pointerEvents: 'none', display: 'block' }}
+                    >
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </button>
+
+                {/* Dropdown Menu */}
+                {showCharacterMenu && (
+                    <div ref={dropdownRef} id="character-menu-dropdown" role="menu" className="header-dropdown-menu" style={{
+                        position: 'absolute',
+                        right: 0,
+                        top: 'calc(100% + 8px)',
+                        borderRadius: '16px',
+                        boxShadow: '0 8px 30px rgba(0,0,0,0.18)',
+                        minWidth: isMobile ? 'min(85vw, 230px)' : '230px',
+                        maxWidth: isMobile ? 'min(95vw, 280px)' : '280px',
+                        maxHeight: 'calc(100vh - 90px)',
+                        zIndex: 1000,
+                        overflowY: 'auto',
+                        overflowX: 'hidden',
+                        animation: 'fadeIn 0.15s ease-out',
+                        border: '2px solid var(--poke-orange, #ffc966)'
+                    }}>
+                        {/* Header */}
+                        <div style={{
+                            padding: '14px 18px',
+                            background: 'linear-gradient(135deg, var(--poke-orange), var(--poke-orange-dark))',
+                            color: 'white',
+                            fontSize: '12px',
+                            fontWeight: 700,
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.5px',
+                            textShadow: '1px 1px 0 rgba(0,0,0,0.15)'
+                        }}>
+                            Character Menu
+                        </div>
+
+                        {/* Trainer Section */}
+                        <div style={{ padding: '8px 0' }}>
+                            <MenuItem {...menuItemProps}
+                                id="new"
+                                icon={
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                                    </svg>
+                                }
+                                label="New Trainer"
+                                onClick={() => {
+                                    addNewTrainer();
+                                    setShowCharacterMenu(false);
+                                }}
+                            />
+                            <MenuItem {...menuItemProps}
+                                id="clone"
+                                icon={
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                    </svg>
+                                }
+                                label="Clone Trainer"
+                                onClick={() => {
+                                    duplicateTrainer(activeTrainerId);
+                                    setShowCharacterMenu(false);
+                                }}
+                            />
+                        </div>
+
+                        <hr style={{ margin: '0 12px', border: 'none', borderTop: '1px solid var(--poke-orange, #ffc966)' }} />
+
+                        {/* Preferences */}
+                        <div style={{ padding: '8px 0' }}>
+                            <MenuItem {...menuItemProps}
+                                id="compact"
+                                icon={
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                                        <line x1="3" y1="6" x2="21" y2="6"/>
+                                        <line x1="3" y1="10" x2="21" y2="10"/>
+                                        <line x1="3" y1="14" x2="21" y2="14"/>
+                                        <line x1="3" y1="18" x2="21" y2="18"/>
+                                    </svg>
+                                }
+                                label={compactMode ? 'Comfortable View' : 'Compact View'}
+                                onClick={() => {
+                                    setCompactMode(m => !m);
+                                    setShowCharacterMenu(false);
+                                }}
+                            />
+                        </div>
+
+                        <hr style={{ margin: '0 12px', border: 'none', borderTop: '1px solid var(--poke-orange, #ffc966)' }} />
+
+                        {/* Danger Zone */}
+                        <div style={{ padding: '8px 0' }}>
+                            <MenuItem {...menuItemProps}
+                                id="archive"
+                                icon={
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <polyline points="21 8 21 21 3 21 3 8"></polyline>
+                                        <rect x="1" y="3" width="22" height="5"></rect>
+                                        <line x1="10" y1="12" x2="14" y2="12"></line>
+                                    </svg>
+                                }
+                                label="Archive Trainer"
+                                disabled={activeTrainers.length <= 1}
+                                title={activeTrainers.length <= 1 ? 'Need at least 2 active trainers to archive one' : 'Move this trainer to the archived list'}
+                                onClick={() => {
+                                    showConfirm({
+                                        title: 'Archive Trainer?',
+                                        message: `Archive "${trainer.name || 'Unnamed'}"? They'll move to the Archived section and can be restored later.`,
+                                        confirmLabel: 'Archive',
+                                        onConfirm: () => {
+                                            archiveTrainer(activeTrainerId);
+                                            setShowCharacterMenu(false);
+                                        }
+                                    });
+                                }}
+                            />
+                            <MenuItem {...menuItemProps}
+                                id="delete"
+                                icon={
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <polyline points="3 6 5 6 21 6"></polyline>
+                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                    </svg>
+                                }
+                                label="Delete Trainer"
+                                danger
+                                disabled={activeTrainers.length <= 1 && archivedTrainers.length === 0}
+                                title={activeTrainers.length <= 1 && archivedTrainers.length === 0 ? 'Cannot delete the only trainer' : 'Permanently delete this trainer'}
+                                onClick={() => {
+                                    deleteTrainer(activeTrainerId);
+                                    setShowCharacterMenu(false);
+                                }}
+                            />
+                        </div>
+
+                        {/* Archived Trainers Section */}
+                        {archivedTrainers.length > 0 && (
+                            <>
+                                <hr style={{ margin: '0 12px', border: 'none', borderTop: '1px solid var(--poke-orange, #ffc966)' }} />
+                                <div style={{ padding: '4px 0' }}>
+                                    <button
+                                        onClick={() => setShowArchivedSection(p => !p)}
+                                        aria-expanded={showArchivedSection}
+                                        style={{
+                                            width: '100%',
+                                            padding: '10px 18px',
+                                            border: 'none',
+                                            background: 'none',
+                                            cursor: 'pointer',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '8px',
+                                            fontSize: '12px',
+                                            fontWeight: 700,
+                                            color: 'var(--text-muted)',
+                                            textTransform: 'uppercase',
+                                            letterSpacing: '0.5px'
+                                        }}
+                                    >
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+                                            style={{ transform: showArchivedSection ? 'rotate(90deg)' : 'none', transition: 'transform 0.15s' }}>
+                                            <polyline points="9 18 15 12 9 6"></polyline>
+                                        </svg>
+                                        Archived ({archivedTrainers.length})
+                                    </button>
+                                    {showArchivedSection && archivedTrainers.map(t => (
+                                        <div key={t.id} style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'space-between',
+                                            padding: '6px 18px',
+                                            gap: '8px'
+                                        }}>
+                                            <span style={{ fontSize: '13px', color: 'var(--text-muted)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                {t.name || 'Unnamed'} (Lv.{t.level})
+                                            </span>
+                                            <button
+                                                role="menuitem"
+                                                onClick={() => {
+                                                    unarchiveTrainer(t.id);
+                                                    setShowCharacterMenu(false);
+                                                }}
+                                                style={{
+                                                    padding: '3px 10px',
+                                                    fontSize: '11px',
+                                                    fontWeight: 700,
+                                                    background: 'var(--poke-orange)',
+                                                    color: 'white',
+                                                    border: 'none',
+                                                    borderRadius: '4px',
+                                                    cursor: 'pointer',
+                                                    flexShrink: 0
+                                                }}
+                                            >
+                                                Restore
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            </>
+                        )}
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+
+    return (
+        <header style={{
+            background: 'linear-gradient(135deg, var(--poke-orange) 0%, var(--poke-orange-dark) 100%)',
+            padding: isMobile
+                ? (isScrolled ? '8px 10px' : '10px 12px')
+                : (isScrolled ? '10px 20px' : '14px 20px'),
+            display: 'flex',
+            flexDirection: isMobile ? 'column' : 'row',
+            justifyContent: isMobile ? 'flex-start' : 'space-between',
+            alignItems: isMobile ? 'stretch' : 'center',
+            boxShadow: isScrolled
+                ? '0 4px 20px rgba(0,0,0,0.25), 0 2px 8px rgba(245, 166, 35, 0.3)'
+                : '0 4px 15px rgba(0,0,0,0.15), inset 0 2px 0 rgba(255,255,255,0.3)',
+            position: 'sticky',
+            top: 0,
+            zIndex: 100,
+            borderBottom: isScrolled ? '2px solid var(--poke-orange-dark)' : '3px solid var(--poke-orange-dark)',
+            backdropFilter: isScrolled ? 'blur(10px)' : 'none',
+            WebkitBackdropFilter: isScrolled ? 'blur(10px)' : 'none',
+            transition: 'all 0.25s ease',
+            gap: isMobile ? '8px' : '12px'
+        }}>
+            {isMobile ? (
+                <>
+                    {/* Row 1: title + icon buttons (theme / data / character menu) */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
+                        {appTitle}
+                        {iconButtons}
+                    </div>
+                    {/* Row 2: money + trainer selector get a dedicated full-width row so both stay legible */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        {moneyDisplay}
+                        {trainerSelector}
+                    </div>
+                </>
+            ) : (
+                <>
+                    {appTitle}
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: isScrolled ? '8px' : '12px',
+                        transition: 'all 0.25s ease',
+                        flexShrink: 1,
+                        minWidth: 0
+                    }}>
+                        {moneyDisplay}
+                        {trainerSelector}
+                        {iconButtons}
+                    </div>
+                </>
+            )}
         </header>
     );
 };
