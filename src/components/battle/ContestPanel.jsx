@@ -127,7 +127,7 @@ const ContestPanel = ({ selectedPokemon, gameData, onRoll }) => {
             {/* Move list */}
             <div style={{ marginBottom: 12 }}>
                 <div style={{ fontSize: 13, fontWeight: 'bold', marginBottom: 6 }}>Select Contest Move</div>
-                <div style={{ maxHeight: filteredMoves.length > 4 ? 240 : undefined, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 5 }}>
+                <div className="detail-tile-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '6px' }}>
                     {filteredMoves.length === 0 && (
                         <div style={{ textAlign: 'center', padding: 12, fontSize: 13, color: 'var(--text-muted)' }}>
                             {moves.length === 0
