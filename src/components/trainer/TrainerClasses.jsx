@@ -160,6 +160,12 @@ const TrainerClasses = () => {
         const classData = GAME_DATA.trainerClasses[cls];
         const isFirstClass = currentClasses.length === 0;
 
+        // Advanced classes require their base class first (PH2: Advanced Class prerequisites)
+        if (classData?.baseClass && !currentClasses.includes(classData.baseClass)) {
+            toast.warning(`${cls} requires the ${classData.baseClass} class first!`);
+            return;
+        }
+
         // Determine feat point cost
         let featPointChange = 0;
         if (classData?.type === 'base' && isFirstClass) {
@@ -423,9 +429,18 @@ const TrainerClasses = () => {
                         <optgroup label="━━ Advanced Classes ━━">
                             {Object.entries(GAME_DATA.trainerClasses || {})
                                 .filter(([_, data]) => data.type === 'advanced')
-                                .map(([cls, _]) => (
-                                    <option key={cls} value={cls} disabled={currentClasses.includes(cls)}>{cls}</option>
-                                ))}
+                                .map(([cls, data]) => {
+                                    const missingBase = data.baseClass && !currentClasses.includes(data.baseClass);
+                                    return (
+                                        <option
+                                            key={cls}
+                                            value={cls}
+                                            disabled={currentClasses.includes(cls) || missingBase}
+                                        >
+                                            {cls}{missingBase ? ` (requires ${data.baseClass})` : ''}
+                                        </option>
+                                    );
+                                })}
                         </optgroup>
                     </select>
                     <button className="btn btn-primary" onClick={handleStartAddClass}>

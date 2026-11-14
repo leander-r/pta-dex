@@ -837,6 +837,7 @@ const PokedexRow = memo(({ species, isExpanded, onRowClick, evolvedFromMap }) =>
                     <img
                         src={spriteUrl}
                         alt={species.species}
+                        loading="lazy"
                         style={{ width: '44px', height: '44px', imageRendering: 'pixelated', objectFit: 'contain', position: 'relative', zIndex: 1 }}
                         onError={e => { e.target.style.display = 'none'; }}
                     />

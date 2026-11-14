@@ -3,6 +3,7 @@
 // ============================================================
 
 import toast from './toast.js';
+import { calculatePokemonHP, calculateTrainerMaxHP } from './dataUtils.js';
 
 
 /**
@@ -566,7 +567,7 @@ const escapeHtml = (str) => String(str ?? '').replace(/[&<>"']/g, c => ({ '&': '
 export const generatePrintSheetHTML = (trainer, party) => {
     const genderSymbol = trainer.gender === 'male' ? '♂' : trainer.gender === 'female' ? '♀' : '';
     const classesDisplay = trainer.classes?.length > 0 ? escapeHtml(trainer.classes.join(' / ')) : 'Trainer';
-    const maxHP = (trainer.stats?.hp ?? 0) * 4 + (trainer.level ?? 0) * 4;
+    const maxHP = calculateTrainerMaxHP(trainer);
     const trainerName = escapeHtml(trainer.name || 'Unnamed');
 
     const statTable = (stats) => `
@@ -610,7 +611,7 @@ export const generatePrintSheetHTML = (trainer, party) => {
     const partyCards = (party || []).map(poke => {
         const sp = poke.species && poke.species !== poke.name ? ` (${escapeHtml(poke.species)})` : '';
         const types = escapeHtml((poke.types || []).join(' / ')) || '—';
-        const pokeMaxHP = (poke.baseStats?.hp ?? 0) * 3 + (poke.level ?? 0) * 3;
+        const pokeMaxHP = calculatePokemonHP(poke);
         // abilities[] is the live source of truth the in-app picker reads/writes — the
         // legacy ability/ability2/ability3 fields are only ever set by evolution, never by
         // the picker, so they're blank for most Pokémon and can go stale after evolving.

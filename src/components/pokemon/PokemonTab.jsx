@@ -153,12 +153,24 @@ const PokemonTab = () => {
     const [hasDragged, setHasDragged] = useState(() => !!safeLocalStorageGet('pta-has-dragged', ''));
     const [expandedWeakType, setExpandedWeakType] = useState(null);
 
+    // Reserve has no size cap (unlike the 6-slot party), so a long campaign can
+    // accumulate hundreds of stored Pokémon. Paginate it the same way PokedexSection
+    // paginates its 809-species list, so a large reserve doesn't mount every card at
+    // once. Party is always <=6, so it's never paginated.
+    const ROSTER_PAGE_SIZE = 50;
+    const [reservePage, setReservePage] = useState(0);
+
     // Scroll to newly added Pokémon
     useEffect(() => {
         const len = currentList.length;
         if (prevListLengthRef.current !== null && len > prevListLengthRef.current) {
             const newPokemon = currentList[len - 1];
             if (newPokemon) {
+                // New Pokémon are appended to the end of the list, which — once paginated —
+                // lands on the last page; jump there so the scroll-into-view below can find it.
+                if (pokemonView === 'reserve') {
+                    setReservePage(Math.floor((len - 1) / ROSTER_PAGE_SIZE));
+                }
                 setJustAddedId(newPokemon.id);
                 setTimeout(() => {
                     if (cardListRef.current) {
@@ -171,6 +183,12 @@ const PokemonTab = () => {
         }
         prevListLengthRef.current = len;
     }, [currentList.length]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    // Reset to page 1 whenever the view, search, or type filter changes — otherwise a
+    // filter that narrows the list could leave the user stranded on a now-empty page.
+    useEffect(() => {
+        setReservePage(0);
+    }, [pokemonView, filter.search, filter.type]);
 
     const handleDragStart = useCallback((id) => {
         setDragId(id);
@@ -352,6 +370,11 @@ const PokemonTab = () => {
 
         return result;
     }, [currentList, filter]);
+
+    const reserveTotalPages = Math.max(1, Math.ceil(filteredList.length / ROSTER_PAGE_SIZE));
+    const pagedList = pokemonView === 'reserve'
+        ? filteredList.slice(reservePage * ROSTER_PAGE_SIZE, (reservePage + 1) * ROSTER_PAGE_SIZE)
+        : filteredList;
 
     const handleAddPokemon = () => {
         addPokemon();
@@ -981,8 +1004,13 @@ const PokemonTab = () => {
                         ⠿ Drag the grip handle on any card to reorder
                     </div>
                 )}
+                {pokemonView === 'reserve' && filteredList.length > ROSTER_PAGE_SIZE && (
+                    <div style={{ fontSize: '12px', color: 'var(--text-muted)', textAlign: 'center', marginBottom: '8px' }}>
+                        {reservePage * ROSTER_PAGE_SIZE + 1}–{Math.min((reservePage + 1) * ROSTER_PAGE_SIZE, filteredList.length)} / {filteredList.length}
+                    </div>
+                )}
                 <div ref={cardListRef} className="pokemon-roster-grid">
-                    {filteredList.map((pokemon) => {
+                    {pagedList.map((pokemon) => {
                         // Use actual position in unfiltered list for move up/down
                         const actualIndex = currentList.findIndex(p => p.id === pokemon.id);
                         const isEditingThis = editingPokemonId === pokemon.id;
@@ -1024,6 +1052,37 @@ const PokemonTab = () => {
                         );
                     })}
                 </div>
+                {pokemonView === 'reserve' && filteredList.length > ROSTER_PAGE_SIZE && (
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', marginTop: '10px', flexWrap: 'wrap' }}>
+                        <button
+                            onClick={() => setReservePage(0)}
+                            disabled={reservePage === 0}
+                            aria-label="First page"
+                            style={{ padding: '7px 12px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--bg-secondary)', color: 'var(--text-primary)', cursor: reservePage === 0 ? 'not-allowed' : 'pointer', opacity: reservePage === 0 ? 0.4 : 1, fontSize: '12px' }}
+                        >«</button>
+                        <button
+                            onClick={() => setReservePage(p => p - 1)}
+                            disabled={reservePage === 0}
+                            aria-label="Previous page"
+                            style={{ padding: '7px 12px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--bg-secondary)', color: 'var(--text-primary)', cursor: reservePage === 0 ? 'not-allowed' : 'pointer', opacity: reservePage === 0 ? 0.4 : 1, fontSize: '12px' }}
+                        >‹ Prev</button>
+                        <span style={{ fontSize: '12px', color: 'var(--text-muted)', padding: '0 4px' }}>
+                            Page {reservePage + 1} of {reserveTotalPages}
+                        </span>
+                        <button
+                            onClick={() => setReservePage(p => p + 1)}
+                            disabled={reservePage >= reserveTotalPages - 1}
+                            aria-label="Next page"
+                            style={{ padding: '7px 12px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--bg-secondary)', color: 'var(--text-primary)', cursor: reservePage >= reserveTotalPages - 1 ? 'not-allowed' : 'pointer', opacity: reservePage >= reserveTotalPages - 1 ? 0.4 : 1, fontSize: '12px' }}
+                        >Next ›</button>
+                        <button
+                            onClick={() => setReservePage(reserveTotalPages - 1)}
+                            disabled={reservePage >= reserveTotalPages - 1}
+                            aria-label="Last page"
+                            style={{ padding: '7px 12px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--bg-secondary)', color: 'var(--text-primary)', cursor: reservePage >= reserveTotalPages - 1 ? 'not-allowed' : 'pointer', opacity: reservePage >= reserveTotalPages - 1 ? 0.4 : 1, fontSize: '12px' }}
+                        >»</button>
+                    </div>
+                )}
                 </>
             )}
         </div>

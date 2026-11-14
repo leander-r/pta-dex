@@ -148,6 +148,7 @@ const MOCK_GAME_DATA_CLASSES = {
     trainerClasses: {
         'Ace Trainer': { type: 'base', skillPool: ['Browbeat', 'Sprint', 'Perception'] },
         'Breeder': { type: 'base', skillPool: ['Healing', 'Investigate', 'Acrobatics'] },
+        'Chaser': { type: 'advanced', baseClass: 'Ace Trainer', skillPool: ['Sprint', 'Perception'] },
     },
     skills: {
         Browbeat: { stat: 'ATK', description: 'Intimidate a foe.' },
@@ -220,5 +221,28 @@ test.describe('Classes/Skills economy regressions', () => {
         // Must reclaim the full +2 the first class granted, not just stay at 1 forever
         // (the bug: the old code only ever refunded the -1 cost of additional classes).
         await expect.poll(featPts).toBe('-1'); // 1 - 2
+    });
+
+    test('an advanced class is unavailable until its base class is taken, then becomes available', async ({ page }) => {
+        const chaserOption = page.locator('#classSelectCombined option', { hasText: 'Chaser' });
+        await expect(chaserOption).toBeDisabled();
+        await expect(chaserOption).toHaveText(/requires Ace Trainer/);
+
+        // Selecting a disabled option via selectOption would throw; confirm the guard in
+        // handleStartAddClass also catches a direct attempt (defense in depth).
+        await page.locator('#classSelectCombined').evaluate((el) => { el.value = 'Chaser'; });
+        await page.getByRole('button', { name: 'Add Class', exact: true }).click();
+        await expect(page.locator('.toast-notification')).toContainText('requires the Ace Trainer class first');
+
+        await addClass(page, 'Ace Trainer', ['Browbeat', 'Sprint', 'Perception']);
+
+        await expect(chaserOption).toBeEnabled();
+        await page.selectOption('#classSelectCombined', 'Chaser');
+        await page.getByRole('button', { name: 'Add Class', exact: true }).click();
+        // Both pool skills (Sprint, Perception) were already picked for Ace Trainer, so their
+        // button label now reads "Sprint +1" (a 2nd rank) rather than plain "Sprint".
+        await page.getByRole('button', { name: /^Sprint/ }).click();
+        await page.getByRole('button', { name: /Confirm/ }).click();
+        await expect(page.locator('span', { hasText: 'Chaser' }).first()).toBeVisible();
     });
 });

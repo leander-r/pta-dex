@@ -5,7 +5,7 @@
 
 import React, { createContext, useContext, useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { safeLocalStorageGet, safeLocalStorageSet } from '../utils/storageUtils.js';
-import { getActualStats, calculatePokemonHP, getBaseRelationViolations } from '../utils/dataUtils.js';
+import { getActualStats, calculatePokemonHP, getBaseRelationViolations, calculateTrainerMaxHP } from '../utils/dataUtils.js';
 import { sanitizeImportedTrainer } from '../utils/exportUtils.js';
 import { buildSpeciesUpdateFields } from '../utils/speciesFields.js';
 import { buildEmbed } from '../utils/discordEmbeds.js';
@@ -16,7 +16,6 @@ import { useTrainerContext } from './TrainerContext.jsx';
 import { useGameData } from './GameDataContext.jsx';
 import {
     MAX_TRAINER_IMPORT_BYTES,
-    TRAINER_HP_MULTIPLIER,
     MS_PER_DAY,
     BACKUP_REMINDER_DAYS,
     AUTOSAVE_DEBOUNCE_MS,
@@ -665,7 +664,7 @@ export const DataProvider = ({ children }) => {
 
     // Export text functions
     const exportTrainerText = useCallback((trainer) => {
-        const maxHP = (trainer.stats.hp * TRAINER_HP_MULTIPLIER) + (trainer.level * TRAINER_HP_MULTIPLIER);
+        const maxHP = calculateTrainerMaxHP(trainer);
         const genderSymbol = trainer.gender === 'male' ? '♂' : trainer.gender === 'female' ? '♀' : '';
         const classesDisplay = (trainer.classes && trainer.classes.length > 0) ? trainer.classes.join(' / ') : 'Trainer';
 

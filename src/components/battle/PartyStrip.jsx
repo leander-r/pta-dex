@@ -16,6 +16,7 @@ const PartySprite = ({ sprite, pixelated }) => {
             src={sprite}
             alt=""
             aria-hidden="true"
+            loading="lazy"
             onError={() => setFailed(true)}
             style={{ width: '48px', height: '48px', objectFit: 'contain', imageRendering: pixelated ? 'pixelated' : 'auto' }}
         />

@@ -8,7 +8,7 @@ import { getTypeColor } from '../../utils/typeUtils.js';
 import { getPokemonDisplayImage } from '../../utils/pokemonSprite.js';
 import { copyToClipboard, downloadCardAsImage } from '../../utils/exportUtils.js';
 import toast from '../../utils/toast.js';
-import { getActualStats, calculatePokemonHP, calculateSTAB } from '../../utils/dataUtils.js';
+import { getActualStats, calculatePokemonHP, calculateSTAB, calculateTrainerMaxHP } from '../../utils/dataUtils.js';
 import useModalKeyboard from '../../hooks/useModalKeyboard.js';
 import { useModal, useTrainerContext, usePokemonContext, useData } from '../../contexts/index.js';
 import { GAME_DATA } from '../../data/configs.js';
@@ -508,7 +508,7 @@ const TrainerCard = ({ trainer, pokemon }) => (
         }}>
             <SectionHeader
                 label="Stats"
-                rightContent={`Max HP: ${(trainer.stats.hp * 4) + (trainer.level * 4)}`}
+                rightContent={`Max HP: ${calculateTrainerMaxHP(trainer)}`}
             />
             {[
                 { label: 'HP', key: 'hp', value: trainer.stats.hp },

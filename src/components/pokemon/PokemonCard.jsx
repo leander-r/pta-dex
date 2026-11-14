@@ -39,6 +39,7 @@ const CollapsedAvatar = ({ src, alt }) => {
         <img
             src={src}
             alt={alt}
+            loading="lazy"
             onError={() => setFailed(true)}
             style={{ width: '42px', height: '42px', objectFit: 'cover' }}
         />

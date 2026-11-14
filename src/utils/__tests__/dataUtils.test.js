@@ -14,6 +14,7 @@ import {
     parseACFromFrequency,
     parseCritThreshold,
     resolveAccuracyRoll,
+    calculateTrainerMaxHP,
 } from '../dataUtils.js';
 import { GAME_DATA } from '../../data/configs.js';
 
@@ -312,5 +313,46 @@ describe('resolveAccuracyRoll', () => {
         expect(resolveAccuracyRoll(18, 0, 99, 18).isCrit).toBe(true);
         expect(resolveAccuracyRoll(19, 0, 99, 18).isCrit).toBe(true);
         expect(resolveAccuracyRoll(17, 0, 99, 18).isCrit).toBe(false);
+    });
+});
+
+describe('calculateTrainerMaxHP', () => {
+    const baseTrainer = { level: 10, stats: { hp: 10, atk: 10, def: 10 }, features: [] };
+
+    it('is level*4 + HP-stat*4 with no relevant features', () => {
+        expect(calculateTrainerMaxHP(baseTrainer)).toBe(10 * 4 + 10 * 4);
+    });
+
+    it('adds (ATK mod + DEF mod) * 5 with Improved Martial Endurance', () => {
+        const trainer = { ...baseTrainer, stats: { hp: 10, atk: 14, def: 12 }, features: ['Improved Martial Endurance'] };
+        // atkMod = floor((14-10)/2) = 2, defMod = floor((12-10)/2) = 1 -> (2+1)*5 = 15
+        expect(calculateTrainerMaxHP(trainer)).toBe(80 + 15);
+    });
+
+    it('adds (floor(ATK mod/2) + floor(DEF mod/2)) * 5 with Martial Endurance (half rate of Improved)', () => {
+        const trainer = { ...baseTrainer, stats: { hp: 10, atk: 14, def: 12 }, features: ['Martial Endurance'] };
+        // atkMod=2, defMod=1 -> (floor(2/2)+floor(1/2))*5 = (1+0)*5 = 5
+        expect(calculateTrainerMaxHP(trainer)).toBe(80 + 5);
+    });
+
+    it('Improved Martial Endurance and Martial Endurance do not stack — only the improved bonus applies', () => {
+        const trainer = { ...baseTrainer, stats: { hp: 10, atk: 14, def: 12 }, features: ['Martial Endurance', 'Improved Martial Endurance'] };
+        expect(calculateTrainerMaxHP(trainer)).toBe(80 + 15);
+    });
+
+    it('adds DEF mod * 3 with Mystic Veil, stacking with Martial Endurance', () => {
+        const trainer = { ...baseTrainer, stats: { hp: 10, atk: 10, def: 12 }, features: ['Mystic Veil'] };
+        // defMod = 1 -> 1*3 = 3
+        expect(calculateTrainerMaxHP(trainer)).toBe(80 + 3);
+    });
+
+    it('never subtracts HP for a negative stat modifier (clamped at 0 bonus)', () => {
+        const trainer = { ...baseTrainer, stats: { hp: 10, atk: 4, def: 4 }, features: ['Improved Martial Endurance', 'Mystic Veil'] };
+        expect(calculateTrainerMaxHP(trainer)).toBe(80);
+    });
+
+    it('accepts features stored as {name} objects, not just plain strings', () => {
+        const trainer = { ...baseTrainer, stats: { hp: 10, atk: 14, def: 12 }, features: [{ name: 'Mystic Veil' }] };
+        expect(calculateTrainerMaxHP(trainer)).toBe(80 + 3);
     });
 });

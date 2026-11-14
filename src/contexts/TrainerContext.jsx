@@ -5,6 +5,7 @@
 
 import React, { createContext, useContext, useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { GAME_DATA } from '../data/configs.js';
+import { calculateTrainerMaxHP } from '../utils/dataUtils.js';
 import {
     DEFAULT_TRAINER,
     BASE_STAT_VALUE,
@@ -13,7 +14,6 @@ import {
     MAX_PARTY_SIZE,
     MAX_TRAINER_LEVEL,
     TRAINER_STAT_NEUTRAL,
-    TRAINER_HP_MULTIPLIER,
     CLASS_2_MIN_LEVEL,
     CLASS_3_MIN_LEVEL,
     CLASS_4_MIN_LEVEL
@@ -252,41 +252,9 @@ export const TrainerProvider = ({ children }) => {
         return Math.floor((value - TRAINER_STAT_NEUTRAL) / 2);
     }, [trainer.stats]);
 
-    // Calculate trainer max HP
-    const calculateMaxHP = useCallback(() => {
-        let baseHP = (trainer.stats.hp * TRAINER_HP_MULTIPLIER) + (trainer.level * TRAINER_HP_MULTIPLIER);
-        const features = trainer.features || [];
-
-        const hasImprovedMartialEndurance = features.some(f =>
-            (typeof f === 'object' ? f.name : f) === 'Improved Martial Endurance'
-        );
-        const hasMartialEndurance = features.some(f =>
-            (typeof f === 'object' ? f.name : f) === 'Martial Endurance'
-        );
-        const hasMysticVeil = features.some(f =>
-            (typeof f === 'object' ? f.name : f) === 'Mystic Veil'
-        );
-
-        if (hasImprovedMartialEndurance) {
-            const atkMod = calculateModifier('atk');
-            const defMod = calculateModifier('def');
-            const hpBonus = (atkMod + defMod) * 5;
-            baseHP += Math.max(0, hpBonus);
-        } else if (hasMartialEndurance) {
-            const atkMod = calculateModifier('atk');
-            const defMod = calculateModifier('def');
-            const hpBonus = (Math.floor(atkMod / 2) + Math.floor(defMod / 2)) * 5;
-            baseHP += Math.max(0, hpBonus);
-        }
-
-        if (hasMysticVeil) {
-            const defMod = calculateModifier('def');
-            const hpBonus = defMod * 3;
-            baseHP += Math.max(0, hpBonus);
-        }
-
-        return baseHP;
-    }, [trainer.stats, trainer.level, trainer.features, calculateModifier]);
+    // Calculate trainer max HP — shared with every export path (print sheet, card
+    // export, clipboard text) via calculateTrainerMaxHP so they can't drift apart.
+    const calculateMaxHP = useCallback(() => calculateTrainerMaxHP(trainer), [trainer]);
 
     // Update trainer stat
     const updateTrainerStat = useCallback((stat, value) => {

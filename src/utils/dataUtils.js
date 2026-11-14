@@ -5,6 +5,7 @@
 import { GAME_DATA } from '../data/configs.js';
 import {
     POKEMON_HP_MULTIPLIER,
+    TRAINER_HP_MULTIPLIER,
     COMBAT_STAGE_POSITIVE_MULTIPLIER,
     COMBAT_STAGE_NEGATIVE_MULTIPLIER
 } from '../data/constants.js';
@@ -16,6 +17,34 @@ export const calcModifier = (stat) => {
     if (stat === 10) return 0;
     if (stat < 10) return -(10 - stat);
     return Math.floor((stat - 10) / 2);
+};
+
+/**
+ * Calculate a trainer's max HP, including the HP bonuses granted by the
+ * Martial Endurance / Improved Martial Endurance / Mystic Veil features.
+ * Single source of truth for this — used by the live Battle tab AND every
+ * export path (print sheet, card export, clipboard text) so they can't drift.
+ */
+export const calculateTrainerMaxHP = (trainer) => {
+    if (!trainer) return 0;
+    let baseHP = ((trainer.stats?.hp || 0) * TRAINER_HP_MULTIPLIER) + ((trainer.level || 0) * TRAINER_HP_MULTIPLIER);
+    const features = trainer.features || [];
+    const hasFeature = (name) => features.some(f => (typeof f === 'object' ? f.name : f) === name);
+
+    const atkMod = calcModifier(trainer.stats?.atk ?? 10);
+    const defMod = calcModifier(trainer.stats?.def ?? 10);
+
+    if (hasFeature('Improved Martial Endurance')) {
+        baseHP += Math.max(0, (atkMod + defMod) * 5);
+    } else if (hasFeature('Martial Endurance')) {
+        baseHP += Math.max(0, (Math.floor(atkMod / 2) + Math.floor(defMod / 2)) * 5);
+    }
+
+    if (hasFeature('Mystic Veil')) {
+        baseHP += Math.max(0, defMod * 3);
+    }
+
+    return baseHP;
 };
 
 /**

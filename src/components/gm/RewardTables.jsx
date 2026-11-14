@@ -205,12 +205,12 @@ const ExpCalculator = () => {
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: 6, fontSize: 13 }}>
                         {[
                             ['Abra',       15], ['Alakazam',  50], ['Arcanine',  40],
-                            ['Caterpie',    5], ['Charizard', 55], ['Clefable',  55],
-                            ['Dragonite',  80], ['Eevee',     25], ['Gengar',    50],
-                            ['Gyarados',   65], ['Jolteon',   45], ['Lapras',    50],
-                            ['Machamp',    55], ['Magikarp',   5], ['Mewtwo',   100],
-                            ['Pidgey',      5], ['Pikachu',   20], ['Raichu',    40],
-                            ['Snorlax',    65], ['Vaporeon',  45],
+                            ['Caterpie',    5], ['Charizard', 50], ['Clefable',  40],
+                            ['Dragonite',  50], ['Eevee',     10], ['Gengar',    50],
+                            ['Gyarados',   45], ['Jolteon',   45], ['Lapras',    45],
+                            ['Machamp',    50], ['Magikarp',   5], ['Mewtwo',   100],
+                            ['Pidgey',     15], ['Pikachu',   15], ['Raichu',    40],
+                            ['Snorlax',    45], ['Vaporeon',  45],
                         ].map(([name, drop]) => (
                             <div
                                 key={name}
