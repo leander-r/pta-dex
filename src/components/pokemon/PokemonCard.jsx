@@ -841,7 +841,8 @@ const PokemonCard = ({
                                     src={headerSprite}
                                     alt=""
                                     aria-hidden="true"
-                                    style={{ width: '48px', height: '48px', imageRendering: 'pixelated', objectFit: 'contain', flexShrink: 0, opacity: 0.9 }}
+                                    loading="lazy"
+                                    style={{ width: '88px', height: '88px', imageRendering: 'pixelated', objectFit: 'contain', flexShrink: 0, opacity: 0.9 }}
                                     onError={e => { e.target.style.visibility = 'hidden'; }}
                                 />
                             ) : null;
