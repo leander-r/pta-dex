@@ -4029,6 +4029,29 @@
             .combat-stages-grid {
                 grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)) !important;
             }
+
+            /* Touch target sizing (combat stage, inventory quantity, stat allocation ±
+               buttons) — these previously only got bumped to a safe size inside the
+               narrower ≤480px block below, leaving a gap at 480-768px (e.g. a phone in
+               landscape, or a small tablet) where frequently-tapped battle/stat controls
+               stayed at their cramped ~28-32px desktop size. */
+            .combat-stage-btn {
+                width: 36px !important;
+                height: 36px !important;
+                font-size: 16px !important;
+                flex-shrink: 0 !important;
+            }
+            .quantity-btn {
+                width: 44px !important;
+                height: 44px !important;
+                font-size: 18px !important;
+                flex-shrink: 0 !important;
+            }
+            .stat-alloc-btn {
+                min-width: 36px !important;
+                height: 36px !important;
+                flex-shrink: 0 !important;
+            }
         }
 
         /* GM Tools tab strip — tighter padding on small screens (labels stay visible, the grid wraps) */
@@ -4126,6 +4149,7 @@
                 width: 36px !important;
                 height: 36px !important;
                 font-size: 16px !important;
+                flex-shrink: 0 !important;
             }
 
             /* TrainerFeatures stat choice grid: single column so labels don't wrap */
@@ -4151,6 +4175,7 @@
                 width: 44px !important;
                 height: 44px !important;
                 font-size: 18px !important;
+                flex-shrink: 0 !important;
             }
 
             /* Combat stages grid: narrower columns so 7 stats don't overflow narrow phones */
@@ -4200,13 +4225,6 @@
                 font-size: 12px;
             }
 
-            /* Level ± buttons in edit header: larger touch target on mobile */
-            .pokemon-expanded-header button[aria-label="Level down"],
-            .pokemon-expanded-header button[aria-label="Level up"] {
-                width: 32px !important;
-                height: 32px !important;
-            }
-
             /* Collapsed quick-action buttons: icon only, no text label */
             .quick-action-btn span {
                 display: none;
@@ -4232,6 +4250,7 @@
             .stat-alloc-btn {
                 min-width: 36px !important;
                 height: 36px !important;
+                flex-shrink: 0 !important;
             }
 
             /* Pokédex filter row: 2×2 grid on small screens */
