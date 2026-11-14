@@ -6,6 +6,7 @@ import React, { useState, useMemo } from 'react';
 import { useModal, useTrainerContext, useGameData, useUI } from '../../contexts/index.js';
 import { HELP_BTN_STYLE } from '../common/helpBtnStyle.js';
 import toast from '../../utils/toast.js';
+import { getUnmetPrerequisites } from '../../utils/featurePrerequisites.js';
 
 // Features that modify trainer stats when acquired
 // Format: { featureName: { stat: 'statName', value: number } } for auto-apply
@@ -96,6 +97,11 @@ const TrainerFeatures = () => {
         return Array.from(cats);
     }, [GAME_DATA.features]);
 
+    // Known class/feature names, for recognizing which clauses in a free-text
+    // prerequisites string refer to a class or a prior feature.
+    const classNameSet = useMemo(() => new Set(Object.keys(GAME_DATA.trainerClasses || {})), [GAME_DATA.trainerClasses]);
+    const featureNameSet = useMemo(() => new Set(Object.keys(GAME_DATA.features || {})), [GAME_DATA.features]);
+
     const handleAddFeature = (featureName) => {
         const featureData = GAME_DATA.features[featureName];
         const isFree = featureData?.category === 'General (Free)' || featureData?.isBase;
@@ -105,6 +111,27 @@ const TrainerFeatures = () => {
             return;
         }
 
+        // Prerequisites text is free-form (class/prior-feature/stat/level, often mixed
+        // with narrative clauses we can't check), so missing ones are a confirmable
+        // warning, not a hard block — the GM/player makes the final call, same as the
+        // rulebook assumes a GM is present to arbitrate edge cases.
+        const unmet = getUnmetPrerequisites(featureData?.prerequisites, trainer, {
+            classNames: classNameSet, featureNames: featureNameSet,
+        });
+        if (unmet.length > 0) {
+            showConfirm({
+                title: 'Prerequisites Not Met',
+                message: `"${featureName}" requires: ${featureData.prerequisites}\n\nYou don't currently meet:\n${unmet.map(u => `• ${u}`).join('\n')}\n\nAdd it anyway?`,
+                confirmLabel: 'Add Anyway',
+                onConfirm: () => proceedAddFeature(featureName, featureData, isFree)
+            });
+            return;
+        }
+
+        proceedAddFeature(featureName, featureData, isFree);
+    };
+
+    const proceedAddFeature = (featureName, featureData, isFree) => {
         // Weapon of Choice needs a weapon type input
         if (featureName === 'Weapon of Choice') {
             setPendingWeaponChoice({ isFree });

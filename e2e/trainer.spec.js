@@ -246,3 +246,58 @@ test.describe('Classes/Skills economy regressions', () => {
         await expect(page.locator('span', { hasText: 'Chaser' }).first()).toBeVisible();
     });
 });
+
+// ── Feature prerequisites (warn + confirm, not a hard block) ────────────────
+
+test.describe('Feature prerequisite warning', () => {
+    const MOCK_GAME_DATA_FEATURE = {
+        moves: {}, abilities: {}, items: {}, natures: {}, trainerClasses: {},
+        features: {
+            'Sharp Shooter': { category: 'General', prerequisites: '18 ATK', description: 'A test feature with an unmet stat prerequisite.' },
+        },
+    };
+
+    const SEEDED_SAVE_FEATURE = JSON.stringify({
+        version: '2.1', activeTrainerId: 1, inventory: [], customSpecies: [],
+        trainers: [{
+            id: 1, name: 'Ash', gender: 'male', age: '', avatar: '', level: 5, experience: 0, classes: [],
+            stats: { hp:10, atk:10, def:8, satk:8, sdef:8, spd:8 }, statPoints: 0, levelStatPoints: 0,
+            featPoints: 3, skills: {}, features: [], notes: '', badges: [], money: 0, party: [], reserve: [],
+        }],
+    });
+
+    test.beforeEach(async ({ page }) => {
+        await page.route('**/pokedex.min.json',       r => r.fulfill({ json: MOCK_POKEDEX }));
+        await page.route('**/pta-game-data.min.json', r => r.fulfill({ json: MOCK_GAME_DATA_FEATURE }));
+        await page.addInitScript((saveData) => {
+            localStorage.setItem('pta-enhanced-save-data', saveData);
+        }, SEEDED_SAVE_FEATURE);
+        await page.goto('/');
+        await page.waitForSelector('[aria-label="Loading application data"]', { state: 'detached', timeout: 15_000 });
+        await page.getByRole('button', { name: 'Expand Features' }).click();
+    });
+
+    test('canceling the warning leaves the feature (and feat points) untouched', async ({ page }) => {
+        await page.getByRole('button', { name: 'Add (1 pt)' }).click();
+
+        const dialog = page.locator('[role="dialog"]');
+        await expect(dialog).toContainText('Prerequisites Not Met');
+        await expect(dialog).toContainText('ATK 18+ (currently 10)');
+
+        await dialog.getByRole('button', { name: 'Cancel' }).click();
+
+        await expect(page.getByText('0 features')).toBeVisible();
+        await expect(page.getByText('3 points available')).toBeVisible();
+    });
+
+    test('confirming "Add Anyway" adds the feature despite the unmet prerequisite', async ({ page }) => {
+        await page.getByRole('button', { name: 'Add (1 pt)' }).click();
+        await page.locator('[role="dialog"]').getByRole('button', { name: 'Add Anyway' }).click();
+
+        await expect(page.getByText('1 features | 2 points available')).toBeVisible();
+    });
+
+    test('the "Requires:" hint is visible on the feature card itself, not just in the confirm dialog', async ({ page }) => {
+        await expect(page.locator('text=Requires: 18 ATK')).toBeVisible();
+    });
+});
