@@ -148,7 +148,7 @@ const ContestPanel = ({ selectedPokemon, gameData, onRoll }) => {
                                     key={idx}
                                     onClick={() => { setSelectedMove(move); setRoll(null); }}
                                     style={{
-                                        display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 10,
+                                        display: 'flex', flexDirection: 'column', gap: 4,
                                         padding: '8px 12px', borderRadius: 7, cursor: 'pointer', minWidth: 0,
                                         border: isSelected ? `2px solid ${c}` : '1px dashed var(--border-medium)',
                                         background: isSelected ? `${c}22` : 'var(--surface-bg)',
@@ -157,18 +157,18 @@ const ContestPanel = ({ selectedPokemon, gameData, onRoll }) => {
                                         transition: 'all 0.12s',
                                     }}
                                 >
-                                    <div style={{ flex: 1, minWidth: 0 }}>
-                                        <div style={{ fontWeight: 700, fontSize: 13, color: 'var(--text-primary)' }}>{move.name}</div>
-                                        {move.contestEffect && (
-                                            <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{move.contestEffect}</div>
-                                        )}
-                                    </div>
-                                    {move.contestType && (
-                                        <span style={{ padding: '2px 8px', borderRadius: 8, fontSize: 11, fontWeight: 700, background: c, color: 'white', flexShrink: 0 }}>
-                                            {move.contestType}
-                                        </span>
+                                    <div style={{ fontWeight: 700, fontSize: 13, color: 'var(--text-primary)' }}>{move.name}</div>
+                                    {move.contestEffect && (
+                                        <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{move.contestEffect}</div>
                                     )}
-                                    <span style={{ fontSize: 11, color: 'var(--text-muted)', flexShrink: 0 }}>✦ effect only</span>
+                                    <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 6 }}>
+                                        {move.contestType && (
+                                            <span style={{ padding: '2px 8px', borderRadius: 8, fontSize: 11, fontWeight: 700, background: c, color: 'white' }}>
+                                                {move.contestType}
+                                            </span>
+                                        )}
+                                        <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>✦ effect only</span>
+                                    </div>
                                 </button>
                             );
                         }
@@ -179,7 +179,7 @@ const ContestPanel = ({ selectedPokemon, gameData, onRoll }) => {
                                 key={idx}
                                 onClick={() => { setSelectedMove(move); setRoll(null); }}
                                 style={{
-                                    display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 10,
+                                    display: 'flex', flexDirection: 'column', gap: 4,
                                     padding: '8px 12px', borderRadius: 7, cursor: 'pointer', minWidth: 0,
                                     border: isSelected ? `2px solid ${c}` : '1px solid var(--border-light)',
                                     background: isSelected ? `${c}22` : 'var(--surface-bg)',
@@ -188,18 +188,18 @@ const ContestPanel = ({ selectedPokemon, gameData, onRoll }) => {
                                     transition: 'all 0.12s',
                                 }}
                             >
-                                <div style={{ flex: 1, minWidth: 0 }}>
-                                    <div style={{ fontWeight: 700, fontSize: 13, color: 'var(--text-primary)' }}>{move.name}</div>
-                                    {move.contestEffect && (
-                                        <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{move.contestEffect}</div>
-                                    )}
+                                <div style={{ fontWeight: 700, fontSize: 13, color: 'var(--text-primary)' }}>{move.name}</div>
+                                {move.contestEffect && (
+                                    <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{move.contestEffect}</div>
+                                )}
+                                <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 6 }}>
+                                    <span style={{ padding: '2px 8px', borderRadius: 8, fontSize: 11, fontWeight: 700, background: c, color: 'white' }}>
+                                        {move.contestType}
+                                    </span>
+                                    <span style={{ fontSize: 12, fontWeight: 700, color: c }}>
+                                        🎲 {move.contestDice}
+                                    </span>
                                 </div>
-                                <span style={{ padding: '2px 8px', borderRadius: 8, fontSize: 11, fontWeight: 700, background: c, color: 'white', flexShrink: 0 }}>
-                                    {move.contestType}
-                                </span>
-                                <span style={{ fontSize: 12, fontWeight: 700, color: c, flexShrink: 0 }}>
-                                    🎲 {move.contestDice}
-                                </span>
                             </button>
                         );
                     })}
