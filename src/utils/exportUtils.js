@@ -2,7 +2,6 @@
 // EXPORT UTILITIES
 // ============================================================
 
-import { getActualStats, calculatePokemonHP } from './dataUtils.js';
 import toast from './toast.js';
 
 
@@ -212,7 +211,7 @@ export const exportSingleTrainer = (trainerToExport, inventory) => {
  */
 export const exportSinglePokemon = (pokemon) => {
     // Create a clean export without the id (will be regenerated on import)
-    const { id, ...pokemonData } = pokemon;
+    const { id: _id, ...pokemonData } = pokemon;
 
     const exportData = {
         type: 'pta-pokemon',
@@ -268,26 +267,6 @@ const IMPORT_LIMITS = {
     MAX_STAT: 50, // Max base stat value
     MAX_ADDED_STAT: 100, // Max added stat points per stat
 };
-
-/**
- * Standard Pokemon types (used as reference, but homebrew types allowed)
- */
-const STANDARD_TYPES = [
-    'Normal', 'Fire', 'Water', 'Electric', 'Grass', 'Ice',
-    'Fighting', 'Poison', 'Ground', 'Flying', 'Psychic', 'Bug',
-    'Rock', 'Ghost', 'Dragon', 'Dark', 'Steel', 'Fairy'
-];
-
-/**
- * Standard natures (used as reference, but homebrew natures allowed)
- */
-const STANDARD_NATURES = [
-    'Hardy', 'Lonely', 'Brave', 'Adamant', 'Naughty',
-    'Bold', 'Docile', 'Relaxed', 'Impish', 'Lax',
-    'Timid', 'Hasty', 'Serious', 'Jolly', 'Naive',
-    'Modest', 'Mild', 'Quiet', 'Bashful', 'Rash',
-    'Calm', 'Gentle', 'Sassy', 'Careful', 'Quirky'
-];
 
 /**
  * Valid genders (strict - no homebrew needed for genders)
@@ -546,6 +525,36 @@ export const importSinglePokemon = (jsonData) => {
 };
 
 /**
+ * Lightly sanitize a trainer object coming from a full-backup import (data.trainers /
+ * data.trainer in DataContext's importData). That path intentionally skips
+ * importSinglePokemon's strict per-field schema validation so a backup round-trips
+ * losslessly, but name/notes/avatar on both the trainer and its Pokémon still flow into
+ * unescaped render sinks (TrainerProfile's <img src>, CardExportModal's CSS url(...)) or can
+ * bloat localStorage — so those three fields get the same treatment regardless of import path.
+ */
+const sanitizeImportedPokemonFields = (poke) => {
+    if (!poke || typeof poke !== 'object') return poke;
+    return {
+        ...poke,
+        name: poke.name ? sanitizeString(poke.name, IMPORT_LIMITS.MAX_STRING_LENGTH) : poke.name,
+        notes: poke.notes ? sanitizeString(poke.notes, IMPORT_LIMITS.MAX_NOTES_LENGTH) : poke.notes,
+        avatar: validateAvatar(poke.avatar)
+    };
+};
+
+export const sanitizeImportedTrainer = (trainerData) => {
+    if (!trainerData || typeof trainerData !== 'object') return trainerData;
+    return {
+        ...trainerData,
+        name: trainerData.name ? sanitizeString(trainerData.name, IMPORT_LIMITS.MAX_STRING_LENGTH) : trainerData.name,
+        notes: trainerData.notes ? sanitizeString(trainerData.notes, IMPORT_LIMITS.MAX_NOTES_LENGTH) : trainerData.notes,
+        avatar: validateAvatar(trainerData.avatar),
+        party: Array.isArray(trainerData.party) ? trainerData.party.map(sanitizeImportedPokemonFields) : trainerData.party,
+        reserve: Array.isArray(trainerData.reserve) ? trainerData.reserve.map(sanitizeImportedPokemonFields) : trainerData.reserve
+    };
+};
+
+/**
  * Generate a printable character sheet as a standalone HTML string.
  * Open in a new tab — the page auto-triggers window.print().
  */
@@ -758,7 +767,7 @@ export const generatePrintSheetHTML = (trainer, party) => {
  */
 export const copyPokemonToClipboard = (pokemon) => {
     // Create a clean export without the id
-    const { id, ...pokemonData } = pokemon;
+    const { id: _id, ...pokemonData } = pokemon;
 
     const exportData = {
         type: 'pta-pokemon',

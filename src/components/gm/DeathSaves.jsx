@@ -54,7 +54,7 @@ const DeathSaves = () => {
                         </div>
                     </div>
                     <div style={{ padding: '12px 14px', borderRadius: 8, background: 'var(--tint-orange-bg)', border: '1px solid var(--tint-orange-border)' }}>
-                        <div style={{ fontWeight: 700, color: 'var(--poke-orange)', marginBottom: 6 }}>🐾 Pokémon Fainting</div>
+                        <div style={{ fontWeight: 700, color: 'var(--poke-orange-text)', marginBottom: 6 }}>🐾 Pokémon Fainting</div>
                         <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
                             At <strong>0 HP</strong>: Fainted. Cannot act. Can still be attacked and suffer status damage
                             until returned to Poké Ball. Wild Pokémon have <strong>no Death Saving Throws</strong>.
@@ -201,7 +201,7 @@ const DeathSaves = () => {
                             background: 'var(--surface-bg)', border: '1px solid var(--border-light)',
                             fontSize: 13, minWidth: 0
                         }}>
-                            Must roll ≤ <strong style={{ color: 'var(--poke-orange)', fontSize: 18 }}>{pokeDC}</strong>
+                            Must roll ≤ <strong style={{ color: 'var(--poke-orange-text)', fontSize: 18 }}>{pokeDC}</strong>
                             <span style={{ fontSize: 12, color: 'var(--text-muted)', marginLeft: 6 }}>
                                 ({pokeDC === 90 ? 'capped at 90' : `${pokeLevel}×2`} · {pokeDC}% survival)
                             </span>

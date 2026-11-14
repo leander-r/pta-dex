@@ -86,6 +86,28 @@ const MoveLearnModal = () => {
             >
                 <div className={`modal-header move-learn-header ${isNatural ? 'natural' : 'taught'}`} style={{ position: 'relative', zIndex: 2 }}>
                     <h3 id="move-learn-modal-title">🎉 New Move Available!</h3>
+                    <button
+                        onClick={handleClose}
+                        aria-label="Close modal"
+                        title="Close"
+                        style={{
+                            background: 'rgba(255,255,255,0.2)',
+                            border: '2px solid rgba(255,255,255,0.3)',
+                            fontSize: '18px',
+                            cursor: 'pointer',
+                            color: 'white',
+                            borderRadius: '50%',
+                            width: '36px',
+                            height: '36px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontWeight: 'bold',
+                            flexShrink: 0
+                        }}
+                    >
+                        ×
+                    </button>
                 </div>
 
                 <div className="move-learn-content" style={{ overflowY: 'auto', flex: 1 }}>
@@ -101,6 +123,12 @@ const MoveLearnModal = () => {
                                     type: moveLearnData.newMove.type
                                 });
                             }}
+                            role="button"
+                            tabIndex={0}
+                            onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), showDetail('move', moveLearnData.newMove.move, {
+                                ...moveData,
+                                type: moveLearnData.newMove.type
+                            }))}
                             title="Tap to view move details"
                         >
                             {moveLearnData.newMove.move}
@@ -147,6 +175,9 @@ const MoveLearnModal = () => {
                                             <div
                                                 className="move-learn-item-info"
                                                 onClick={() => showDetail('move', move.name, { ...moveDef, ...move })}
+                                                role="button"
+                                                tabIndex={0}
+                                                onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), showDetail('move', move.name, { ...moveDef, ...move }))}
                                             >
                                                 <div className="move-name">
                                                     {move.name}

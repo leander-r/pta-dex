@@ -57,10 +57,14 @@ const ToastContainer = () => {
         }}>
             {toasts.map(t => {
                 const s = typeStyles[t.type] || typeStyles.info;
+                // Routine success/info toasts use "status" (polite) so they don't interrupt
+                // the screen reader's current reading; error/warning use "alert" (assertive)
+                // since those need immediate attention.
+                const liveRole = (t.type === 'error' || t.type === 'warning') ? 'alert' : 'status';
                 return (
                     <div
                         key={t.id}
-                        role="alert"
+                        role={liveRole}
                         className={`toast-notification toast-${t.type}`}
                         style={{
                             background: s.bg,
@@ -73,12 +77,10 @@ const ToastContainer = () => {
                             boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
                             pointerEvents: 'auto',
                             animation: t.exiting ? 'toastOut 0.3s ease forwards' : 'toastIn 0.3s ease',
-                            cursor: 'pointer',
                             whiteSpace: 'pre-line',
                             fontSize: '14px',
                             lineHeight: '1.4'
                         }}
-                        onClick={() => dismissToast(t.id)}
                     >
                         <span style={{
                             fontSize: '18px',
@@ -94,8 +96,7 @@ const ToastContainer = () => {
                             {t.action && (
                                 <div style={{ marginTop: '6px' }}>
                                     <button
-                                        onClick={(e) => {
-                                            e.stopPropagation();
+                                        onClick={() => {
                                             t.action.onClick();
                                             dismissToast(t.id);
                                         }}
@@ -115,6 +116,23 @@ const ToastContainer = () => {
                                 </div>
                             )}
                         </div>
+                        <button
+                            onClick={() => dismissToast(t.id)}
+                            aria-label="Dismiss notification"
+                            style={{
+                                flexShrink: 0,
+                                background: 'none',
+                                border: 'none',
+                                cursor: 'pointer',
+                                fontSize: '16px',
+                                lineHeight: '1',
+                                color: s.color,
+                                opacity: 0.6,
+                                padding: '2px 4px'
+                            }}
+                        >
+                            ×
+                        </button>
                     </div>
                 );
             })}

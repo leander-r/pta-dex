@@ -3,11 +3,11 @@
 // ============================================================
 // Manages Pokemon state and actions including move learning
 
-import React, { createContext, useContext, useCallback, useEffect, useRef } from 'react';
+import React, { createContext, useContext, useCallback, useEffect, useMemo, useRef } from 'react';
 import { GAME_DATA } from '../data/configs.js';
 import { MAX_PARTY_SIZE, MAX_NATURAL_MOVES, POKEMON_HP_MULTIPLIER, MAX_POKEMON_LEVEL } from '../data/constants.js';
 import { EVOLUTION_CHAINS } from '../data/evolutionChains.js';
-import { getActualStats, calculatePokemonHP, calculateSTAB as calcSTAB, getBaseRelationViolations } from '../utils/dataUtils.js';
+import { getActualStats, calculateSTAB as calcSTAB, getBaseRelationViolations } from '../utils/dataUtils.js';
 import { buildSpeciesUpdateFields } from '../utils/speciesFields.js';
 import toast from '../utils/toast.js';
 import { useGameData } from './GameDataContext.jsx';
@@ -892,7 +892,7 @@ export const PokemonProvider = ({ children }) => {
         });
     }, [party, reserve, pokedex, customSpecies, addItemToInventory, applyDevolutionToPokemon, showLevelUpNotification, showConfirm]);
 
-    const value = {
+    const value = useMemo(() => ({
         // State
         party,
         reserve,
@@ -928,7 +928,14 @@ export const PokemonProvider = ({ children }) => {
         calculatePokemonMaxHP,
         calculateSTAB,
         getActualStats
-    };
+    }), [
+        party, reserve, pokemon, pokemonView, setPokemonView, editingPokemon, setEditingPokemon,
+        addPokemon, updatePokemon, restorePokemon, deletePokemon, importPokemon, applySpeciesToPokemon,
+        learnMove, forgetMovesAboveLevel,
+        getEvolutionOptions, evolvePokemon, devolvePokemon,
+        hasItemInInventory, removeItemFromInventory, addItemToInventory,
+        calculatePokemonMaxHP, calculateSTAB
+    ]);
 
     return (
         <PokemonContext.Provider value={value}>

@@ -331,7 +331,7 @@ const TypeChartSection = () => {
                             </span>
                         )}
                         {matchup.weak.length > 0 && (
-                            <span style={{ color: 'var(--poke-orange)' }}>
+                            <span style={{ color: 'var(--poke-orange-text)' }}>
                                 <strong>{matchup.weak.length}</strong> weak
                             </span>
                         )}

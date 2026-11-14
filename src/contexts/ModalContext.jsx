@@ -4,7 +4,7 @@
 // Manages all modal state so modal open/close doesn't re-render
 // the entire app tree — only components subscribed to ModalContext.
 
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState, useCallback, useMemo } from 'react';
 
 const ModalContext = createContext(null);
 
@@ -119,7 +119,7 @@ export const ModalProvider = ({ children }) => {
     const openPrintSheet  = useCallback(() => setShowPrintSheetModal(true),  []);
     const closePrintSheet = useCallback(() => setShowPrintSheetModal(false), []);
 
-    const value = {
+    const value = useMemo(() => ({
         // Confirm Modal
         confirmModal,
         setConfirmModal,
@@ -199,7 +199,24 @@ export const ModalProvider = ({ children }) => {
         showPrintSheetModal,
         openPrintSheet,
         closePrintSheet
-    };
+    }), [
+        confirmModal, setConfirmModal, showConfirm,
+        detailModal, setDetailModal, showDetail,
+        showMoveModal, setShowMoveModal, selectedMove, setSelectedMove,
+        showFeatureModal, setShowFeatureModal, selectedFeature, setSelectedFeature,
+        showReferenceModal, setShowReferenceModal,
+        showCustomFeatureModal, setShowCustomFeatureModal, customFeature, setCustomFeature,
+        showCustomMoveModal, setShowCustomMoveModal, customMove, setCustomMove,
+        customMoveForPokemon, setCustomMoveForPokemon,
+        showCustomSpeciesModal, setShowCustomSpeciesModal, editingCustomSpeciesId, setEditingCustomSpeciesId,
+        showMoveLearnModal, setShowMoveLearnModal, moveLearnData, setMoveLearnData,
+        pendingMoveLearn, setPendingMoveLearn,
+        showCardModal, setShowCardModal, cardType, setCardType, selectedCardPokemon, setSelectedCardPokemon,
+        showBulkExpModal, setShowBulkExpModal,
+        showComparisonModal, setShowComparisonModal, comparisonIds, setComparisonIds, openComparison, closeComparison,
+        showSaveLoadModal, openSaveLoadModal, closeSaveLoadModal,
+        showPrintSheetModal, openPrintSheet, closePrintSheet
+    ]);
 
     return (
         <ModalContext.Provider value={value}>

@@ -613,7 +613,7 @@ const TrainerFeatures = () => {
                                         </div>
                                     )}
                                     {data.prerequisites && (
-                                        <div style={{ fontSize: '11px', color: 'var(--poke-orange)', marginTop: '2px', fontWeight: 600 }}>
+                                        <div style={{ fontSize: '11px', color: 'var(--poke-orange-text)', marginTop: '2px', fontWeight: 600 }}>
                                             Requires: {data.prerequisites}
                                         </div>
                                     )}

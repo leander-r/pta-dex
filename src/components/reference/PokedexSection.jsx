@@ -1191,7 +1191,7 @@ const PokedexSection = () => {
                 {filtered.length === 0 ? (
                     <div style={{ gridColumn: '1 / -1', padding: '40px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '14px', border: '1px solid var(--border-light)', borderRadius: '10px' }}>
                         No species found.{' '}
-                        <button onClick={resetAll} style={{ background: 'none', border: 'none', color: 'var(--poke-orange)', cursor: 'pointer', fontSize: '14px', fontWeight: 600, padding: 0 }}>
+                        <button onClick={resetAll} style={{ background: 'none', border: 'none', color: 'var(--poke-orange-text)', cursor: 'pointer', fontSize: '14px', fontWeight: 600, padding: 0 }}>
                             Reset filters
                         </button>
                     </div>

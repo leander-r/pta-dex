@@ -2,7 +2,7 @@
 // Pokemon Card Component
 // ============================================================
 
-import React, { useState, useMemo, useEffect, useRef } from 'react';
+import React, { memo, useState, useMemo, useEffect, useRef } from 'react';
 import { getTypeColor, getContrastTextColor } from '../../utils/typeUtils.js';
 import { getActualStats, calculatePokemonHP, calculateSTAB, getBaseRelationViolations, applyNature } from '../../utils/dataUtils.js';
 import { exportSinglePokemon, copyPokemonToClipboard } from '../../utils/exportUtils.js';
@@ -3157,7 +3157,7 @@ const PokemonCard = ({
                                                                     {evo.note && ` (${evo.note})`}
                                                                 </div>
                                                             ) : (
-                                                                <div title={`${evo.reason || evo.requirement}${evo.note ? ` (${evo.note})` : ''}`} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: 'var(--poke-orange)', fontWeight: 600, padding: '4px 10px', borderRadius: '12px', background: 'var(--tint-orange-bg)', border: '1px solid var(--tint-orange-border)', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                                <div title={`${evo.reason || evo.requirement}${evo.note ? ` (${evo.note})` : ''}`} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: 'var(--poke-orange-text)', fontWeight: 600, padding: '4px 10px', borderRadius: '12px', background: 'var(--tint-orange-bg)', border: '1px solid var(--tint-orange-border)', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                                                     🔒 {evo.reason || evo.requirement}
                                                                     {evo.note && ` (${evo.note})`}
                                                                 </div>
@@ -3378,4 +3378,4 @@ function getBaseRelationBlockReason(stat, baseStats, addedStats, delta) {
     return null;
 }
 
-export default PokemonCard;
+export default memo(PokemonCard);

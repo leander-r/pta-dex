@@ -183,8 +183,8 @@ const JudgeCard = ({ judge, color, selected, onSelect, disabled, holdThought, ex
             Judge {judge.id}
         </div>
         <VoltageBar voltage={judge.voltage} color={color} />
-        {judge.voltage === 6 && <div style={{ fontSize: 11, color: 'var(--poke-orange)', fontWeight: 700, marginTop: 2 }}>MAX ⚡</div>}
-        {holdThought && <div style={{ fontSize: 11, color: 'var(--poke-orange)', fontWeight: 700, marginTop: 2 }}>🔒 Locked</div>}
+        {judge.voltage === 6 && <div style={{ fontSize: 11, color: 'var(--poke-orange-text)', fontWeight: 700, marginTop: 2 }}>MAX ⚡</div>}
+        {holdThought && <div style={{ fontSize: 11, color: 'var(--poke-orange-text)', fontWeight: 700, marginTop: 2 }}>🔒 Locked</div>}
         {excitement && <div style={{ fontSize: 11, color: 'var(--stat-hp)', fontWeight: 700, marginTop: 2 }}>🛡 Protected</div>}
     </button>
 );
@@ -1247,7 +1247,7 @@ const ContestRunner = () => {
                         {parsedPaste && (
                             <div style={{ marginTop: 8, padding: '8px 12px', borderRadius: 7, background: 'var(--bg-light)', border: `1px solid ${color}44` }}>
                                 {nameMatchWarning && (
-                                    <div style={{ fontSize: 13, color: 'var(--poke-orange)', fontWeight: 700, marginBottom: 4 }}>
+                                    <div style={{ fontSize: 13, color: 'var(--poke-orange-text)', fontWeight: 700, marginBottom: 4 }}>
                                         ⚠ Name "{parsedPaste.name}" doesn't match current participant — check you're entering the right score
                                     </div>
                                 )}

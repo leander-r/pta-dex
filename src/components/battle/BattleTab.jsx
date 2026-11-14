@@ -263,14 +263,16 @@ const BattleTab = () => {
         const statMod = applyCombatStage(actualStats[statKey] || 0, combatStages[statKey] || 0);
 
         const defaultAC = parseACFromFrequency(selectedMove.frequency || selectedMove.freq);
-        const moveAC = acOverride !== '' ? parseInt(acOverride) || defaultAC : defaultAC;
+        const parsedOverride = parseInt(acOverride, 10);
+        const moveAC = acOverride !== '' && !Number.isNaN(parsedOverride) ? parsedOverride : defaultAC;
         const accModifier = combatStages.acc || 0;
-        const evaStage = combatStages.eva || 0;
         const critThreshold = parseCritThreshold(selectedMove.description);
         const accRoll = Math.floor(Math.random() * 20) + 1;
         const modifiedAccRoll = accRoll + accModifier;
         const isCrit = accRoll >= critThreshold;
-        const isHit = moveAC === null || isCrit || modifiedAccRoll >= moveAC + evaStage;
+        // EVA is this Pokémon's own evasion (reduces incoming hit rolls against it) — it
+        // must not apply to its own outgoing attack roll, which only this Pokémon's ACC affects.
+        const isHit = moveAC === null || isCrit || modifiedAccRoll >= moveAC;
         const acWasOverridden = acOverride !== '';
 
         const hp = getPokemonHP(selectedPokemon);
@@ -301,7 +303,6 @@ const BattleTab = () => {
         const statBonus = statMod - baseStatVal; // actual stat change from combat stage
         const relevantStages = [
             combatStages.acc ? { label: 'ACC', stage: combatStages.acc, bonus: combatStages.acc, isFlat: true } : null,
-            evaStage ? { label: 'EVA', stage: evaStage, bonus: -evaStage, isFlat: true } : null,
             diceData.count > 0 && combatStages[statKey] ? { label: statLabel, stage: combatStages[statKey], bonus: statBonus, base: baseStatVal, boosted: statMod } : null,
         ].filter(Boolean);
 

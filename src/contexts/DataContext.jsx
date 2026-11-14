@@ -3,9 +3,10 @@
 // ============================================================
 // Manages data persistence: save, load, import, export
 
-import React, { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { safeLocalStorageGet, safeLocalStorageSet } from '../utils/storageUtils.js';
 import { getActualStats, calculatePokemonHP, getBaseRelationViolations } from '../utils/dataUtils.js';
+import { sanitizeImportedTrainer } from '../utils/exportUtils.js';
 import { buildSpeciesUpdateFields } from '../utils/speciesFields.js';
 import { buildEmbed } from '../utils/discordEmbeds.js';
 import toast from '../utils/toast.js';
@@ -63,7 +64,6 @@ export const DataProvider = ({ children }) => {
 
     // Auto-save refs
     const dataLoadedRef = useRef(false);
-    const lastAutoSaveDataRef = useRef(null);
     const saveDataRef = useRef(null);
     const isImportingRef = useRef(false);
 
@@ -542,7 +542,7 @@ export const DataProvider = ({ children }) => {
                 ) || inventory.length > 0;
 
                 if (data.trainers) {
-                    const migratedTrainers = data.trainers.map(t => ({
+                    const migratedTrainers = data.trainers.map(t => sanitizeImportedTrainer({
                         ...t,
                         money: t.money || 0,
                         party: t.party || t.pokemon?.slice(0, 6) || [],
@@ -583,14 +583,14 @@ export const DataProvider = ({ children }) => {
                         trainerData = { ...trainerData, classes: migratedClasses };
                     }
 
-                    trainerData = {
+                    trainerData = sanitizeImportedTrainer({
                         ...trainerData,
                         id: trainerData.id || Date.now(),
                         money: trainerData.money || 0,
                         party: trainerData.party || data.pokemon?.slice(0, 6) || trainerData.pokemon?.slice(0, 6) || [],
                         reserve: trainerData.reserve || data.pokemon?.slice(6) || trainerData.pokemon?.slice(6) || [],
                         skills: migrateSkills(trainerData.skills)
-                    };
+                    });
 
                     const doInventoryImport = () => {
                         if (data.inventory && data.inventory.length > 0) {
@@ -902,7 +902,7 @@ export const DataProvider = ({ children }) => {
         return () => clearInterval(autoSaveInterval);
     }, []);
 
-    const value = {
+    const value = useMemo(() => ({
         // Inventory State
         inventory,
         setInventory,
@@ -933,7 +933,13 @@ export const DataProvider = ({ children }) => {
         discordWebhook,
         setDiscordWebhook,
         sendToDiscord
-    };
+    }), [
+        inventory, setInventory,
+        saveData, loadData, restoreAutoBackup, loadDemoTrainer, exportAllData, exportSingleTrainer, importData,
+        saveSlots, saveToSlot, loadFromSlot, deleteSlot, renameSlot,
+        exportTrainerText, exportPokemonText, exportTeamText, copyToClipboard,
+        discordWebhook, setDiscordWebhook, sendToDiscord
+    ]);
 
     return (
         <DataContext.Provider value={value}>

@@ -5,7 +5,7 @@
 // and AbilitiesSection. Isolated so filter changes don't
 // re-render the rest of the app.
 
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useMemo } from 'react';
 
 const FilterContext = createContext(null);
 
@@ -46,7 +46,7 @@ export const FilterProvider = ({ children }) => {
     const [moveTypeFilter, setMoveTypeFilter] = useState('all');
     const [moveCategoryFilter, setMoveCategoryFilter] = useState('all');
 
-    const value = {
+    const value = useMemo(() => ({
         movesFilter,
         setMovesFilter,
         abilitiesFilter,
@@ -61,7 +61,12 @@ export const FilterProvider = ({ children }) => {
         setMoveTypeFilter,
         moveCategoryFilter,
         setMoveCategoryFilter
-    };
+    }), [
+        movesFilter, setMovesFilter, abilitiesFilter, setAbilitiesFilter,
+        trainerClassesFilter, setTrainerClassesFilter, trainerFeaturesFilter, setTrainerFeaturesFilter,
+        moveSearchQuery, setMoveSearchQuery, moveTypeFilter, setMoveTypeFilter,
+        moveCategoryFilter, setMoveCategoryFilter
+    ]);
 
     return (
         <FilterContext.Provider value={value}>

@@ -115,7 +115,7 @@ export const GameDataProvider = ({ children }) => {
         }
     }, [getLevelUpMovesForPokemon, getLevelUpMovesForSpecies]);
 
-    const value = {
+    const value = useMemo(() => ({
         // Pokedex
         pokedex,
         pokedexLoading,
@@ -136,7 +136,11 @@ export const GameDataProvider = ({ children }) => {
         getLevelUpMovesForPokemon,
         getLevelUpMovesForSpecies,
         getMovesForLevelRange
-    };
+    }), [
+        pokedex, pokedexLoading, pokedexError, filteredSpecies, speciesSearch, setSpeciesSearch,
+        gameDataLoaded, customSpecies, setCustomSpecies,
+        getLevelUpMovesForPokemon, getLevelUpMovesForSpecies, getMovesForLevelRange
+    ]);
 
     return (
         <GameDataContext.Provider value={value}>

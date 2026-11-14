@@ -47,13 +47,16 @@ function allocateStatPoints(difference, newValue, creationPoints, levelPoints, t
             return { creationDelta: 0, levelDelta: -difference };
         }
     } else {
-        // Decreasing a stat — refund to the pool the point was most likely spent from.
-        // Points at/below CREATION_STAT_CAP were spent from creation; above from level points.
+        // Decreasing a stat — refund to the pool the point was spent from. Points in the
+        // range (CREATION_STAT_CAP, oldValue] were spent from level points; the rest of the
+        // decrease (down to newValue) was spent from creation points. A decrease can span
+        // both pools (e.g. 16 -> 10 across a cap of 14), so split proportionally rather than
+        // bucketing the whole refund by oldValue alone.
         const refund = Math.abs(difference);
         const oldValue = newValue - difference; // newValue + refund (difference is negative)
-        return oldValue <= CREATION_STAT_CAP
-            ? { creationDelta: refund, levelDelta: 0 }
-            : { creationDelta: 0, levelDelta: refund };
+        const levelPortion = Math.max(0, oldValue - Math.max(newValue, CREATION_STAT_CAP));
+        const creationPortion = refund - levelPortion;
+        return { creationDelta: creationPortion, levelDelta: levelPortion };
     }
 }
 
@@ -123,9 +126,9 @@ export const TrainerProvider = ({ children }) => {
     }, [activeTrainerId, setTrainers]);
 
     // Get pokemon for current trainer
-    const party = trainer.party || [];
-    const reserve = trainer.reserve || [];
-    const pokemon = [...party, ...reserve];
+    const party = useMemo(() => trainer.party || [], [trainer.party]);
+    const reserve = useMemo(() => trainer.reserve || [], [trainer.reserve]);
+    const pokemon = useMemo(() => [...party, ...reserve], [party, reserve]);
 
     // Helper to update party pokemon
     const setParty = useCallback((updater) => {
@@ -566,7 +569,9 @@ export const TrainerProvider = ({ children }) => {
         });
     }, [setParty, setReserve]);
 
-    const value = {
+    const canUndoStat = !!lastStatSnapshot;
+
+    const value = useMemo(() => ({
         // Trainer State
         trainers,
         setTrainers,
@@ -594,7 +599,7 @@ export const TrainerProvider = ({ children }) => {
         calculateMaxHP,
         updateTrainerStat,
         undoStatAllocation,
-        canUndoStat: !!lastStatSnapshot,
+        canUndoStat,
         levelUpTrainer,
         levelDownTrainer,
         respecTrainer,
@@ -606,7 +611,14 @@ export const TrainerProvider = ({ children }) => {
         movePokemonDown,
         sortPokemonList,
         reorderPokemon
-    };
+    }), [
+        trainers, setTrainers, activeTrainerId, setActiveTrainerId, trainer, setTrainer,
+        party, reserve, pokemon, setParty, setReserve,
+        addNewTrainer, deleteTrainer, duplicateTrainer, archiveTrainer, unarchiveTrainer,
+        calculateModifier, calculateMaxHP, updateTrainerStat, undoStatAllocation, canUndoStat,
+        levelUpTrainer, levelDownTrainer, respecTrainer,
+        moveToParty, moveToReserve, movePokemonUp, movePokemonDown, sortPokemonList, reorderPokemon
+    ]);
 
     return (
         <TrainerContext.Provider value={value}>

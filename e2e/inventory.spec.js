@@ -195,7 +195,8 @@ test.describe('Use item — heal flow', () => {
         await card.getByRole('button', { name: 'Roll & Apply' }).click();
 
         // Toast confirms the heal actually applied to Bulby, not just that the item was consumed.
-        await expect(page.locator('[role="alert"]')).toContainText('Bulby healed');
+        // Success toasts use role="status" (polite) — role="alert" is reserved for errors/warnings.
+        await expect(page.locator('.toast-notification[role="status"]')).toContainText('Bulby healed');
 
         // Potion was the last one in stock -> fully consumed and removed from inventory.
         await expect(page.getByText('Inventory is empty')).toBeVisible();

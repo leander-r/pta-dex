@@ -187,6 +187,35 @@ const PokemonTab = () => {
     }, [dragId, reorderPokemon, pokemonView]);
     const handleDragEnd = useCallback(() => { setDragId(null); setDragOverId(null); }, []);
 
+    // PokemonCard is React.memo'd — per-card callbacks must keep a stable identity across
+    // renders (one bound to each pokemon.id) or every card would re-render whenever any
+    // single card's data changes, since inline arrow props are a new reference every render.
+    const cardCallbackCache = useRef(new Map());
+    const getCardCallbacks = useCallback((id) => {
+        const cached = cardCallbackCache.current.get(id);
+        if (cached && cached.pokemonView === pokemonView) return cached.callbacks;
+        const callbacks = {
+            setEditing: (editing) => setEditingPokemonId(editing ? id : null),
+            updatePokemon: (updates) => updatePokemon(id, updates),
+            restorePokemon: (snapshot) => restorePokemon(id, snapshot),
+            deletePokemon: () => deletePokemon(id),
+            onMoveToParty: () => moveToParty(id),
+            onMoveToReserve: () => moveToReserve(id),
+            onMoveUp: () => movePokemonUp(id, pokemonView === 'party'),
+            onMoveDown: () => movePokemonDown(id, pokemonView === 'party'),
+        };
+        cardCallbackCache.current.set(id, { pokemonView, callbacks });
+        return callbacks;
+    }, [pokemonView, setEditingPokemonId, updatePokemon, restorePokemon, deletePokemon, moveToParty, moveToReserve, movePokemonUp, movePokemonDown]);
+
+    // Prune cache entries for Pokémon no longer in the roster (released/evolved away)
+    useEffect(() => {
+        const liveIds = new Set([...party, ...reserve].map(p => p.id));
+        for (const id of cardCallbackCache.current.keys()) {
+            if (!liveIds.has(id)) cardCallbackCache.current.delete(id);
+        }
+    }, [party, reserve]);
+
     const toggleCompareSelect = useCallback((id) => {
         setCompareSelected(prev => {
             if (prev.includes(id)) return prev.filter(x => x !== id);
@@ -940,6 +969,7 @@ const PokemonTab = () => {
                         // Use actual position in unfiltered list for move up/down
                         const actualIndex = currentList.findIndex(p => p.id === pokemon.id);
                         const isEditingThis = editingPokemonId === pokemon.id;
+                        const cardCallbacks = getCardCallbacks(pokemon.id);
                         return (
                             <div
                                 key={pokemon.id}
@@ -948,17 +978,17 @@ const PokemonTab = () => {
                             >
                             <PokemonCard
                                 pokemon={pokemon}
-                                isEditing={editingPokemonId === pokemon.id}
-                                setEditing={(editing) => setEditingPokemonId(editing ? pokemon.id : null)}
-                                updatePokemon={(updates) => updatePokemon(pokemon.id, updates)}
-                                restorePokemon={(snapshot) => restorePokemon(pokemon.id, snapshot)}
-                                deletePokemon={() => deletePokemon(pokemon.id)}
+                                isEditing={isEditingThis}
+                                setEditing={cardCallbacks.setEditing}
+                                updatePokemon={cardCallbacks.updatePokemon}
+                                restorePokemon={cardCallbacks.restorePokemon}
+                                deletePokemon={cardCallbacks.deletePokemon}
                                 isInParty={pokemonView === 'party'}
                                 canMoveToParty={pokemonView === 'reserve' && party.length < MAX_PARTY_SIZE}
-                                onMoveToParty={() => moveToParty(pokemon.id)}
-                                onMoveToReserve={() => moveToReserve(pokemon.id)}
-                                onMoveUp={() => movePokemonUp(pokemon.id, pokemonView === 'party')}
-                                onMoveDown={() => movePokemonDown(pokemon.id, pokemonView === 'party')}
+                                onMoveToParty={cardCallbacks.onMoveToParty}
+                                onMoveToReserve={cardCallbacks.onMoveToReserve}
+                                onMoveUp={cardCallbacks.onMoveUp}
+                                onMoveDown={cardCallbacks.onMoveDown}
                                 canMoveUp={actualIndex > 0}
                                 canMoveDown={actualIndex < currentList.length - 1}
                                 evolvePokemon={evolvePokemon}

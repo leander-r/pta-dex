@@ -201,7 +201,8 @@ test.describe('Classes/Skills economy regressions', () => {
         await healingTile.click();
 
         await expect(healingTile).toHaveAttribute('aria-label', /not trained/); // unchanged
-        await expect(page.locator('[role="alert"]')).toContainText('granted by Trainer Classes');
+        // Info toasts use role="status" (polite), not role="alert" (assertive) — reserved for errors/warnings.
+        await expect(page.locator('.toast-notification[role="status"]')).toContainText('granted by Trainer Classes');
     });
 
     test('regression: removing the first class reclaims the feat points it granted, even with other classes remaining', async ({ page }) => {

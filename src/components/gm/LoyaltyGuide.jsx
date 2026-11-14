@@ -168,7 +168,7 @@ const LoyaltyGuide = () => {
                     <div style={{
                         padding: '8px 12px', borderRadius: 6, marginBottom: 10,
                         background: 'var(--tint-orange-bg)', border: '1px solid var(--tint-orange-border)',
-                        fontSize: 13, color: 'var(--poke-orange)', fontWeight: 600,
+                        fontSize: 13, color: 'var(--poke-orange-text)', fontWeight: 600,
                     }}>
                         ⚠️ Loyalty 3 and 4 cannot be gained passively — only through triumphant events.
                     </div>

@@ -492,7 +492,13 @@ const FeatureDetails = ({ data, name }) => {
 
 // Clickable variant of DetailBadge — used to drill into a related class/feature
 const LinkBadge = ({ children, color, onClick }) => (
-    <span onClick={onClick} style={{ cursor: 'pointer' }}>
+    <span
+        onClick={onClick}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), onClick())}
+        style={{ cursor: 'pointer' }}
+    >
         <DetailBadge color={color}>{children} ↗</DetailBadge>
     </span>
 );

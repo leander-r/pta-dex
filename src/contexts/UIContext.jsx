@@ -4,7 +4,7 @@
 // Core app shell state: navigation, theme, save indicator,
 // level-up notifications, and Pokemon edit view.
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { safeLocalStorageGet, safeLocalStorageSet } from '../utils/storageUtils.js';
 
 const UIContext = createContext(null);
@@ -79,7 +79,7 @@ export const UIProvider = ({ children }) => {
         setTimeout(() => setLevelUpNotification(null), 5000);
     }, []);
 
-    const value = {
+    const value = useMemo(() => ({
         // Navigation
         activeTab,
         setActiveTab,
@@ -121,7 +121,15 @@ export const UIProvider = ({ children }) => {
         // Pokédex deep-link
         pokedexJumpTarget,
         setPokedexJumpTarget
-    };
+    }), [
+        activeTab, setActiveTab, referenceTab, setReferenceTab,
+        theme, setTheme, compactMode, setCompactMode,
+        showSaveIndicator, isAutoSave, lastSaveTime, triggerSaveIndicator,
+        levelUpNotification, setLevelUpNotification, showLevelUpNotification,
+        selectedPokemon, setSelectedPokemon, editingPokemon, setEditingPokemon, pokemonView, setPokemonView,
+        helpTopic, showHelp, closeHelp,
+        pokedexJumpTarget, setPokedexJumpTarget
+    ]);
 
     return (
         <UIContext.Provider value={value}>

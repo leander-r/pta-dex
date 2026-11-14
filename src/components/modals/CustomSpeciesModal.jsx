@@ -630,18 +630,24 @@ const CustomSpeciesModal = () => {
                                     Showing {filteredAbilities.length} of {totalAbilities} abilities
                                 </div>
                                 <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
-                                    {filteredAbilities.slice(0, 100).map(([name, desc]) => (
-                                        <div
-                                            key={name}
-                                            onClick={() => { addAbility(showAbilityPicker, name); setShowAbilityPicker(null); }}
-                                            style={{ padding: '8px', cursor: 'pointer', borderBottom: '1px solid var(--border-light)', fontSize: '12px' }}
-                                            onMouseEnter={(e) => e.currentTarget.style.background = 'var(--hover-bg)'}
-                                            onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-                                        >
-                                            <div style={{ fontWeight: 'bold' }}>{name}</div>
-                                            <div style={{ fontSize: '10px', color: 'var(--text-secondary)', marginTop: '2px' }}>{desc?.substring(0, 100)}{desc?.length > 100 ? '...' : ''}</div>
-                                        </div>
-                                    ))}
+                                    {filteredAbilities.slice(0, 100).map(([name, desc]) => {
+                                        const activate = () => { addAbility(showAbilityPicker, name); setShowAbilityPicker(null); };
+                                        return (
+                                            <div
+                                                key={name}
+                                                onClick={activate}
+                                                role="button"
+                                                tabIndex={0}
+                                                onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), activate())}
+                                                style={{ padding: '8px', cursor: 'pointer', borderBottom: '1px solid var(--border-light)', fontSize: '12px' }}
+                                                onMouseEnter={(e) => e.currentTarget.style.background = 'var(--hover-bg)'}
+                                                onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                                            >
+                                                <div style={{ fontWeight: 'bold' }}>{name}</div>
+                                                <div style={{ fontSize: '10px', color: 'var(--text-secondary)', marginTop: '2px' }}>{desc?.substring(0, 100)}{desc?.length > 100 ? '...' : ''}</div>
+                                            </div>
+                                        );
+                                    })}
                                 </div>
                             </div>
                         )}
@@ -730,24 +736,30 @@ const CustomSpeciesModal = () => {
 
                                 {/* Move list */}
                                 <div style={{ maxHeight: '250px', overflowY: 'auto' }}>
-                                    {filteredMoves.slice(0, 100).map(([name, data]) => (
-                                        <div
-                                            key={name}
-                                            onClick={() => { addLevelUpMove(name); }}
-                                            style={{ padding: '8px', cursor: 'pointer', borderBottom: '1px solid var(--border-light)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
-                                            onMouseEnter={(e) => e.currentTarget.style.background = 'var(--hover-bg)'}
-                                            onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-                                        >
-                                            <div>
-                                                <span style={{ fontWeight: 'bold', fontSize: '12px' }}>{name}</span>
-                                                <div style={{ fontSize: '10px', color: 'var(--text-secondary)' }}>{data.damage || 'Status'} | {data.frequency}</div>
+                                    {filteredMoves.slice(0, 100).map(([name, data]) => {
+                                        const activate = () => { addLevelUpMove(name); };
+                                        return (
+                                            <div
+                                                key={name}
+                                                onClick={activate}
+                                                role="button"
+                                                tabIndex={0}
+                                                onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), activate())}
+                                                style={{ padding: '8px', cursor: 'pointer', borderBottom: '1px solid var(--border-light)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                                                onMouseEnter={(e) => e.currentTarget.style.background = 'var(--hover-bg)'}
+                                                onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                                            >
+                                                <div>
+                                                    <span style={{ fontWeight: 'bold', fontSize: '12px' }}>{name}</span>
+                                                    <div style={{ fontSize: '10px', color: 'var(--text-secondary)' }}>{data.damage || 'Status'} | {data.frequency}</div>
+                                                </div>
+                                                <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                                                    <span style={{ padding: '2px 6px', background: getTypeColor(data.type), color: 'white', borderRadius: '4px', fontSize: '9px', fontWeight: 'bold' }}>{data.type}</span>
+                                                    <span style={{ padding: '2px 6px', background: data.category === 'Physical' ? '#e65100' : data.category === 'Special' ? '#1565c0' : '#616161', color: 'white', borderRadius: '4px', fontSize: '9px' }}>{data.category?.charAt(0)}</span>
+                                                </div>
                                             </div>
-                                            <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-                                                <span style={{ padding: '2px 6px', background: getTypeColor(data.type), color: 'white', borderRadius: '4px', fontSize: '9px', fontWeight: 'bold' }}>{data.type}</span>
-                                                <span style={{ padding: '2px 6px', background: data.category === 'Physical' ? '#e65100' : data.category === 'Special' ? '#1565c0' : '#616161', color: 'white', borderRadius: '4px', fontSize: '9px' }}>{data.category?.charAt(0)}</span>
-                                            </div>
-                                        </div>
-                                    ))}
+                                        );
+                                    })}
                                 </div>
                             </div>
                         )}

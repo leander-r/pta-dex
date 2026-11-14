@@ -108,27 +108,32 @@ const ComparisonModal = () => {
                 </div>
 
                 {/* Held Item */}
-                {pok.heldItem && (
-                    <div
-                        onClick={() => {
-                            const itemData = gameData?.items?.[pok.heldItem];
-                            if (showDetail && itemData) showDetail('item', pok.heldItem, itemData);
-                        }}
-                        style={{
-                            marginBottom: '12px',
-                            padding: '6px 10px',
-                            borderRadius: '8px',
-                            background: 'var(--bg-primary)',
-                            border: '1px solid var(--border-light)',
-                            fontSize: '12px',
-                            color: 'var(--text-primary)',
-                            cursor: gameData?.items?.[pok.heldItem] && showDetail ? 'pointer' : 'default'
-                        }}
-                        title={gameData?.items?.[pok.heldItem] ? 'Click to view item details' : ''}
-                    >
-                        🎒 <strong>Held Item:</strong> {pok.heldItem}
-                    </div>
-                )}
+                {pok.heldItem && (() => {
+                    const itemData = gameData?.items?.[pok.heldItem];
+                    const isInteractive = !!(itemData && showDetail);
+                    const activate = () => { if (isInteractive) showDetail('item', pok.heldItem, itemData); };
+                    return (
+                        <div
+                            onClick={activate}
+                            role={isInteractive ? 'button' : undefined}
+                            tabIndex={isInteractive ? 0 : undefined}
+                            onKeyDown={isInteractive ? (e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), activate()) : undefined}
+                            style={{
+                                marginBottom: '12px',
+                                padding: '6px 10px',
+                                borderRadius: '8px',
+                                background: 'var(--bg-primary)',
+                                border: '1px solid var(--border-light)',
+                                fontSize: '12px',
+                                color: 'var(--text-primary)',
+                                cursor: isInteractive ? 'pointer' : 'default'
+                            }}
+                            title={isInteractive ? 'Click to view item details' : ''}
+                        >
+                            🎒 <strong>Held Item:</strong> {pok.heldItem}
+                        </div>
+                    );
+                })()}
 
                 {/* Abilities */}
                 {abilities.length > 0 && (
@@ -137,12 +142,17 @@ const ComparisonModal = () => {
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
                             {abilities.map((ab, i) => {
                                 const abilityData = gameData?.abilities?.[ab];
+                                const isInteractive = !!(abilityData && showDetail);
+                                const activate = () => { if (isInteractive) showDetail('ability', ab, abilityData); };
                                 return (
                                     <span
                                         key={i}
-                                        onClick={() => { if (showDetail && abilityData) showDetail('ability', ab, abilityData); }}
-                                        title={abilityData ? 'Click to view ability details' : ''}
-                                        style={{ padding: '3px 8px', borderRadius: '10px', background: 'linear-gradient(135deg, #f093fb, #f5576c)', color: 'white', fontSize: '11px', fontWeight: 'bold', cursor: abilityData && showDetail ? 'pointer' : 'default' }}
+                                        onClick={activate}
+                                        role={isInteractive ? 'button' : undefined}
+                                        tabIndex={isInteractive ? 0 : undefined}
+                                        onKeyDown={isInteractive ? (e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), activate()) : undefined}
+                                        title={isInteractive ? 'Click to view ability details' : ''}
+                                        style={{ padding: '3px 8px', borderRadius: '10px', background: 'linear-gradient(135deg, #f093fb, #f5576c)', color: 'white', fontSize: '11px', fontWeight: 'bold', cursor: isInteractive ? 'pointer' : 'default' }}
                                     >
                                         {ab}
                                     </span>
@@ -159,10 +169,14 @@ const ComparisonModal = () => {
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
                             {(pok.moves || []).map((move, i) => {
                                 const moveData = gameData?.moves?.[move.name];
+                                const activate = () => { if (showDetail) showDetail('move', move.name, { ...moveData, type: move.type }); };
                                 return (
                                     <span
                                         key={i}
-                                        onClick={() => { if (showDetail) showDetail('move', move.name, { ...moveData, type: move.type }); }}
+                                        onClick={activate}
+                                        role={showDetail ? 'button' : undefined}
+                                        tabIndex={showDetail ? 0 : undefined}
+                                        onKeyDown={showDetail ? (e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), activate()) : undefined}
                                         title="Click to view move details"
                                         style={{ padding: '3px 8px', borderRadius: '10px', background: getTypeColor(move.type || 'Normal'), color: 'white', fontSize: '11px', fontWeight: 'bold', cursor: showDetail ? 'pointer' : 'default' }}
                                     >
