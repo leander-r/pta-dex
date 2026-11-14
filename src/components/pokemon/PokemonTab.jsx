@@ -190,23 +190,40 @@ const PokemonTab = () => {
     // PokemonCard is React.memo'd — per-card callbacks must keep a stable identity across
     // renders (one bound to each pokemon.id) or every card would re-render whenever any
     // single card's data changes, since inline arrow props are a new reference every render.
+    //
+    // moveToParty/moveToReserve close over the current party/reserve contents (so they can
+    // enforce the 6-Pokémon cap), so they get a new identity every time party/reserve actually
+    // changes — same as updatePokemon, which closes over party/reserve to look up the Pokémon
+    // being edited, so IT gets a new identity on every single edit to any card. Caching the
+    // callbacks object itself (keyed only on pokemonView, as before) meant a card's cached
+    // onMoveToParty could keep calling a stale moveToParty closure that still remembered
+    // whatever the party size was back when that cache entry was built — e.g. a reserve card
+    // untouched since the party was briefly full would still report "party is full" after the
+    // party had since dropped below the cap. Rebuilding the cache on every identity change of
+    // these functions would defeat the whole optimization (updatePokemon's identity changes on
+    // literally every edit). Instead, each cached callback indirects through a ref that's kept
+    // pointed at the latest action functions on every render — the outer callback's identity
+    // stays stable (so React.memo still bails out), but it always *calls* the freshest version.
+    const latestActionsRef = useRef(null);
+    latestActionsRef.current = { updatePokemon, restorePokemon, deletePokemon, moveToParty, moveToReserve, movePokemonUp, movePokemonDown };
+
     const cardCallbackCache = useRef(new Map());
     const getCardCallbacks = useCallback((id) => {
         const cached = cardCallbackCache.current.get(id);
         if (cached && cached.pokemonView === pokemonView) return cached.callbacks;
         const callbacks = {
             setEditing: (editing) => setEditingPokemonId(editing ? id : null),
-            updatePokemon: (updates) => updatePokemon(id, updates),
-            restorePokemon: (snapshot) => restorePokemon(id, snapshot),
-            deletePokemon: () => deletePokemon(id),
-            onMoveToParty: () => moveToParty(id),
-            onMoveToReserve: () => moveToReserve(id),
-            onMoveUp: () => movePokemonUp(id, pokemonView === 'party'),
-            onMoveDown: () => movePokemonDown(id, pokemonView === 'party'),
+            updatePokemon: (updates) => latestActionsRef.current.updatePokemon(id, updates),
+            restorePokemon: (snapshot) => latestActionsRef.current.restorePokemon(id, snapshot),
+            deletePokemon: () => latestActionsRef.current.deletePokemon(id),
+            onMoveToParty: () => latestActionsRef.current.moveToParty(id),
+            onMoveToReserve: () => latestActionsRef.current.moveToReserve(id),
+            onMoveUp: () => latestActionsRef.current.movePokemonUp(id, pokemonView === 'party'),
+            onMoveDown: () => latestActionsRef.current.movePokemonDown(id, pokemonView === 'party'),
         };
         cardCallbackCache.current.set(id, { pokemonView, callbacks });
         return callbacks;
-    }, [pokemonView, setEditingPokemonId, updatePokemon, restorePokemon, deletePokemon, moveToParty, moveToReserve, movePokemonUp, movePokemonDown]);
+    }, [pokemonView, setEditingPokemonId]);
 
     // Prune cache entries for Pokémon no longer in the roster (released/evolved away)
     useEffect(() => {
