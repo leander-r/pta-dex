@@ -138,17 +138,6 @@ test.describe('Breeder Bonus (Stats tab)', () => {
         await expect(reopenedCard.getByText(/Permanent base-stat bonus/)).toHaveCount(0);
     });
 
-    /** The second `.stat-cards-grid` on the tab is the Breeder Bonus grid (first is Stat Allocation). */
-    function breederStatCard(card, stat) {
-        const grid = card.locator('.stat-cards-grid').nth(1);
-        return grid.getByText(stat, { exact: true }).locator('xpath=..');
-    }
-
-    function mainStatCard(card, stat) {
-        const grid = card.locator('.stat-cards-grid').nth(0);
-        return grid.getByText(stat, { exact: true }).locator('xpath=..');
-    }
-
     test('section is collapsed by default showing "(none)"', async ({ page }) => {
         const card = await openStatsTab(page);
         await expect(card.getByText('🧬 Breeder Bonus')).toBeVisible();
@@ -183,52 +172,50 @@ test.describe('Breeder Bonus (Stats tab)', () => {
         const card = await openStatsTab(page);
         await card.getByText('🧬 Breeder Bonus').click();
 
-        const defCard = breederStatCard(card, 'DEF');
-        const plusBtn = defCard.locator('button').last();
+        const plusBtn = card.getByLabel('Increase DEF breeder bonus', { exact: true });
 
         for (let i = 0; i < 6; i++) {
             await plusBtn.click();
         }
-        await expect(defCard.locator('span').first()).toHaveText('+6');
+        await expect(card.getByLabel('DEF breeder bonus value', { exact: true })).toHaveText('+6');
         await expect(plusBtn).toBeDisabled();
 
         // A further click is a no-op — the bonus must not exceed +6.
         await plusBtn.click({ force: true }).catch(() => {});
-        await expect(defCard.locator('span').first()).toHaveText('+6');
+        await expect(card.getByLabel('DEF breeder bonus value', { exact: true })).toHaveText('+6');
 
         // Base (species default 10) + 6 = 16 on the main Stat Allocation card.
-        await expect(mainStatCard(card, 'DEF').locator('div').nth(3)).toHaveText('16');
+        await expect(card.getByLabel('DEF total', { exact: true })).toHaveText('16');
     });
 
     test('decrementing floors at +0 and restores the original base stat', async ({ page }) => {
         const card = await openStatsTab(page);
         await card.getByText('🧬 Breeder Bonus').click();
 
-        const defCard = breederStatCard(card, 'DEF');
-        const plusBtn = defCard.locator('button').last();
-        const minusBtn = defCard.locator('button').first();
+        const plusBtn = card.getByLabel('Increase DEF breeder bonus', { exact: true });
+        const minusBtn = card.getByLabel('Decrease DEF breeder bonus', { exact: true });
 
         await expect(minusBtn).toBeDisabled();
 
         await plusBtn.click();
         await plusBtn.click();
-        await expect(defCard.locator('span').first()).toHaveText('+2');
-        await expect(mainStatCard(card, 'DEF').locator('div').nth(3)).toHaveText('12');
+        await expect(card.getByLabel('DEF breeder bonus value', { exact: true })).toHaveText('+2');
+        await expect(card.getByLabel('DEF total', { exact: true })).toHaveText('12');
 
         await minusBtn.click();
         await minusBtn.click();
-        await expect(defCard.locator('span').first()).toHaveText('+0');
+        await expect(card.getByLabel('DEF breeder bonus value', { exact: true })).toHaveText('+0');
         await expect(minusBtn).toBeDisabled();
-        await expect(mainStatCard(card, 'DEF').locator('div').nth(3)).toHaveText('10');
+        await expect(card.getByLabel('DEF total', { exact: true })).toHaveText('10');
     });
 
     test('collapsed summary lists only stats with a non-zero bonus', async ({ page }) => {
         const card = await openStatsTab(page);
         await card.getByText('🧬 Breeder Bonus').click();
 
-        await breederStatCard(card, 'DEF').locator('button').last().click();
-        await breederStatCard(card, 'DEF').locator('button').last().click();
-        await breederStatCard(card, 'SPD').locator('button').last().click();
+        await card.getByLabel('Increase DEF breeder bonus', { exact: true }).click();
+        await card.getByLabel('Increase DEF breeder bonus', { exact: true }).click();
+        await card.getByLabel('Increase SPD breeder bonus', { exact: true }).click();
 
         await card.getByText('🧬 Breeder Bonus').click(); // collapse
 
@@ -240,9 +227,9 @@ test.describe('Breeder Bonus (Stats tab)', () => {
     test('bonus survives switching tabs away and back', async ({ page }) => {
         const card = await openStatsTab(page);
         await card.getByText('🧬 Breeder Bonus').click();
-        await breederStatCard(card, 'SATK').locator('button').last().click();
-        await breederStatCard(card, 'SATK').locator('button').last().click();
-        await breederStatCard(card, 'SATK').locator('button').last().click();
+        await card.getByLabel('Increase SATK breeder bonus', { exact: true }).click();
+        await card.getByLabel('Increase SATK breeder bonus', { exact: true }).click();
+        await card.getByLabel('Increase SATK breeder bonus', { exact: true }).click();
 
         await card.locator('.pokemon-card-tabs .tab', { hasText: 'moves' }).click();
         await expect(card.getByText(/Known Moves/)).toBeVisible();
@@ -251,7 +238,7 @@ test.describe('Breeder Bonus (Stats tab)', () => {
 
         // PokemonCard itself never unmounts across its inner tabs, so both the expanded/collapsed
         // UI state and the bonus value should still be exactly as left.
-        await expect(breederStatCard(card, 'SATK').locator('span').first()).toHaveText('+3');
-        await expect(mainStatCard(card, 'SATK').locator('div').nth(3)).toHaveText('13');
+        await expect(card.getByLabel('SATK breeder bonus value', { exact: true })).toHaveText('+3');
+        await expect(card.getByLabel('SATK total', { exact: true })).toHaveText('13');
     });
 });

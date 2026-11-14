@@ -11,6 +11,9 @@ import {
     calculatePokemonHP,
     calculateSTAB,
     getBaseRelationViolations,
+    parseACFromFrequency,
+    parseCritThreshold,
+    resolveAccuracyRoll,
 } from '../dataUtils.js';
 import { GAME_DATA } from '../../data/configs.js';
 
@@ -239,5 +242,75 @@ describe('Breeder Bonus interaction with Base Relation', () => {
             nature: 'none',
         };
         expect(getBaseRelationViolations(pokemon).length).toBeGreaterThan(0);
+    });
+});
+
+describe('parseACFromFrequency', () => {
+    it('extracts the AC number from a frequency string', () => {
+        expect(parseACFromFrequency('At-Will - 2')).toBe(2);
+        expect(parseACFromFrequency('EOT - 4')).toBe(4);
+        expect(parseACFromFrequency('Battle - 8')).toBe(8);
+    });
+
+    it('returns null (auto-hit) for "- None" frequencies, not a default AC', () => {
+        expect(parseACFromFrequency('EOT - None')).toBeNull();
+        expect(parseACFromFrequency('Center - None')).toBeNull();
+    });
+
+    it('defaults to AC 2 only when the frequency string is missing entirely', () => {
+        expect(parseACFromFrequency('')).toBe(2);
+        expect(parseACFromFrequency(null)).toBe(2);
+    });
+});
+
+describe('parseCritThreshold', () => {
+    it('defaults to a natural 20 when no extended crit range is described', () => {
+        expect(parseCritThreshold('')).toBe(20);
+        expect(parseCritThreshold('Deals extra damage.')).toBe(20);
+    });
+
+    it('parses an extended crit range from the move description', () => {
+        expect(parseCritThreshold('Critical Hit on 18-20')).toBe(18);
+        expect(parseCritThreshold('Critical Hit on 19-20')).toBe(19);
+    });
+});
+
+describe('resolveAccuracyRoll', () => {
+    // Regression guard for the shipped bug where a Pokémon's own EVA stage was being
+    // folded into its own attack-accuracy check. EVA only reduces incoming hit rolls
+    // against this Pokémon — it must never factor into this function at all, so the
+    // only stage-derived modifier this function accepts is the attacker's own ACC.
+    it('a hit/miss outcome depends only on the raw roll + the attacker\'s own ACC modifier vs. AC', () => {
+        // AC 12, no ACC stage: roll of 12 hits, 11 misses.
+        expect(resolveAccuracyRoll(12, 0, 12, 20).isHit).toBe(true);
+        expect(resolveAccuracyRoll(11, 0, 12, 20).isHit).toBe(false);
+    });
+
+    it('a positive ACC modifier can turn an otherwise-missed roll into a hit', () => {
+        const result = resolveAccuracyRoll(10, 3, 12, 20); // 10 + 3 = 13 >= 12
+        expect(result.modifiedAccRoll).toBe(13);
+        expect(result.isHit).toBe(true);
+    });
+
+    it('a negative ACC modifier can turn an otherwise-hit roll into a miss', () => {
+        const result = resolveAccuracyRoll(12, -2, 12, 20); // 12 - 2 = 10 < 12
+        expect(result.modifiedAccRoll).toBe(10);
+        expect(result.isHit).toBe(false);
+    });
+
+    it('moveAC === null means the move auto-hits regardless of roll or ACC modifier', () => {
+        expect(resolveAccuracyRoll(1, -5, null, 20).isHit).toBe(true);
+    });
+
+    it('a natural roll at/above the crit threshold always hits and crits, even against a modified roll below AC', () => {
+        const result = resolveAccuracyRoll(20, -10, 25, 20); // modifiedAccRoll = 10, far below AC 25
+        expect(result.isCrit).toBe(true);
+        expect(result.isHit).toBe(true);
+    });
+
+    it('an extended crit threshold (e.g. "18-20") crits on 18 and 19 too, not just a natural 20', () => {
+        expect(resolveAccuracyRoll(18, 0, 99, 18).isCrit).toBe(true);
+        expect(resolveAccuracyRoll(19, 0, 99, 18).isCrit).toBe(true);
+        expect(resolveAccuracyRoll(17, 0, 99, 18).isCrit).toBe(false);
     });
 });

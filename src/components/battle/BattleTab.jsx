@@ -4,7 +4,7 @@
 
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { getTypeColor } from '../../utils/typeUtils.js';
-import { calculateSTAB, getActualStats, calculatePokemonHP, parseDice, applyCombatStage, parseHealFormula, parseReviveAmount, parseStatusCure, parseCritThreshold, parseACFromFrequency } from '../../utils/dataUtils.js';
+import { calculateSTAB, getActualStats, calculatePokemonHP, parseDice, applyCombatStage, parseHealFormula, parseReviveAmount, parseStatusCure, parseCritThreshold, parseACFromFrequency, resolveAccuracyRoll } from '../../utils/dataUtils.js';
 import toast from '../../utils/toast.js';
 import { safeLocalStorageGet, safeLocalStorageSet } from '../../utils/storageUtils.js';
 import { useGameData, useModal, useTrainerContext, usePokemonContext, useData, useUI } from '../../contexts/index.js';
@@ -268,11 +268,9 @@ const BattleTab = () => {
         const accModifier = combatStages.acc || 0;
         const critThreshold = parseCritThreshold(selectedMove.description);
         const accRoll = Math.floor(Math.random() * 20) + 1;
-        const modifiedAccRoll = accRoll + accModifier;
-        const isCrit = accRoll >= critThreshold;
         // EVA is this Pokémon's own evasion (reduces incoming hit rolls against it) — it
         // must not apply to its own outgoing attack roll, which only this Pokémon's ACC affects.
-        const isHit = moveAC === null || isCrit || modifiedAccRoll >= moveAC;
+        const { modifiedAccRoll, isCrit, isHit } = resolveAccuracyRoll(accRoll, accModifier, moveAC, critThreshold);
         const acWasOverridden = acOverride !== '';
 
         const hp = getPokemonHP(selectedPokemon);

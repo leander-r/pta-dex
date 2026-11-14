@@ -208,6 +208,19 @@ export const parseCritThreshold = (description = '') => {
 };
 
 /**
+ * Resolve an attack roll's crit/hit outcome.
+ * accModifier is the ATTACKER's own ACC combat stage — the defender's EVA stage must
+ * never be folded in here, since it only reduces *incoming* hit rolls against the
+ * defender, not the attacker's own roll (see rollPokemonMove in BattleTab.jsx).
+ */
+export const resolveAccuracyRoll = (accRoll, accModifier, moveAC, critThreshold = 20) => {
+    const modifiedAccRoll = accRoll + accModifier;
+    const isCrit = accRoll >= critThreshold;
+    const isHit = moveAC === null || isCrit || modifiedAccRoll >= moveAC;
+    return { modifiedAccRoll, isCrit, isHit };
+};
+
+/**
  * Parse an item's effect string for an HP heal formula.
  * Handles dice notation ("2d6+3 HP", "2d6 + 3 HP") and fractions ("1/2 Max HP").
  * Returns { type: 'dice', formula } | { type: 'fraction', num, denom } | { type: 'none' }

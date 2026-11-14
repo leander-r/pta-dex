@@ -461,6 +461,13 @@ const ContestRunner = () => {
         } else {
             // ── Player path — use submitted score as base ──────────────────
             appeal = manualScore;
+            // Same-Contest-Type bonus (PH2: "roll an additional 1d4") — the player's
+            // own roll can't know this since they don't see the active Contest Type,
+            // so it's added here from the pasted move's Contest Type vs. this Contest's.
+            if (typeRel === 'same') {
+                typeBonusRolls = rollD4s(1);
+                appeal += typeBonusRolls[0];
+            }
             // Reliable: add the +1d4 bonus the player should have rolled
             if (reliableActive) {
                 reliableRolls = rollD4s(1);
@@ -1266,7 +1273,7 @@ const ContestRunner = () => {
                                 </div>
                                 {pasteTypeRel && !isSameMove && (
                                     <div style={{ fontSize: 12, marginTop: 4, color: pasteTypeRel === 'same' ? 'var(--color-success-text)' : pasteTypeRel === 'opposite' ? 'var(--color-danger-text)' : 'var(--text-muted)' }}>
-                                        {pasteTypeRel === 'same'     && `✓ ${parsedPaste.moveContestType} move → raises judge voltage`}
+                                        {pasteTypeRel === 'same'     && `✓ ${parsedPaste.moveContestType} move → +1d4 bonus + raises judge voltage`}
                                         {pasteTypeRel === 'opposite' && `⚠ ${parsedPaste.moveContestType} move → lowers judge voltage`}
                                         {pasteTypeRel === 'adjacent' && `— no voltage effect`}
                                     </div>

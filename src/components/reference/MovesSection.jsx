@@ -124,7 +124,6 @@ const MovesSection = () => {
                         <option value="EOT">EOT</option>
                         <option value="Battle">Battle</option>
                         <option value="Center">Center</option>
-                        <option value="Daily">Daily</option>
                     </select>
 
                     <select

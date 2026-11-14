@@ -2332,12 +2332,13 @@ const PokemonCard = ({
                                             }}
                                             disabled={minusDisabled}
                                             title={removeBlockReason || undefined}
+                                            aria-label={`Decrease ${stat.toUpperCase()}`}
                                             className="stat-alloc-btn"
                                             style={{ ...statBtnStyle, opacity: minusDisabled ? 0.45 : 1, cursor: minusDisabled ? 'not-allowed' : 'pointer', background: minusDisabled ? 'var(--border-light)' : statBtnStyle.background, color: minusDisabled ? 'var(--text-muted)' : statBtnStyle.color }}
                                         >
                                             −
                                         </button>
-                                        <span style={{ minWidth: '28px', fontSize: '12px', fontWeight: 'bold', color: addedVal > 0 ? statColor : 'var(--text-muted)', opacity: addedVal > 0 ? 1 : 0.4 }} title="Points added from level-up bonuses">
+                                        <span aria-label={`${stat.toUpperCase()} added points`} style={{ minWidth: '28px', fontSize: '12px', fontWeight: 'bold', color: addedVal > 0 ? statColor : 'var(--text-muted)', opacity: addedVal > 0 ? 1 : 0.4 }} title="Points added from level-up bonuses">
                                             {addedVal > 0 ? `+${addedVal}` : '+0'}
                                         </span>
                                         <button
@@ -2352,13 +2353,14 @@ const PokemonCard = ({
                                             }}
                                             disabled={plusDisabled}
                                             title={addBlockReason || undefined}
+                                            aria-label={`Increase ${stat.toUpperCase()}`}
                                             className="stat-alloc-btn"
                                             style={{ ...statBtnStyle, opacity: plusDisabled ? 0.45 : 1, cursor: plusDisabled ? 'not-allowed' : 'pointer', background: plusDisabled ? 'var(--border-light)' : statBtnStyle.background, color: plusDisabled ? 'var(--text-muted)' : statBtnStyle.color }}
                                         >
                                             +
                                         </button>
                                     </div>
-                                    <div style={{ borderTop: '1px solid var(--border-light)', marginTop: '4px', paddingTop: '4px', fontSize: '20px', fontWeight: 'bold' }} title="Total stat (base ± added). Used for damage calculations and skill checks.">
+                                    <div aria-label={`${stat.toUpperCase()} total`} style={{ borderTop: '1px solid var(--border-light)', marginTop: '4px', paddingTop: '4px', fontSize: '20px', fontWeight: 'bold' }} title="Total stat (base ± added). Used for damage calculations and skill checks.">
                                         {actualStats[stat]}
                                     </div>
                                     {(addViolates || removeViolates) && (
@@ -2449,18 +2451,20 @@ const PokemonCard = ({
                                                             onClick={() => !minusDisabled && adjust(-1)}
                                                             disabled={minusDisabled}
                                                             title={minusDisabled ? 'No Breeder Bonus to remove' : undefined}
+                                                            aria-label={`Decrease ${stat.toUpperCase()} breeder bonus`}
                                                             className="stat-alloc-btn"
                                                             style={{ ...statBtnStyle, opacity: minusDisabled ? 0.45 : 1, cursor: minusDisabled ? 'not-allowed' : 'pointer', background: minusDisabled ? 'var(--border-light)' : statBtnStyle.background, color: minusDisabled ? 'var(--text-muted)' : statBtnStyle.color }}
                                                         >
                                                             −
                                                         </button>
-                                                        <span style={{ minWidth: '28px', fontSize: '12px', fontWeight: 'bold', color: bonusVal > 0 ? statColor : 'var(--text-muted)', opacity: bonusVal > 0 ? 1 : 0.4 }} title="Permanent bonus added to this Pokémon's base stat">
+                                                        <span aria-label={`${stat.toUpperCase()} breeder bonus value`} style={{ minWidth: '28px', fontSize: '12px', fontWeight: 'bold', color: bonusVal > 0 ? statColor : 'var(--text-muted)', opacity: bonusVal > 0 ? 1 : 0.4 }} title="Permanent bonus added to this Pokémon's base stat">
                                                             {bonusVal > 0 ? `+${bonusVal}` : '+0'}
                                                         </span>
                                                         <button
                                                             onClick={() => !plusDisabled && adjust(1)}
                                                             disabled={plusDisabled}
                                                             title={plusDisabled ? 'Breeder Bonus capped at +6 per stat' : undefined}
+                                                            aria-label={`Increase ${stat.toUpperCase()} breeder bonus`}
                                                             className="stat-alloc-btn"
                                                             style={{ ...statBtnStyle, opacity: plusDisabled ? 0.45 : 1, cursor: plusDisabled ? 'not-allowed' : 'pointer', background: plusDisabled ? 'var(--border-light)' : statBtnStyle.background, color: plusDisabled ? 'var(--text-muted)' : statBtnStyle.color }}
                                                         >
