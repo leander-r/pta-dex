@@ -72,7 +72,9 @@ test('empty party shows the no-Pokémon message instead of the roll panel', asyn
     await setupPage(page);
     await goToDiceRollerTab(page);
 
-    await expect(page.getByText('No Pokémon in your party.')).toBeVisible();
+    // Generous timeout — first assertion right after a fresh page load/tab switch,
+    // which can be slow under a full parallel suite run's CPU contention.
+    await expect(page.getByText('No Pokémon in your party.')).toBeVisible({ timeout: 15_000 });
     await expect(page.getByRole('button', { name: 'Select a Pokémon & move' })).toBeDisabled();
 });
 

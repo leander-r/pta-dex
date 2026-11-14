@@ -37,7 +37,9 @@ test.beforeEach(async ({ page }) => {
 });
 
 test('Capture Rates is the default section', async ({ page }) => {
-    await expect(page.getByRole('tab', { name: 'Capture Rates' })).toHaveAttribute('aria-selected', 'true');
+    // Generous timeout — first assertion right after a fresh page load/tab switch,
+    // which can be slow under a full parallel suite run's CPU contention.
+    await expect(page.getByRole('tab', { name: 'Capture Rates' })).toHaveAttribute('aria-selected', 'true', { timeout: 15_000 });
 });
 
 test('switching sub-tabs mounts the corresponding section content', async ({ page }) => {

@@ -4,6 +4,13 @@ export default defineConfig({
     testDir: './e2e',
     timeout: 30_000,
     retries: process.env.CI ? 1 : 0,
+    // Playwright's default (half of logical cores) over-saturates this project locally:
+    // many concurrent headless Chromium instances all hitting one shared dev server plus
+    // per-context IndexedDB writes can leave a page's internal data-loading state stuck
+    // in its loading spinner indefinitely (not just slow — it never resolves even with a
+    // generous timeout). Verified empirically: the full suite is flaky at the ~8-worker
+    // default on a 16-core machine, and passes reliably at workers=3.
+    workers: process.env.CI ? 2 : 4,
     use: {
         baseURL: 'http://localhost:5173',
         headless: true,

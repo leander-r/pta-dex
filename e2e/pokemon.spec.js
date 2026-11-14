@@ -37,9 +37,12 @@ test.beforeEach(async ({ page }) => {
 // ── Tests ────────────────────────────────────────────────────────────────────
 
 test('empty party shows "Add Your First Pokémon" CTA', async ({ page }) => {
+    // Generous timeout — this is the first assertion right after a fresh page load/tab
+    // switch, which can be slow under a full parallel suite run's CPU contention even
+    // though the app itself renders near-instantly in isolation.
     await expect(
         page.getByRole('button', { name: /Add Your First Pokémon/i })
-    ).toBeVisible();
+    ).toBeVisible({ timeout: 15_000 });
 });
 
 test('clicking add button shows a new Pokémon card in edit mode', async ({ page }) => {

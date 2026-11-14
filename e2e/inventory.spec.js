@@ -85,7 +85,9 @@ test.beforeEach(async ({ page }) => {
 // ── Smoke / empty state ─────────────────────────────────────────────────────
 
 test('empty inventory shows the empty state and Add Items CTA', async ({ page }) => {
-    await expect(page.getByText('Inventory is empty')).toBeVisible();
+    // Generous timeout — first assertion right after a fresh page load/tab switch,
+    // which can be slow under a full parallel suite run's CPU contention.
+    await expect(page.getByText('Inventory is empty')).toBeVisible({ timeout: 15_000 });
     await expect(page.getByRole('button', { name: '+ Add Items' })).toBeVisible();
 });
 
