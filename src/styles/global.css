@@ -4025,9 +4025,13 @@
                 display: none;
             }
 
-            /* Combat stages grid: prevent overflow at tablet widths */
+            /* Combat stages grid: prevent overflow at tablet widths.
+               Cell must fit two 36px (non-shrinking) buttons + the value span + gaps
+               + cell padding (~112px) now that .combat-stage-btn is flex-shrink:0 at
+               this breakpoint — a narrower cell lets a row's buttons spill into the
+               next stat's cell, visually overlapping it and intercepting its clicks. */
             .combat-stages-grid {
-                grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)) !important;
+                grid-template-columns: repeat(auto-fill, minmax(115px, 1fr)) !important;
             }
 
             /* Touch target sizing (combat stage, inventory quantity, stat allocation ±
@@ -4178,9 +4182,11 @@
                 flex-shrink: 0 !important;
             }
 
-            /* Combat stages grid: narrower columns so 7 stats don't overflow narrow phones */
+            /* Combat stages grid: cell width must still fit two non-shrinking 36px
+               buttons (see the ≤768px rule above) — narrower than that overlaps
+               neighboring cells instead of actually preventing overflow. */
             .combat-stages-grid {
-                grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)) !important;
+                grid-template-columns: repeat(auto-fill, minmax(115px, 1fr)) !important;
             }
 
             /* Party sprite strip: wrap to 2×3 grid on narrow portrait screens */
@@ -4304,9 +4310,10 @@
                 grid-template-columns: repeat(2, 1fr) !important;
             }
 
-            /* Combat stages: tighter min so all 7 fit in 2 rows on very narrow screens */
+            /* Combat stages: same 115px floor as the wider breakpoints — the buttons
+               don't get any smaller here, so the cell can't either without overlap. */
             .combat-stages-grid {
-                grid-template-columns: repeat(auto-fill, minmax(55px, 1fr)) !important;
+                grid-template-columns: repeat(auto-fill, minmax(115px, 1fr)) !important;
             }
 
             /* Pokémon card tab labels: hide text at ≤360px, show icons only */
