@@ -11,14 +11,14 @@ export const STATUS_CONDITIONS = [
         label: 'Burned',
         icon: '🔥',
         color: '#f44336',
-        mechanic: 'DEF treated as −2 combat stages for damage calculations. Takes damage at end of each round.'
+        mechanic: 'DEF treated as −2 combat stages for damage calculations. Once per turn, in place of an action/Move, roll 1d20 to self-cure: DC 17 (DC 13 for Fire types). Takes damage at end of each round (not while in a Poké Ball or at rest).'
     },
     {
         key: 'poisoned',
         label: 'Poisoned',
         icon: '☠️',
         color: '#9c27b0',
-        mechanic: 'SDEF treated as −2 combat stages for damage calculations. Takes damage at end of each round.'
+        mechanic: 'SDEF treated as −2 combat stages for damage calculations. Poison/Steel types are immune to becoming Poisoned. Once per turn, in place of a Move, roll 1d20 to self-cure: DC 17 (not usable while Badly Poisoned). Takes damage at end of each round (not while in a Poké Ball or at rest).'
     },
     {
         key: 'badlyPoisoned',
@@ -39,14 +39,14 @@ export const STATUS_CONDITIONS = [
         label: 'Paralyzed',
         icon: '⚡',
         color: '#ffc107',
-        mechanic: 'Speed halved. Roll 1d20 to act: DC 6 on the first round, rising by 1 each round (6→7→…→16 cap). On a failed roll, no Move or Shift.'
+        mechanic: 'Speed halved. Roll 1d20 to act: DC 6 on the first round, rising by 1 each round (6→7→…→16 cap; starts at DC 11 if sent out of its Poké Ball while Paralyzed). On a failed roll, no Move or Shift. Dragon/Electric types may instead self-cure on a natural 20. Cured after 1 hour of rest.'
     },
     {
         key: 'asleep',
         label: 'Asleep',
         icon: '💤',
         color: '#607d8b',
-        mechanic: 'Cannot act. Roll 1d20 to wake: DC 16 on the first round, dropping by 2 each round (16→14→12→10→8→6 cap).'
+        mechanic: 'Cannot act. Roll 1d20 to wake: DC 16 on the first round, dropping by 2 each round (16→14→12→10→8→6 cap; starts at DC 12 if sent out of its Poké Ball while Asleep, then drops by 2 as normal).'
     },
     {
         key: 'confused',

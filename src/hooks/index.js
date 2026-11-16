@@ -5,4 +5,3 @@
 
 export { useLocalStorage, usePersistentStorage } from './useLocalStorage.js';
 export { useDiscordWebhook } from './useDiscordWebhook.js';
-export { usePokedex } from './usePokedex.js';

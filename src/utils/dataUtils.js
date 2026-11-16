@@ -130,18 +130,6 @@ export const getCombatStagePercent = (stages) => {
 };
 
 /**
- * Calculate Speed Skill modifier from combat stages
- * +1 per 2 positive stages, -1 per 3 negative stages (min 1)
- */
-export const getSpeedSkillMod = (spdStages) => {
-    if (spdStages >= 0) {
-        return Math.floor(spdStages / 2);
-    } else {
-        return -Math.floor(Math.abs(spdStages) / 3);
-    }
-};
-
-/**
  * Calculate STAB bonus - OFFICIAL P:TA HANDBOOK
  * You get the bonus AT the listed level
  */

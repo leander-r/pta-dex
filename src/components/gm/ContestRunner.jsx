@@ -24,7 +24,7 @@ import { buildContestTurnEmbed, buildContestResultsEmbed } from '../../utils/dis
 import toast from '../../utils/toast.js';
 import {
     CONTEST_TYPES, TYPE_ADJACENT, getTypeRelation, ctColor,
-    KEYWORD_SET, normalizeKeyword, KEYWORD_DESC, KEYWORD_COLOR,
+    normalizeKeyword, KEYWORD_DESC, KEYWORD_COLOR,
     rollD4s, rollDiceStr, parsePasteInput,
 } from './contestHelpers.js';
 import { VoltageBar, JudgeCard, StepLabel, KeywordPill } from './ContestRunnerPieces.jsx';
