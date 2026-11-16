@@ -91,7 +91,11 @@ export const DataProvider = ({ children }) => {
             try {
                 const prev = localStorage.getItem('pta-enhanced-save-data');
                 if (prev) localStorage.setItem('pta-auto-backup', prev);
-            } catch {}
+            } catch (backupError) {
+                // Don't fail the main save over this, but don't let it fail silently either —
+                // the user should know their safety net didn't update.
+                console.warn('Auto-backup snapshot failed:', backupError);
+            }
 
             const savePayload = {
                 trainers,
@@ -403,15 +407,19 @@ export const DataProvider = ({ children }) => {
             confirmLabel: 'Load',
             onConfirm: () => {
                 try {
-                    if (slot.trainers && Array.isArray(slot.trainers) && slot.trainers.length > 0) {
-                        const validActiveId = slot.trainers.some(t => t.id === slot.activeTrainerId)
-                            ? slot.activeTrainerId
-                            : slot.trainers[0].id;
-                        setTrainers(slot.trainers);
+                    // A slot saved before a schema change (e.g. the old `pokemon` array ->
+                    // party/reserve split) needs the same migration loadData/restoreAutoBackup
+                    // already apply — otherwise an old slot loads with a stale/broken shape.
+                    const migrated = migrateOldData(slot);
+                    if (migrated.trainers && Array.isArray(migrated.trainers) && migrated.trainers.length > 0) {
+                        const validActiveId = migrated.trainers.some(t => t.id === migrated.activeTrainerId)
+                            ? migrated.activeTrainerId
+                            : migrated.trainers[0].id;
+                        setTrainers(migrated.trainers);
                         setActiveTrainerId(validActiveId);
                     }
-                    setInventory(Array.isArray(slot.inventory) ? slot.inventory : []);
-                    setCustomSpecies(Array.isArray(slot.customSpecies) ? slot.customSpecies : []);
+                    setInventory(Array.isArray(migrated.inventory) ? migrated.inventory : []);
+                    setCustomSpecies(Array.isArray(migrated.customSpecies) ? migrated.customSpecies : []);
                     toast.success(`Slot ${index + 1} loaded!`);
                 } catch (err) {
                     console.error('Load slot error:', err);
@@ -419,7 +427,7 @@ export const DataProvider = ({ children }) => {
                 }
             }
         });
-    }, [saveSlots, showConfirm, setTrainers, setActiveTrainerId, setInventory, setCustomSpecies]);
+    }, [saveSlots, showConfirm, migrateOldData, setTrainers, setActiveTrainerId, setInventory, setCustomSpecies]);
 
     const deleteSlot = useCallback((index) => {
         const slot = saveSlots[index];
@@ -551,7 +559,13 @@ export const DataProvider = ({ children }) => {
 
                     const applyFullImport = () => {
                         setTrainers(migratedTrainers);
-                        setActiveTrainerId(data.activeTrainerId || migratedTrainers[0]?.id);
+                        // Don't trust the imported activeTrainerId blindly — a hand-edited or
+                        // malformed backup file could reference an id that isn't actually in
+                        // this file's own trainers array.
+                        const validActiveId = migratedTrainers.some(t => t.id === data.activeTrainerId)
+                            ? data.activeTrainerId
+                            : migratedTrainers[0]?.id;
+                        setActiveTrainerId(validActiveId);
                         if (data.inventory) setInventory(data.inventory);
                         if (data.customSpecies) setCustomSpecies(data.customSpecies);
 

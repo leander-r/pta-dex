@@ -33,7 +33,7 @@ const CustomFeatureModal = () => {
     if (!showCustomFeatureModal) return null;
 
     const handleAddFeature = () => {
-        if (!customFeature.name || !customFeature.effect) return;
+        if (!customFeature.name?.trim() || !customFeature.effect?.trim()) return;
         if ((trainer.featPoints || 0) <= 0) {
             toast.warning('Not enough feat points!');
             return;
@@ -197,7 +197,7 @@ const CustomFeatureModal = () => {
                         </button>
                         <button
                             className="btn btn-primary"
-                            disabled={!customFeature.name || !customFeature.effect}
+                            disabled={!customFeature.name?.trim() || !customFeature.effect?.trim()}
                             onClick={handleAddFeature}
                         >
                             Add Feature (1 point)

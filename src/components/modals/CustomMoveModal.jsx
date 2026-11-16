@@ -48,7 +48,7 @@ const CustomMoveModal = () => {
     const allPokemon = [...(party || []), ...(reserve || [])];
 
     const handleAddMove = () => {
-        if (!customMove.name || !customMoveForPokemon) return;
+        if (!customMove.name?.trim() || !customMoveForPokemon) return;
 
         const targetPoke = allPokemon.find(p => p.id === customMoveForPokemon);
         if (!targetPoke) return;
@@ -229,7 +229,16 @@ const CustomMoveModal = () => {
                                 min="1"
                                 value={customMove.cannotMiss ? '' : customMove.ac}
                                 disabled={customMove.cannotMiss}
-                                onChange={(e) => setCustomMove(prev => ({ ...prev, ac: e.target.value }))}
+                                onChange={(e) => {
+                                    const raw = e.target.value;
+                                    // `min="1"` is only an HTML hint — clamp here too, otherwise a
+                                    // negative/zero AC gets combined into the stored frequency
+                                    // string (e.g. "At-Will - -3") and the AC parser elsewhere
+                                    // silently strips the minus sign rather than rejecting it.
+                                    if (raw === '') { setCustomMove(prev => ({ ...prev, ac: '' })); return; }
+                                    const clamped = Math.max(1, parseInt(raw, 10) || 1);
+                                    setCustomMove(prev => ({ ...prev, ac: String(clamped) }));
+                                }}
                                 placeholder="e.g., 2, 4"
                                 style={{ opacity: customMove.cannotMiss ? 0.5 : 1 }}
                             />
@@ -306,7 +315,7 @@ const CustomMoveModal = () => {
                         </button>
                         <button
                             className="btn btn-primary"
-                            disabled={!customMove.name}
+                            disabled={!customMove.name?.trim()}
                             onClick={handleAddMove}
                         >
                             Add Move
