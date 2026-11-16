@@ -4,7 +4,7 @@
 // Manages all modal state so modal open/close doesn't re-render
 // the entire app tree — only components subscribed to ModalContext.
 
-import React, { createContext, useContext, useState, useCallback, useMemo } from 'react';
+import { createContext, useContext, useState, useCallback, useMemo } from 'react';
 
 const ModalContext = createContext(null);
 

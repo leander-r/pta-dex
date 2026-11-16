@@ -2,7 +2,7 @@
 // Natures Section Component
 // ============================================================
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { GAME_DATA } from '../../data/configs.js';
 
 const STAT_OPTIONS = ['', 'hp', 'atk', 'def', 'satk', 'sdef', 'spd'];

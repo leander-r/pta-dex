@@ -1,4 +1,3 @@
-import React from 'react';
 import { parseHealFormula, parseReviveAmount, parseStatusCure, calculatePokemonHP } from '../../utils/dataUtils.js';
 import { STATUS_CONDITIONS } from '../../data/statusConditions.js';
 import PartyStrip from './PartyStrip.jsx';

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { STATUS_CONDITIONS } from '../../data/statusConditions.js';
 
 const Chevron = ({ open }) => (

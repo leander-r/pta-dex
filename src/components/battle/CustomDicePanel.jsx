@@ -1,4 +1,3 @@
-import React from 'react';
 
 const QUICK_DICE = ['1d4', '1d6', '1d8', '1d10', '1d12', '1d20', '2d6', '3d6'];
 

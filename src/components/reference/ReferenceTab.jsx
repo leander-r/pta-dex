@@ -3,7 +3,7 @@
 // ============================================================
 // Quick reference section with type chart, moves, abilities, etc.
 
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useUI } from '../../contexts/index.js';
 
 // Sub-components for each reference section

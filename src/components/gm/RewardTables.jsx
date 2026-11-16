@@ -4,7 +4,7 @@
 // Experience formula: (EXP Drop × Pokémon Level) × multiplier
 // Wild Pokémon = ×1, Trainer's Pokémon = ×2
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import toast from '../../utils/toast.js';
 
 const ExpCalculator = () => {
@@ -43,7 +43,7 @@ const ExpCalculator = () => {
                     }}
                 >
                     <span>📐 EXP Formula</span>
-                    <span style={{ fontSize: 11 }}>{formulaOpen ? '▲' : '▼'}</span>
+                    <span style={{ display: 'inline-block', fontSize: 11, transform: formulaOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}>▼</span>
                 </button>
                 {formulaOpen && (
                     <div style={{

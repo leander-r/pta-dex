@@ -3,7 +3,7 @@
 // ============================================================
 // DC charts for each trainer skill, organized by associated stat.
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import toast from '../../utils/toast.js';
 
 const SKILLS = {

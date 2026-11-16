@@ -4,7 +4,6 @@
 
 import { describe, it, expect } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
-import React from 'react';
 import { ModalProvider, useModal } from '../ModalContext.jsx';
 
 const wrapper = ({ children }) => <ModalProvider>{children}</ModalProvider>;

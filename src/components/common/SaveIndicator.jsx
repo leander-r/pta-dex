@@ -2,7 +2,6 @@
 // Save Indicator Component
 // ============================================================
 
-import React from 'react';
 
 /**
  * SaveIndicator - Shows save status with optional timestamp

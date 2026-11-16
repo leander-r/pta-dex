@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { getTypeColor } from '../../utils/typeUtils.js';
 import { useModal } from '../../contexts/index.js';
 import toast from '../../utils/toast.js';

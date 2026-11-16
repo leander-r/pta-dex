@@ -12,7 +12,6 @@
 //   6. DataProvider     — Save/Load/Export; owns inventory
 //   7. PokemonProvider  — Pokémon CRUD and move learning
 
-import React from 'react';
 import { UIProvider } from '../contexts/UIContext.jsx';
 import { ModalProvider } from '../contexts/ModalContext.jsx';
 import { FilterProvider } from '../contexts/FilterContext.jsx';

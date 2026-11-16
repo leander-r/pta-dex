@@ -3,7 +3,7 @@
 // Used inside BattleTab when the player switches to Contest mode.
 // ============================================================
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { parseDice } from '../../utils/dataUtils.js';
 import toast from '../../utils/toast.js';
 

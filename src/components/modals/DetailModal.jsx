@@ -3,7 +3,7 @@
 // ============================================================
 // Shows full info for moves, features, abilities, skills, items
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { getTypeColor } from '../../utils/typeUtils.js';
 import useModalKeyboard from '../../hooks/useModalKeyboard.js';
 import { useModal } from '../../contexts/index.js';

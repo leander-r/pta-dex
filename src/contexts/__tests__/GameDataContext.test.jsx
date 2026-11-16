@@ -6,7 +6,6 @@
 
 import { describe, it, expect, vi } from 'vitest';
 import { renderHook, act, waitFor } from '@testing-library/react';
-import React from 'react';
 import { GameDataProvider, useGameData } from '../GameDataContext.jsx';
 
 const MOCK_POKEDEX = [

@@ -3,7 +3,7 @@
 // ============================================================
 // Main Game Master tools tab with sub-section navigation.
 
-import React, { useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import CaptureCalculator from './CaptureCalculator.jsx';
 import EncounterGuide from './EncounterGuide.jsx';
 import RewardTables from './RewardTables.jsx';
@@ -15,14 +15,14 @@ import ContestRunner from './ContestRunner.jsx';
 
 // Sections drawn directly from the PTA GM Guide (final).pdf
 const SECTIONS = [
-    { id: 'capture',   icon: '🎯', label: 'Capture Rates'  },
-    { id: 'encounter', icon: '🌿', label: 'Wild Encounters' },
-    { id: 'biome',     icon: '🗺️', label: 'Habitats'       },
-    { id: 'rewards',   icon: '⭐', label: 'EXP Calculator'  },
-    { id: 'gym',       icon: '❤️', label: 'Loyalty Guide'  },
-    { id: 'npc',       icon: '📋', label: 'Skill Checks'   },
-    { id: 'death',     icon: '💀', label: 'Death Saves'    },
-    { id: 'contest',   icon: '🎭', label: 'Contests'       },
+    { id: 'capture',   icon: '🎯', label: 'Capture Rates',   description: 'Roll a capture check against a wild Pokémon\'s catch rate and modifiers.' },
+    { id: 'encounter', icon: '🌿', label: 'Wild Encounters', description: 'Rules for encounter composition, wild Pokémon stats, and allying.' },
+    { id: 'biome',     icon: '🗺️', label: 'Habitats',        description: 'Browse which species can appear in each habitat/biome.' },
+    { id: 'rewards',   icon: '⭐', label: 'EXP Calculator',  description: 'Look up EXP and prize money awards for defeating a given species.' },
+    { id: 'gym',       icon: '❤️', label: 'Loyalty Guide',   description: 'Reference for what raises or lowers a Pokémon\'s Loyalty rank.' },
+    { id: 'npc',       icon: '📋', label: 'Skill Checks',    description: 'Roll a skill check and look up DCs for every trainer skill.' },
+    { id: 'death',     icon: '💀', label: 'Death Saves',     description: 'Rules reference for Death Saves and the Fainted condition.' },
+    { id: 'contest',   icon: '🎭', label: 'Contests',        description: 'Run a Pokémon Contest — appeal rounds, judging, and scoring.' },
 ];
 
 const SECTION_COMPONENTS = {
@@ -70,15 +70,15 @@ const GMTab = () => {
                     border: '1px solid var(--border-light)',
                 }}
             >
-                {SECTIONS.map(({ id, icon, label }) => (
+                {SECTIONS.map(({ id, icon, label, description }) => (
                     <button
                         key={id}
                         role="tab"
                         onClick={() => handleSectionChange(id)}
                         className={activeSection === id ? 'tab active' : 'tab'}
                         aria-selected={activeSection === id}
-                        aria-label={label}
-                        title={label}
+                        aria-label={`${label} — ${description}`}
+                        title={description}
                         style={{
                             display: 'flex',
                             alignItems: 'center',

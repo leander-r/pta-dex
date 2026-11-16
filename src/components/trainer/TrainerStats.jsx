@@ -2,7 +2,7 @@
 // Trainer Stats Component
 // ============================================================
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useTrainerContext, useUI } from '../../contexts/index.js';
 import { HELP_BTN_STYLE } from '../common/helpBtnStyle.js';
 

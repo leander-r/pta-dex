@@ -3,7 +3,7 @@
 // ============================================================
 // Campaign notes, session notes, and quest log
 
-import React, { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { useTrainerContext, useModal, useUI } from '../../contexts/index.js';
 import { HELP_BTN_STYLE } from '../common/helpBtnStyle.js';
 import toast from '../../utils/toast.js';

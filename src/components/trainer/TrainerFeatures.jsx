@@ -2,7 +2,7 @@
 // Trainer Features Component
 // ============================================================
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useModal, useTrainerContext, useGameData, useUI } from '../../contexts/index.js';
 import { HELP_BTN_STYLE } from '../common/helpBtnStyle.js';
 import toast from '../../utils/toast.js';
@@ -64,7 +64,7 @@ const TrainerFeatures = () => {
     const [weaponChoiceInput, setWeaponChoiceInput] = useState('');
     const [collapsed, setCollapsed] = useState(true);
 
-    const currentFeatures = trainer.features || [];
+    const currentFeatures = useMemo(() => trainer.features || [], [trainer.features]);
 
     // Get available features for selection
     const availableFeatures = useMemo(() => {

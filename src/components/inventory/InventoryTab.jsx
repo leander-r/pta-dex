@@ -2,7 +2,7 @@
 // Inventory Tab Component
 // ============================================================
 
-import React, { useState, useMemo, useRef, useCallback } from 'react';
+import { useState, useMemo, useRef, useCallback } from 'react';
 import { GAME_DATA } from '../../data/configs.js';
 import { useData, useModal, useTrainerContext, usePokemonContext } from '../../contexts/index.js';
 import { calculatePokemonHP, parseDice, parseHealFormula, parseReviveAmount, parseStatusCure } from '../../utils/dataUtils.js';

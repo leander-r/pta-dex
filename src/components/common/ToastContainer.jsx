@@ -3,7 +3,7 @@
 // ============================================================
 // Renders toast notifications from the global toast utility
 
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import toast from '../../utils/toast.js';
 
 const ToastContainer = () => {

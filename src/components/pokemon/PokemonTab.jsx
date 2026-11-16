@@ -3,7 +3,7 @@
 // ============================================================
 // Main Pokemon management tab
 
-import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
+import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import PokemonCard from './PokemonCard.jsx';
 import { MAX_PARTY_SIZE } from '../../data/constants.js';
 import { importSinglePokemon } from '../../utils/exportUtils.js';
@@ -372,6 +372,14 @@ const PokemonTab = () => {
     }, [currentList, filter]);
 
     const reserveTotalPages = Math.max(1, Math.ceil(filteredList.length / ROSTER_PAGE_SIZE));
+
+    // Deleting/evolving a Pokémon can shrink the list enough that the current page
+    // no longer exists (e.g. removing the last item on page 2) — clamp back down
+    // instead of showing a blank "page N of fewer-than-N" dead end.
+    useEffect(() => {
+        setReservePage(p => Math.min(p, reserveTotalPages - 1));
+    }, [reserveTotalPages]);
+
     const pagedList = pokemonView === 'reserve'
         ? filteredList.slice(reservePage * ROSTER_PAGE_SIZE, (reservePage + 1) * ROSTER_PAGE_SIZE)
         : filteredList;

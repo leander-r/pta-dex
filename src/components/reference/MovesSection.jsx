@@ -2,7 +2,7 @@
 // Moves Section Component
 // ============================================================
 
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { GAME_DATA } from '../../data/configs.js';
 import { getTypeColor, getContrastTextColor } from '../../utils/typeUtils.js';
 import { POKEMON_TYPES } from '../../data/typeChart.js';

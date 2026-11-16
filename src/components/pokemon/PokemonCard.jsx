@@ -2,18 +2,19 @@
 // Pokemon Card Component
 // ============================================================
 
-import React, { memo, useState, useMemo, useEffect, useRef } from 'react';
+import { memo, useState, useMemo, useEffect, useRef } from 'react';
 import { getTypeColor, getContrastTextColor } from '../../utils/typeUtils.js';
 import { getActualStats, calculatePokemonHP, calculateSTAB, getBaseRelationViolations, applyNature } from '../../utils/dataUtils.js';
 import { exportSinglePokemon, copyPokemonToClipboard } from '../../utils/exportUtils.js';
 import toast from '../../utils/toast.js';
 import { useGameData, useModal, usePokemonContext, useUI, useData } from '../../contexts/index.js';
-import { buildPokemonSkills } from '../../utils/speciesFields.js';
+import { buildPokemonSkills, getEffectiveLevelUpMoves } from '../../utils/speciesFields.js';
 import { MAX_NATURAL_MOVES, MAX_TAUGHT_MOVES, MAX_TOTAL_MOVES } from '../../data/constants.js';
 import { getPokemonDisplayImage, getPokemonSprite } from '../../utils/pokemonSprite.js';
 
 import { HELP_BTN_STYLE } from '../common/helpBtnStyle.js';
 import { STATUS_CONDITIONS } from '../../data/statusConditions.js';
+import useModalKeyboard from '../../hooks/useModalKeyboard.js';
 
 // Breeder Bonus — one-time "NEW" nudge so the feature isn't missed on launch.
 // Auto-expands the section and shows a badge until the player has opened or used it once.
@@ -155,18 +156,23 @@ const PokemonCard = ({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isEditing]);
 
-    // P22: Close regional form overlay on Escape
-    useEffect(() => {
-        if (!showRegionalFormSelect) return;
-        const handleKey = (e) => {
-            if (e.key === 'Escape') {
-                setShowRegionalFormSelect(false);
-                setPendingSpeciesData(null);
-            }
-        };
-        document.addEventListener('keydown', handleKey);
-        return () => document.removeEventListener('keydown', handleKey);
-    }, [showRegionalFormSelect]);
+    // Species search dropdown and regional-form popover both get focus-trap +
+    // Escape-to-close via the same hook every real modal in this app uses — the
+    // search input sits outside the dropdown's DOM subtree (so autoFocus would
+    // steal focus away from it mid-type), hence autoFocus: false there only.
+    const closeSpeciesDropdown = () => {
+        setShowSpeciesDropdown(false);
+        setSpeciesSearch('');
+        setSpeciesTypeFilter('all');
+        setSpeciesTypeFilter2('all');
+    };
+    const { modalRef: speciesDropdownRef } = useModalKeyboard(showSpeciesDropdown, closeSpeciesDropdown, { autoFocus: false });
+
+    const closeRegionalFormSelect = () => {
+        setShowRegionalFormSelect(false);
+        setPendingSpeciesData(null);
+    };
+    const { modalRef: regionalFormRef } = useModalKeyboard(showRegionalFormSelect, closeRegionalFormSelect);
 
     // Close the collapsed-tile overflow menu on an outside click
     useEffect(() => {
@@ -555,7 +561,7 @@ const PokemonCard = ({
         const types = formData?.types || speciesData.types || [];
         const baseStats = formData?.baseStats || speciesData.baseStats || { hp: 10, atk: 10, def: 10, satk: 10, sdef: 10, spd: 10 };
         const abilities = formData?.abilities || speciesData.abilities;
-        const levelUpMoves = formData?.levelUpMoves || speciesData.levelUpMoves || [];
+        const levelUpMoves = formData?.levelUpMoves || getEffectiveLevelUpMoves(speciesData, [...(pokedex || []), ...(customSpecies || [])]);
 
         // Build available abilities from the correct form
         const availableAbilities = [];
@@ -1028,7 +1034,7 @@ const PokemonCard = ({
                                 {showSpeciesDropdown && (
                                     <div
                                         style={{ position: 'fixed', inset: 0, zIndex: 99 }}
-                                        onClick={() => { setShowSpeciesDropdown(false); setSpeciesSearch(''); setSpeciesTypeFilter('all'); setSpeciesTypeFilter2('all'); }}
+                                        onClick={closeSpeciesDropdown}
                                         aria-hidden="true"
                                     />
                                 )}
@@ -1087,7 +1093,7 @@ const PokemonCard = ({
 
                                 {/* Species Dropdown */}
                                 {showSpeciesDropdown && (
-                                    <div style={{
+                                    <div ref={speciesDropdownRef} style={{
                                         position: 'absolute',
                                         top: '100%',
                                         left: 0,
@@ -1225,6 +1231,17 @@ const PokemonCard = ({
                                                         <div
                                                             key={sp.id}
                                                             onClick={() => handleSelectSpecies(sp)}
+                                                            onKeyDown={(e) => {
+                                                                // Guard against the nested "⋮" menu button's own Enter/Space
+                                                                // activation bubbling up and re-triggering selection.
+                                                                if ((e.key === 'Enter' || e.key === ' ') && e.target === e.currentTarget) {
+                                                                    e.preventDefault();
+                                                                    handleSelectSpecies(sp);
+                                                                }
+                                                            }}
+                                                            role="button"
+                                                            tabIndex={0}
+                                                            aria-label={`Select ${sp.species}`}
                                                             className="detail-tile species-list-item"
                                                         >
                                                             {sp.isCustom && setCustomSpecies && (
@@ -1358,7 +1375,7 @@ const PokemonCard = ({
 
                                 {/* Regional Form Selection Modal */}
                                 {showRegionalFormSelect && pendingSpeciesData && (
-                                    <div style={{
+                                    <div ref={regionalFormRef} style={{
                                         position: 'absolute',
                                         top: '100%',
                                         left: 0,
@@ -1388,8 +1405,10 @@ const PokemonCard = ({
                                         <div style={{ maxHeight: '320px', overflowY: 'auto', padding: '10px' }}>
                                             <div className="detail-tile-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(110px, 1fr))' }}>
                                                 {/* Normal Form */}
-                                                <div
+                                                <button
+                                                    type="button"
                                                     onClick={() => applySpeciesForm(pendingSpeciesData, { isBase: true })}
+                                                    aria-label={`Select Normal Form for ${pendingSpeciesData.species}`}
                                                     className="detail-tile"
                                                 >
                                                     <img
@@ -1414,13 +1433,15 @@ const PokemonCard = ({
                                                             >{t}</span>
                                                         ))}
                                                     </div>
-                                                </div>
+                                                </button>
 
                                                 {/* Regional Forms */}
                                                 {pendingSpeciesData.regionalForms.map((form, idx) => (
-                                                    <div
+                                                    <button
+                                                        type="button"
                                                         key={idx}
                                                         onClick={() => applySpeciesForm(pendingSpeciesData, form)}
+                                                        aria-label={`Select ${form.name} Form for ${pendingSpeciesData.species}`}
                                                         className="detail-tile"
                                                     >
                                                         <img
@@ -1445,7 +1466,7 @@ const PokemonCard = ({
                                                                 >{t}</span>
                                                             ))}
                                                         </div>
-                                                    </div>
+                                                    </button>
                                                 ))}
                                             </div>
                                         </div>
@@ -1718,7 +1739,7 @@ const PokemonCard = ({
                                             onClick={() => showHelp('pokemon-loyalty')}
                                         >?</button>
                                     </div>
-                                    <div style={{ display: 'flex', gap: '6px' }}>
+                                    <div role="radiogroup" aria-label="Loyalty" style={{ display: 'flex', gap: '6px' }}>
                                         {[0, 1, 2, 3, 4].map(rank => {
                                             const isSelected = currentLoyalty === rank;
                                             return (
@@ -1727,6 +1748,8 @@ const PokemonCard = ({
                                                     onClick={() => updatePokemon({ loyalty: rank })}
                                                     title={`${rank} — ${LOYALTY_LABELS[rank]}`}
                                                     aria-label={`Set loyalty to ${rank} — ${LOYALTY_LABELS[rank]}`}
+                                                    role="radio"
+                                                    aria-checked={isSelected}
                                                     className="detail-tile-filled"
                                                     style={{
                                                         flex: 1, padding: '8px 4px', border: '2px solid',
@@ -2336,7 +2359,7 @@ const PokemonCard = ({
                                             title={removeBlockReason || undefined}
                                             aria-label={`Decrease ${stat.toUpperCase()}`}
                                             className="stat-alloc-btn"
-                                            style={{ ...statBtnStyle, opacity: minusDisabled ? 0.45 : 1, cursor: minusDisabled ? 'not-allowed' : 'pointer', background: minusDisabled ? 'var(--border-light)' : statBtnStyle.background, color: minusDisabled ? 'var(--text-muted)' : statBtnStyle.color }}
+                                            style={{ ...statBtnStyle, opacity: minusDisabled ? 'var(--disabled-opacity)' : 1, cursor: minusDisabled ? 'not-allowed' : 'pointer', background: minusDisabled ? 'var(--border-light)' : statBtnStyle.background, color: minusDisabled ? 'var(--text-muted)' : statBtnStyle.color }}
                                         >
                                             −
                                         </button>
@@ -2357,7 +2380,7 @@ const PokemonCard = ({
                                             title={addBlockReason || undefined}
                                             aria-label={`Increase ${stat.toUpperCase()}`}
                                             className="stat-alloc-btn"
-                                            style={{ ...statBtnStyle, opacity: plusDisabled ? 0.45 : 1, cursor: plusDisabled ? 'not-allowed' : 'pointer', background: plusDisabled ? 'var(--border-light)' : statBtnStyle.background, color: plusDisabled ? 'var(--text-muted)' : statBtnStyle.color }}
+                                            style={{ ...statBtnStyle, opacity: plusDisabled ? 'var(--disabled-opacity)' : 1, cursor: plusDisabled ? 'not-allowed' : 'pointer', background: plusDisabled ? 'var(--border-light)' : statBtnStyle.background, color: plusDisabled ? 'var(--text-muted)' : statBtnStyle.color }}
                                         >
                                             +
                                         </button>
@@ -2455,7 +2478,7 @@ const PokemonCard = ({
                                                             title={minusDisabled ? 'No Breeder Bonus to remove' : undefined}
                                                             aria-label={`Decrease ${stat.toUpperCase()} breeder bonus`}
                                                             className="stat-alloc-btn"
-                                                            style={{ ...statBtnStyle, opacity: minusDisabled ? 0.45 : 1, cursor: minusDisabled ? 'not-allowed' : 'pointer', background: minusDisabled ? 'var(--border-light)' : statBtnStyle.background, color: minusDisabled ? 'var(--text-muted)' : statBtnStyle.color }}
+                                                            style={{ ...statBtnStyle, opacity: minusDisabled ? 'var(--disabled-opacity)' : 1, cursor: minusDisabled ? 'not-allowed' : 'pointer', background: minusDisabled ? 'var(--border-light)' : statBtnStyle.background, color: minusDisabled ? 'var(--text-muted)' : statBtnStyle.color }}
                                                         >
                                                             −
                                                         </button>
@@ -2468,7 +2491,7 @@ const PokemonCard = ({
                                                             title={plusDisabled ? 'Breeder Bonus capped at +6 per stat' : undefined}
                                                             aria-label={`Increase ${stat.toUpperCase()} breeder bonus`}
                                                             className="stat-alloc-btn"
-                                                            style={{ ...statBtnStyle, opacity: plusDisabled ? 0.45 : 1, cursor: plusDisabled ? 'not-allowed' : 'pointer', background: plusDisabled ? 'var(--border-light)' : statBtnStyle.background, color: plusDisabled ? 'var(--text-muted)' : statBtnStyle.color }}
+                                                            style={{ ...statBtnStyle, opacity: plusDisabled ? 'var(--disabled-opacity)' : 1, cursor: plusDisabled ? 'not-allowed' : 'pointer', background: plusDisabled ? 'var(--border-light)' : statBtnStyle.background, color: plusDisabled ? 'var(--text-muted)' : statBtnStyle.color }}
                                                         >
                                                             +
                                                         </button>

@@ -2,7 +2,6 @@
 // Pokemon Comparison Modal
 // ============================================================
 
-import React from 'react';
 import { useModal, useTrainerContext, useGameData } from '../../contexts/index.js';
 import useModalKeyboard from '../../hooks/useModalKeyboard.js';
 import { getActualStats, calculatePokemonHP } from '../../utils/dataUtils.js';

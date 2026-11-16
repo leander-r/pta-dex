@@ -5,7 +5,7 @@
 // Pure navigation only — Save/Load and Export actions live in the
 // Header's menu (one place for actions, reachable on mobile too).
 
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { TABS } from '../../data/constants.js';
 import OnboardingChecklist from './OnboardingChecklist.jsx';
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { getTypeColor, getContrastTextColor } from '../../utils/typeUtils.js';
 import { getCombinedTypeEffectiveness } from '../../data/typeChart.js';
 

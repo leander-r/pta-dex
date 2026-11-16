@@ -2,7 +2,6 @@
 // Trainer Profile Component
 // ============================================================
 
-import React from 'react';
 import { useTrainerContext, useModal } from '../../contexts/index.js';
 import { CREATION_STAT_POINTS } from '../../data/constants.js';
 

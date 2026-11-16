@@ -3,7 +3,7 @@
 // ============================================================
 // Wild encounter composition, stats formula, and Pokémon allying rules.
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import toast from '../../utils/toast.js';
 
 const ALLY_ACTIONS = [

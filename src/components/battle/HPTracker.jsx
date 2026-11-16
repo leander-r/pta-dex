@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 import { useUI } from '../../contexts/index.js';
 import toast from '../../utils/toast.js';
 import { HELP_BTN_STYLE } from '../common/helpBtnStyle.js';
@@ -40,7 +40,7 @@ const HPTracker = ({ label, currentHP, maxHP, onDamage, onHeal, onFull, level, i
     const dmgBtnStyle = {
         flex: 1, padding: '8px 4px', background: 'var(--stat-atk, #f44336)', color: 'white',
         border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '13px',
-        fontWeight: 'bold', minHeight: '44px', opacity: isFainted ? 0.5 : 1,
+        fontWeight: 'bold', minHeight: '44px', opacity: isFainted ? 'var(--disabled-opacity)' : 1,
     };
     const healBtnStyle = {
         flex: 1, padding: '8px 4px', background: 'var(--stat-hp, #4caf50)', color: 'white',

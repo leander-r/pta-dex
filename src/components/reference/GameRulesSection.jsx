@@ -2,7 +2,7 @@
 // Game Rules Section Component
 // ============================================================
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 const GameRulesSection = () => {
     const [expandedSection, setExpandedSection] = useState('combat');

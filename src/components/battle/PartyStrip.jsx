@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { calculatePokemonHP } from '../../utils/dataUtils.js';
 import { getPokemonDisplayImage } from '../../utils/pokemonSprite.js';
 

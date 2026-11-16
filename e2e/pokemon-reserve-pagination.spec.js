@@ -65,6 +65,24 @@ test('a large reserve is paginated (50/page) with working navigation', async ({ 
     await expect(page.getByText('Mon1', { exact: true })).toBeVisible();
 });
 
+test('deleting the last Pokémon on page 2 clamps back to a valid page instead of a blank dead end', async ({ page }) => {
+    await page.getByRole('button', { name: 'Next page' }).click();
+    await expect(page.getByText('Page 2 of 2')).toBeVisible();
+    await expect(page.locator('.pokemon-roster-tile')).toHaveCount(12);
+
+    // Delete every Pokémon on page 2 (Mon51..Mon62) so the page itself ceases to exist.
+    for (let i = 0; i < 12; i++) {
+        await page.locator('.pokemon-roster-tile').first().click();
+        await page.getByRole('button', { name: 'Delete Pokémon' }).click();
+        await page.getByRole('button', { name: 'Release' }).click();
+    }
+
+    // Reserve is now 50 (exactly one page) — must land back on a real, non-blank page.
+    await expect(page.getByText('Page 2 of 2')).not.toBeVisible();
+    await expect(page.locator('.pokemon-roster-tile')).toHaveCount(50);
+    await expect(page.getByText('Mon1', { exact: true })).toBeVisible();
+});
+
 test('filtering resets to page 1 and paginates the filtered result', async ({ page }) => {
     await page.getByRole('button', { name: 'Next page' }).click();
     await expect(page.getByText('Page 2 of 2')).toBeVisible();

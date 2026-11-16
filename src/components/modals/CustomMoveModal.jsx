@@ -3,7 +3,6 @@
 // ============================================================
 // Modal for creating custom Pokemon moves
 
-import React from 'react';
 import { getTypeColor, getContrastTextColor } from '../../utils/typeUtils.js';
 import useModalKeyboard from '../../hooks/useModalKeyboard.js';
 import { useModal, usePokemonContext } from '../../contexts/index.js';

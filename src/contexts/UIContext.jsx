@@ -4,7 +4,7 @@
 // Core app shell state: navigation, theme, save indicator,
 // level-up notifications, and Pokemon edit view.
 
-import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { safeLocalStorageGet, safeLocalStorageSet } from '../utils/storageUtils.js';
 
 const UIContext = createContext(null);

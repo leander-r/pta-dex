@@ -3,7 +3,6 @@
 // ============================================================
 // Created by: leander_rsr | Licensed under MIT
 
-import React from 'react';
 import ReactDOM from 'react-dom/client';
 import ErrorBoundary from './components/ErrorBoundary.jsx';
 import App from './App.jsx';

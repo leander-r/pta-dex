@@ -3,7 +3,7 @@
 // ============================================================
 // Reusable confirm/prompt dialog replacing window.confirm() and window.prompt()
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import useModalKeyboard from '../../hooks/useModalKeyboard.js';
 import { useModal } from '../../contexts/index.js';
 

@@ -3,7 +3,7 @@
 // ============================================================
 // Modal for creating custom Pokemon species for homebrew/newer Pokemon
 
-import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
+import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { getTypeColor, getContrastTextColor } from '../../utils/typeUtils.js';
 import { GAME_DATA } from '../../data/configs.js';
 import { POKEMON_TYPES } from '../../data/typeChart.js';

@@ -4,7 +4,6 @@
 // Shows a preview of the trainer + party, then opens a new tab
 // with a print-ready HTML page and auto-triggers window.print().
 
-import React from 'react';
 import useModalKeyboard from '../../hooks/useModalKeyboard.js';
 import { useModal } from '../../contexts/index.js';
 import { useTrainerContext } from '../../contexts/TrainerContext.jsx';

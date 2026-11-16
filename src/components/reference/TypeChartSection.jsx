@@ -3,7 +3,7 @@
 // ============================================================
 // Interactive type effectiveness lookup with dual-type support
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { TYPE_CHART, POKEMON_TYPES, getCombinedTypeEffectiveness } from '../../data/typeChart.js';
 import { getTypeColor, getContrastTextColor } from '../../utils/typeUtils.js';
 

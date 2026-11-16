@@ -6,7 +6,6 @@
 // row and each current-move row, matching their existing onClick handlers
 // (see commit a5a9476).
 
-import React from 'react';
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import MoveLearnModal from '../MoveLearnModal.jsx';

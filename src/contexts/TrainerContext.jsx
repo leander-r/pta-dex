@@ -3,7 +3,7 @@
 // ============================================================
 // Manages trainer state and actions
 
-import React, { createContext, useContext, useState, useMemo, useCallback, useEffect, useRef } from 'react';
+import { createContext, useContext, useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { GAME_DATA } from '../data/configs.js';
 import { calculateTrainerMaxHP } from '../utils/dataUtils.js';
 import {

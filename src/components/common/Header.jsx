@@ -3,7 +3,7 @@
 // ============================================================
 // App header with trainer selector and menu
 
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useTrainerContext, useData, useUI, useModal } from '../../contexts/index.js';
 import toast from '../../utils/toast.js';
 
@@ -30,7 +30,7 @@ const MenuItem = ({ id, icon, label, onClick, danger, disabled, hoveredItem, set
             display: 'flex',
             alignItems: 'center',
             gap: '12px',
-            opacity: disabled ? 0.5 : 1,
+            opacity: disabled ? 'var(--disabled-opacity)' : 1,
             transition: 'all 0.15s ease',
             borderLeft: hoveredItem === id && !danger ? '3px solid var(--poke-orange)' : '3px solid transparent',
             WebkitTapHighlightColor: 'transparent',

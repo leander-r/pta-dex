@@ -3,10 +3,11 @@
 // ============================================================
 // Provides Pokedex, GAME_DATA, and custom species management
 
-import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
+import { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
 import { GAME_DATA } from '../data/configs.js';
 import { gameDataLoadPromise } from '../data/gameDataLoader.js';
 import { loadPokedexFromGitHub } from '../data/pokedexLoader.js';
+import { getEffectiveLevelUpMoves } from '../utils/speciesFields.js';
 import toast from '../utils/toast.js';
 
 const GameDataContext = createContext(null);
@@ -85,7 +86,7 @@ export const GameDataProvider = ({ children }) => {
             }
         }
 
-        return speciesData?.levelUpMoves || [];
+        return getEffectiveLevelUpMoves(speciesData, [...pokedex, ...(customSpecies || [])]);
     }, [pokedex, customSpecies]);
 
     // Legacy function for backwards compatibility
@@ -99,7 +100,7 @@ export const GameDataProvider = ({ children }) => {
                 p.species?.toLowerCase() === species.toLowerCase()
             );
         }
-        return speciesData?.levelUpMoves || [];
+        return getEffectiveLevelUpMoves(speciesData, [...pokedex, ...(customSpecies || [])]);
     }, [pokedex, customSpecies]);
 
     // Get moves for level range

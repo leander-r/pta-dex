@@ -8,6 +8,7 @@ import { useGameData, useModal, useUI } from '../../contexts/index.js';
 import { getTypeColor, getContrastTextColor } from '../../utils/typeUtils.js';
 import { getPokemonDisplayImage, getMegaSprite, getPokemonSprite } from '../../utils/pokemonSprite.js';
 import { POKEMON_TYPES, getCombinedTypeEffectiveness } from '../../data/typeChart.js';
+import { getEffectiveLevelUpMoves } from '../../utils/speciesFields.js';
 
 const STAT_LABELS = ['HP', 'ATK', 'DEF', 'SATK', 'SDEF', 'SPD'];
 const STAT_KEYS   = ['hp', 'atk', 'def', 'satk', 'sdef', 'spd'];
@@ -213,7 +214,7 @@ const GenderBar = ({ genderRatio }) => {
     );
 };
 
-const SpeciesDetail = ({ species, evolvedFromMap }) => {
+const SpeciesDetail = ({ species, evolvedFromMap, allSpecies }) => {
     const { GAME_DATA } = useGameData();
     const { showDetail } = useModal();
     // Same DetailModal every other move/ability click in the app opens (PokemonCard,
@@ -237,7 +238,6 @@ const SpeciesDetail = ({ species, evolvedFromMap }) => {
         baseStats = {},
         abilities = {},
         skills = {},
-        levelUpMoves = [],
         eggMoves,
         tutorMoves,
         evolvedFrom: ownEvolvedFrom,
@@ -259,6 +259,9 @@ const SpeciesDetail = ({ species, evolvedFromMap }) => {
     // The species' own evolvedFrom field is never populated in the source data — fall back
     // to the reverse-lookup map built from every species' own evolutions[].to in PokedexSection.
     const evolvedFrom = ownEvolvedFrom || evolvedFromMap?.get(species.species);
+    // An evolved species with no level-up moves of its own inherits its pre-evolution's
+    // learnset (see getEffectiveLevelUpMoves) — otherwise this view wrongly showed "no moves".
+    const levelUpMoves = getEffectiveLevelUpMoves(species, allSpecies);
     const bst = getBST(species);
     // Real level-up move entries use a "move" field, not "name" (confirmed against the
     // live pokedex data — e.g. { level: 0, move: "Wing Attack", type: "Flying" }). Missing
@@ -768,7 +771,7 @@ const inputStyle = {
 // ── Memoized row ─────────────────────────────────────────────
 // Extracted so only the row whose isExpanded changes actually re-renders.
 
-const PokedexRow = memo(({ species, isExpanded, onRowClick, evolvedFromMap }) => {
+const PokedexRow = memo(({ species, isExpanded, onRowClick, evolvedFromMap, allSpecies }) => {
     const spriteUrl = getPokemonDisplayImage(species);
     const bst      = getBST(species);
 
@@ -819,7 +822,7 @@ const PokedexRow = memo(({ species, isExpanded, onRowClick, evolvedFromMap }) =>
                         <polyline points="9 18 15 12 9 6" />
                     </svg>
                 </button>
-                <SpeciesDetail species={species} evolvedFromMap={evolvedFromMap} />
+                <SpeciesDetail species={species} evolvedFromMap={evolvedFromMap} allSpecies={allSpecies} />
             </div>
         );
     }
@@ -1206,6 +1209,7 @@ const PokedexSection = () => {
                                 isExpanded={expandedId === rowId}
                                 onRowClick={() => handleRowClick(rowId)}
                                 evolvedFromMap={evolvedFromMap}
+                                allSpecies={allSpecies}
                             />
                         );
                     })

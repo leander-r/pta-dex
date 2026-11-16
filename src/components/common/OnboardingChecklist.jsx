@@ -5,7 +5,6 @@
 // desktop sidebar and as a mobile banner (sidebar checklist is CSS-hidden
 // on mobile — bottom nav bar has no room for it).
 
-import React from 'react';
 import { useModal, useData } from '../../contexts/index.js';
 import { useOnboarding } from '../../hooks/useOnboarding.js';
 

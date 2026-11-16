@@ -4,7 +4,7 @@
 // Inner application shell. Lives inside AppProviders so it can
 // consume all contexts directly — no prop drilling needed.
 
-import React, { lazy, Suspense, useState, useEffect } from 'react';
+import { lazy, Suspense, useState, useEffect } from 'react';
 
 // Data & Configs
 import { DATA_CONFIG, GAME_DATA } from '../data/configs.js';

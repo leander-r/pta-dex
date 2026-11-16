@@ -46,9 +46,57 @@ export const buildPokemonSkills = (skills) => {
     return result;
 };
 
+// Species whose own levelUpMoves is empty in the Pokédex data, mapped to their
+// known pre-evolution. Level evolutions record a reverse link via the
+// pre-evolution's `evolutions[].to` field (see getEffectiveLevelUpMoves below),
+// but non-level evolutions (stone, friendship) don't populate that link in this
+// dataset, so those known gaps need an explicit fallback.
+const PREVOLUTION_FALLBACK = {
+    'Raichu': 'Pikachu',
+    'Ninetales': 'Vulpix',
+    'Simisage': 'Pansage',
+    'Simisear': 'Pansear',
+    'Simipour': 'Panpour',
+    'Ludicolo': 'Lombre',
+    'Musharna': 'Munna',
+    'Clefable': 'Clefairy',
+    'Wigglytuff': 'Jigglypuff',
+    'Delcatty': 'Skitty',
+    'Cinccino': 'Minccino',
+    'Chandelure': 'Lampent',
+    'Mismagius': 'Misdreavus',
+};
+
+// An evolved species with an empty levelUpMoves list inherits its
+// pre-evolution's learnset. Walks the chain (bounded by a visited-set) so a
+// multi-stage family still resolves if an intermediate stage is also empty.
+export const getEffectiveLevelUpMoves = (speciesData, allSpecies) => {
+    if (speciesData?.levelUpMoves?.length > 0) return speciesData.levelUpMoves;
+    if (!Array.isArray(allSpecies) || !speciesData?.species) return speciesData?.levelUpMoves || [];
+
+    const findByName = (name) => allSpecies.find(p => p.species?.toLowerCase() === name.toLowerCase());
+
+    let current = speciesData;
+    const visited = new Set();
+    while (current && !(current.levelUpMoves?.length > 0)) {
+        if (visited.has(current.species)) break;
+        visited.add(current.species);
+
+        const preEvo = allSpecies.find(p => p.evolutions?.some(e => e.to === current.species))
+            || (PREVOLUTION_FALLBACK[current.species] ? findByName(PREVOLUTION_FALLBACK[current.species]) : null);
+
+        if (!preEvo) break;
+        current = preEvo;
+    }
+    return current?.levelUpMoves?.length > 0 ? current.levelUpMoves : (speciesData.levelUpMoves || []);
+};
+
 // Build the common species update fields shared by applySpeciesToPokemon,
 // applyEvolutionToPokemon, applyDevolutionToPokemon, and demo trainer setup.
-export const buildSpeciesUpdateFields = (speciesData, regionalForm) => {
+// `allSpecies` (the full pokedex + custom species list) is optional — pass it
+// when available so evolved species with an empty levelUpMoves can inherit
+// their pre-evolution's learnset instead of showing zero learnable moves.
+export const buildSpeciesUpdateFields = (speciesData, regionalForm, allSpecies) => {
     const isRegional = regionalForm && !regionalForm.isBase;
     const formData = isRegional ? regionalForm : null;
     return {
@@ -61,7 +109,7 @@ export const buildSpeciesUpdateFields = (speciesData, regionalForm) => {
             availableAbilities: formData?.abilities ? { ...formData.abilities } : (speciesData.abilities ? { ...speciesData.abilities } : null),
             pokedexId: speciesData.id,
             regionalForm: isRegional ? regionalForm.name : null,
-            availableLevelUpMoves: formData?.levelUpMoves || speciesData.levelUpMoves || [],
+            availableLevelUpMoves: formData?.levelUpMoves || getEffectiveLevelUpMoves(speciesData, allSpecies),
             availableEggMoves: formData?.eggMoves || speciesData.eggMoves || [],
             availableTutorMoves: formData?.tutorMoves || speciesData.tutorMoves || [],
             pokemonSkills: buildPokemonSkills(speciesData.skills),

@@ -1,4 +1,3 @@
-import React from 'react';
 import useModalKeyboard from '../../hooks/useModalKeyboard.js';
 import { useUI } from '../../contexts/index.js';
 

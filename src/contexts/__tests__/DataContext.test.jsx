@@ -13,7 +13,6 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { renderHook, act, waitFor, cleanup } from '@testing-library/react';
-import React from 'react';
 import { UIProvider } from '../UIContext.jsx';
 import { ModalProvider, useModal } from '../ModalContext.jsx';
 import { GameDataProvider, useGameData } from '../GameDataContext.jsx';

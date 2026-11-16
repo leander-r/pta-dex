@@ -3,7 +3,7 @@
 // ============================================================
 // Manages Pokemon state and actions including move learning
 
-import React, { createContext, useContext, useCallback, useEffect, useMemo, useRef } from 'react';
+import { createContext, useContext, useCallback, useEffect, useMemo, useRef } from 'react';
 import { GAME_DATA } from '../data/configs.js';
 import { MAX_PARTY_SIZE, MAX_NATURAL_MOVES, POKEMON_HP_MULTIPLIER, MAX_POKEMON_LEVEL } from '../data/constants.js';
 import { EVOLUTION_CHAINS } from '../data/evolutionChains.js';
@@ -119,7 +119,7 @@ export const PokemonProvider = ({ children }) => {
     const { party, reserve, setParty, setReserve } = useTrainerContext();
     const { inventory, setInventory } = useData();
 
-    const pokemon = [...(party || []), ...(reserve || [])];
+    const pokemon = useMemo(() => [...(party || []), ...(reserve || [])], [party, reserve]);
 
     // Keep a ref to party so addPokemon can read its length without depending on it
     const partyRef = useRef(party);
@@ -670,7 +670,7 @@ export const PokemonProvider = ({ children }) => {
         if (!currentPoke) return;
         const currentLevel = currentPoke.level || 1;
 
-        const { formData, updates } = buildSpeciesUpdateFields(speciesData, regionalForm);
+        const { formData, updates } = buildSpeciesUpdateFields(speciesData, regionalForm, [...(pokedex || []), ...(customSpecies || [])]);
 
         // Fresh species assignment — reset abilities unconditionally
         const abilities = formData?.abilities || speciesData.abilities;
@@ -718,14 +718,14 @@ export const PokemonProvider = ({ children }) => {
         }
 
         updatePokemon(pokemonId, updates);
-    }, [party, reserve, updatePokemon]);
+    }, [party, reserve, updatePokemon, pokedex, customSpecies]);
 
     // Apply evolution to a Pokemon - preserves moves and only adds evolution (E) moves
     const applyEvolutionToPokemon = useCallback((pokemonId, speciesData, regionalForm, inParty, consumedItem = null, previousSpecies = null) => {
         const currentPoke = party.find(p => p.id === pokemonId) || reserve.find(p => p.id === pokemonId);
         if (!currentPoke) return;
 
-        const { formData, updates } = buildSpeciesUpdateFields(speciesData, regionalForm);
+        const { formData, updates } = buildSpeciesUpdateFields(speciesData, regionalForm, [...(pokedex || []), ...(customSpecies || [])]);
         // Reset stat allocation so points are re-spent against the new form's base relation (PHB2 evolution rules)
         const totalPoints = Math.max(0, (currentPoke.highestLevelReached || currentPoke.level || 1) - 1);
         Object.assign(updates, {
@@ -763,14 +763,14 @@ export const PokemonProvider = ({ children }) => {
                 setPendingMoveLearn(prev => [...prev, ...movesToQueue]);
             }
         }
-    }, [party, reserve, updatePokemon, setPendingMoveLearn]);
+    }, [party, reserve, updatePokemon, setPendingMoveLearn, pokedex, customSpecies]);
 
     // Apply devolution to a Pokemon
     const applyDevolutionToPokemon = useCallback((pokemonId, speciesData, regionalForm, inParty) => {
         const currentPoke = party.find(p => p.id === pokemonId) || reserve.find(p => p.id === pokemonId);
         if (!currentPoke) return;
 
-        const { formData, updates } = buildSpeciesUpdateFields(speciesData, regionalForm);
+        const { formData, updates } = buildSpeciesUpdateFields(speciesData, regionalForm, [...(pokedex || []), ...(customSpecies || [])]);
         // Reset stat allocation so points are re-spent against the devolved form's base relation
         const totalPoints = Math.max(0, (currentPoke.highestLevelReached || currentPoke.level || 1) - 1);
         Object.assign(updates, {
@@ -783,7 +783,7 @@ export const PokemonProvider = ({ children }) => {
         });
 
         updatePokemon(pokemonId, updates);
-    }, [party, reserve, updatePokemon]);
+    }, [party, reserve, updatePokemon, pokedex, customSpecies]);
 
     // Handle Pokemon evolution
     const evolvePokemon = useCallback((pokemonId, targetSpecies, targetRegionalForm, consumeItem) => {

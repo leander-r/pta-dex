@@ -5,7 +5,6 @@
 // ability/move picker rows (previously click-only divs with no keyboard
 // equivalent — see commit a5a9476).
 
-import React from 'react';
 import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import CustomSpeciesModal from '../CustomSpeciesModal.jsx';

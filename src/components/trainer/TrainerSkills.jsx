@@ -2,7 +2,7 @@
 // Trainer Skills Component
 // ============================================================
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useTrainerContext, useGameData, useModal, useUI } from '../../contexts/index.js';
 import { HELP_BTN_STYLE } from '../common/helpBtnStyle.js';
 import toast from '../../utils/toast.js';

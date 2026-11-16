@@ -3,7 +3,6 @@
 // ============================================================
 // Main trainer management tab
 
-import React from 'react';
 import TrainerProfile from './TrainerProfile.jsx';
 import TrainerStats from './TrainerStats.jsx';
 import TrainerClasses from './TrainerClasses.jsx';

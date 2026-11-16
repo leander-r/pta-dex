@@ -5,7 +5,7 @@
 // and AbilitiesSection. Isolated so filter changes don't
 // re-render the rest of the app.
 
-import React, { createContext, useContext, useState, useMemo } from 'react';
+import { createContext, useContext, useState, useMemo } from 'react';
 
 const FilterContext = createContext(null);
 

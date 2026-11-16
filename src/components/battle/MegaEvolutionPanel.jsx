@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 const MegaEvolutionPanel = ({ selectedPokemon, megaForms, megaEvolved, currentMegaForm, onMegaEvolve, onMegaRevert, label = 'Mega Evolution', isFormChange = false }) => {
     const [showModal, setShowModal] = useState(false);

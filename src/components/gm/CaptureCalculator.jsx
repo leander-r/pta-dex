@@ -4,7 +4,7 @@
 // Roll 1d100 strictly LESS THAN (captureRate + modifiers) to capture.
 // Modifiers: HP condition, status effects, wild Pokémon's level range.
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import toast from '../../utils/toast.js';
 
 const HP_MODS = [

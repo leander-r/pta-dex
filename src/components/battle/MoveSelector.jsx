@@ -1,4 +1,3 @@
-import React from 'react';
 import { getTypeColor, getContrastTextColor } from '../../utils/typeUtils.js';
 import { parseACFromFrequency } from '../../utils/dataUtils.js';
 

@@ -2,7 +2,7 @@
 // Trainer Classes Section Component
 // ============================================================
 
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { GAME_DATA } from '../../data/configs.js';
 import { useModal, useFilter } from '../../contexts/index.js';
 

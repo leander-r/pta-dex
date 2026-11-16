@@ -3,7 +3,7 @@
 // ============================================================
 // Rules for Pokémon/Trainer fainting, death saves, and lethal thresholds.
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import toast from '../../utils/toast.js';
 
 const DeathSaves = () => {

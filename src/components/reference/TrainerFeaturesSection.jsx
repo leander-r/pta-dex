@@ -4,7 +4,7 @@
 // Read-only browse of the full Features catalog. For managing a
 // trainer's own features, see components/trainer/TrainerFeatures.jsx.
 
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { GAME_DATA } from '../../data/configs.js';
 import { useModal, useFilter } from '../../contexts/index.js';
 

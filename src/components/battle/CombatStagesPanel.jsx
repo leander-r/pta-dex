@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { COMBAT_STAGE_POSITIVE_MULTIPLIER, COMBAT_STAGE_NEGATIVE_MULTIPLIER } from '../../data/constants.js';
 import { HELP_BTN_STYLE } from '../common/helpBtnStyle.js';
 
@@ -88,7 +88,7 @@ const CombatStagesPanel = ({ selectedPokemon, combatStages, getStatsWithMega, up
                     })()}
                     {show && <span className="text-muted" style={{ fontSize: '12px', marginLeft: '2px' }}>Buffs &amp; debuffs from moves</span>}
                 </div>
-                <span aria-hidden="true" style={{ color: 'var(--text-secondary)', fontSize: '12px', flexShrink: 0 }}>{show ? '▲' : '▼'}</span>
+                <span aria-hidden="true" style={{ display: 'inline-block', color: 'var(--text-secondary)', fontSize: '12px', flexShrink: 0, transform: show ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}>▼</span>
             </div>
             {show && (
                 <div className="combat-stages-content" style={{ padding: '10px', borderRadius: '6px' }}>
@@ -161,7 +161,7 @@ const CombatStagesPanel = ({ selectedPokemon, combatStages, getStatsWithMega, up
                             style={{ padding: '7px 10px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '11px', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.4px' }}
                         >
                             <span>Base Evasion (from stats)</span>
-                            <span>{showEva ? '▲' : '▼'}</span>
+                            <span style={{ display: 'inline-block', transform: showEva ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}>▼</span>
                         </div>
                         {showEva && (
                             <div style={{ padding: '0 10px 8px' }}>

@@ -3,7 +3,7 @@
 // ============================================================
 // Modal for awarding EXP to multiple party Pokemon at once
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import useModalKeyboard from '../../hooks/useModalKeyboard.js';
 import { useModal, usePokemonContext } from '../../contexts/index.js';
 import { useTrainerContext } from '../../contexts/TrainerContext.jsx';

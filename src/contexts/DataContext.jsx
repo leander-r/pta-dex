@@ -3,7 +3,7 @@
 // ============================================================
 // Manages data persistence: save, load, import, export
 
-import React, { createContext, useContext, useState, useCallback, useEffect, useMemo, useRef } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { safeLocalStorageGet, safeLocalStorageSet } from '../utils/storageUtils.js';
 import { getActualStats, calculatePokemonHP, getBaseRelationViolations, calculateTrainerMaxHP } from '../utils/dataUtils.js';
 import { sanitizeImportedTrainer } from '../utils/exportUtils.js';
@@ -321,7 +321,7 @@ export const DataProvider = ({ children }) => {
                     demo.party = demo.party.map(p => {
                         const speciesData = pokedex.find(s => s.species?.toLowerCase() === p.species?.toLowerCase());
                         if (!speciesData) return p;
-                        const { updates } = buildSpeciesUpdateFields(speciesData, null);
+                        const { updates } = buildSpeciesUpdateFields(speciesData, null, pokedex);
                         return {
                             ...p,
                             types: updates.types,

@@ -3,7 +3,7 @@
 // ============================================================
 // Pokémon habitat lists organized by biome for quick encounter generation.
 
-import React, { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import toast from '../../utils/toast.js';
 
 const BIOMES = [

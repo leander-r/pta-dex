@@ -5,7 +5,7 @@
 // Each modal is lazy-loaded — its JS chunk is fetched only when the
 // modal is first opened, not at app startup.
 
-import React, { lazy, Suspense } from 'react';
+import { lazy, Suspense } from 'react';
 
 const HelpModal           = lazy(() => import('../modals/HelpModal.jsx'));
 const CustomFeatureModal  = lazy(() => import('../modals/CustomFeatureModal.jsx'));

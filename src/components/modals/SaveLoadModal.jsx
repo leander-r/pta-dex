@@ -4,7 +4,7 @@
 // FF-style named save slot system: 3 slots + auto-backup display.
 // Slots persist to localStorage key 'pta-save-slots'.
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import useModalKeyboard from '../../hooks/useModalKeyboard.js';
 import { useModal, useUI } from '../../contexts/index.js';
 import { useData } from '../../contexts/DataContext.jsx';

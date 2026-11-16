@@ -4,7 +4,7 @@
 // Loyalty ranks 0-4, how it changes, defiance table (d100),
 // expressing loyalty, and allying details.
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import toast from '../../utils/toast.js';
 
 const LOYALTY_RANKS = [

@@ -2,7 +2,7 @@
 // Battle Tab Component (Dice Roller)
 // ============================================================
 
-import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { getTypeColor } from '../../utils/typeUtils.js';
 import { calculateSTAB, getActualStats, calculatePokemonHP, parseDice, applyCombatStage, parseHealFormula, parseReviveAmount, parseStatusCure, parseCritThreshold, parseACFromFrequency, resolveAccuracyRoll } from '../../utils/dataUtils.js';
 import toast from '../../utils/toast.js';

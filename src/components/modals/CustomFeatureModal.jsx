@@ -3,7 +3,6 @@
 // ============================================================
 // Modal for creating custom trainer features
 
-import React from 'react';
 import useModalKeyboard from '../../hooks/useModalKeyboard.js';
 import { useModal, useTrainerContext } from '../../contexts/index.js';
 import toast from '../../utils/toast.js';

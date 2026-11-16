@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useData } from '../../contexts/index.js';
 import toast from '../../utils/toast.js';
 
@@ -99,7 +99,7 @@ const DiscordWebhookConfig = () => {
                                 setIsTesting(false);
                             }
                         }}
-                        style={{ width: '100%', padding: '10px', background: '#5865F2', color: 'white', border: 'none', borderRadius: '4px', cursor: isTesting ? 'not-allowed' : 'pointer', fontWeight: 'bold', fontSize: '13px', opacity: isTesting ? 0.6 : 1 }}
+                        style={{ width: '100%', padding: '10px', background: '#5865F2', color: 'white', border: 'none', borderRadius: '4px', cursor: isTesting ? 'not-allowed' : 'pointer', fontWeight: 'bold', fontSize: '13px', opacity: isTesting ? 'var(--disabled-opacity)' : 1 }}
                     >
                         {isTesting ? 'Sending...' : 'Send Test Message'}
                     </button>

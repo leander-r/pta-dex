@@ -5,6 +5,9 @@
         }
 
         :root {
+            /* Shared, theme-agnostic tokens */
+            --disabled-opacity: 0.5;
+
             /* Brand colors */
             --poke-orange: #f5a623;
             --poke-orange-dark: #e8941c;

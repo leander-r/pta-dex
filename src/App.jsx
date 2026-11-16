@@ -12,7 +12,6 @@
 // are trademarks, registered trademarks, or copyrights of Nintendo, Game Freak,
 // Creatures Inc., and The Pokémon Company.
 
-import React from 'react';
 import AppProviders from './components/AppProviders.jsx';
 import AppLayout from './components/AppLayout.jsx';
 import ErrorBoundary from './components/ErrorBoundary.jsx';

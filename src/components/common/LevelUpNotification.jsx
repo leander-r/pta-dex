@@ -2,7 +2,6 @@
 // Level Up Notification Component
 // ============================================================
 
-import React from 'react';
 
 /**
  * LevelUpNotification - Shows level up/evolution notifications

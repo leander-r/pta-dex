@@ -4,7 +4,6 @@
 // Modal that appears when a Pokemon levels up and learns a new move,
 // or when manually adding a move via N/T buttons and at the limit
 
-import React from 'react';
 import useModalKeyboard from '../../hooks/useModalKeyboard.js';
 import { useModal, useGameData, usePokemonContext } from '../../contexts/index.js';
 import toast from '../../utils/toast.js';

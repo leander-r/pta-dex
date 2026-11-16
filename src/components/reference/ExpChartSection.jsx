@@ -2,7 +2,6 @@
 // EXP Chart Section Component
 // ============================================================
 
-import React from 'react';
 import { GAME_DATA } from '../../data/configs.js';
 
 const ExpChartSection = () => {
