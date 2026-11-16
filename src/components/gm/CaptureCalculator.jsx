@@ -37,6 +37,42 @@ const LEVEL_MODS = [
     { label: 'Level 81–100', value: -30 },
 ];
 
+// GM Guide p.421 "Poke Balls" table — the Mod applies to the d100 Capture Roll,
+// not the Capture Rate (e.g. "Great Ball adds 5 to Jimmy's roll"). That's
+// mathematically equivalent to subtracting it from the modified Capture Rate
+// used for the success check, which is how it's applied below. Several balls
+// also carry situational bonuses (Level Ball vs. a lower-level target, Dusk
+// Ball at night, etc.) not modeled here — those still need a manual GM call.
+const BALL_MODS = [
+    { label: 'Basic Ball',   value: 15 },
+    { label: 'Great Ball',   value: 5 },
+    { label: 'Ultra Ball',   value: -5 },
+    { label: 'Master Ball',  value: -100 },
+    { label: 'Safari Ball',  value: 0 },
+    { label: 'Level Ball',   value: 5 },
+    { label: 'Lure Ball',    value: 0 },
+    { label: 'Moon Ball',    value: 0 },
+    { label: 'Friend Ball',  value: -5 },
+    { label: 'Love Ball',    value: 0 },
+    { label: 'Heavy Ball',   value: 5 },
+    { label: 'Fast Ball',    value: 5 },
+    { label: 'Sport Ball',   value: 0 },
+    { label: 'Premier Ball', value: 0 },
+    { label: 'Repeat Ball',  value: 10 },
+    { label: 'Timer Ball',   value: 5 },
+    { label: 'Nest Ball',    value: 0 },
+    { label: 'Net Ball',     value: 0 },
+    { label: 'Dive Ball',    value: 5 },
+    { label: 'Luxury Ball',  value: -5 },
+    { label: 'Heal Ball',    value: -5 },
+    { label: 'Quick Ball',   value: -20 },
+    { label: 'Dusk Ball',    value: 0 },
+    { label: 'Cherish Ball', value: -5 },
+    { label: 'Park Ball',    value: 0 },
+    { label: 'Dream Ball',   value: 0 },
+    { label: 'Beast Ball',   value: 45 },
+];
+
 const sign = n => (n >= 0 ? `+${n}` : `${n}`);
 
 const CaptureCalculator = () => {
@@ -44,11 +80,12 @@ const CaptureCalculator = () => {
     const [hpMod,    setHpMod]   = useState(-15);
     const [statMod,  setStatMod] = useState(0);
     const [levelMod, setLevelMod]= useState(20);
+    const [ballMod,  setBallMod] = useState(15);
     const [rollResult, setRollResult] = useState(null);
 
     const target = useMemo(
-        () => baseRate + hpMod + statMod + levelMod,
-        [baseRate, hpMod, statMod, levelMod]
+        () => baseRate + hpMod + statMod + levelMod - ballMod,
+        [baseRate, hpMod, statMod, levelMod, ballMod]
     );
     // succeed on roll 1..(target-1) out of 1-100
     const successPct = Math.max(0, Math.min(100, target - 1));
@@ -172,6 +209,28 @@ const CaptureCalculator = () => {
                         ))}
                     </select>
                 </div>
+
+                {/* Ball modifier */}
+                <div className="card-orange" style={{ padding: '14px 16px' }}>
+                    <div style={{ fontWeight: 700, marginBottom: 8, color: 'var(--text-primary)', fontSize: 14 }}>
+                        Poké Ball <span style={{ fontWeight: 400, color: 'var(--text-muted)' }}>({sign(-ballMod)})</span>
+                    </div>
+                    <select
+                        aria-label="Poké Ball modifier"
+                        value={ballMod}
+                        onChange={e => { setBallMod(Number(e.target.value)); setRollResult(null); }}
+                        style={{
+                            width: '100%', padding: '8px 10px', borderRadius: 6,
+                            border: '1px solid var(--border-light)',
+                            background: 'var(--surface-bg)', color: 'var(--text-primary)',
+                            fontSize: 14, boxSizing: 'border-box'
+                        }}
+                    >
+                        {BALL_MODS.map(m => (
+                            <option key={m.label} value={m.value}>{m.label} ({sign(-m.value)})</option>
+                        ))}
+                    </select>
+                </div>
             </div>
 
             {/* Result */}
@@ -186,7 +245,7 @@ const CaptureCalculator = () => {
                                 {target <= 0 ? 0 : target}
                             </span>
                             <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>
-                                = {baseRate} base {sign(hpMod)} HP {sign(statMod)} status {sign(levelMod)} level
+                                = {baseRate} base {sign(hpMod)} HP {sign(statMod)} status {sign(levelMod)} level {sign(-ballMod)} ball
                             </span>
                         </div>
                         {target <= 0 && (
@@ -255,7 +314,9 @@ const CaptureCalculator = () => {
                     marginTop: 14, paddingTop: 12, borderTop: '1px solid var(--border-light)',
                     fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.6
                 }}>
-                    ⓘ Basic Ball adds +15 to the d100 roll (higher roll = harder to capture). Other ball modifiers are GM discretion.
+                    ⓘ Ball modifiers above are from the GM Guide's Poké Ball table (p.421). Several balls also carry
+                    situational bonuses beyond their base modifier (e.g. Level Ball vs. a lower-level target, Dusk Ball
+                    at night) — those aren't modeled here and still need a manual GM call per the book.
                     Always award EXP to active Pokémon even on a successful capture.
                 </div>
             </div>

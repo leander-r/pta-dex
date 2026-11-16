@@ -6,7 +6,7 @@
 export const TYPE_CHART = {
     'Normal': { weak: ['Fighting'], resist: [], immune: ['Ghost'] },
     'Fire': { weak: ['Water', 'Ground', 'Rock'], resist: ['Fire', 'Grass', 'Ice', 'Bug', 'Steel', 'Fairy'], immune: [] },
-    'Water': { weak: ['Electric', 'Grass'], resist: ['Fire', 'Water', 'Ice', 'Steel'], immune: [] },
+    'Water': { weak: ['Electric', 'Grass'], resist: ['Fire', 'Water', 'Steel'], immune: [] },
     'Electric': { weak: ['Ground'], resist: ['Electric', 'Flying', 'Steel'], immune: [] },
     'Grass': { weak: ['Fire', 'Ice', 'Poison', 'Flying', 'Bug'], resist: ['Water', 'Electric', 'Grass', 'Ground'], immune: [] },
     'Ice': { weak: ['Fire', 'Fighting', 'Rock', 'Steel'], resist: ['Ice'], immune: [] },
