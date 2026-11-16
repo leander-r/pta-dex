@@ -45,7 +45,7 @@ const TabFallback = () => (
 );
 
 // Common Components
-import { Header, SaveIndicator, LevelUpNotification, MainNavigation, ModalsContainer, OnboardingChecklist } from './common';
+import { Header, LevelUpNotification, MainNavigation, ModalsContainer, OnboardingChecklist } from './common';
 import ToastContainer from './common/ToastContainer.jsx';
 import ErrorBoundary from './ErrorBoundary.jsx';
 
@@ -105,7 +105,6 @@ const ClearCacheButton = () => {
 const AppLayout = () => {
     const {
         activeTab, setActiveTab,
-        showSaveIndicator, isAutoSave, lastSaveTime,
         levelUpNotification
     } = useUI();
     const { pokedex, pokedexLoading, pokedexError, gameDataLoaded } = useGameData();
@@ -149,13 +148,6 @@ const AppLayout = () => {
 
             {/* Toast Notifications */}
             <ToastContainer />
-
-            {/* Save Indicator */}
-            <SaveIndicator
-                show={showSaveIndicator}
-                isAuto={isAutoSave}
-                saveTime={lastSaveTime}
-            />
 
             {/* Level Up / Evolution Notification */}
             <LevelUpNotification notification={levelUpNotification} />

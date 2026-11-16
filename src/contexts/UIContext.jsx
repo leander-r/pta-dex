@@ -1,8 +1,8 @@
 // ============================================================
 // UI Context
 // ============================================================
-// Core app shell state: navigation, theme, save indicator,
-// level-up notifications, and Pokemon edit view.
+// Core app shell state: navigation, theme, level-up notifications,
+// and Pokemon edit view.
 
 import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { safeLocalStorageGet, safeLocalStorageSet } from '../utils/storageUtils.js';
@@ -37,11 +37,6 @@ export const UIProvider = ({ children }) => {
         safeLocalStorageSet('pta-compact-mode', compactMode);
     }, [compactMode]);
 
-    // Save Indicator State
-    const [showSaveIndicator, setShowSaveIndicator] = useState(false);
-    const [isAutoSave, setIsAutoSave] = useState(false);
-    const [lastSaveTime, setLastSaveTime] = useState(null);
-
     // Level Up Notification
     const [levelUpNotification, setLevelUpNotification] = useState(null);
 
@@ -65,14 +60,6 @@ export const UIProvider = ({ children }) => {
         safeLocalStorageSet('pta-theme', theme);
     }, [theme]);
 
-    // Show save indicator
-    const triggerSaveIndicator = useCallback((isAuto = false) => {
-        setIsAutoSave(isAuto);
-        setLastSaveTime(new Date());
-        setShowSaveIndicator(true);
-        setTimeout(() => setShowSaveIndicator(false), 2000);
-    }, []);
-
     // Show level up notification
     const showLevelUpNotification = useCallback((notification) => {
         setLevelUpNotification(notification);
@@ -93,12 +80,6 @@ export const UIProvider = ({ children }) => {
         // Compact Mode
         compactMode,
         setCompactMode,
-
-        // Save Indicator
-        showSaveIndicator,
-        isAutoSave,
-        lastSaveTime,
-        triggerSaveIndicator,
 
         // Level Up Notification
         levelUpNotification,
@@ -124,7 +105,6 @@ export const UIProvider = ({ children }) => {
     }), [
         activeTab, setActiveTab, referenceTab, setReferenceTab,
         theme, setTheme, compactMode, setCompactMode,
-        showSaveIndicator, isAutoSave, lastSaveTime, triggerSaveIndicator,
         levelUpNotification, setLevelUpNotification, showLevelUpNotification,
         selectedPokemon, setSelectedPokemon, editingPokemon, setEditingPokemon, pokemonView, setPokemonView,
         helpTopic, showHelp, closeHelp,

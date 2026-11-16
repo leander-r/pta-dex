@@ -53,21 +53,6 @@ describe('UIContext', () => {
         });
     });
 
-    describe('save indicator', () => {
-        beforeEach(() => vi.useFakeTimers());
-        afterEach(() => vi.useRealTimers());
-
-        it('shows immediately then auto-hides after 2s', () => {
-            const { result } = renderUI();
-            act(() => result.current.triggerSaveIndicator(true));
-            expect(result.current.showSaveIndicator).toBe(true);
-            expect(result.current.isAutoSave).toBe(true);
-
-            act(() => vi.advanceTimersByTime(2000));
-            expect(result.current.showSaveIndicator).toBe(false);
-        });
-    });
-
     describe('level up notification', () => {
         beforeEach(() => vi.useFakeTimers());
         afterEach(() => vi.useRealTimers());

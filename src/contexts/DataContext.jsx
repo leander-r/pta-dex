@@ -10,7 +10,6 @@ import { sanitizeImportedTrainer } from '../utils/exportUtils.js';
 import { buildSpeciesUpdateFields } from '../utils/speciesFields.js';
 import { buildEmbed } from '../utils/discordEmbeds.js';
 import toast from '../utils/toast.js';
-import { useUI } from './UIContext.jsx';
 import { useModal } from './ModalContext.jsx';
 import { useTrainerContext } from './TrainerContext.jsx';
 import { useGameData } from './GameDataContext.jsx';
@@ -34,7 +33,6 @@ export const useData = () => {
 };
 
 export const DataProvider = ({ children }) => {
-    const { triggerSaveIndicator } = useUI();
     const { showConfirm } = useModal();
     const { trainers, setTrainers, activeTrainerId, setActiveTrainerId } = useTrainerContext();
     const { customSpecies, setCustomSpecies, pokedex } = useGameData();
@@ -82,10 +80,7 @@ export const DataProvider = ({ children }) => {
     // Note: dataLoadedRef is now set in loadData after data is actually loaded
 
     // Save data to storage
-    // `silent` suppresses the SaveIndicator — used for the one autosave that fires
-    // immediately after loadData populates state, so the indicator never appears
-    // before the user has actually made a change.
-    const saveData = useCallback(async (isAuto = false, silent = false) => {
+    const saveData = useCallback(async () => {
         try {
             // Auto-backup: snapshot the previous save before overwriting
             try {
@@ -106,23 +101,16 @@ export const DataProvider = ({ children }) => {
                 version: '2.1'
             };
 
-            let saveSuccess = false;
-
             if (window.storage) {
-                const result = await window.storage.set('pta-enhanced-save-data', JSON.stringify(savePayload));
-                saveSuccess = !!result;
+                await window.storage.set('pta-enhanced-save-data', JSON.stringify(savePayload));
             } else {
-                saveSuccess = safeLocalStorageSet('pta-enhanced-save-data', savePayload);
-            }
-
-            if (saveSuccess && !silent) {
-                triggerSaveIndicator(isAuto);
+                safeLocalStorageSet('pta-enhanced-save-data', savePayload);
             }
         } catch (error) {
             console.error('Error saving data:', error);
             toast.error('Failed to save. Check your browser storage settings.');
         }
-    }, [trainers, activeTrainerId, inventory, customSpecies, triggerSaveIndicator]);
+    }, [trainers, activeTrainerId, inventory, customSpecies]);
 
     // Keep ref current so auto-save effects always call the latest version
     useEffect(() => { saveDataRef.current = saveData; });
@@ -264,8 +252,13 @@ export const DataProvider = ({ children }) => {
             try {
                 const lastBackup = parseInt(localStorage.getItem('pta-last-backup') || '0');
                 const daysSince = lastBackup ? Math.floor((Date.now() - lastBackup) / MS_PER_DAY) : -1;
-                if (daysSince > BACKUP_REMINDER_DAYS) {
-                    setTimeout(() => toast.info(`It's been ${daysSince} days since your last backup. Consider exporting your data!`), 3000);
+                const reminderDismissed = localStorage.getItem('pta-backup-reminder-dismissed') === '1';
+                if (daysSince > BACKUP_REMINDER_DAYS && !reminderDismissed) {
+                    setTimeout(() => toast.show(
+                        `It's been ${daysSince} days since your last backup. Consider exporting your data!`,
+                        'info', 4000,
+                        { label: "Don't remind me", onClick: () => localStorage.setItem('pta-backup-reminder-dismissed', '1') }
+                    ), 3000);
                 }
             } catch {}
         } catch (error) {
@@ -874,17 +867,12 @@ export const DataProvider = ({ children }) => {
         navigator.storage?.persist?.().catch(() => {});
     }, []);
 
-    // Debounced auto-save on data changes (1 second delay). The very first run fires
-    // right after loadData() populates state — silence just that one so the SaveIndicator
-    // never appears before the user has actually made a change.
-    const hasSavedOnceRef = useRef(false);
+    // Debounced auto-save on data changes (1 second delay).
     useEffect(() => {
         if (!dataLoadedRef.current) return;
 
-        const isInitialSave = !hasSavedOnceRef.current;
         const saveTimeout = setTimeout(() => {
-            saveDataRef.current?.(false, isInitialSave);
-            hasSavedOnceRef.current = true;
+            saveDataRef.current?.();
         }, AUTOSAVE_DEBOUNCE_MS);
 
         return () => clearTimeout(saveTimeout);
@@ -909,7 +897,7 @@ export const DataProvider = ({ children }) => {
     useEffect(() => {
         const autoSaveInterval = setInterval(() => {
             if (!dataLoadedRef.current) return;
-            saveDataRef.current?.(true);
+            saveDataRef.current?.();
         }, AUTOSAVE_INTERVAL_MS);
 
         return () => clearInterval(autoSaveInterval);
