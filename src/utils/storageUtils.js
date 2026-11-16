@@ -17,8 +17,8 @@ export const safeLocalStorageGet = (key, fallback = null) => {
     }
 };
 
-// Track quota warning so we don't spam the user
-let _quotaWarned = false;
+// Track save-error warning so we don't spam the user
+let _saveErrorWarned = false;
 
 /**
  * Safely set item in localStorage
@@ -29,12 +29,16 @@ export const safeLocalStorageSet = (key, value) => {
         return true;
     } catch (error) {
         console.error(`Error writing to localStorage (${key}):`, error);
-        if (error.name === 'QuotaExceededError') {
-            if (!_quotaWarned) {
-                _quotaWarned = true;
-                toast.error('Storage is full! Export your data as a backup, then clear old trainers to free space.');
-                setTimeout(() => { _quotaWarned = false; }, 60000);
-            }
+        // Quota errors get a specific, actionable message; anything else (e.g. a
+        // SecurityError when storage is blocked in some private-browsing modes)
+        // still needs to surface to the user instead of failing silently.
+        if (!_saveErrorWarned) {
+            _saveErrorWarned = true;
+            const message = error.name === 'QuotaExceededError'
+                ? 'Storage is full! Export your data as a backup, then clear old trainers to free space.'
+                : 'Failed to save — your browser may be blocking storage (e.g. private browsing). Export your data as a backup.';
+            toast.error(message);
+            setTimeout(() => { _saveErrorWarned = false; }, 60000);
         }
         return false;
     }

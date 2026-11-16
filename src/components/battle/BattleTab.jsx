@@ -659,9 +659,11 @@ const BattleTab = () => {
                                     {selectedPokemon?.heldItem && (() => {
                                         const itemData = GAME_DATA?.items?.[selectedPokemon.heldItem];
                                         return (
-                                            <div
+                                            <button
+                                                type="button"
                                                 onClick={() => { if (showDetail && itemData) showDetail('item', selectedPokemon.heldItem, itemData); }}
-                                                style={{ marginBottom: '10px', padding: '8px 10px', borderRadius: '8px', background: 'var(--bg-secondary)', border: '1px solid var(--border-light)', display: 'flex', alignItems: 'center', gap: '8px', cursor: showDetail && itemData ? 'pointer' : 'default' }}
+                                                disabled={!(showDetail && itemData)}
+                                                style={{ width: '100%', textAlign: 'left', font: 'inherit', color: 'inherit', marginBottom: '10px', padding: '8px 10px', borderRadius: '8px', background: 'var(--bg-secondary)', border: '1px solid var(--border-light)', display: 'flex', alignItems: 'center', gap: '8px', cursor: showDetail && itemData ? 'pointer' : 'default' }}
                                                 title={itemData ? 'Click to view item details' : selectedPokemon.heldItem}
                                             >
                                                 <span style={{ fontSize: '16px' }}>🎒</span>
@@ -675,7 +677,7 @@ const BattleTab = () => {
                                                 {showDetail && itemData && (
                                                     <span style={{ fontSize: '13px', color: 'var(--color-purple)', flexShrink: 0 }}>Details →</span>
                                                 )}
-                                            </div>
+                                            </button>
                                         );
                                     })()}
 
@@ -687,9 +689,11 @@ const BattleTab = () => {
                                             {selectedPokemon.abilities.map((abilityName, idx) => {
                                                 const abilityData = GAME_DATA.abilities?.[abilityName];
                                                 return (
-                                                    <div
+                                                    <button
+                                                        type="button"
                                                         key={idx}
                                                         onClick={() => { if (showDetail && abilityData) showDetail('ability', abilityName, abilityData); }}
+                                                        disabled={!(showDetail && abilityData)}
                                                         className="detail-tile-filled"
                                                         style={{
                                                             background: 'var(--gradient-purple)',
@@ -700,7 +704,7 @@ const BattleTab = () => {
                                                         title={abilityData ? 'Click to view ability details' : abilityName}
                                                     >
                                                         <span>{abilityName}</span>
-                                                    </div>
+                                                    </button>
                                                 );
                                             })}
                                         </div>

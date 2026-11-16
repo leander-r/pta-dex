@@ -9,6 +9,7 @@ import { exportSinglePokemon, copyPokemonToClipboard } from '../../utils/exportU
 import toast from '../../utils/toast.js';
 import { useGameData, useModal, usePokemonContext, useUI, useData } from '../../contexts/index.js';
 import { buildPokemonSkills, getEffectiveLevelUpMoves } from '../../utils/speciesFields.js';
+import { resizeImageFile } from '../../utils/imageUtils.js';
 import { MAX_NATURAL_MOVES, MAX_TAUGHT_MOVES, MAX_TOTAL_MOVES } from '../../data/constants.js';
 import { getPokemonDisplayImage, getPokemonSprite } from '../../utils/pokemonSprite.js';
 
@@ -2212,11 +2213,9 @@ const PokemonCard = ({
                                             onChange={(e) => {
                                                 const file = e.target.files?.[0];
                                                 if (file) {
-                                                    const reader = new FileReader();
-                                                    reader.onload = (event) => {
-                                                        updatePokemon({ avatar: event.target.result });
-                                                    };
-                                                    reader.readAsDataURL(file);
+                                                    resizeImageFile(file).then(dataUrl => {
+                                                        updatePokemon({ avatar: dataUrl });
+                                                    });
                                                 }
                                             }}
                                             style={{ display: 'none' }}

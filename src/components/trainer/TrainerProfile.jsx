@@ -4,6 +4,7 @@
 
 import { useTrainerContext, useModal } from '../../contexts/index.js';
 import { CREATION_STAT_POINTS } from '../../data/constants.js';
+import { resizeImageFile } from '../../utils/imageUtils.js';
 
 /**
  * TrainerProfile - Trainer profile management
@@ -23,26 +24,9 @@ const TrainerProfile = () => {
     const handleAvatarChange = (e) => {
         const file = e.target.files[0];
         if (file) {
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                const img = new Image();
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    const maxSize = 150;
-                    let width = img.width, height = img.height;
-                    if (width > height) {
-                        if (width > maxSize) { height *= maxSize / width; width = maxSize; }
-                    } else {
-                        if (height > maxSize) { width *= maxSize / height; height = maxSize; }
-                    }
-                    canvas.width = width;
-                    canvas.height = height;
-                    canvas.getContext('2d').drawImage(img, 0, 0, width, height);
-                    setTrainer(prev => ({ ...prev, avatar: canvas.toDataURL('image/jpeg', 0.8) }));
-                };
-                img.src = event.target.result;
-            };
-            reader.readAsDataURL(file);
+            resizeImageFile(file).then(dataUrl => {
+                setTrainer(prev => ({ ...prev, avatar: dataUrl }));
+            });
         }
     };
 

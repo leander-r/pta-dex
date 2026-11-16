@@ -30,10 +30,20 @@ export const GameDataProvider = ({ children }) => {
     const [gameDataLoaded, setGameDataLoaded] = useState(GAME_DATA._loaded || false);
     const [speciesSearch, setSpeciesSearch] = useState('');
 
-    // Wait for game data to load; catch network failures so the UI never hangs
+    // Wait for game data to load; catch network failures so the UI never hangs.
+    // loadGameDataFromGitHub() reports total failure (no network + no cache) by
+    // resolving to `false`, not by rejecting — so that case must be handled in
+    // .then() too, or the UI hangs on the loading screen forever with the
+    // .catch() branch below never firing.
     useEffect(() => {
         gameDataLoadPromise
-            .then(loaded => setGameDataLoaded(loaded))
+            .then(loaded => {
+                if (!loaded) {
+                    console.error('Failed to load game data: no network data and no cache available');
+                    toast.warning('Game data failed to load — using fallback. Some moves, abilities, or features may be missing.');
+                }
+                setGameDataLoaded(true); // unblock spinner either way — the app has a safe default GAME_DATA shape
+            })
             .catch(err => {
                 console.error('Failed to load game data:', err);
                 toast.warning('Game data failed to load — using fallback. Some moves, abilities, or features may be missing.');
