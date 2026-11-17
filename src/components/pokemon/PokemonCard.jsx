@@ -203,6 +203,23 @@ const PokemonCard = ({
     const maxHP = useMemo(() => calculatePokemonHP(pokemon), [pokemon]);
     const currentHP = maxHP - (pokemon.currentDamage || 0);
     const stabBonus = useMemo(() => calculateSTAB(pokemon.level || 1), [pokemon.level]);
+    // Shared between the collapsed tile and the expanded header's HP summary
+    const activeStatusConditions = STATUS_CONDITIONS.filter(c => pokemon.statusConditions?.[c.key]);
+    const hpRatio = maxHP > 0 ? currentHP / maxHP : 0;
+    const hpColor = hpRatio > 0.5 ? 'var(--stat-hp)' : hpRatio > 0.25 ? 'var(--poke-orange)' : 'var(--danger-btn-start)';
+    // Collapsed-tile overflow menu for Export/Copy on the expanded header
+    const [showHeaderMenu, setShowHeaderMenu] = useState(false);
+    const headerMenuRef = useRef(null);
+    useEffect(() => {
+        if (!showHeaderMenu) return;
+        const handleOutsideClick = (e) => {
+            if (headerMenuRef.current && !headerMenuRef.current.contains(e.target)) {
+                setShowHeaderMenu(false);
+            }
+        };
+        document.addEventListener('mousedown', handleOutsideClick);
+        return () => document.removeEventListener('mousedown', handleOutsideClick);
+    }, [showHeaderMenu]);
 
     const primaryType = pokemon.types?.[0] || 'Normal';
     const secondaryType = pokemon.types?.[1] || null;
@@ -610,10 +627,7 @@ const PokemonCard = ({
 
     // Collapsed view
     if (!isEditing) {
-        const activeStatusConditions = STATUS_CONDITIONS.filter(c => pokemon.statusConditions?.[c.key]);
         const loyaltyLevel = pokemon.loyalty ?? 1;
-        const hpRatio = currentHP / maxHP;
-        const hpColor = hpRatio > 0.5 ? 'var(--stat-hp)' : hpRatio > 0.25 ? 'var(--poke-orange)' : 'var(--danger-btn-start)';
 
         return (
             <div
@@ -831,14 +845,27 @@ const PokemonCard = ({
                 borderRight: secondaryType ? `4px solid ${secondaryColor}` : 'none'
             }}
         >
-            {/* Header */}
+            {/* Header — solid primary-type color so text contrast stays computable
+                (the old primary→secondary gradient put the header text/buttons over
+                an unpredictable blend, which on e.g. Grass/Poison or Electric/Ghost
+                dropped Discard's contrast under 3:1). The second type is shown via
+                the type badges below and a thin two-tone strip along the bottom
+                edge, not by discoloring the whole header. */}
             <div style={{
-                background: `repeating-linear-gradient(135deg, rgba(255,255,255,0.09) 0px, rgba(255,255,255,0.09) 2px, transparent 2px, transparent 14px), linear-gradient(135deg, ${primaryColor} 0%, ${primaryColor} 45%, ${secondaryColor} 100%)`,
+                position: 'relative',
+                background: `repeating-linear-gradient(135deg, rgba(255,255,255,0.09) 0px, rgba(255,255,255,0.09) 2px, transparent 2px, transparent 14px), ${primaryColor}`,
                 boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.35), inset 0 -1px 0 rgba(0,0,0,0.1)',
                 padding: '15px',
+                paddingBottom: secondaryType ? '19px' : '15px',
                 color: headerTextColor,
                 textShadow: headerTextColor === 'white' ? '0 1px 3px rgba(0,0,0,0.5)' : 'none'
             }}>
+                {secondaryType && (
+                    <div aria-hidden="true" style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: '4px', display: 'flex' }}>
+                        <div style={{ flex: 1, background: primaryColor }} />
+                        <div style={{ flex: 1, background: secondaryColor }} />
+                    </div>
+                )}
                 <div className="pokemon-expanded-header">
                     <div className="pokemon-expanded-header-left">
                         {(() => {
@@ -849,17 +876,21 @@ const PokemonCard = ({
                                     alt=""
                                     aria-hidden="true"
                                     loading="lazy"
-                                    style={{ width: '88px', height: '88px', imageRendering: 'pixelated', objectFit: 'contain', flexShrink: 0, opacity: 0.9 }}
+                                    className="pokemon-expanded-sprite"
+                                    style={{ imageRendering: 'pixelated', objectFit: 'contain', flexShrink: 0, opacity: 1 }}
                                     onError={e => { e.target.style.visibility = 'hidden'; }}
                                 />
                             ) : null;
                         })()}
                         <div style={{ flex: 1, minWidth: 0 }}>
+                            {/* No nickname set: show the species itself as the real field
+                                value (full contrast) rather than as placeholder text, which
+                                read as greyed-out/disabled against lighter type colors. */}
                             <input
                                 type="text"
-                                value={pokemon.name || ''}
+                                value={pokemon.name || pokemon.species || ''}
                                 onChange={(e) => updatePokemon({ name: e.target.value })}
-                                placeholder={pokemon.species || 'Nickname'}
+                                placeholder={pokemon.species ? undefined : 'Nickname'}
                                 className="pokemon-expanded-nickname"
                                 aria-label="Pokémon nickname"
                                 style={{
@@ -894,40 +925,111 @@ const PokemonCard = ({
                                     </button>
                                 </div>
                             )}
-                            {/* Level — read-only display; editing now lives in the Info tab's
-                                "Set Level" field (with Confirm/Cancel), so a second, instantly-
-                                applying control here would be a redundant, inconsistent duplicate. */}
-                            <div style={{ display: 'inline-flex', alignItems: 'center', marginTop: '6px', opacity: 0.9, background: 'rgba(255,255,255,0.12)', borderRadius: '6px', padding: '3px 10px', alignSelf: 'flex-start' }}>
+                            {/* Type badges — the collapsed tile shows these, but the expanded
+                                header relied on the background color alone to say "dual-type",
+                                which is unreadable on e.g. Ghost/Poison and invisible to
+                                colour-blind players. Same type-specific classes as the collapsed
+                                tile, so they stay legible regardless of the header color. */}
+                            {(pokemon.types || []).length > 0 && (
+                                <div style={{ display: 'flex', gap: '5px', marginTop: '6px', paddingLeft: '12px', flexWrap: 'wrap' }}>
+                                    {pokemon.types.map(type => (
+                                        <span
+                                            key={type}
+                                            className={`type-pill-single type-${type.toLowerCase()}`}
+                                            style={{ color: getContrastTextColor(getTypeColor(type)), fontSize: '10px' }}
+                                        >
+                                            {type}
+                                        </span>
+                                    ))}
+                                </div>
+                            )}
+                            {/* Level, HP, and a quick status/held-item/gender/nature summary —
+                                the natural place players look first, so it doesn't require
+                                opening a tab. Level is plain text now (not a translucent box
+                                matching the input above it), since that box read as an editable
+                                field it wasn't — editing lives in the Info tab's Set Level field. */}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '8px', paddingLeft: '12px', flexWrap: 'wrap' }}>
                                 <span style={{ whiteSpace: 'nowrap', fontSize: '13px', fontWeight: 'bold' }}>Lv.{pokemon.level}</span>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flex: '1 1 110px', maxWidth: '220px' }}>
+                                    <div
+                                        role="progressbar"
+                                        aria-valuenow={currentHP}
+                                        aria-valuemin={0}
+                                        aria-valuemax={maxHP}
+                                        aria-label={`HP: ${currentHP} of ${maxHP}`}
+                                        style={{ flex: 1, height: '6px', background: 'rgba(127,127,127,0.35)', borderRadius: '3px', overflow: 'hidden' }}
+                                    >
+                                        <div style={{ width: `${Math.max(0, Math.min(100, hpRatio * 100))}%`, height: '100%', background: hpColor }} />
+                                    </div>
+                                    <span style={{ fontSize: '11px', fontWeight: 'bold', whiteSpace: 'nowrap' }}>{currentHP}/{maxHP}</span>
+                                </div>
+                                {pokemon.heldItem && (() => {
+                                    const itemData = GAME_DATA?.items?.[pokemon.heldItem];
+                                    return (
+                                        <span
+                                            onClick={(e) => { e.stopPropagation(); if (showDetail && itemData) showDetail('item', pokemon.heldItem, itemData); }}
+                                            title={pokemon.heldItem}
+                                            style={{ fontSize: '13px', cursor: showDetail && itemData ? 'pointer' : 'default' }}
+                                        >
+                                            🎒
+                                        </span>
+                                    );
+                                })()}
+                                {activeStatusConditions.map(c => (
+                                    <span key={c.key} title={c.label} style={{ fontSize: '13px', cursor: 'help' }}>{c.icon}</span>
+                                ))}
+                                {pokemon.gender && pokemon.gender !== 'unknown' && (
+                                    <span title={`Gender: ${pokemon.gender}`} style={{ fontSize: '13px', fontWeight: 'bold' }}>
+                                        {pokemon.gender === 'male' ? '♂' : pokemon.gender === 'female' ? '♀' : '⚲'}
+                                    </span>
+                                )}
+                                {pokemon.nature && (
+                                    <span title={`Nature: ${pokemon.nature}`} style={{ fontSize: '11px', opacity: 0.85, whiteSpace: 'nowrap' }}>{pokemon.nature}</span>
+                                )}
                             </div>
                         </div>
                     </div>
-                    <div style={{ display: 'flex', gap: '6px', flexShrink: 0, alignItems: 'flex-start', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-                        {/* Export & Copy — visible label so touch users don't have to guess (tooltips don't exist on mobile) */}
-                        <button
-                            onClick={() => exportSinglePokemon(pokemon)}
-                            title="Export this Pokémon as a file"
-                            aria-label="Export Pokémon"
-                            style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.35)', borderRadius: '6px', padding: '7px 10px', color: headerTextColor, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px', fontSize: '12px', fontWeight: 'bold' }}
-                        >
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
-                            </svg>
-                            Export
-                        </button>
-                        <button
-                            onClick={() => copyPokemonToClipboard(pokemon)}
-                            title="Copy Pokémon data to clipboard"
-                            aria-label="Copy Pokémon"
-                            style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.35)', borderRadius: '6px', padding: '7px 10px', color: headerTextColor, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px', fontSize: '12px', fontWeight: 'bold' }}
-                        >
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-                            </svg>
-                            Copy
-                        </button>
-                        {/* Visual separator */}
-                        <div style={{ width: '1px', height: '28px', background: 'rgba(255,255,255,0.25)', alignSelf: 'center' }} aria-hidden="true" />
+                    <div style={{ display: 'flex', gap: '6px', flexShrink: 0, alignItems: 'center' }}>
+                        {/* Export & Copy are occasional actions, folded into a menu so the
+                            right-hand action row stays down to 3 controls — on phones that
+                            was previously wrapping onto two rows with Done alone on the
+                            second. */}
+                        <div ref={headerMenuRef} style={{ position: 'relative' }}>
+                            <button
+                                onClick={() => setShowHeaderMenu(v => !v)}
+                                title="More actions (Export, Copy)"
+                                aria-label="More actions"
+                                aria-haspopup="true"
+                                aria-expanded={showHeaderMenu}
+                                style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.35)', borderRadius: '6px', padding: '8px 12px', color: headerTextColor, cursor: 'pointer', fontSize: '16px', fontWeight: 'bold', lineHeight: 1 }}
+                            >
+                                ⋯
+                            </button>
+                            {showHeaderMenu && (
+                                <div style={tileMenuStyle} onClick={(e) => e.stopPropagation()}>
+                                    <button
+                                        onClick={() => { exportSinglePokemon(pokemon); setShowHeaderMenu(false); }}
+                                        title="Export this Pokémon as a file"
+                                        style={tileMenuItemStyle}
+                                    >
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+                                        </svg>
+                                        Export
+                                    </button>
+                                    <button
+                                        onClick={() => { copyPokemonToClipboard(pokemon); setShowHeaderMenu(false); }}
+                                        title="Copy Pokémon data to clipboard"
+                                        style={tileMenuItemStyle}
+                                    >
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                                        </svg>
+                                        Copy
+                                    </button>
+                                </div>
+                            )}
+                        </div>
                         <button
                             onClick={() => {
                                 const hasChanges = snapshot && JSON.stringify(snapshot) !== JSON.stringify(pokemon);
@@ -948,12 +1050,16 @@ const PokemonCard = ({
                                 }
                             }}
                             style={{
-                                background: 'rgba(255,255,255,0.08)',
-                                border: '1px solid rgba(255,255,255,0.35)',
+                                // A visible outline, not muted translucent-on-translucent —
+                                // the previous styling read as a disabled button even though
+                                // Discard is always active.
+                                background: 'transparent',
+                                border: `2px solid ${headerTextColor === 'white' ? 'rgba(255,255,255,0.85)' : 'rgba(26,26,46,0.55)'}`,
                                 borderRadius: '6px',
-                                padding: '8px 14px',
-                                color: headerMutedColor,
+                                padding: '7px 13px',
+                                color: headerTextColor,
                                 cursor: 'pointer',
+                                fontWeight: 'bold',
                                 fontSize: '13px'
                             }}
                         >
@@ -998,12 +1104,12 @@ const PokemonCard = ({
                         aria-selected={editTab === id}
                         className={`tab ${editTab === id ? 'active' : ''}`}
                         onClick={() => setEditTab(id)}
-                        style={{ position: 'relative' }}
+                        style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}
                     >
                         <span aria-hidden="true">{icon}</span> {label}
                         {badge != null && (
                             <span style={{
-                                position: 'absolute', top: '4px', right: '4px',
+                                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                                 minWidth: '16px', height: '16px', lineHeight: '16px',
                                 borderRadius: '8px', fontSize: '11px', fontWeight: 'bold',
                                 background: id === 'stats' || id === 'evolution' ? 'var(--color-success-text)' : (id === 'moves' && (pokemon.moves || []).length >= MAX_TOTAL_MOVES) ? 'var(--color-success-text)' : 'var(--text-muted)',

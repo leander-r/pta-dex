@@ -4176,22 +4176,6 @@
                 justify-content: flex-start !important;
             }
 
-            /* Pokémon card expanded header: stack input above Cancel/Done */
-            .pokemon-expanded-header {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 10px;
-            }
-
-            .pokemon-expanded-nickname {
-                max-width: none;
-            }
-
-            /* Align Cancel/Done to the right when stacked */
-            .pokemon-expanded-header > div:last-child {
-                justify-content: flex-end;
-            }
-
             /* Pokemon card tabs: tighter padding so 5 tabs stay on one row */
             .pokemon-card-tabs .tab {
                 padding: 8px 8px;
@@ -4844,13 +4828,40 @@
         .pokemon-expanded-nickname {
             flex: 1;
             min-width: 0;
-            max-width: 180px;
         }
 
         .pokemon-expanded-nickname::placeholder {
             color: rgba(255, 255, 255, 0.65);
         }
 
+        .pokemon-expanded-sprite {
+            width: 88px;
+            height: 88px;
+        }
+
+        /* Expanded card header, mobile: stack name block above the action
+           row, shrink the sprite, and keep the ⋯/Discard/Done group on one
+           row instead of wrapping. Placed after the base rules above (not
+           before, as it previously was) so these overrides actually win the
+           cascade at equal specificity — the old position lost silently on
+           align-items/gap. */
+        @media (max-width: 768px) {
+            .pokemon-expanded-header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+
+            .pokemon-expanded-header > div:last-child {
+                justify-content: flex-end;
+                flex-wrap: nowrap;
+            }
+
+            .pokemon-expanded-sprite {
+                width: 56px;
+                height: 56px;
+            }
+        }
 
         /* EXP/Nature info grid */
         .pokemon-info-grid {
@@ -4875,6 +4886,20 @@
 
         [data-theme="dark"] .pokemon-card-expanded {
             box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+        }
+
+        /* The header keeps its own light-on-type-color scheme regardless of
+           page theme, but the site-wide `[data-theme="dark"] input` rule
+           (higher up, same !important) would otherwise paint this field
+           near-black. Higher specificity (class + attribute) wins it back. */
+        [data-theme="dark"] .pokemon-expanded-nickname {
+            background: rgba(255, 255, 255, 0.2) !important;
+            border-color: rgba(255, 255, 255, 0.45) !important;
+            color: inherit !important;
+        }
+
+        [data-theme="dark"] .pokemon-expanded-nickname::placeholder {
+            color: rgba(255, 255, 255, 0.65) !important;
         }
 
         [data-theme="dark"] .pokemon-card::after {
