@@ -1052,7 +1052,7 @@ const PokemonCard = ({
                             style={{
                                 // A visible outline, not muted translucent-on-translucent —
                                 // the previous styling read as a disabled button even though
-                                // Discard is always active.
+                                // Cancel is always active.
                                 background: 'transparent',
                                 border: `2px solid ${headerTextColor === 'white' ? 'rgba(255,255,255,0.85)' : 'rgba(26,26,46,0.55)'}`,
                                 borderRadius: '6px',
@@ -1063,7 +1063,7 @@ const PokemonCard = ({
                                 fontSize: '13px'
                             }}
                         >
-                            Discard
+                            Cancel
                         </button>
                         <button
                             onClick={() => setEditing(false)}
@@ -1083,7 +1083,7 @@ const PokemonCard = ({
                                 boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
                             }}
                         >
-                            Done
+                            OK
                         </button>
                     </div>
                 </div>
