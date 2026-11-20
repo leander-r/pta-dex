@@ -401,7 +401,9 @@ const TrainerProfile = () => {
                     { key: 'tough',  icon: '💪', label: 'Tough'  },
                 ];
                 const ribbons = trainer.ribbons || {};
-                const totalRibbons = RIBBON_TYPES.reduce((s, r) => s + (ribbons[r.key] || 0), 0);
+                const customRibbons = trainer.customRibbons || [];
+                const totalRibbons = RIBBON_TYPES.reduce((s, r) => s + (ribbons[r.key] || 0), 0)
+                    + customRibbons.reduce((s, r) => s + (r.count || 0), 0);
 
                 const updateRibbon = (key, delta) => {
                     setTrainer(prev => ({
@@ -413,12 +415,56 @@ const TrainerProfile = () => {
                     }));
                 };
 
+                const handleAddCustomRibbon = () => {
+                    showConfirm({
+                        title: 'Add Custom Ribbon',
+                        message: 'Enter ribbon name:',
+                        confirmLabel: 'Add',
+                        inputConfig: { placeholder: 'Ribbon name...', defaultValue: '' },
+                        onConfirm: (name) => {
+                            const trimmed = name?.trim();
+                            if (!trimmed) return;
+                            setTrainer(prev => {
+                                const prevCustom = prev.customRibbons || [];
+                                if (prevCustom.some(r => r.name.toLowerCase() === trimmed.toLowerCase())) return prev;
+                                return { ...prev, customRibbons: [...prevCustom, { id: Date.now(), name: trimmed, count: 0 }] };
+                            });
+                        }
+                    });
+                };
+
+                const handleRemoveCustomRibbon = (ribbon) => {
+                    showConfirm({
+                        title: 'Remove Ribbon',
+                        message: `Remove "${ribbon.name}" ribbon?`,
+                        danger: true,
+                        onConfirm: () => {
+                            setTrainer(prev => ({
+                                ...prev,
+                                customRibbons: (prev.customRibbons || []).filter(r => r.id !== ribbon.id)
+                            }));
+                        }
+                    });
+                };
+
+                const updateCustomRibbonCount = (id, delta) => {
+                    setTrainer(prev => ({
+                        ...prev,
+                        customRibbons: (prev.customRibbons || []).map(r => r.id === id ? { ...r, count: Math.max(0, (r.count || 0) + delta) } : r)
+                    }));
+                };
+
                 return (
                     <div style={{ marginTop: '12px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
                             <span style={{ fontWeight: 'bold', color: 'var(--color-purple)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                                 🏆 Contest Ribbons {totalRibbons > 0 && `(${totalRibbons})`}
                             </span>
+                            <button
+                                type="button"
+                                onClick={handleAddCustomRibbon}
+                                style={{ padding: '4px 10px', fontSize: '11px', fontWeight: 'bold', background: 'var(--bg-light)', color: 'var(--text-secondary)', border: '1px solid var(--border-light)', borderRadius: '4px', cursor: 'pointer' }}
+                            >+ Custom</button>
                         </div>
                         <div className="detail-tile-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(72px, 1fr))', gap: '6px' }}>
                             {RIBBON_TYPES.map(({ key, icon, label }) => {
@@ -439,6 +485,36 @@ const TrainerProfile = () => {
                                             </span>
                                             <button
                                                 onClick={() => updateRibbon(key, 1)}
+                                                style={{ flex: 1, padding: '4px 2px', background: 'var(--bg-light)', color: 'var(--text-primary)', border: '1px solid var(--border-light)', borderRadius: '4px', cursor: 'pointer', fontSize: '12px' }}
+                                            >+</button>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                            {customRibbons.map((ribbon) => {
+                                const count = ribbon.count || 0;
+                                return (
+                                    <div key={ribbon.id} className="detail-tile" style={{ cursor: 'default', padding: '8px 6px' }}>
+                                        <button
+                                            onClick={() => handleRemoveCustomRibbon(ribbon)}
+                                            className="detail-tile-remove"
+                                            title="Remove ribbon"
+                                            aria-label={`Remove ${ribbon.name} ribbon`}
+                                        >✕</button>
+                                        <div style={{ fontSize: '12px', fontWeight: 'bold', color: 'var(--text-muted)', wordBreak: 'break-word' }} title={ribbon.name}>
+                                            🎀 {ribbon.name}
+                                        </div>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '2px', width: '100%' }}>
+                                            <button
+                                                onClick={() => updateCustomRibbonCount(ribbon.id, -1)}
+                                                disabled={count === 0}
+                                                style={{ flex: 1, padding: '4px 2px', background: 'var(--bg-light)', color: 'var(--text-primary)', border: '1px solid var(--border-light)', borderRadius: '4px', cursor: count === 0 ? 'not-allowed' : 'pointer', opacity: count === 0 ? 0.4 : 1, fontSize: '12px' }}
+                                            >−</button>
+                                            <span style={{ minWidth: '20px', textAlign: 'center', fontWeight: 'bold', fontSize: '13px' }}>
+                                                {count > 0 ? count : '—'}
+                                            </span>
+                                            <button
+                                                onClick={() => updateCustomRibbonCount(ribbon.id, 1)}
                                                 style={{ flex: 1, padding: '4px 2px', background: 'var(--bg-light)', color: 'var(--text-primary)', border: '1px solid var(--border-light)', borderRadius: '4px', cursor: 'pointer', fontSize: '12px' }}
                                             >+</button>
                                         </div>

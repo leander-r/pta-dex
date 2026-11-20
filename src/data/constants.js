@@ -34,7 +34,8 @@ export const DEFAULT_TRAINER = {
     party: [],             // Active party - max 6 Pokemon
     reserve: [],           // Reserve/PC storage - unlimited
     archived: false,       // Soft-delete: archived trainers are hidden but recoverable
-    ribbons: { cool: 0, beauty: 0, cute: 0, smart: 0, tough: 0 }
+    ribbons: { cool: 0, beauty: 0, cute: 0, smart: 0, tough: 0 },
+    customRibbons: []      // User-defined ribbons: { id, name, count }
 };
 
 /**
@@ -77,7 +78,8 @@ export const DEFAULT_POKEMON = {
     statPointsAvailable: 0,
     origin: 'caught',
     contestStats: { cool: 0, beauty: 0, cute: 0, smart: 0, tough: 0 },
-    ribbons: { cool: 0, beauty: 0, cute: 0, smart: 0, tough: 0 }
+    ribbons: { cool: 0, beauty: 0, cute: 0, smart: 0, tough: 0 },
+    customRibbons: []      // User-defined ribbons: { id, name, count }
 };
 
 /**
