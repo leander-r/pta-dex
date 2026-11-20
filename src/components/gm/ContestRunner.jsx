@@ -75,8 +75,10 @@ const ContestRunner = () => {
     const [judgeTargetedBy, setJudgeTargetedBy] = useState({});
     // Ordered list of judgeIds targeted each turn this round (for Big Show check)
     const [roundJudgeTargets, setRoundJudgeTargets] = useState([]);
-    // Last appeal result per judge { [judgeId]: { participantId, name, appeal } }
-    const [lastAppealByJudge, setLastAppealByJudge] = useState({});
+    // Result of the actual previous turn in this round (any judge, not just the one the
+    // current turn targets) — PH2's Attention Grabber steals from "the Pokémon who last
+    // went during that Appeal round", which is round-wide, not per-judge.
+    const [lastAppeal, setLastAppeal] = useState(null);
     // Judge protection flags (reset each round)
     const [excitementJudges, setExcitementJudges]     = useState(new Set());
     const [holdThoughtJudges, setHoldThoughtJudges]   = useState(new Set());
@@ -84,8 +86,10 @@ const ContestRunner = () => {
     const [nextRoundFirst,    setNextRoundFirst]       = useState(null);
     const [nextRoundLast,     setNextRoundLast]        = useState(null);
     const [scrambleNextRound, setScrambleNextRound]    = useState(false);
-    // Voltage raise history per judge (last 2 turns): { [judgeId]: bool[] }
-    const [recentVoltageRaises, setRecentVoltageRaises] = useState({});
+    // Voltage raise history for the round's last 2 turns, any judge (PH2's Good Show!
+    // triggers off "any Voltage was raised during both of the last two turns during the
+    // Appeal Round" — round-wide, not per-judge).
+    const [recentVoltageRaises, setRecentVoltageRaises] = useState([]);
     // Max voltage tracking for Seen Nothing Yet
     const [maxVoltageHitThisRound, setMaxVoltageHitThisRound] = useState(false);
     const [maxVoltageHitLastRound, setMaxVoltageHitLastRound] = useState(false);
@@ -175,13 +179,13 @@ const ContestRunner = () => {
         setParticipantEffects({});
         setJudgeTargetedBy({});
         setRoundJudgeTargets([]);
-        setLastAppealByJudge({});
+        setLastAppeal(null);
         setExcitementJudges(new Set());
         setHoldThoughtJudges(new Set());
         setNextRoundFirst(null);
         setNextRoundLast(null);
         setScrambleNextRound(false);
-        setRecentVoltageRaises({});
+        setRecentVoltageRaises([]);
         setMaxVoltageHitThisRound(false);
         setMaxVoltageHitLastRound(false);
     };
@@ -322,7 +326,7 @@ const ContestRunner = () => {
                 }
 
             } else if (keyword === 'Good Show!') {
-                const raises = recentVoltageRaises[pendingJudge] || [];
+                const raises = recentVoltageRaises;
                 if (raises.length >= 2 && raises[raises.length - 1] && raises[raises.length - 2]) {
                     const b = rollD4s(3);
                     keywordBonusRolls = b; keywordBonusLabel = 'Good Show! +3d4';
@@ -341,7 +345,6 @@ const ContestRunner = () => {
                 }
 
             } else if (keyword === 'Attention Grabber') {
-                const lastAppeal = lastAppealByJudge[pendingJudge];
                 if (lastAppeal && lastAppeal.appeal > 0) {
                     const stolen = Math.floor(lastAppeal.appeal / 2);
                     if (stolen > 0) {
@@ -465,7 +468,6 @@ const ContestRunner = () => {
         setParticipantEffects(prev => ({ ...prev, [p.id]: newEffects }));
 
         // ── Attention Grabber retroactive modification ─────────────────────
-        const lastAppeal = lastAppealByJudge[pendingJudge];
         const attentionStolen = keyword === 'Attention Grabber' && lastAppeal && lastAppeal.appeal > 0
             ? Math.floor(lastAppeal.appeal / 2)
             : 0;
@@ -486,9 +488,11 @@ const ContestRunner = () => {
             if (attentionStolen > 0) {
                 updated = prev.map(p2 => {
                     if (p2.id !== lastAppeal.participantId) return p2;
+                    // lastAppeal tracks the actual previous turn in the round (any judge),
+                    // so their most recent rounds entry IS that turn — no judge-match needed.
                     const newRounds = [...p2.rounds];
                     const lastIdx   = newRounds.length - 1;
-                    if (lastIdx >= 0 && newRounds[lastIdx].judgeId === pendingJudge) {
+                    if (lastIdx >= 0) {
                         newRounds[lastIdx] = { ...newRounds[lastIdx], appeal: newRounds[lastIdx].appeal - attentionStolen };
                     }
                     return { ...p2, rounds: newRounds };
@@ -505,12 +509,8 @@ const ContestRunner = () => {
         // ── Update round tracking state ────────────────────────────────────
         setJudgeTargetedBy(prev => prev[pendingJudge] ? prev : { ...prev, [pendingJudge]: p.id });
         setRoundJudgeTargets(prev => [...prev, pendingJudge]);
-        setLastAppealByJudge(prev => ({ ...prev, [pendingJudge]: { participantId: p.id, name: p.name, appeal } }));
-        setRecentVoltageRaises(prev => {
-            const raises  = prev[pendingJudge] || [];
-            const updated = [...raises, voltageChange > 0].slice(-2);
-            return { ...prev, [pendingJudge]: updated };
-        });
+        setLastAppeal({ participantId: p.id, name: p.name, appeal });
+        setRecentVoltageRaises(prev => [...prev, voltageChange > 0].slice(-2));
 
         // ── Build log entry ────────────────────────────────────────────────
         const logParts = [`${p.name} → J${pendingJudge}: `];
@@ -602,9 +602,12 @@ const ContestRunner = () => {
         // Reset round-level state
         setJudgeTargetedBy({});
         setRoundJudgeTargets([]);
-        setLastAppealByJudge({});
+        setLastAppeal(null);
         setExcitementJudges(new Set());
         setHoldThoughtJudges(new Set());
+        // Good Show!'s "last two turns" window is round-wide and must not bleed into the
+        // next round (this reset was previously missing entirely).
+        setRecentVoltageRaises([]);
         // Carry over max voltage flag
         setMaxVoltageHitLastRound(maxVoltageHitThisRound);
         setMaxVoltageHitThisRound(false);
@@ -633,13 +636,13 @@ const ContestRunner = () => {
         setParticipantEffects({});
         setJudgeTargetedBy({});
         setRoundJudgeTargets([]);
-        setLastAppealByJudge({});
+        setLastAppeal(null);
         setExcitementJudges(new Set());
         setHoldThoughtJudges(new Set());
         setNextRoundFirst(null);
         setNextRoundLast(null);
         setScrambleNextRound(false);
-        setRecentVoltageRaises({});
+        setRecentVoltageRaises([]);
         setMaxVoltageHitThisRound(false);
         setMaxVoltageHitLastRound(false);
     };
