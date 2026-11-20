@@ -543,12 +543,23 @@ const sanitizeImportedPokemonFields = (poke) => {
     };
 };
 
+const sanitizeImportedQuest = (quest) => {
+    if (!quest || typeof quest !== 'object') return quest;
+    return {
+        ...quest,
+        title: quest.title ? sanitizeString(quest.title, IMPORT_LIMITS.MAX_STRING_LENGTH) : quest.title,
+        notes: quest.notes ? sanitizeString(quest.notes, IMPORT_LIMITS.MAX_NOTES_LENGTH) : quest.notes,
+    };
+};
+
 export const sanitizeImportedTrainer = (trainerData) => {
     if (!trainerData || typeof trainerData !== 'object') return trainerData;
     return {
         ...trainerData,
         name: trainerData.name ? sanitizeString(trainerData.name, IMPORT_LIMITS.MAX_STRING_LENGTH) : trainerData.name,
         notes: trainerData.notes ? sanitizeString(trainerData.notes, IMPORT_LIMITS.MAX_NOTES_LENGTH) : trainerData.notes,
+        sessionNotes: trainerData.sessionNotes ? sanitizeString(trainerData.sessionNotes, IMPORT_LIMITS.MAX_NOTES_LENGTH) : trainerData.sessionNotes,
+        quests: Array.isArray(trainerData.quests) ? trainerData.quests.map(sanitizeImportedQuest) : trainerData.quests,
         avatar: validateAvatar(trainerData.avatar),
         party: Array.isArray(trainerData.party) ? trainerData.party.map(sanitizeImportedPokemonFields) : trainerData.party,
         reserve: Array.isArray(trainerData.reserve) ? trainerData.reserve.map(sanitizeImportedPokemonFields) : trainerData.reserve
@@ -739,7 +750,7 @@ export const generatePrintSheetHTML = (trainer, party) => {
     <div class="info-row">
         <span><strong>Money:</strong> ₽${(trainer.money || 0).toLocaleString()}</span>
         <span><strong>Badges:</strong> <span class="badge-count">${badgeCount}</span></span>
-        ${trainer.age ? `<span><strong>Age:</strong> ${trainer.age}</span>` : ''}
+        ${trainer.age ? `<span><strong>Age:</strong> ${escapeHtml(trainer.age)}</span>` : ''}
     </div>
 
     <h2>Features</h2>
