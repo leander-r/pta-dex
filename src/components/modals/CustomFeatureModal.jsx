@@ -9,9 +9,7 @@ import toast from '../../utils/toast.js';
 
 // Mirrors ModalContext's customFeature initial state — this modal's form
 // state is never otherwise reset, so without this, reopening the modal
-// after creating one feature shows that feature's data still filled in
-// (and since there's no duplicate-name guard here, submitting again would
-// silently add an exact duplicate).
+// after creating one feature shows that feature's data still filled in.
 const DEFAULT_CUSTOM_FEATURE = { name: '', category: 'Custom', prerequisites: '', frequency: '', trigger: '', target: '', effect: '' };
 
 /**
@@ -20,12 +18,30 @@ const DEFAULT_CUSTOM_FEATURE = { name: '', category: 'Custom', prerequisites: ''
  */
 const CustomFeatureModal = () => {
     // Get from contexts
-    const { showCustomFeatureModal, setShowCustomFeatureModal, customFeature, setCustomFeature } = useModal();
+    const { showCustomFeatureModal, setShowCustomFeatureModal, customFeature, setCustomFeature, showConfirm } = useModal();
     const { trainer, setTrainer } = useTrainerContext();
 
-    const handleClose = () => {
+    const doClose = () => {
         setShowCustomFeatureModal(false);
         setCustomFeature(DEFAULT_CUSTOM_FEATURE);
+    };
+
+    // Warn before discarding — same pattern as CustomSpeciesModal/CustomMoveModal, since this
+    // form has 7 fields and previously wiped them with zero confirmation on a stray backdrop
+    // click, Escape, or Cancel.
+    const handleClose = () => {
+        const isModified = JSON.stringify(customFeature) !== JSON.stringify(DEFAULT_CUSTOM_FEATURE);
+        if (isModified) {
+            showConfirm({
+                title: 'Discard feature?',
+                message: 'You have unsaved changes to this custom feature. Close without saving?',
+                confirmLabel: 'Discard',
+                danger: true,
+                onConfirm: doClose,
+            });
+            return;
+        }
+        doClose();
     };
 
     const { modalRef } = useModalKeyboard(showCustomFeatureModal, handleClose);
@@ -38,12 +54,22 @@ const CustomFeatureModal = () => {
             toast.warning('Not enough feat points!');
             return;
         }
+        // Same duplicate-name guard CustomMoveModal already has for moves — without it,
+        // a double-click or a reopen-and-resubmit silently burns a feat point on an
+        // exact duplicate feature.
+        const alreadyHas = (trainer.features || []).some(f =>
+            (typeof f === 'object' ? f.name : f)?.toLowerCase() === customFeature.name.trim().toLowerCase()
+        );
+        if (alreadyHas) {
+            toast.warning(`${trainer.name || 'Trainer'} already has a feature named "${customFeature.name.trim()}"!`);
+            return;
+        }
         setTrainer(prev => ({
             ...prev,
             features: [...prev.features, { ...customFeature }],
             featPoints: (prev.featPoints || 0) - 1
         }));
-        handleClose();
+        doClose();
     };
 
     return (

@@ -32,12 +32,30 @@ const DEFAULT_CUSTOM_MOVE = { name: '', type: 'Normal', category: 'Physical', fr
  */
 const CustomMoveModal = () => {
     // Get from contexts
-    const { showCustomMoveModal, setShowCustomMoveModal, customMove, setCustomMove, customMoveForPokemon } = useModal();
+    const { showCustomMoveModal, setShowCustomMoveModal, customMove, setCustomMove, customMoveForPokemon, showConfirm } = useModal();
     const { party, reserve, updatePokemon } = usePokemonContext();
 
-    const handleClose = () => {
+    const doClose = () => {
         setShowCustomMoveModal(false);
         setCustomMove(DEFAULT_CUSTOM_MOVE);
+    };
+
+    // Warn before discarding — same pattern as CustomSpeciesModal, since this form has
+    // several fields and previously wiped them with zero confirmation on a stray backdrop
+    // click, Escape, or Cancel.
+    const handleClose = () => {
+        const isModified = JSON.stringify(customMove) !== JSON.stringify(DEFAULT_CUSTOM_MOVE);
+        if (isModified) {
+            showConfirm({
+                title: 'Discard move?',
+                message: 'You have unsaved changes to this custom move. Close without saving?',
+                confirmLabel: 'Discard',
+                danger: true,
+                onConfirm: doClose,
+            });
+            return;
+        }
+        doClose();
     };
 
     const { modalRef } = useModalKeyboard(showCustomMoveModal, handleClose);
@@ -87,7 +105,7 @@ const CustomMoveModal = () => {
             moves: [...targetPoke.moves, { ...moveFields, frequency: combinedFrequency, source }]
         });
 
-        handleClose();
+        doClose();
     };
 
     return (
