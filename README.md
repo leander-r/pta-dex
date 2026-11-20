@@ -221,8 +221,9 @@ pta-dex/
 │   ├── styles/            # Global CSS
 │   └── utils/             # Utility functions (sprites, export, types…)
 ├── e2e/                   # Playwright end-to-end tests
-├── pokedex.min.json       # Pokémon species data
-├── pta-game-data.min.json # PTA rules data (moves, abilities, classes…)
+├── public/
+│   ├── pokedex.min.json       # Pokémon species data
+│   └── pta-game-data.min.json # PTA rules data (moves, abilities, classes…)
 └── index.html
 ```
 
