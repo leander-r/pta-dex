@@ -199,9 +199,16 @@ const InventoryTab = () => {
 
             if (existingIndex >= 0) {
                 const newInventory = [...prev];
+                const existing = newInventory[existingIndex];
                 newInventory[existingIndex] = {
-                    ...newInventory[existingIndex],
-                    quantity: (newInventory[existingIndex].quantity || 1) + qty
+                    ...existing,
+                    quantity: (existing.quantity || 1) + qty,
+                    // Refresh metadata from the incoming item data when it actually has some —
+                    // otherwise a custom stub added first (type:'misc', no effect) stays stranded
+                    // forever once the real catalog item is added under the same name.
+                    type: itemData.type || existing.type,
+                    effect: itemData.effect || existing.effect,
+                    price: itemData.price ?? existing.price,
                 };
                 return newInventory;
             } else {
@@ -364,6 +371,14 @@ const InventoryTab = () => {
         const { amount, desc } = rollHealFormula(formula, maxHP);
         if (amount === 0 && !desc) {
             toast.warning(`${itemName} has no HP formula — cannot determine heal amount.`);
+            setHealPanel(null);
+            setHealTargetId('');
+            return;
+        }
+        // A fraction formula floors to 0 on a low-maxHP target — the UI disables this via
+        // wouldHealZero above, but guard here too so the item is never consumed for nothing.
+        if (amount === 0) {
+            toast.warning(`${itemName} would heal 0 HP (${desc}) — not used.`);
             setHealPanel(null);
             setHealTargetId('');
             return;
@@ -707,6 +722,7 @@ const InventoryTab = () => {
                                                     onClick={() => setDetailModal({ show: true, type: 'item', name, data })}
                                                     title={`View ${name} details`}
                                                     aria-label={`View details for ${name}`}
+                                                    className="quantity-btn"
                                                     style={{ background: 'none', border: '1px solid var(--border-medium)', borderRadius: '50%', width: '28px', height: '28px', fontSize: '13px', cursor: 'pointer', color: 'var(--text-muted)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}
                                                 >ℹ</button>
                                                 <button
@@ -848,6 +864,7 @@ const InventoryTab = () => {
                                                 onClick={() => setDetailModal({ show: true, type: 'item', name: item.name, data: { type: item.type, price: item.price, effect: item.effect } })}
                                                 title={`View ${item.name} details`}
                                                 aria-label={`View details for ${item.name}`}
+                                                className="quantity-btn"
                                                 style={{ background: 'none', border: '1px solid var(--border-medium)', borderRadius: '50%', width: '28px', height: '28px', fontSize: '13px', cursor: 'pointer', color: 'var(--text-muted)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: 0, flexShrink: 0 }}
                                             >ℹ</button>
                                         </div>
@@ -945,6 +962,7 @@ const InventoryTab = () => {
                                             onClick={() => handleDeleteItem(item.name)}
                                             title={`Delete all ${item.name}`}
                                             aria-label={`Delete all ${item.name}`}
+                                            className="quantity-btn"
                                             style={{
                                                 width: '28px',
                                                 height: '28px',
@@ -1046,8 +1064,15 @@ const InventoryTab = () => {
                                                         : '✨ Status';
                                                     applyLabel = 'Roll & Apply';
                                                     const isFullHP = target && (target.currentDamage || 0) <= 0;
-                                                    disabled = !target || (healsHP && isFullHP);
-                                                    disabledReason = target && healsHP && isFullHP ? 'Already at full HP' : undefined;
+                                                    // A fraction formula floors — on a low-maxHP target it can round down to 0
+                                                    // even when not at full HP, which would still consume the item for nothing.
+                                                    const wouldHealZero = target && formula.type === 'fraction'
+                                                        && Math.floor(targetMaxHP * formula.num / formula.denom) === 0;
+                                                    disabled = !target || (healsHP && (isFullHP || wouldHealZero));
+                                                    disabledReason = !target ? undefined
+                                                        : isFullHP && healsHP ? 'Already at full HP'
+                                                        : wouldHealZero ? `Would heal 0 HP at ${targetMaxHP} Max HP — item would be wasted`
+                                                        : undefined;
                                                 }
 
                                                 return (

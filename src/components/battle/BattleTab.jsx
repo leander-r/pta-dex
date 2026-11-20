@@ -512,6 +512,12 @@ const BattleTab = () => {
         } else {
             toast.info(`Used ${itemName} (status effect only).`);
         }
+        // A fraction formula floors — on a low-maxHP target it can round down to 0 even when
+        // not at full HP. Don't consume the item for a heal that does nothing.
+        if ((formula.type === 'dice' || formula.type === 'fraction') && amount === 0) {
+            toast.warning(`${itemName} would heal 0 HP (${desc}) — not used.`);
+            return;
+        }
         const hpAfter = Math.min(maxHP, hpBefore + amount);
         if (amount > 0) {
             updatePokemon(target.id, { currentDamage: Math.max(0, (target.currentDamage || 0) - amount) });
