@@ -3259,13 +3259,17 @@ const PokemonCard = ({
                                     {canEvolve && canEvolve.length > 0 && (
                                         <div style={{ marginBottom: '16px' }}>
                                             <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-light)' }}>Evolution Options</div>
+                                            {/* Grid (not .detail-tile-grid) so branching evolutions (Eevee, Tyrogue, Wurmple...) tile
+                                                side-by-side instead of stacking full-width; the shared class's 480px breakpoint forces
+                                                2 columns regardless of content width, which would crush these wide comparison cards. */}
+                                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '10px' }}>
                                             {canEvolve.map((evo, idx) => {
                                                 const targetData = pokedex?.find(p => p.species?.toLowerCase() === evo.species?.toLowerCase());
                                                 // Regional forms may have different types than the base species in the pokedex;
                                                 // use types stored on the evo entry if present, otherwise fall back to pokedex
                                                 const targetTypes = evo.types || targetData?.types;
                                                 return (
-                                                    <div key={idx} style={{ marginBottom: '10px', padding: '12px', borderRadius: '10px', border: '1px solid var(--border-light)', background: 'var(--surface-bg)' }}>
+                                                    <div key={idx} style={{ padding: '12px', borderRadius: '10px', border: '1px solid var(--border-light)', background: 'var(--surface-bg)' }}>
                                                         {/* Sprite comparison */}
                                                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px', flexWrap: 'wrap' }}>
                                                             {renderSpeciesCard({
@@ -3313,6 +3317,7 @@ const PokemonCard = ({
                                                     </div>
                                                 );
                                             })}
+                                            </div>
                                         </div>
                                     )}
 
