@@ -21,6 +21,7 @@ import CustomDicePanel from './CustomDicePanel.jsx';
 import HealModePanel from './HealModePanel.jsx';
 import PartyStrip from './PartyStrip.jsx';
 import RollHistory from './RollHistory.jsx';
+import RollResultEntry from './RollResultEntry.jsx';
 import DiscordWebhookConfig from './DiscordWebhookConfig.jsx';
 import ContestPanel from './ContestPanel.jsx';
 
@@ -137,6 +138,16 @@ const BattleTab = () => {
     const [acOverride, setAcOverride] = useState('');
     const [megaEvolved, setMegaEvolved] = useState(false);
     const [currentMegaForm, setCurrentMegaForm] = useState(null);
+    // Inline "just rolled" results shown right under each Roll button — RollHistory lives in a
+    // separate card that's frequently scrolled out of view by the time a long form is filled in
+    // (confirmed: on a 1366x768 viewport it renders ~780px above the viewport after scrolling to
+    // the Roll button), so rolling produced no visible feedback. Mirrors ContestPanel's existing
+    // inline result box. Cleared whenever the inputs that produced it change, so a stale result
+    // can't be mistaken for the outcome of a different move/skill/weapon/dice string.
+    const [lastPokemonRoll, setLastPokemonRoll] = useState(null);
+    const [lastTrainerSkillRoll, setLastTrainerSkillRoll] = useState(null);
+    const [lastTrainerAttackRoll, setLastTrainerAttackRoll] = useState(null);
+    const [lastCustomRoll, setLastCustomRoll] = useState(null);
     const [battleCalloutDismissed, setBattleCalloutDismissed] = useState(
         () => safeLocalStorageGet('pta-battle-visited', false)
     );
@@ -209,6 +220,7 @@ const BattleTab = () => {
         setMegaEvolved(false);
         setCurrentMegaForm(null);
         setAcOverride('');
+        setLastPokemonRoll(null);
         // Combat stages reset on switch per PTA rules (PH2 p.256)
         resetCombatStages();
     // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: reset on pokemon switch only; resetCombatStages is stable (useCallback with no deps)
@@ -305,7 +317,9 @@ const BattleTab = () => {
         ].filter(Boolean);
 
         if (diceData.count === 0) {
-            addToHistory(buildPokemonRollEntry({ ...commonFields, isStatus: true, relevantStages, statusPenalties }));
+            const entry = buildPokemonRollEntry({ ...commonFields, isStatus: true, relevantStages, statusPenalties });
+            addToHistory(entry);
+            setLastPokemonRoll(entry);
             return;
         }
 
@@ -324,12 +338,14 @@ const BattleTab = () => {
             total = diceTotal + (isCrit ? diceData.bonus * 2 : diceData.bonus) + statMod + stabBonus;
         }
 
-        addToHistory(buildPokemonRollEntry({
+        const entry = buildPokemonRollEntry({
             ...commonFields,
             dice: isHit ? `${diceCount}d${diceData.sides}` : null,
             diceBonus: diceData.bonus,
             rolls, diceTotal, statBonus: statMod, stabBonus, total, relevantStages, statusPenalties
-        }));
+        });
+        addToHistory(entry);
+        setLastPokemonRoll(entry);
     };
 
     const rollTrainerSkill = () => {
@@ -358,7 +374,9 @@ const BattleTab = () => {
 
         const trainerMaxHP = calculateMaxHP();
         const trainerCurrentHP = trainerMaxHP - (trainer.currentDamage || 0);
-        addToHistory({ type: 'trainer_skill', skill: selectedSkill, skillStat: skillData.stat, dice: '1d20', rolls, baseStat, modifier, hasSkill, bonus: skillBonus, total, trainerCurrentHP, trainerMaxHP, trainerAvatarUrl: trainer.avatar || null, timestamp: Date.now() });
+        const entry = { type: 'trainer_skill', skill: selectedSkill, skillStat: skillData.stat, dice: '1d20', rolls, baseStat, modifier, hasSkill, bonus: skillBonus, total, trainerCurrentHP, trainerMaxHP, trainerAvatarUrl: trainer.avatar || null, timestamp: Date.now() };
+        addToHistory(entry);
+        setLastTrainerSkillRoll(entry);
     };
 
     const rollTrainerAttack = () => {
@@ -393,7 +411,7 @@ const BattleTab = () => {
             total = diceTotal + diceBonus + statMod;
         }
 
-        addToHistory({
+        const entry = {
             type: 'trainer_attack',
             trainer: trainer.name || 'Trainer',
             weapon: weapon.name,
@@ -408,7 +426,9 @@ const BattleTab = () => {
             trainerCurrentHP, trainerMaxHP,
             trainerAvatarUrl: trainer.avatar || null,
             timestamp: Date.now()
-        });
+        };
+        addToHistory(entry);
+        setLastTrainerAttackRoll(entry);
     };
 
     const rollCustomDice = () => {
@@ -419,7 +439,9 @@ const BattleTab = () => {
         }
         const rolls = rollDice(diceData.count, diceData.sides);
         const rollTotal = rolls.reduce((sum, r) => sum + r, 0);
-        addToHistory({ type: 'custom', dice: customDice, rolls, rollTotal, bonus: diceData.bonus, total: rollTotal + diceData.bonus, timestamp: Date.now() });
+        const entry = { type: 'custom', dice: customDice, rolls, rollTotal, bonus: diceData.bonus, total: rollTotal + diceData.bonus, timestamp: Date.now() };
+        addToHistory(entry);
+        setLastCustomRoll(entry);
     };
 
     const rollHealItem = (itemName) => {
@@ -808,7 +830,7 @@ const BattleTab = () => {
                                     <MoveSelector
                                         selectedPokemon={selectedPokemon}
                                         selectedMove={selectedMove}
-                                        onSelectMove={setSelectedMove}
+                                        onSelectMove={(move) => { setSelectedMove(move); setLastPokemonRoll(null); }}
                                         showDetail={showDetail}
                                         gameData={GAME_DATA}
                                     />
@@ -822,6 +844,14 @@ const BattleTab = () => {
                                     >
                                         {selectedPokemon && selectedMove ? `Roll ${selectedMove.name}!` : 'Select a Pokémon & move'}
                                     </button>
+
+                                    {/* Inline result — visible right away, without needing to scroll to the
+                                        (often off-screen) Roll History panel. See RollResultEntry.jsx. */}
+                                    {lastPokemonRoll && (
+                                        <div style={{ marginTop: '10px' }}>
+                                            <RollResultEntry roll={lastPokemonRoll} />
+                                        </div>
+                                    )}
                                 </div>
                             )}
                         </div>
@@ -894,7 +924,7 @@ const BattleTab = () => {
                                 <label style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '4px', display: 'block' }}>Select Skill</label>
                                 <select
                                     value={selectedSkill}
-                                    onChange={(e) => setSelectedSkill(e.target.value)}
+                                    onChange={(e) => { setSelectedSkill(e.target.value); setLastTrainerSkillRoll(null); }}
                                     style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--input-bg)', color: 'var(--text-primary)', cursor: 'pointer' }}
                                 >
                                     <option value="">Choose a skill...</option>
@@ -946,10 +976,17 @@ const BattleTab = () => {
                             <button
                                 onClick={rollTrainerSkill}
                                 disabled={!selectedSkill}
+                                title={!selectedSkill ? 'Select a skill first' : undefined}
                                 style={{ width: '100%', padding: '15px', background: selectedSkill ? 'var(--gradient-purple)' : 'var(--collapsed-btn-bg)', color: selectedSkill ? 'white' : 'var(--collapsed-btn-text)', border: 'none', borderRadius: '8px', cursor: selectedSkill ? 'pointer' : 'not-allowed', fontSize: '16px', fontWeight: 'bold' }}
                             >
                                 Roll Skill Check!
                             </button>
+
+                            {lastTrainerSkillRoll && (
+                                <div style={{ marginTop: '10px' }}>
+                                    <RollResultEntry roll={lastTrainerSkillRoll} />
+                                </div>
+                            )}
 
                             {/* Arms Attack */}
                             <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid var(--border-light)' }}>
@@ -957,7 +994,7 @@ const BattleTab = () => {
                                     <label style={{ fontSize: '13px', fontWeight: 'bold', marginBottom: '4px', display: 'block' }}>Arms Attack</label>
                                     <select
                                         value={selectedWeapon || ''}
-                                        onChange={e => setSelectedWeapon(e.target.value || null)}
+                                        onChange={e => { setSelectedWeapon(e.target.value || null); setLastTrainerAttackRoll(null); }}
                                         style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid var(--border-medium)', background: 'var(--input-bg)', color: 'var(--text-primary)', cursor: 'pointer' }}
                                     >
                                         <option value="">Choose weapon...</option>
@@ -999,16 +1036,34 @@ const BattleTab = () => {
                                 <button
                                     onClick={rollTrainerAttack}
                                     disabled={!selectedWeapon}
+                                    title={!selectedWeapon ? 'Select a weapon first' : undefined}
                                     style={{ width: '100%', padding: '15px', background: selectedWeapon ? 'linear-gradient(135deg, var(--stat-atk, #e53935), #c62828)' : 'var(--collapsed-btn-bg)', color: selectedWeapon ? 'white' : 'var(--collapsed-btn-text)', border: 'none', borderRadius: '8px', cursor: selectedWeapon ? 'pointer' : 'not-allowed', fontSize: '16px', fontWeight: 'bold' }}
                                 >
                                     {selectedWeapon ? `Roll Attack (${selectedWeapon})!` : 'Select a weapon'}
                                 </button>
+
+                                {lastTrainerAttackRoll && (
+                                    <div style={{ marginTop: '10px' }}>
+                                        <RollResultEntry roll={lastTrainerAttackRoll} />
+                                    </div>
+                                )}
                             </div>
                         </div>
                     )}
 
                     {mode === 'custom' && (
-                        <CustomDicePanel customDice={customDice} setCustomDice={setCustomDice} onRoll={rollCustomDice} />
+                        <>
+                            <CustomDicePanel
+                                customDice={customDice}
+                                setCustomDice={(v) => { setCustomDice(v); setLastCustomRoll(null); }}
+                                onRoll={rollCustomDice}
+                            />
+                            {lastCustomRoll && (
+                                <div style={{ marginTop: '10px' }}>
+                                    <RollResultEntry roll={lastCustomRoll} />
+                                </div>
+                            )}
+                        </>
                     )}
 
                     {mode === 'heal' && (
