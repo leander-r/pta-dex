@@ -15,8 +15,8 @@ const GameRulesSection = () => {
                 <div>
                     <h4>Turn Order</h4>
                     <ul>
-                        <li>Speed determines initiative order (highest first)</li>
-                        <li>Ties are resolved by Speed stat, then coin flip</li>
+                        <li>Trainers act first, in order of highest Speed to lowest</li>
+                        <li>Then Pokémon act, also in order of highest Speed to lowest</li>
                     </ul>
 
                     <h4>Actions Per Turn</h4>

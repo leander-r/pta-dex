@@ -70,7 +70,7 @@ const NotesTab = () => {
     const handleAddQuest = () => {
         const title = newQuestTitle.trim();
         if (!title) return;
-        const quest = { id: Date.now(), title, status: QUEST_STATUSES[0].key, notes: '' };
+        const quest = { id: Date.now() + Math.random(), title, status: QUEST_STATUSES[0].key, notes: '' };
         setTrainer(prev => ({ ...prev, quests: [...(prev.quests || []), quest] }));
         setNewQuestTitle('');
         toast.success(`Quest "${title}" added.`);
