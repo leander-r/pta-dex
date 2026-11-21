@@ -83,7 +83,11 @@ const useModalKeyboard = (isOpen, onClose, options = {}) => {
         }
     }, [isOpen, closeOnEscape, trapFocus, getFocusableElements]);
 
-    // Auto-focus on open, restore focus on close (only runs when isOpen changes)
+    // Auto-focus on open, restore focus on close (only runs when isOpen changes).
+    // Both halves are gated behind `autoFocus` — callers that opt out of it are
+    // typically anchored to a focusable trigger that opens on its own focus event
+    // (e.g. a search input opening a results dropdown onFocus). Restoring focus to
+    // that trigger on close would re-fire its onFocus and immediately reopen it.
     useEffect(() => {
         if (isOpen) {
             previousActiveElement.current = document.activeElement;
@@ -99,7 +103,7 @@ const useModalKeyboard = (isOpen, onClose, options = {}) => {
                 }, 50);
                 return () => clearTimeout(timer);
             }
-        } else {
+        } else if (autoFocus) {
             if (previousActiveElement.current && typeof previousActiveElement.current.focus === 'function') {
                 previousActiveElement.current.focus();
             }
