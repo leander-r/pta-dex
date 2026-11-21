@@ -607,7 +607,7 @@ const PokemonCard = ({
 
         updatePokemon({
             species: speciesData.species,
-            name: pokemon.name === 'New Pokemon' || !pokemon.name ? speciesData.species : pokemon.name,
+            name: pokemon.name === 'New Pokémon' || !pokemon.name ? speciesData.species : pokemon.name,
             types: types,
             baseStats: baseStats,
             abilities: initialAbilities,
@@ -2447,10 +2447,40 @@ const PokemonCard = ({
 
                 {editTab === 'stats' && (
                     <div>
-                        {/* Pre-existing Base Relation violation — offers reset as escape hatch */}
+                        {/* Homebrew toggle — lets a GM-approved homebrew Pokémon bypass the
+                            Base Relation rule's +/- blocking below, for builds that intentionally
+                            don't follow standard base-stat ordering. */}
+                        <label style={{
+                            display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px',
+                            cursor: 'pointer', fontSize: '12px', fontWeight: 'bold', color: 'var(--text-secondary)'
+                        }}>
+                            <input
+                                type="checkbox"
+                                checked={!!pokemon.homebrew}
+                                onChange={(e) => updatePokemon({ homebrew: e.target.checked })}
+                                style={{ width: '16px', height: '16px', cursor: 'pointer' }}
+                            />
+                            🛠️ Homebrew (ignore Base Relation stat limit)
+                        </label>
+
+                        {/* Pre-existing Base Relation violation — offers reset as escape hatch,
+                            unless this is a Homebrew Pokémon intentionally breaking the rule */}
                         {(() => {
                             const violations = getBaseRelationViolations(pokemon);
                             if (!violations.length) return null;
+
+                            if (pokemon.homebrew) {
+                                return (
+                                    <div style={{
+                                        marginBottom: '12px', padding: '10px 14px', borderRadius: '8px',
+                                        background: 'var(--bg-light)', border: '1px solid var(--border-light)',
+                                        fontSize: '12px', color: 'var(--text-muted)'
+                                    }}>
+                                        ℹ️ Base Relation ignored (Homebrew): {violations.join('; ')}
+                                    </div>
+                                );
+                            }
+
                             return (
                                 <div style={{
                                     marginBottom: '12px', padding: '14px 16px', borderRadius: '8px',
@@ -2463,7 +2493,7 @@ const PokemonCard = ({
                                         {violations.map(v => <li key={v}>{v}</li>)}
                                     </ul>
                                     <div style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '10px' }}>
-                                        These violations prevent any +/− moves from being allowed. Reset the allocation to start fresh — all spent points are returned.
+                                        These violations prevent any +/− moves from being allowed. Reset the allocation to start fresh, or mark this Pokémon Homebrew above to ignore the rule.
                                     </div>
                                     <button
                                         onClick={() => showConfirm({
@@ -2518,8 +2548,8 @@ const PokemonCard = ({
                                 const statColor = `var(--stat-${stat})`;
                                 const addedVal = pokemon.addedStats?.[stat] || 0;
                                 const pointsLeft = pokemon.statPointsAvailable || 0;
-                                const addBlockReason = pointsLeft > 0 ? getBaseRelationBlockReason(stat, natureModifiedBase, pokemon.addedStats || {}, 1) : null;
-                                const removeBlockReason = addedVal > 0 ? getBaseRelationBlockReason(stat, natureModifiedBase, pokemon.addedStats || {}, -1) : null;
+                                const addBlockReason = (!pokemon.homebrew && pointsLeft > 0) ? getBaseRelationBlockReason(stat, natureModifiedBase, pokemon.addedStats || {}, 1) : null;
+                                const removeBlockReason = (!pokemon.homebrew && addedVal > 0) ? getBaseRelationBlockReason(stat, natureModifiedBase, pokemon.addedStats || {}, -1) : null;
                                 const addViolates = !!addBlockReason;
                                 const removeViolates = !!removeBlockReason;
                                 const minusDisabled = addedVal <= 0 || removeViolates;

@@ -134,6 +134,7 @@ export const PokemonProvider = ({ children }) => {
             gender: '',
             avatar: '',
             shiny: false,
+            homebrew: false,
             level: 1,
             exp: 0,
             highestLevelReached: 1,
@@ -450,7 +451,7 @@ export const PokemonProvider = ({ children }) => {
     // Import Pokemon
     const importPokemon = useCallback((pokemonData, toParty = false) => {
         const violations = getBaseRelationViolations(pokemonData);
-        if (violations.length > 0) {
+        if (!pokemonData.homebrew && violations.length > 0) {
             const name = pokemonData.name || pokemonData.species || 'This Pokémon';
             toast.warning(`${name} has Base Relation stat violations: ${violations.join('; ')}. Edit their stats to fix.`);
         }

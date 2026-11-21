@@ -233,7 +233,7 @@ export const DataProvider = ({ children }) => {
                         [...(t.party || []), ...(t.reserve || [])]
                     );
                     setTimeout(() => {
-                        const violators = allPokemon.filter(p => getBaseRelationViolations(p).length > 0);
+                        const violators = allPokemon.filter(p => !p.homebrew && getBaseRelationViolations(p).length > 0);
                         if (violators.length > 0) {
                             const names = violators.map(p => p.name || p.species || 'Unknown').join(', ');
                             toast.warning(
