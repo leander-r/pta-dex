@@ -133,6 +133,7 @@ export const PokemonProvider = ({ children }) => {
             species: '',
             gender: '',
             avatar: '',
+            shiny: false,
             level: 1,
             exp: 0,
             highestLevelReached: 1,

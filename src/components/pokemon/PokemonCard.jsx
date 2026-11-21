@@ -2297,10 +2297,28 @@ const PokemonCard = ({
                             label="Appearance"
                             isOpen={!!openInfoSections.appearance}
                             onToggle={() => toggleInfoSection('appearance')}
-                            summary={pokemon.avatar ? 'Custom image set (optional)' : 'Default sprite (optional)'}
+                            summary={`${pokemon.avatar ? 'Custom image set' : 'Default sprite'}${pokemon.shiny ? ' · Shiny ✨' : ''} (optional)`}
                         />
                         {openInfoSections.appearance && (
                         <div style={{ marginBottom: '15px' }}>
+                            <label style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                                marginBottom: '12px',
+                                cursor: 'pointer',
+                                fontSize: '13px',
+                                fontWeight: 'bold',
+                                color: 'var(--text-secondary)'
+                            }}>
+                                <input
+                                    type="checkbox"
+                                    checked={!!pokemon.shiny}
+                                    onChange={(e) => updatePokemon({ shiny: e.target.checked })}
+                                    style={{ width: '16px', height: '16px', cursor: 'pointer' }}
+                                />
+                                ✨ Shiny
+                            </label>
                             <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
                                 {(() => {
                                     const autoSprite = getPokemonSprite(pokemon);

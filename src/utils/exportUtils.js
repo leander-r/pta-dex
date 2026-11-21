@@ -231,7 +231,8 @@ export const exportSinglePokemon = (pokemon) => {
             statPointsAvailable: pokemon.statPointsAvailable || 0,
             currentDamage: pokemon.currentDamage || 0,
             gender: pokemon.gender || '',
-            avatar: pokemon.avatar || ''
+            avatar: pokemon.avatar || '',
+            shiny: !!pokemon.shiny
         },
         exportedAt: new Date().toISOString(),
         version: '1.0',
@@ -501,6 +502,7 @@ export const importSinglePokemon = (jsonData) => {
             currentDamage: clampNumber(pokemon.currentDamage, 0, 9999, 0),
             gender,
             avatar: validateAvatar(pokemon.avatar),
+            shiny: !!pokemon.shiny,
             pokemonSkills,
             regionalForm: pokemon.regionalForm ? sanitizeString(String(pokemon.regionalForm), 30) : null,
             heldItem: sanitizeString(pokemon.heldItem || '', 50),

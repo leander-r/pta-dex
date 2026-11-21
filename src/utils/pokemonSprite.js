@@ -51,14 +51,16 @@ const REGIONAL_FORM_SUFFIXES = {
 };
 
 // Returns the auto-generated sprite URL for a Pokémon, or null if no species is set.
-// Handles regional forms by appending the appropriate Showdown suffix.
+// Handles regional forms by appending the appropriate Showdown suffix, and
+// switches to Showdown's shiny sprite directory when pokemon.shiny is set.
 export const getPokemonSprite = (pokemon) => {
     const slug = speciesSlug(pokemon?.species);
     if (!slug) return null;
     const formSuffix = REGIONAL_FORM_SUFFIXES[(pokemon?.regionalForm || '').toLowerCase()];
     const baseSlug = SLUG_OVERRIDES[slug] ?? slug;
     const fullSlug = formSuffix ? `${baseSlug}-${formSuffix}` : baseSlug;
-    return `https://play.pokemonshowdown.com/sprites/gen5/${fullSlug}.png`;
+    const dir = pokemon?.shiny ? 'gen5-shiny' : 'gen5';
+    return `https://play.pokemonshowdown.com/sprites/${dir}/${fullSlug}.png`;
 };
 
 // Returns the sprite URL for a mega/alternate form.
@@ -74,7 +76,8 @@ export const getMegaSprite = (pokemon, megaForm) => {
     if (!slug || !megaForm?.name) return getPokemonSprite(pokemon);
     const base = SLUG_OVERRIDES[slug] ?? slug;
     const formSlug = megaForm.name.toLowerCase().replace(/[\s%]/g, ''); // strip spaces and % (e.g. "10%" → "10")
-    return `https://play.pokemonshowdown.com/sprites/gen5/${base}-${formSlug}.png`;
+    const dir = pokemon?.shiny ? 'gen5-shiny' : 'gen5';
+    return `https://play.pokemonshowdown.com/sprites/${dir}/${base}-${formSlug}.png`;
 };
 
 // Returns the effective display image: custom upload first, then auto sprite.
