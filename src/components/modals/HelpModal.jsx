@@ -44,6 +44,7 @@ const HELP_CONTENT = {
                 </ul>
                 <p>The pools are completely separate. Forgetting a Natural move <em>never</em> affects Taught moves and vice versa. This lets your Pokémon keep a full kit of both level-up and taught moves simultaneously.</p>
                 <p style={{ marginTop: '10px', fontSize: '12px', color: 'var(--text-muted)' }}>Tip: When all 4 slots in a pool are full, you'll be prompted to replace an existing move.</p>
+                <p style={{ marginTop: '10px', fontSize: '12px', color: 'var(--text-muted)' }}>GM-approved homebrew: the <strong>Homebrew Move Economy</strong> toggle on the Moves tab (mirrors the official Natural Move Economy Feature) lets any mix of moves fill the 8 slots instead of enforcing the 4/4 split.</p>
             </>
         )
     },

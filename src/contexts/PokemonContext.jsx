@@ -5,7 +5,7 @@
 
 import { createContext, useContext, useCallback, useEffect, useMemo, useRef } from 'react';
 import { GAME_DATA } from '../data/configs.js';
-import { MAX_PARTY_SIZE, MAX_NATURAL_MOVES, POKEMON_HP_MULTIPLIER, MAX_POKEMON_LEVEL } from '../data/constants.js';
+import { MAX_PARTY_SIZE, MAX_NATURAL_MOVES, MAX_TOTAL_MOVES, POKEMON_HP_MULTIPLIER, MAX_POKEMON_LEVEL } from '../data/constants.js';
 import { EVOLUTION_CHAINS } from '../data/evolutionChains.js';
 import { getActualStats, calculateSTAB as calcSTAB, getBaseRelationViolations } from '../utils/dataUtils.js';
 import { buildSpeciesUpdateFields } from '../utils/speciesFields.js';
@@ -356,7 +356,9 @@ export const PokemonProvider = ({ children }) => {
                 const movesToLearn = getMovesForLevelRange(currentPoke, oldLvl, newLvl);
                 if (movesToLearn.length === 0) return;
 
+                const homebrewMoves = !!currentPoke.homebrewMoves;
                 let currentNaturalCount = startingMoves.filter(m => m.source === 'natural').length;
+                let currentTotalCount = startingMoves.length;
                 const movesToLearnDirectly = [];
                 const movesToQueue = [];
 
@@ -366,9 +368,11 @@ export const PokemonProvider = ({ children }) => {
                     );
                     if (alreadyKnows) return;
 
-                    if (currentNaturalCount < MAX_NATURAL_MOVES) {
+                    const hasRoom = homebrewMoves ? currentTotalCount < MAX_TOTAL_MOVES : currentNaturalCount < MAX_NATURAL_MOVES;
+                    if (hasRoom) {
                         movesToLearnDirectly.push(newMove);
                         currentNaturalCount++;
+                        currentTotalCount++;
                     } else {
                         movesToQueue.push({
                             pokemonId,
@@ -635,17 +639,19 @@ export const PokemonProvider = ({ children }) => {
                 const alreadyKnows = freshMoves.some(m =>
                     m.name.toLowerCase() === nextMove.newMove.move.toLowerCase()
                 );
+                const hasRoom = freshPokemon.homebrewMoves ? freshMoves.length < MAX_TOTAL_MOVES : naturalMoves.length < MAX_NATURAL_MOVES;
 
                 if (alreadyKnows) {
                     setPendingMoveLearn(prev => prev.slice(1));
-                } else if (naturalMoves.length < MAX_NATURAL_MOVES) {
+                } else if (hasRoom) {
                     learnMove(nextMove.pokemonId, nextMove.newMove, null, nextMove.inParty);
                     setPendingMoveLearn(prev => prev.slice(1));
                 } else {
                     setMoveLearnData({
                         ...nextMove,
                         currentMoves: freshMoves,
-                        pokemonName: freshPokemon.name
+                        pokemonName: freshPokemon.name,
+                        homebrewMoves: !!freshPokemon.homebrewMoves
                     });
                     setShowMoveLearnModal(true);
                     setPendingMoveLearn(prev => prev.slice(1));
@@ -695,7 +701,7 @@ export const PokemonProvider = ({ children }) => {
                     seenMoves.add(moveLower);
                     return true;
                 })
-                .slice(0, MAX_NATURAL_MOVES)
+                .slice(0, currentPoke.homebrewMoves ? MAX_TOTAL_MOVES : MAX_NATURAL_MOVES)
                 .map(m => {
                     const moveData = GAME_DATA.moves[m.move] || {};
                     return {

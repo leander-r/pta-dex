@@ -85,11 +85,11 @@ const CustomMoveModal = () => {
         const naturalMoves = targetPoke.moves.filter(m => m.source === 'natural').length;
         const taughtMoves = targetPoke.moves.filter(m => m.source === 'taught').length;
 
-        if (source === 'natural' && naturalMoves >= MAX_NATURAL_MOVES) {
+        if (!targetPoke.homebrewMoves && source === 'natural' && naturalMoves >= MAX_NATURAL_MOVES) {
             toast.warning(`This Pokemon already has ${MAX_NATURAL_MOVES} Natural moves.`);
             return;
         }
-        if (source === 'taught' && taughtMoves >= MAX_TAUGHT_MOVES) {
+        if (!targetPoke.homebrewMoves && source === 'taught' && taughtMoves >= MAX_TAUGHT_MOVES) {
             toast.warning(`This Pokemon already has ${MAX_TAUGHT_MOVES} Taught moves.`);
             return;
         }

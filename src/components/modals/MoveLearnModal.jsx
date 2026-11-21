@@ -39,6 +39,9 @@ const MoveLearnModal = () => {
     // Determine the source type (natural or taught)
     const moveSource = moveLearnData.source || moveLearnData.newMove?.source || 'natural';
     const isNatural = moveSource === 'natural';
+    // Homebrew Move Economy — any current move can be forgotten to make room,
+    // not just ones matching the new move's natural/taught slot type.
+    const homebrewMoves = !!moveLearnData.homebrewMoves;
 
     const handleForgetMove = (index) => {
         // Snapshot the current moves so this swap can be undone — forgetting a
@@ -150,7 +153,11 @@ const MoveLearnModal = () => {
                     </div>
 
                     <div className={`move-learn-warning ${isNatural ? 'natural' : 'taught'}`}>
-                        <strong>⚠️ {moveLearnData.pokemonName} already knows 4 {isNatural ? 'Natural' : 'Taught'} moves!</strong>
+                        <strong>
+                            ⚠️ {homebrewMoves
+                                ? `${moveLearnData.pokemonName} already knows 8 moves!`
+                                : `${moveLearnData.pokemonName} already knows 4 ${isNatural ? 'Natural' : 'Taught'} moves!`}
+                        </strong>
                         <div className="move-learn-warning-text">
                             Tap a move to view details. Choose a move to forget, or skip learning.
                         </div>
@@ -158,12 +165,12 @@ const MoveLearnModal = () => {
 
                     <div className="move-learn-current-moves">
                         <div className="move-learn-section-title">
-                            Current {isNatural ? 'Natural' : 'Taught'} Moves:
+                            {homebrewMoves ? 'Current Moves:' : `Current ${isNatural ? 'Natural' : 'Taught'} Moves:`}
                         </div>
                         <div className="move-learn-moves-list">
                             {(moveLearnData.currentMoves || [])
                                 .map((move, index) => ({ move, index }))
-                                .filter(({ move }) => move.source === moveSource)
+                                .filter(({ move }) => homebrewMoves || move.source === moveSource)
                                 .map(({ move, index }) => {
                                     const moveDef = GAME_DATA.moves[move.name] || move;
                                     return (

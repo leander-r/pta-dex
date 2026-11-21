@@ -49,6 +49,7 @@ export const DEFAULT_POKEMON = {
     avatar: '',
     shiny: false,
     homebrew: false,
+    homebrewMoves: false,
     level: 1,
     exp: 0,
     highestLevelReached: 1,

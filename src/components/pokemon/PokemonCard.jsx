@@ -408,14 +408,16 @@ const PokemonCard = ({
             return;
         }
 
-        // Check move limits based on source
+        // Check move limits based on source — Homebrew Move Economy relaxes the
+        // per-category (4/4) cap but never the 8-move total.
         const naturalCount = pokemon.moves?.filter(m => m.source === 'natural').length || 0;
         const taughtCount = pokemon.moves?.filter(m => m.source === 'taught').length || 0;
+        const atTotalCap = (pokemon.moves?.length || 0) >= MAX_TOTAL_MOVES;
 
         // If trying to add a natural move when at limit, show replacement modal
-        if (source === 'natural' && (naturalCount >= MAX_NATURAL_MOVES || (pokemon.moves?.length || 0) >= MAX_TOTAL_MOVES)) {
-            if (naturalCount === 0) {
-                toast.warning('Cannot add natural move - no natural moves to replace.');
+        if (source === 'natural' && ((!pokemon.homebrewMoves && naturalCount >= MAX_NATURAL_MOVES) || atTotalCap)) {
+            if ((pokemon.homebrewMoves ? (pokemon.moves?.length || 0) : naturalCount) === 0) {
+                toast.warning('Cannot add natural move - no moves to replace.');
                 return;
             }
             // Use the shared MoveLearnModal
@@ -434,16 +436,17 @@ const PokemonCard = ({
                 },
                 currentMoves: pokemon.moves || [],
                 inParty: isInParty,
-                source: source
+                source: source,
+                homebrewMoves: !!pokemon.homebrewMoves
             });
             setShowMoveLearnModal(true);
             return;
         }
 
         // If trying to add a taught move when at limit, show replacement modal
-        if (source === 'taught' && (taughtCount >= MAX_TAUGHT_MOVES || (pokemon.moves?.length || 0) >= MAX_TOTAL_MOVES)) {
-            if (taughtCount === 0) {
-                toast.warning('Cannot add taught move - no taught moves to replace.');
+        if (source === 'taught' && ((!pokemon.homebrewMoves && taughtCount >= MAX_TAUGHT_MOVES) || atTotalCap)) {
+            if ((pokemon.homebrewMoves ? (pokemon.moves?.length || 0) : taughtCount) === 0) {
+                toast.warning('Cannot add taught move - no moves to replace.');
                 return;
             }
             // Use the shared MoveLearnModal
@@ -462,7 +465,8 @@ const PokemonCard = ({
                 },
                 currentMoves: pokemon.moves || [],
                 inParty: isInParty,
-                source: source
+                source: source,
+                homebrewMoves: !!pokemon.homebrewMoves
             });
             setShowMoveLearnModal(true);
             return;
@@ -489,6 +493,14 @@ const PokemonCard = ({
     // Calculate current move counts for UI
     const naturalMoveCount = pokemon.moves?.filter(m => m.source === 'natural').length || 0;
     const taughtMoveCount = pokemon.moves?.filter(m => m.source === 'taught').length || 0;
+    // Homebrew Move Economy — mirrors the "Natural Move Economy" Feature: when enabled,
+    // the 4/4 natural-vs-taught split is ignored and only the 8-move total is enforced.
+    const homebrewMoves = !!pokemon.homebrewMoves;
+    const naturalAtCap = !homebrewMoves && naturalMoveCount >= MAX_NATURAL_MOVES;
+    const taughtAtCap = !homebrewMoves && taughtMoveCount >= MAX_TAUGHT_MOVES;
+    const totalAtCap = (pokemon.moves?.length || 0) >= MAX_TOTAL_MOVES;
+    const canReplaceNatural = homebrewMoves ? (pokemon.moves?.length || 0) > 0 : naturalMoveCount > 0;
+    const canReplaceTaught = homebrewMoves ? (pokemon.moves?.length || 0) > 0 : taughtMoveCount > 0;
 
     // Get all available abilities from species data
     const getAvailableAbilities = (speciesData) => {
@@ -2766,10 +2778,27 @@ const PokemonCard = ({
                                 title="About move slots"
                             >?</button>
                             <div style={{ marginLeft: 'auto', display: 'flex', gap: '5px' }}>
-                                <span style={{ fontSize: '12px', fontWeight: 'bold', padding: '2px 8px', borderRadius: '5px', background: naturalMoveCount >= MAX_NATURAL_MOVES ? 'var(--tint-fail-bg)' : 'var(--tint-success-bg)', color: naturalMoveCount >= MAX_NATURAL_MOVES ? 'var(--color-danger-text)' : 'var(--stat-hp)', border: `1px solid ${naturalMoveCount >= MAX_NATURAL_MOVES ? 'var(--color-danger-text)' : 'var(--stat-hp)'}` }} title={`Natural moves: ${naturalMoveCount} of ${MAX_NATURAL_MOVES}`}>Nat {naturalMoveCount}/{MAX_NATURAL_MOVES}</span>
-                                <span style={{ fontSize: '12px', fontWeight: 'bold', padding: '2px 8px', borderRadius: '5px', background: taughtMoveCount >= MAX_TAUGHT_MOVES ? 'var(--tint-fail-bg)' : 'var(--tint-purple-bg)', color: taughtMoveCount >= MAX_TAUGHT_MOVES ? 'var(--color-danger-text)' : 'var(--color-taught)', border: `1px solid ${taughtMoveCount >= MAX_TAUGHT_MOVES ? 'var(--color-danger-text)' : 'var(--color-taught)'}` }} title={`Taught moves: ${taughtMoveCount} of ${MAX_TAUGHT_MOVES}`}>Taught {taughtMoveCount}/{MAX_TAUGHT_MOVES}</span>
+                                <span style={{ fontSize: '12px', fontWeight: 'bold', padding: '2px 8px', borderRadius: '5px', background: naturalAtCap ? 'var(--tint-fail-bg)' : 'var(--tint-success-bg)', color: naturalAtCap ? 'var(--color-danger-text)' : 'var(--stat-hp)', border: `1px solid ${naturalAtCap ? 'var(--color-danger-text)' : 'var(--stat-hp)'}` }} title={homebrewMoves ? `Natural moves: ${naturalMoveCount} (no per-category cap while Homebrew Move Economy is on)` : `Natural moves: ${naturalMoveCount} of ${MAX_NATURAL_MOVES}`}>Nat {naturalMoveCount}{!homebrewMoves && `/${MAX_NATURAL_MOVES}`}</span>
+                                <span style={{ fontSize: '12px', fontWeight: 'bold', padding: '2px 8px', borderRadius: '5px', background: taughtAtCap ? 'var(--tint-fail-bg)' : 'var(--tint-purple-bg)', color: taughtAtCap ? 'var(--color-danger-text)' : 'var(--color-taught)', border: `1px solid ${taughtAtCap ? 'var(--color-danger-text)' : 'var(--color-taught)'}` }} title={homebrewMoves ? `Taught moves: ${taughtMoveCount} (no per-category cap while Homebrew Move Economy is on)` : `Taught moves: ${taughtMoveCount} of ${MAX_TAUGHT_MOVES}`}>Taught {taughtMoveCount}{!homebrewMoves && `/${MAX_TAUGHT_MOVES}`}</span>
+                                <span style={{ fontSize: '12px', fontWeight: 'bold', padding: '2px 8px', borderRadius: '5px', background: totalAtCap ? 'var(--tint-fail-bg)' : 'var(--bg-light)', color: totalAtCap ? 'var(--color-danger-text)' : 'var(--text-muted)', border: `1px solid ${totalAtCap ? 'var(--color-danger-text)' : 'var(--border-medium)'}` }} title={`Total moves: ${pokemon.moves?.length || 0} of ${MAX_TOTAL_MOVES}`}>Total {pokemon.moves?.length || 0}/{MAX_TOTAL_MOVES}</span>
                             </div>
                         </div>
+
+                        {/* Homebrew Move Economy toggle — mirrors the official "Natural Move Economy"
+                            Feature (Hatcher, 16 SDEF): lets any mix of moves fill the 8 slots instead
+                            of enforcing the 4 natural / 4 taught split. */}
+                        <label style={{
+                            display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px',
+                            cursor: 'pointer', fontSize: '12px', fontWeight: 'bold', color: 'var(--text-secondary)'
+                        }}>
+                            <input
+                                type="checkbox"
+                                checked={homebrewMoves}
+                                onChange={(e) => updatePokemon({ homebrewMoves: e.target.checked })}
+                                style={{ width: '16px', height: '16px', cursor: 'pointer' }}
+                            />
+                            🛠️ Homebrew (ignore 4 Natural / 4 Taught split — any mix, up to 8 total)
+                        </label>
 
                         {(pokemon.moves || []).length === 0 && !showMoveDropdown && (
                             <div style={{ textAlign: 'center', padding: '18px 16px', marginBottom: '10px', borderRadius: '8px', background: 'var(--bg-light)', border: '1px dashed var(--border-medium)' }}>
@@ -3109,34 +3138,34 @@ const PokemonCard = ({
                                                         }}>{data.category || 'Status'}</span>
                                                         <button
                                                             onClick={() => addMoveWithSource(name, data, 'natural')}
-                                                            disabled={naturalMoveCount === 0 && (pokemon.moves?.length || 0) >= MAX_TOTAL_MOVES}
+                                                            disabled={!canReplaceNatural && totalAtCap}
                                                             style={{
                                                                 width: '28px', height: '28px', flexShrink: 0,
-                                                                background: (naturalMoveCount === 0 && (pokemon.moves?.length || 0) >= MAX_TOTAL_MOVES) ? 'var(--border-medium)' : ((naturalMoveCount >= MAX_NATURAL_MOVES || (pokemon.moves?.length || 0) >= MAX_TOTAL_MOVES) ? 'var(--poke-orange)' : 'var(--stat-hp)'),
+                                                                background: (!canReplaceNatural && totalAtCap) ? 'var(--border-medium)' : ((naturalAtCap || totalAtCap) ? 'var(--poke-orange)' : 'var(--stat-hp)'),
                                                                 color: 'white', border: 'none', borderRadius: '50%',
                                                                 fontSize: '14px', fontWeight: 'bold',
-                                                                cursor: (naturalMoveCount === 0 && (pokemon.moves?.length || 0) >= MAX_TOTAL_MOVES) ? 'not-allowed' : 'pointer',
-                                                                opacity: (naturalMoveCount === 0 && (pokemon.moves?.length || 0) >= MAX_TOTAL_MOVES) ? 0.6 : 1,
+                                                                cursor: (!canReplaceNatural && totalAtCap) ? 'not-allowed' : 'pointer',
+                                                                opacity: (!canReplaceNatural && totalAtCap) ? 0.6 : 1,
                                                                 display: 'flex', alignItems: 'center', justifyContent: 'center'
                                                             }}
-                                                            title={(naturalMoveCount >= MAX_NATURAL_MOVES || (pokemon.moves?.length || 0) >= MAX_TOTAL_MOVES) ? "Replace oldest Natural move" : "Add as Natural move"}
+                                                            title={(naturalAtCap || totalAtCap) ? "Replace oldest Natural move" : "Add as Natural move"}
                                                             aria-label={`Add ${name} as Natural move`}
                                                         >
                                                             N
                                                         </button>
                                                         <button
                                                             onClick={() => addMoveWithSource(name, data, 'taught')}
-                                                            disabled={taughtMoveCount === 0 && (pokemon.moves?.length || 0) >= MAX_TOTAL_MOVES}
+                                                            disabled={!canReplaceTaught && totalAtCap}
                                                             style={{
                                                                 width: '28px', height: '28px', flexShrink: 0,
-                                                                background: (taughtMoveCount === 0 && (pokemon.moves?.length || 0) >= MAX_TOTAL_MOVES) ? 'var(--border-medium)' : ((taughtMoveCount >= MAX_TAUGHT_MOVES || (pokemon.moves?.length || 0) >= MAX_TOTAL_MOVES) ? 'var(--poke-orange)' : 'var(--color-taught)'),
+                                                                background: (!canReplaceTaught && totalAtCap) ? 'var(--border-medium)' : ((taughtAtCap || totalAtCap) ? 'var(--poke-orange)' : 'var(--color-taught)'),
                                                                 color: 'white', border: 'none', borderRadius: '50%',
                                                                 fontSize: '14px', fontWeight: 'bold',
-                                                                cursor: (taughtMoveCount === 0 && (pokemon.moves?.length || 0) >= MAX_TOTAL_MOVES) ? 'not-allowed' : 'pointer',
-                                                                opacity: (taughtMoveCount === 0 && (pokemon.moves?.length || 0) >= MAX_TOTAL_MOVES) ? 0.6 : 1,
+                                                                cursor: (!canReplaceTaught && totalAtCap) ? 'not-allowed' : 'pointer',
+                                                                opacity: (!canReplaceTaught && totalAtCap) ? 0.6 : 1,
                                                                 display: 'flex', alignItems: 'center', justifyContent: 'center'
                                                             }}
-                                                            title={(taughtMoveCount >= MAX_TAUGHT_MOVES || (pokemon.moves?.length || 0) >= MAX_TOTAL_MOVES) ? "Replace oldest Taught move" : "Add as Taught move"}
+                                                            title={(taughtAtCap || totalAtCap) ? "Replace oldest Taught move" : "Add as Taught move"}
                                                             aria-label={`Add ${name} as Taught move`}
                                                         >
                                                             T
