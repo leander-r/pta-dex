@@ -822,7 +822,28 @@ const TeamPokemonSlot = ({ poke, idx }) => {
             {(() => {
                 const img = getPokemonDisplayImage(poke);
                 return img
-                    ? <img src={img} alt={poke.name} onError={e => { e.currentTarget.style.display = 'none'; }} style={{ width: '64px', height: '64px', objectFit: 'contain', filter: 'drop-shadow(0 3px 6px rgba(0,0,0,0.4))' }} />
+                    ? (
+                        <div style={{ position: 'relative' }}>
+                            <img
+                                src={img}
+                                alt={poke.name}
+                                onError={e => { e.currentTarget.style.display = 'none'; }}
+                                style={{
+                                    width: '64px',
+                                    height: '64px',
+                                    objectFit: 'contain',
+                                    filter: poke.shiny
+                                        ? 'drop-shadow(0 0 5px #ffd54a) drop-shadow(0 3px 6px rgba(0,0,0,0.4))'
+                                        : 'drop-shadow(0 3px 6px rgba(0,0,0,0.4))'
+                                }}
+                            />
+                            {poke.shiny && (
+                                <span aria-hidden="true" style={{ position: 'absolute', top: '-2px', right: '-2px', fontSize: '13px', filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.6))' }}>
+                                    ✨
+                                </span>
+                            )}
+                        </div>
+                    )
                     : <div style={{ width: '64px', height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '32px', opacity: 0.6 }}>🎴</div>;
             })()}
 
@@ -1021,8 +1042,10 @@ const PokemonCard = ({ poke }) => {
                             height: '100px',
                             borderRadius: '16px',
                             background: 'rgba(255,255,255,0.2)',
-                            border: '4px solid rgba(255,255,255,0.5)',
-                            boxShadow: '0 6px 20px rgba(0,0,0,0.3)',
+                            border: poke.shiny ? '4px solid #ffd54a' : '4px solid rgba(255,255,255,0.5)',
+                            boxShadow: poke.shiny
+                                ? '0 0 20px 4px rgba(255,213,74,0.7), 0 6px 20px rgba(0,0,0,0.3)'
+                                : '0 6px 20px rgba(0,0,0,0.3)',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
@@ -1035,12 +1058,18 @@ const PokemonCard = ({ poke }) => {
                                 ? <img src={spriteUrl} alt={poke.species || poke.name} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
                                 : '?'
                             }
+                            {poke.shiny && (
+                                <span aria-hidden="true" style={{ position: 'absolute', top: '2px', right: '2px', fontSize: '18px', filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.6))' }}>
+                                    ✨
+                                </span>
+                            )}
                         </div>
                     );
                 })()}
                 <div style={{ flex: 1 }}>
                     <h2 style={{ margin: 0, fontSize: '24px', fontWeight: 800, textShadow: '0 3px 6px rgba(0,0,0,0.4)', color: 'white' }}>
                         {poke.name} <span style={{ opacity: 0.9 }}>{genderSymbol}</span>
+                        {poke.shiny && <span style={{ marginLeft: '8px', fontSize: '15px', color: '#ffd54a' }}>✨ Shiny</span>}
                     </h2>
                     {poke.species && poke.species !== poke.name && (
                         <p style={{ margin: '2px 0', opacity: 0.85, fontSize: '13px', fontStyle: 'italic' }}>{poke.species}</p>

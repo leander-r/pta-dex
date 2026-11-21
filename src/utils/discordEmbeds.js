@@ -33,7 +33,8 @@ export const buildPokemonEmbed = (roll, trainerName) => {
 
     const icon   = miss ? '❌' : crit ? '💥' : roll.isStatus ? '✨' : '⚔️';
     const suffix = crit ? ' — CRITICAL HIT!' : '';
-    const title  = `${icon} ${roll.pokemon} used ${roll.move}!${suffix}`;
+    const shinyPrefix = roll.shiny ? '✨ ' : '';
+    const title  = `${icon} ${shinyPrefix}${roll.pokemon} used ${roll.move}!${suffix}`;
     const color  = miss ? 0x95A5A6 : crit ? 0xFF6F00 : (roll.typeColor || 0xF5A623);
 
     // One-line battle summary as description
@@ -224,7 +225,7 @@ export const buildHealEmbed = (roll, trainerName) => {
 
     const embed = {
         author: { name: trainerName },
-        title: `🩹 ${roll.pokemon} used ${roll.item}`,
+        title: `🩹 ${roll.shiny ? '✨ ' : ''}${roll.pokemon} used ${roll.item}`,
         description,
         color: 0x4CAF50,
         fields,
@@ -241,7 +242,7 @@ export const buildHealEmbed = (roll, trainerName) => {
 export const buildStatusCureEmbed = (roll, trainerName) => {
     const embed = {
         author: { name: trainerName },
-        title: `✨ ${roll.pokemon} used ${roll.item}`,
+        title: `✨ ${roll.pokemon}${roll.shiny ? ' ✨' : ''} used ${roll.item}`,
         description: `**Cured:** ${roll.cured}`,
         color: 0x9C27B0,
         timestamp: new Date().toISOString(),

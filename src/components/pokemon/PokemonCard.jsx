@@ -747,23 +747,35 @@ const PokemonCard = ({
                     </div>
                 )}
 
-                {/* Avatar */}
-                <div style={{
-                    width: '48px',
-                    height: '48px',
-                    borderRadius: '50%',
-                    background: `radial-gradient(circle at 38% 32%, rgba(255,255,255,0.45) 0%, ${primaryColor}cc 45%, ${secondaryColor}ff 100%)`,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    overflow: 'hidden',
-                    boxShadow: `0 2px 10px ${primaryColor}88, inset 0 1px 3px rgba(255,255,255,0.3)`,
-                    marginTop: '8px'
-                }}>
-                    {(() => {
-                        const img = getPokemonDisplayImage(pokemon);
-                        return <CollapsedAvatar key={img} src={img} alt={pokemon.name || pokemon.species || 'Pokémon'} />;
-                    })()}
+                {/* Avatar — shiny Pokémon get a gold ring + sparkle badge so the collapsed
+                    tile signals rarity without needing to open the card. */}
+                <div style={{ position: 'relative', marginTop: '8px' }}>
+                    <div style={{
+                        width: '48px',
+                        height: '48px',
+                        borderRadius: '50%',
+                        background: `radial-gradient(circle at 38% 32%, rgba(255,255,255,0.45) 0%, ${primaryColor}cc 45%, ${secondaryColor}ff 100%)`,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        overflow: 'hidden',
+                        boxShadow: pokemon.shiny
+                            ? `0 0 0 2px #ffd54a, 0 0 8px 2px rgba(255,213,74,0.7), inset 0 1px 3px rgba(255,255,255,0.3)`
+                            : `0 2px 10px ${primaryColor}88, inset 0 1px 3px rgba(255,255,255,0.3)`,
+                    }}>
+                        {(() => {
+                            const img = getPokemonDisplayImage(pokemon);
+                            return <CollapsedAvatar key={img} src={img} alt={pokemon.name || pokemon.species || 'Pokémon'} />;
+                        })()}
+                    </div>
+                    {pokemon.shiny && (
+                        <span
+                            aria-hidden="true"
+                            style={{ position: 'absolute', top: '-4px', right: '-4px', fontSize: '13px', filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.5))' }}
+                        >
+                            ✨
+                        </span>
+                    )}
                 </div>
 
                 {/* Name + level */}
@@ -883,15 +895,31 @@ const PokemonCard = ({
                         {(() => {
                             const headerSprite = getPokemonSprite(pokemon);
                             return headerSprite ? (
-                                <img
-                                    src={headerSprite}
-                                    alt=""
-                                    aria-hidden="true"
-                                    loading="lazy"
-                                    className="pokemon-expanded-sprite"
-                                    style={{ imageRendering: 'pixelated', objectFit: 'contain', flexShrink: 0, opacity: 1 }}
-                                    onError={e => { e.target.style.visibility = 'hidden'; }}
-                                />
+                                <div style={{ position: 'relative', flexShrink: 0 }}>
+                                    <img
+                                        src={headerSprite}
+                                        alt=""
+                                        aria-hidden="true"
+                                        loading="lazy"
+                                        className="pokemon-expanded-sprite"
+                                        style={{
+                                            imageRendering: 'pixelated',
+                                            objectFit: 'contain',
+                                            flexShrink: 0,
+                                            opacity: 1,
+                                            ...(pokemon.shiny ? { filter: 'drop-shadow(0 0 5px #ffd54a) drop-shadow(0 0 2px #fff59d)' } : null),
+                                        }}
+                                        onError={e => { e.target.style.visibility = 'hidden'; }}
+                                    />
+                                    {pokemon.shiny && (
+                                        <span
+                                            aria-hidden="true"
+                                            style={{ position: 'absolute', top: '0', right: '0', fontSize: '16px', filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.6))' }}
+                                        >
+                                            ✨
+                                        </span>
+                                    )}
+                                </div>
                             ) : null;
                         })()}
                         <div style={{ flex: 1, minWidth: 0 }}>
@@ -942,9 +970,9 @@ const PokemonCard = ({
                                 which is unreadable on e.g. Ghost/Poison and invisible to
                                 colour-blind players. Same type-specific classes as the collapsed
                                 tile, so they stay legible regardless of the header color. */}
-                            {(pokemon.types || []).length > 0 && (
+                            {((pokemon.types || []).length > 0 || pokemon.shiny) && (
                                 <div style={{ display: 'flex', gap: '5px', marginTop: '6px', paddingLeft: '12px', flexWrap: 'wrap' }}>
-                                    {pokemon.types.map(type => (
+                                    {(pokemon.types || []).map(type => (
                                         <span
                                             key={type}
                                             className={`type-pill-single type-${type.toLowerCase()}`}
@@ -953,6 +981,18 @@ const PokemonCard = ({
                                             {type}
                                         </span>
                                     ))}
+                                    {pokemon.shiny && (
+                                        <span style={{
+                                            fontSize: '10px',
+                                            fontWeight: 'bold',
+                                            padding: '3px 8px',
+                                            borderRadius: '10px',
+                                            background: 'linear-gradient(135deg, #ffd54a, #ffb300)',
+                                            color: '#4a3200',
+                                        }}>
+                                            ✨ Shiny
+                                        </span>
+                                    )}
                                 </div>
                             )}
                             {/* Level, HP, and a quick status/held-item/gender/nature summary —

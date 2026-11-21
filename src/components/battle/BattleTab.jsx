@@ -59,6 +59,7 @@ const battleContext = (pokemon, hp, megaEvolved, currentMegaForm) => ({
     pokemonSpriteUrl: megaEvolved && currentMegaForm
         ? getMegaSprite(pokemon, currentMegaForm)
         : getPokemonSprite(pokemon),
+    shiny: !!pokemon.shiny,
     activeStatuses: Object.entries(pokemon.statusConditions || {}).filter(([, v]) => v).map(([k]) => k),
     megaEvolved,
     megaFormName: megaEvolved && currentMegaForm ? currentMegaForm.name : null,
@@ -471,7 +472,7 @@ const BattleTab = () => {
             }
             updatePokemon(target.id, { currentDamage: Math.max(0, maxHP - reviveHp) });
             consumeItem();
-            addToHistory({ type: 'heal', pokemon: target.name || target.species, item: itemName, formula: `Revive to ${reviveHp} HP`, rolls: [], bonus: 0, amount: reviveHp, hpBefore, hpAfter: Math.min(maxHP, reviveHp), hpMax: maxHP, pokemonSpriteUrl: getPokemonSprite(target), timestamp: Date.now() });
+            addToHistory({ type: 'heal', pokemon: target.name || target.species, item: itemName, formula: `Revive to ${reviveHp} HP`, rolls: [], bonus: 0, amount: reviveHp, hpBefore, hpAfter: Math.min(maxHP, reviveHp), hpMax: maxHP, pokemonSpriteUrl: getPokemonSprite(target), shiny: !!target.shiny, timestamp: Date.now() });
             return;
         }
 
@@ -490,7 +491,7 @@ const BattleTab = () => {
             updatePokemon(target.id, { statusConditions: newConditions });
             consumeItem();
             const label = keysToClear.map(k => STATUS_CONDITIONS.find(c => c.key === k)?.label || k).join(', ');
-            addToHistory({ type: 'status_cure', pokemon: target.name || target.species, item: itemName, cured: label, pokemonSpriteUrl: getPokemonSprite(target), timestamp: Date.now() });
+            addToHistory({ type: 'status_cure', pokemon: target.name || target.species, item: itemName, cured: label, pokemonSpriteUrl: getPokemonSprite(target), shiny: !!target.shiny, timestamp: Date.now() });
             return;
         }
 
@@ -523,7 +524,7 @@ const BattleTab = () => {
             updatePokemon(target.id, { currentDamage: Math.max(0, (target.currentDamage || 0) - amount) });
         }
         consumeItem();
-        addToHistory({ type: 'heal', pokemon: target.name || target.species, item: itemName, formula: desc, rolls, bonus, amount, hpBefore, hpAfter, hpMax: maxHP, pokemonSpriteUrl: getPokemonSprite(target), timestamp: Date.now() });
+        addToHistory({ type: 'heal', pokemon: target.name || target.species, item: itemName, formula: desc, rolls, bonus, amount, hpBefore, hpAfter, hpMax: maxHP, pokemonSpriteUrl: getPokemonSprite(target), shiny: !!target.shiny, timestamp: Date.now() });
     };
 
     return (
