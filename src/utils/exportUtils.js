@@ -85,15 +85,17 @@ const captureCard = async (card, filename, html2canvas) => {
         let dataUrl = await imgToDataURL(img.src);
         if (!dataUrl) {
             // Pokémon Showdown CDN has no CORS headers.
-            // Extract the species slug from the Showdown URL and look up the sprite
-            // via the PokeAPI REST endpoint (by name, so IDs never mismatch).
-            const slug = img.src.match(/play\.pokemonshowdown\.com\/sprites\/gen5\/([^.]+)\.png/)?.[1];
-            if (slug) {
+            // Extract the species slug (and whether it's the shiny directory) from the
+            // Showdown URL and look up the matching sprite via the PokeAPI REST endpoint
+            // (by name, so IDs never mismatch).
+            const match = img.src.match(/play\.pokemonshowdown\.com\/sprites\/(gen5-shiny|gen5)\/([^.]+)\.png/);
+            if (match) {
+                const [, dir, slug] = match;
                 try {
                     const apiResp = await fetch(`https://pokeapi.co/api/v2/pokemon/${slug}`, { cache: 'no-store' });
                     if (apiResp.ok) {
                         const apiData = await apiResp.json();
-                        const spriteSrc = apiData.sprites?.front_default;
+                        const spriteSrc = dir === 'gen5-shiny' ? apiData.sprites?.front_shiny : apiData.sprites?.front_default;
                         if (spriteSrc) dataUrl = await imgToDataURL(spriteSrc);
                     }
                 } catch { /* ignore — custom/homebrew species won't be in PokeAPI */ }
